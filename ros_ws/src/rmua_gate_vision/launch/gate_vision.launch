@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- 双目 OpenCV Gate 识别 -> 世界系 XYZ 采集 -->
+  <arg name="route_file" default="$(find route_follower)/config/route_1_3.yaml"/>
+  <arg name="route_name" default="route_1_3"/>
+  <arg name="out_file"   default="$(find route_follower)/config/gates_vision_1_3.yaml"/>
+
+  <node pkg="rmua_gate_vision" type="gate_vision_node.py" name="gate_vision" output="screen">
+    <param name="route_file"    value="$(arg route_file)"/>
+    <param name="route_name"    value="$(arg route_name)"/>
+    <param name="out_file"      value="$(arg out_file)"/>
+    <param name="cluster_radius" value="3.0"/>
+    <param name="min_support"   value="8"/>
+    <param name="max_d_cross"   value="5.0"/>
+    <param name="save_images"   value="false"/>
+  </node>
+</launch>

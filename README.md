@@ -12,6 +12,7 @@
 | Stage 3 | `docs/03_stage3_z_axis_and_gates.md` | `route_follower`（Gate Manager） | 3D 路径 + 检测门穿越 |
 | Stage 4 | `docs/04_stage4_z_safety_and_gate_collection.md` | `route_follower`（Z Safety）+ `z_probe.py` | Z 合法高度包络 + 真实 Gate 采集 |
 | Stage 5 | `docs/05_stage5_xy_gate_anchors_z_planner.md` | `altitude_planner.py` + `route_follower` | Gate 锚点生成 z_ref(s)（Smoothstep/混合/限速/异常保护） |
+| Stage 6 | `docs/06_stage6_stereo_opencv_gate_vision.md` | `ros_ws/src/rmua_gate_vision` | 双目 OpenCV Gate 识别 → 三角化 → 真实 Gate XYZ |
 
 ## 系统与接口
 - 平台：Ubuntu 20.04 + ROS Noetic + 官方模拟器（NED 世界系）。
@@ -35,6 +36,10 @@ roslaunch start_to_goal start_to_goal.launch
 
 # Stage 2/3/4
 roslaunch route_follower route_follower.launch
+
+# Stage 6: 双目 OpenCV Gate 识别/采集 (边飞边采, 最后 save)
+roslaunch rmua_gate_vision gate_vision.launch
+rosservice call /gate_vision/save
 ```
 
 > 运行前需先启动官方模拟器（见其 README）。
