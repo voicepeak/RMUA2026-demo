@@ -15,5 +15,6 @@ catkin_install_python(PROGRAMS
   scripts/route_recorder.py
   scripts/splines_to_yaml.py
   scripts/make_gates.py
+  scripts/z_probe.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

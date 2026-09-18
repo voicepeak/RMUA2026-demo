@@ -46,6 +46,11 @@ class RouteFollower(object):
         self.z_ref = rospy.get_param("~z_ref", -1.5)
         self.use_route_z = bool(rospy.get_param("~use_route_z", True))
 
+        # Z 合法高度包络 (pose 坐标系, 实测后填入; 默认很宽)
+        self.z_safe_min = rospy.get_param("~z_safe_min", -20.0)
+        self.z_safe_max = rospy.get_param("~z_safe_max", 10.0)
+        self.z_soft_margin = rospy.get_param("~z_soft_margin", 0.5)
+
         self.gate_blend_start = rospy.get_param("~gate_blend_start", 25.0)
         self.gate_blend_full = rospy.get_param("~gate_blend_full", 10.0)
         self.gate_align_dist = rospy.get_param("~gate_align_dist", 12.0)
@@ -268,9 +273,18 @@ class RouteFollower(object):
             z_ref = z_path
 
         # ---- 高度误差 -> vz (机体 z 向上为正) ----
+        # Z Safety Clamp: 任何来源的 z_ref 都限制在安全包络内
+        z_ref = max(self.z_safe_min, min(self.z_safe_max, z_ref))
         z_err = p.z - z_ref
         vz = self.k_z * z_err
         vz = max(-self.vmax_z, min(self.vmax_z, vz))
+
+        # 软边界: 接近上限禁止继续上升, 接近下限禁止继续下降
+        # 正 vz = 上升(z 减小)
+        if p.z <= self.z_safe_min + self.z_soft_margin:   # 接近合法最高点
+            vz = min(vz, 0.0)                             # 禁止继续上升
+        if p.z >= self.z_safe_max - self.z_soft_margin:   # 接近合法最低点
+            vz = max(vz, 0.0)                             # 禁止继续下降
 
         # ---- 高度误差大时减速 ----
         if abs(z_err) > self.z_err_slow:
