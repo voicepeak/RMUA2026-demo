@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>start_to_goal</name>
+  <version>0.0.0</version>
+  <description>RMUA 2026 Stage 0 basic start-to-goal goal follower</description>
+  <maintainer email="huang@todo.todo">huang</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>airsim_ros</build_depend>
+  <build_depend>rospy</build_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>airsim_ros</exec_depend>
+  <exec_depend>tf</exec_depend>
+</package>

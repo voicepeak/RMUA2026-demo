@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- RMUA 2026 Stage 0 : pose_gt + end_goal -> vel_body_cmd -->
+
+  <arg name="use_end_goal"     default="true"/>
+  <arg name="kp_xy"            default="0.3"/>
+  <arg name="kp_z"             default="0.3"/>
+  <arg name="vmax_xy"          default="2.0"/>
+  <arg name="vmax_z"           default="1.0"/>
+  <arg name="goal_tolerance"   default="1.0"/>
+  <arg name="accel"            default="8"/>
+  <arg name="control_rate"     default="20.0"/>
+  <arg name="do_takeoff"       default="false"/>
+  <arg name="takeoff_height"   default="1.0"/>
+
+  <node pkg="start_to_goal" type="start_to_goal.py" name="start_to_goal" output="screen">
+    <param name="use_end_goal"   value="$(arg use_end_goal)"/>
+    <param name="kp_xy"          value="$(arg kp_xy)"/>
+    <param name="kp_z"           value="$(arg kp_z)"/>
+    <param name="vmax_xy"        value="$(arg vmax_xy)"/>
+    <param name="vmax_z"         value="$(arg vmax_z)"/>
+    <param name="goal_tolerance" value="$(arg goal_tolerance)"/>
+    <param name="accel"          value="$(arg accel)"/>
+    <param name="control_rate"   value="$(arg control_rate)"/>
+    <param name="do_takeoff"     value="$(arg do_takeoff)"/>
+    <param name="takeoff_height" value="$(arg takeoff_height)"/>
+    <!-- fixed goal used when use_end_goal:=false -->
+    <rosparam param="fixed_goal">[10.0, 0.0, 0.0]</rosparam>
+  </node>
+</launch>
