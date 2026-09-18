@@ -5,6 +5,7 @@
   <arg name="route"          default="route_1_3"/>
   <arg name="route_file"     default="$(find route_follower)/config/route_1_3.yaml"/>
   <arg name="gates_file"     default="$(find route_follower)/config/gates_1_3.yaml"/>
+  <arg name="gate_z_uses_offset" default="true"/>
   <arg name="forward_speed"  default="2.0"/>
   <arg name="k_cross"        default="0.7"/>
   <arg name="lookahead"      default="5.0"/>
@@ -35,6 +36,7 @@
     <param name="route_file"       value="$(arg route_file)"/>
     <param name="route_name"       value="$(arg route)"/>
     <param name="gates_file"       value="$(arg gates_file)"/>
+    <param name="gate_z_uses_offset" value="$(arg gate_z_uses_offset)"/>
     <param name="forward_speed"    value="$(arg forward_speed)"/>
     <param name="k_cross"          value="$(arg k_cross)"/>
     <param name="lookahead"        value="$(arg lookahead)"/>

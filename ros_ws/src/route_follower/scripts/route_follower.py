@@ -92,6 +92,7 @@ class RouteFollower(object):
         self.build_progress()
         for g in self.gates:
             g["s"] = self.project_s(g)
+        self.gates.sort(key=lambda g: g["s"])
         self.gate_idx = 0
         self.prev_s = None
         self.planner = None
@@ -187,6 +188,12 @@ class RouteFollower(object):
                 best, best_d, best_c = i, d, c
         self.seg = best
         self.z_offset = p.z - best_c.z
+
+        # 中途启动时跳过已经走过的 Gate
+        t0, _, _ = self.project_segment(best, p)
+        s_now = self.progress(best, t0)
+        while self.gate_idx < len(self.gates) and self.gates[self.gate_idx]["s"] <= s_now - 2.0:
+            self.gate_idx += 1
 
         # 构建 Altitude Planner: START 用进入时实际高度(或覆盖值), GOAL 用最后一个有效 Gate Z
         start_z = self.start_anchor_z if self.start_anchor_z is not None else p.z
