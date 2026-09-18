@@ -34,6 +34,8 @@
   <arg name="aperture_z_tol"  default="0.6"/>
   <arg name="slope_factor"   default="3.0"/>
   <arg name="slope_abs_max"  default="0.6"/>
+  <arg name="xy_converge"    default="0.5"/>
+  <arg name="snap_gate_to_route" default="true"/>
   <arg name="start_gate"     default="0"/>
   <arg name="end_gate"       default="-1"/>
 
@@ -67,6 +69,8 @@
     <param name="aperture_z_tol"   value="$(arg aperture_z_tol)"/>
     <param name="slope_factor"     value="$(arg slope_factor)"/>
     <param name="slope_abs_max"    value="$(arg slope_abs_max)"/>
+    <param name="xy_converge"      value="$(arg xy_converge)"/>
+    <param name="snap_gate_to_route" value="$(arg snap_gate_to_route)"/>
     <param name="start_gate"       value="$(arg start_gate)"/>
     <param name="end_gate"         value="$(arg end_gate)"/>
     <param name="accel"            value="$(arg accel)"/>

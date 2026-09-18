@@ -69,6 +69,8 @@ class RouteFollower(object):
         self.aperture_z_tol = rospy.get_param("~aperture_z_tol", 0.6)
         self.slope_factor = rospy.get_param("~slope_factor", 3.0)
         self.slope_abs_max = rospy.get_param("~slope_abs_max", 0.6)
+        self.xy_converge = rospy.get_param("~xy_converge", 0.5)
+        self.snap_gate_to_route = bool(rospy.get_param("~snap_gate_to_route", True))
         self.start_gate = int(rospy.get_param("~start_gate", 0))
         self.end_gate = int(rospy.get_param("~end_gate", -1))
 
@@ -184,6 +186,9 @@ class RouteFollower(object):
         gates_adj = [dict(g, z=g["z"] + off) for g in self.gates]
         for g in gates_adj:
             g["s"] = self.project_gate_s(g)
+            if self.snap_gate_to_route:      # 门在道路中心: XY 吸附到路线中心线(消除视觉横向偏差)
+                tx_, ty_, _ = self.point_at(g["s"])
+                g["x"], g["y"] = tx_, ty_
         self.chain = GateChain(gates_adj, slope_factor=self.slope_factor,
                                slope_abs_max=self.slope_abs_max)
         start_z = self.start_anchor_z if self.start_anchor_z is not None else p.z
@@ -236,6 +241,13 @@ class RouteFollower(object):
         self.seg = i
         s_now = self.seg_s[i] + t * self.seg_len[i]
 
+        # 甩在身后的门直接跳过 (错过穿门判定时不至于卡住)
+        while (self.gate_idx < len(self.chain.gates)
+               and self.chain.gates[self.gate_idx]["s"] < s_now - 12.0):
+            rospy.logwarn("SKIP gate %s (left behind)", self.chain.gates[self.gate_idx].get("id"))
+            self.gate_idx += 1
+            self.prev_s_plane = None
+
         ng = self.chain.gates[self.gate_idx] if self.gate_idx < len(self.chain.gates) else None
         d_g = 1e9
         if ng is not None:
@@ -271,6 +283,12 @@ class RouteFollower(object):
         # ---- 动态 look-ahead 目标 ----
         L = self.lookahead_base + self.lookahead_kv * v
         tx, ty, _ = self.point_at(s_now + L)
+        if ng is not None:
+            a = (self.gate_blend_start - d_g) / max(1e-6, self.gate_blend_start - self.gate_blend_full)
+            a = max(0.0, min(1.0, a))
+            w = self.xy_converge * a
+            tx = (1.0 - w) * tx + w * ng["x"]
+            ty = (1.0 - w) * ty + w * ng["y"]
         vx = self.k_pursuit * (tx - p.x)
         vy = self.k_pursuit * (ty - p.y)
         v_route = self.arbiter.arbitrate((vx, vy), (0.0, 0.0), "PATH", 0.0)[0]
