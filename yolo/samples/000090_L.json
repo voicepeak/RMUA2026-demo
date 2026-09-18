@@ -1,0 +1,98 @@
+{
+  "version": "4.0.6",
+  "flags": {},
+  "checked": false,
+  "shapes": [
+    {
+      "label": "gate",
+      "score": null,
+      "points": [
+        [
+          439.5,
+          275.0
+        ],
+        [
+          610.5,
+          275.0
+        ],
+        [
+          610.5,
+          371.5
+        ],
+        [
+          439.5,
+          371.5
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "difficult": false,
+      "shape_type": "rectangle",
+      "flags": {},
+      "attributes": {},
+      "kie_linking": []
+    },
+    {
+      "label": "gate",
+      "score": null,
+      "points": [
+        [
+          386.5,
+          247.5
+        ],
+        [
+          656.0,
+          247.5
+        ],
+        [
+          656.0,
+          408.5
+        ],
+        [
+          386.5,
+          408.5
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "difficult": false,
+      "shape_type": "rectangle",
+      "flags": {},
+      "attributes": {},
+      "kie_linking": []
+    },
+    {
+      "label": "gate",
+      "score": null,
+      "points": [
+        [
+          213.5,
+          169.5
+        ],
+        [
+          814.5,
+          169.5
+        ],
+        [
+          814.5,
+          528.0
+        ],
+        [
+          213.5,
+          528.0
+        ]
+      ],
+      "group_id": null,
+      "description": "",
+      "difficult": false,
+      "shape_type": "rectangle",
+      "flags": {},
+      "attributes": {},
+      "kie_linking": []
+    }
+  ],
+  "imagePath": "000090_L.png",
+  "imageData": null,
+  "imageHeight": 720,
+  "imageWidth": 960
+}
