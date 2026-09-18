@@ -1,40 +1,44 @@
 <?xml version="1.0"?>
 <launch>
-  <!-- RMUA 2026 Stage 7 v2: Route + Gate Guidance + Command Arbiter + Altitude Profile -->
+  <!-- RMUA 2026 Stage 7 v3: Multi-Gate Lookahead + Ordered Chain + 动态 Z + 提速 -->
 
-  <arg name="route"           default="route_1_3"/>
-  <arg name="route_file"      default="$(find route_follower)/config/route_1_3.yaml"/>
-  <arg name="gates_file"      default="$(find route_follower)/config/gates_1_3.yaml"/>
-  <arg name="guides_file"     default="$(find route_follower)/config/none.yaml"/>
+  <arg name="route"          default="route_1_3"/>
+  <arg name="route_file"     default="$(find route_follower)/config/route_1_3.yaml"/>
+  <arg name="gates_file"     default="$(find route_follower)/config/gates_1_3.yaml"/>
+  <arg name="guides_file"    default="$(find route_follower)/config/none.yaml"/>
   <arg name="gate_z_uses_offset" default="true"/>
-  <arg name="start_anchor_z"  default="-999.0"/>
+  <arg name="start_anchor_z" default="-999.0"/>
 
-  <arg name="forward_speed"   default="2.0"/>
-  <arg name="k_cross"         default="0.7"/>
-  <arg name="soft_boundary"   default="2.0"/>
-  <arg name="hard_boundary"   default="3.0"/>
-  <arg name="vmax_xy"         default="2.5"/>
+  <!-- 速度调度 -->
+  <arg name="cruise_speed"   default="4.0"/>
+  <arg name="max_speed"      default="6.0"/>
+  <arg name="min_speed"      default="2.0"/>
+  <arg name="gate_slow_speed" default="1.5"/>
+  <arg name="k_curv"         default="1.0"/>
+  <arg name="eta_z"          default="1.0"/>
+  <arg name="lookahead_base" default="5.0"/>
+  <arg name="lookahead_kv"   default="1.5"/>
+  <arg name="k_pursuit"      default="1.2"/>
 
-  <arg name="k_z"             default="0.6"/>
-  <arg name="vmax_z"          default="1.5"/>
-  <arg name="z_err_slow"      default="1.0"/>
-  <arg name="z_rate_max"      default="1.0"/>
-  <arg name="corridor_half"   default="1.5"/>
+  <!-- Z -->
+  <arg name="k_z"            default="0.6"/>
+  <arg name="vmax_z"         default="1.5"/>
+  <arg name="z_err_slow"     default="1.0"/>
+  <arg name="z_rate_max"     default="1.5"/>
+  <arg name="corridor_half"  default="1.5"/>
+  <arg name="gate_blend_start" default="25.0"/>
+  <arg name="gate_blend_full"  default="8.0"/>
 
-  <arg name="capture_start"   default="22.0"/>
-  <arg name="full_control"    default="10.0"/>
-  <arg name="align_xy_tol"    default="0.5"/>
-  <arg name="align_z_tol"     default="0.35"/>
+  <!-- Gate chain / pass -->
   <arg name="aperture_xy_tol" default="1.2"/>
   <arg name="aperture_z_tol"  default="0.6"/>
-  <arg name="approach_distance" default="4.0"/>
-  <arg name="exit_distance"   default="3.0"/>
-  <arg name="max_retry"       default="3"/>
-  <arg name="cross_speed"     default="1.2"/>
-  <arg name="gate_k_near"     default="2.0"/>
+  <arg name="slope_factor"   default="3.0"/>
+  <arg name="slope_abs_max"  default="0.6"/>
+  <arg name="start_gate"     default="0"/>
+  <arg name="end_gate"       default="-1"/>
 
-  <arg name="accel"           default="8"/>
-  <arg name="control_rate"    default="20.0"/>
+  <arg name="accel"          default="8"/>
+  <arg name="control_rate"   default="20.0"/>
 
   <node pkg="route_follower" type="route_follower.py" name="route_follower" output="screen">
     <param name="route_file"       value="$(arg route_file)"/>
@@ -43,27 +47,28 @@
     <param name="guides_file"      value="$(arg guides_file)"/>
     <param name="gate_z_uses_offset" value="$(arg gate_z_uses_offset)"/>
     <param name="start_anchor_z"   value="$(arg start_anchor_z)"/>
-    <param name="forward_speed"    value="$(arg forward_speed)"/>
-    <param name="k_cross"          value="$(arg k_cross)"/>
-    <param name="soft_boundary"    value="$(arg soft_boundary)"/>
-    <param name="hard_boundary"    value="$(arg hard_boundary)"/>
-    <param name="vmax_xy"          value="$(arg vmax_xy)"/>
+    <param name="cruise_speed"     value="$(arg cruise_speed)"/>
+    <param name="max_speed"        value="$(arg max_speed)"/>
+    <param name="min_speed"        value="$(arg min_speed)"/>
+    <param name="gate_slow_speed"  value="$(arg gate_slow_speed)"/>
+    <param name="k_curv"           value="$(arg k_curv)"/>
+    <param name="eta_z"            value="$(arg eta_z)"/>
+    <param name="lookahead_base"   value="$(arg lookahead_base)"/>
+    <param name="lookahead_kv"     value="$(arg lookahead_kv)"/>
+    <param name="k_pursuit"        value="$(arg k_pursuit)"/>
     <param name="k_z"              value="$(arg k_z)"/>
     <param name="vmax_z"           value="$(arg vmax_z)"/>
     <param name="z_err_slow"       value="$(arg z_err_slow)"/>
     <param name="z_rate_max"       value="$(arg z_rate_max)"/>
     <param name="corridor_half"    value="$(arg corridor_half)"/>
-    <param name="capture_start"    value="$(arg capture_start)"/>
-    <param name="full_control"     value="$(arg full_control)"/>
-    <param name="align_xy_tol"     value="$(arg align_xy_tol)"/>
-    <param name="align_z_tol"      value="$(arg align_z_tol)"/>
+    <param name="gate_blend_start" value="$(arg gate_blend_start)"/>
+    <param name="gate_blend_full"  value="$(arg gate_blend_full)"/>
     <param name="aperture_xy_tol"  value="$(arg aperture_xy_tol)"/>
     <param name="aperture_z_tol"   value="$(arg aperture_z_tol)"/>
-    <param name="approach_distance" value="$(arg approach_distance)"/>
-    <param name="exit_distance"    value="$(arg exit_distance)"/>
-    <param name="max_retry"        value="$(arg max_retry)"/>
-    <param name="cross_speed"      value="$(arg cross_speed)"/>
-    <param name="gate_k_near"      value="$(arg gate_k_near)"/>
+    <param name="slope_factor"     value="$(arg slope_factor)"/>
+    <param name="slope_abs_max"    value="$(arg slope_abs_max)"/>
+    <param name="start_gate"       value="$(arg start_gate)"/>
+    <param name="end_gate"         value="$(arg end_gate)"/>
     <param name="accel"            value="$(arg accel)"/>
     <param name="control_rate"     value="$(arg control_rate)"/>
   </node>

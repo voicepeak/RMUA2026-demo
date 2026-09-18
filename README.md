@@ -14,6 +14,7 @@
 | Stage 5 | `docs/05_stage5_xy_gate_anchors_z_planner.md` | `altitude_planner.py` + `route_follower` | Gate 锚点生成 z_ref(s)（Smoothstep/混合/限速/异常保护） |
 | Stage 6 | `docs/06_stage6_stereo_opencv_gate_vision.md` | `ros_ws/src/rmua_gate_vision` | 双目 OpenCV Gate 识别 → 三角化 → 真实 Gate XYZ |
 | Stage 7 | `docs/07_stage7_full_gate_crossing_v2.md` | `route_follower`（模块化重构） | Command Arbiter + Gate 状态机 + 动态 Z 走廊 + 避障预留 |
+| Stage 7b | `docs/08_stage7_v3_multi_gate_chain.md` | `gate_chain.py` + `route_follower` | 多 Gate 前视/顺序链 + Look-ahead 参考 + 动态 Z + 提速 |
 
 ## 系统与接口
 - 平台：Ubuntu 20.04 + ROS Noetic + 官方模拟器（NED 世界系）。
