@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>route_follower</name>
+  <version>0.0.0</version>
+  <description>RMUA 2026 stage 2: track-constrained path following</description>
+  <maintainer email="huang@todo.todo">huang</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>airsim_ros</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_srvs</build_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>airsim_ros</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
+  <exec_depend>tf</exec_depend>
+</package>

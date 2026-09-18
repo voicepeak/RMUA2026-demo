@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- RMUA 2026 stage 2 : Route Manager + Path Follower + Boundary Guard -->
+
+  <arg name="route"          default="route_1_3"/>
+  <arg name="route_file"     default="$(find route_follower)/config/route_1_3.yaml"/>
+  <arg name="forward_speed"  default="2.0"/>
+  <arg name="k_cross"        default="0.7"/>
+  <arg name="lookahead"      default="5.0"/>
+  <arg name="soft_boundary"  default="2.0"/>
+  <arg name="hard_boundary"  default="3.0"/>
+  <arg name="k_z"            default="0.6"/>
+  <arg name="vmax_z"         default="1.5"/>
+  <arg name="vmax_xy"        default="2.5"/>
+  <arg name="z_ref"          default="-1.5"/>
+  <arg name="use_route_z"    default="true"/>
+  <arg name="segment_switch_t" default="0.85"/>
+  <arg name="goal_tolerance" default="1.5"/>
+  <arg name="accel"          default="8"/>
+  <arg name="control_rate"   default="20.0"/>
+
+  <node pkg="route_follower" type="route_follower.py" name="route_follower" output="screen">
+    <param name="route_file"       value="$(arg route_file)"/>
+    <param name="route_name"       value="$(arg route)"/>
+    <param name="forward_speed"    value="$(arg forward_speed)"/>
+    <param name="k_cross"          value="$(arg k_cross)"/>
+    <param name="lookahead"        value="$(arg lookahead)"/>
+    <param name="soft_boundary"    value="$(arg soft_boundary)"/>
+    <param name="hard_boundary"    value="$(arg hard_boundary)"/>
+    <param name="k_z"              value="$(arg k_z)"/>
+    <param name="vmax_z"           value="$(arg vmax_z)"/>
+    <param name="vmax_xy"          value="$(arg vmax_xy)"/>
+    <param name="z_ref"            value="$(arg z_ref)"/>
+    <param name="use_route_z"      value="$(arg use_route_z)"/>
+    <param name="segment_switch_t" value="$(arg segment_switch_t)"/>
+    <param name="goal_tolerance"   value="$(arg goal_tolerance)"/>
+    <param name="accel"            value="$(arg accel)"/>
+    <param name="control_rate"     value="$(arg control_rate)"/>
+  </node>
+</launch>
