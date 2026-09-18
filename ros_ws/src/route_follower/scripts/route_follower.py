@@ -53,6 +53,9 @@ class RouteFollower(object):
         self.vmax_xy = rospy.get_param("~vmax_xy", 2.5)
         self.z_ref = rospy.get_param("~z_ref", -3.5)
         self.use_route_z = bool(rospy.get_param("~use_route_z", False))
+        # 起始高度锚点覆盖 (默认用进入时实际高度)
+        self.start_anchor_z = rospy.get_param("~start_anchor_z", -999.0)
+        self.start_anchor_z = None if self.start_anchor_z == -999.0 else self.start_anchor_z
 
         # Z 合法高度包络 (pose 坐标系)
         self.z_safe_min = rospy.get_param("~z_safe_min", -4.9)
@@ -185,10 +188,11 @@ class RouteFollower(object):
         self.seg = best
         self.z_offset = p.z - best_c.z
 
-        # 构建 Altitude Planner: START 用进入时实际高度, GOAL 用最后一个有效 Gate Z
+        # 构建 Altitude Planner: START 用进入时实际高度(或覆盖值), GOAL 用最后一个有效 Gate Z
+        start_z = self.start_anchor_z if self.start_anchor_z is not None else p.z
         valid_z = [g["z"] + (self.z_offset if self.gate_z_uses_offset else 0.0)
                    for g in self.gates if g.get("valid", False)]
-        goal_z = valid_z[-1] if valid_z else p.z
+        goal_z = valid_z[-1] if valid_z else start_z
         anchors = [{"s": g["s"],
                     "z": g["z"] + (self.z_offset if self.gate_z_uses_offset else 0.0),
                     "valid": g.get("valid", False)} for g in self.gates]
@@ -196,11 +200,11 @@ class RouteFollower(object):
                    "z": gd["z"] + (self.z_offset if self.gate_z_uses_offset else 0.0)}
                   for gd in self.guides if gd.get("s") is not None]
         self.planner = AltitudePlanner(
-            0.0, p.z, self.seg_s[-1], goal_z, anchors, guides,
+            0.0, start_z, self.seg_s[-1], goal_z, anchors, guides,
             self.gate_blend_start, self.gate_blend_full,
             self.z_rate_max, self.gate_z_max_jump)
-        rospy.loginfo("entry segment=%d d_cross=%.2f z_offset=%.2f valid_gates=%d",
-                      best, best_d, self.z_offset, len(valid_z))
+        rospy.loginfo("entry segment=%d d_cross=%.2f z_offset=%.2f valid_gates=%d start_z=%.2f",
+                      best, best_d, self.z_offset, len(valid_z), start_z)
 
     def lookahead_point(self, idx, t, look):
         remaining = look

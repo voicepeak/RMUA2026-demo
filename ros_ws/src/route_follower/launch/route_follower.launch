@@ -15,6 +15,7 @@
   <arg name="vmax_xy"        default="2.5"/>
   <arg name="z_ref"          default="-3.5"/>
   <arg name="use_route_z"    default="false"/>
+  <arg name="start_anchor_z" default="-999.0"/>
   <arg name="z_safe_min"     default="-4.9"/>
   <arg name="z_safe_max"     default="8.0"/>
   <arg name="z_soft_margin"  default="0.5"/>
@@ -44,6 +45,7 @@
     <param name="vmax_xy"          value="$(arg vmax_xy)"/>
     <param name="z_ref"            value="$(arg z_ref)"/>
     <param name="use_route_z"      value="$(arg use_route_z)"/>
+    <param name="start_anchor_z"   value="$(arg start_anchor_z)"/>
     <param name="z_safe_min"       value="$(arg z_safe_min)"/>
     <param name="z_safe_max"       value="$(arg z_safe_max)"/>
     <param name="z_soft_margin"    value="$(arg z_soft_margin)"/>
