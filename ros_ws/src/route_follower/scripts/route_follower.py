@@ -71,6 +71,25 @@ class RouteFollower(object):
         self.slope_abs_max = rospy.get_param("~slope_abs_max", 0.6)
         self.xy_converge = rospy.get_param("~xy_converge", 0.5)
         self.snap_gate_to_route = bool(rospy.get_param("~snap_gate_to_route", True))
+
+        # v4: Z 前视/前馈 + 坡度限速 + 掉高保护 + 速度/Z 斜坡
+        self.z_preview_time = rospy.get_param("~z_preview_time", 2.0)
+        self.z_preview_min = rospy.get_param("~z_preview_min", 8.0)
+        self.vz_up_safe = rospy.get_param("~vz_up_safe", 3.0)
+        self.vz_up_limit = rospy.get_param("~vz_up_limit", 3.0)
+        self.vz_down_limit = rospy.get_param("~vz_down_limit", 2.5)
+        self.vz_accel_limit = rospy.get_param("~vz_accel_limit", 3.0)
+        self.slope_eta = rospy.get_param("~slope_eta", 0.8)
+        self.z_error_slow1 = rospy.get_param("~z_error_slow1", 0.25)
+        self.z_error_slow2 = rospy.get_param("~z_error_slow2", 0.5)
+        self.z_error_stop = rospy.get_param("~z_error_stop", 0.9)
+        self.a_plan = rospy.get_param("~a_plan", 5.0)
+        self.k_steep = rospy.get_param("~k_steep", 0.15)
+        self.pred_time = rospy.get_param("~pred_time", 1.5)
+
+        self.v_cmd_prev = 0.0
+        self.vz_prev = 0.0
+        self.z_prev = None
         self.start_gate = int(rospy.get_param("~start_gate", 0))
         self.end_gate = int(rospy.get_param("~end_gate", -1))
 
@@ -268,17 +287,42 @@ class RouteFollower(object):
             else:
                 self.prev_s_plane = e_n
 
-        # ---- 速度调度 ----
-        v = self.cruise_speed
+        # ---- 速度调度 (v4: cruise/curve/slope/quality/altitude) ----
+        v_s = max(self.v_cmd_prev, 0.5)
+        Lz = max(self.z_preview_min, self.z_preview_time * v_s)
+        kz_prev = self.profile.dz_ds(s_now + Lz)
         kap = self.curvature(s_now)
-        v_curv = self.cruise_speed / (1.0 + self.k_curv * kap)
-        kz = abs(self.z_slope(s_now))
-        v_zlim = self.eta_z * self.vmax_z / (kz + 1e-3)
-        v = min(self.cruise_speed, v_curv, v_zlim)
+        v_curve = self.cruise_speed / (1.0 + self.k_curv * kap)
+        v_slope = self.slope_eta * self.vz_up_safe / (abs(kz_prev) + 1e-3)
+        v_quality = self.max_speed
+        if ng is not None and abs(ng.get("slope", 0.0)) > self.k_steep:
+            v_quality = 6.0
+        # 掉高保护 (NED: e_z>0 表示低于参考)
+        e_z0 = p.z - self.profile.center(s_now)
+        v_alt = self.cruise_speed
+        if e_z0 > self.z_error_stop:
+            v_alt = 1.0
+        elif e_z0 > self.z_error_slow2:
+            v_alt = self.cruise_speed * 0.45
+        elif e_z0 > self.z_error_slow1:
+            v_alt = self.cruise_speed * 0.8
+        # 预测掉高
+        z_dot = 0.0
+        if self.z_prev is not None and self.dt > 0:
+            z_dot = (p.z - self.z_prev) / self.dt
+        self.z_prev = p.z
+        future_z = self.profile.center(s_now + max(2.0, v_s * self.pred_time))
+        e_pred = (p.z + z_dot * self.pred_time) - future_z
+        if e_pred > self.z_error_slow2:
+            v_alt = min(v_alt, self.cruise_speed * 0.5)
         # 预测穿门失败才减速
         if ng is not None and d_g < 25.0 and (lat > self.aperture_xy_tol or abs(vert) > self.aperture_z_tol):
-            v = min(v, self.gate_slow_speed)
-        v = max(self.min_speed, min(self.max_speed, v))
+            v_alt = min(v_alt, self.gate_slow_speed)
+        v_target = max(1.0, min(self.cruise_speed, v_curve, v_slope, v_quality, v_alt))
+        # 速度斜坡
+        dv = max(-self.a_plan * self.dt, min(self.a_plan * self.dt, v_target - self.v_cmd_prev))
+        v = max(0.8, min(self.max_speed, self.v_cmd_prev + dv))
+        self.v_cmd_prev = v
 
         # ---- 动态 look-ahead 目标 ----
         L = self.lookahead_base + self.lookahead_kv * v
@@ -293,14 +337,19 @@ class RouteFollower(object):
         vy = self.k_pursuit * (ty - p.y)
         v_route = self.arbiter.arbitrate((vx, vy), (0.0, 0.0), "PATH", 0.0)[0]
 
-        # ---- 动态 Z 走廊 + gate z 融合 ----
+        # ---- Z: 反馈 + 前馈 (vz_ff = -dz/ds_preview * v) ----
         z_gate = {"z": float(ng["z"]), "valid": True} if ng is not None else None
         z_ref, z_mode, _ = self.profile.compute(s_now, p.z, z_gate, d_g, self.dt)
         z_ref = self.profile.clamp_corridor(z_ref, s_now)
         z_err = p.z - z_ref
-        vz = max(-self.vmax_z, min(self.vmax_z, self.k_z * z_err))
+        vz_fb = self.k_z * z_err
+        vz_ff = -kz_prev * v
+        vz_target = max(-self.vz_down_limit, min(self.vz_up_limit, vz_fb + vz_ff))
+        dvz = max(-self.vz_accel_limit * self.dt, min(self.vz_accel_limit * self.dt, vz_target - self.vz_prev))
+        vz = self.vz_prev + dvz
+        self.vz_prev = vz
 
-        # 限速
+        # 水平限速
         sp = math.hypot(*v_route)
         if sp > v and sp > 1e-6:
             v_route = (v_route[0] * v / sp, v_route[1] * v / sp)
@@ -324,10 +373,12 @@ class RouteFollower(object):
 
         rospy.loginfo_throttle(
             2.0,
-            "PATH s=%.0f v=%.2f kap=%.3f kz=%.3f idx=%d dG=%.1f lat=%.2f vert=%.2f "
-            "zRef=%.2f zErr=%.2f CROSS=%.2f L=%.1f avoid=%s",
-            s_now, v, kap, kz, self.gate_idx, d_g, lat if ng is not None else 0.0,
-            vert if ng is not None else 0.0, z_ref, z_err, d_cross, L, self.avoidance.active)
+            "PATH s=%.0f v=%.2f vSlope=%.2f kap=%.3f kzPrev=%.3f idx=%d dG=%.1f "
+            "lat=%.2f vert=%.2f zRef=%.2f zErr=%.2f ePred=%.2f vzFB=%.2f vzFF=%.2f vz=%.2f "
+            "CROSS=%.2f L=%.1f avoid=%s",
+            s_now, v, v_slope, kap, kz_prev, self.gate_idx, d_g,
+            lat if ng is not None else 0.0, vert if ng is not None else 0.0,
+            z_ref, z_err, e_pred, vz_fb, vz_ff, vz, d_cross, L, self.avoidance.active)
 
 
 if __name__ == "__main__":

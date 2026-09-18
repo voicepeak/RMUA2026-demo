@@ -60,6 +60,13 @@ class AltitudeProfile(object):
         c = self.center(s)
         return c - self.corridor_half, c + self.corridor_half   # (ceiling, floor)
 
+    def dz_ds(self, s, h=4.0):
+        s0 = max(self.anchors[0][0], s - h)
+        s1 = min(self.anchors[-1][0], s + h)
+        if s1 - s0 < 1e-6:
+            return 0.0
+        return (self.center(s1) - self.center(s0)) / (s1 - s0)
+
     def compute(self, s, current_z, next_gate, dist_to_gate, dt):
         z = self.center(s)
         alpha = 0.0
