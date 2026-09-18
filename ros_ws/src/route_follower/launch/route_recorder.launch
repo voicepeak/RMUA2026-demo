@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="out_file"   default="$(find route_follower)/config/recorded_route.yaml"/>
+  <arg name="route_name" default="recorded"/>
+
+  <node pkg="route_follower" type="route_recorder.py" name="route_recorder" output="screen">
+    <param name="out_file"   value="$(arg out_file)"/>
+    <param name="route_name" value="$(arg route_name)"/>
+  </node>
+</launch>

@@ -12,6 +12,8 @@ catkin_package()
 
 catkin_install_python(PROGRAMS
   scripts/route_follower.py
+  scripts/route_recorder.py
   scripts/splines_to_yaml.py
+  scripts/make_gates.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
