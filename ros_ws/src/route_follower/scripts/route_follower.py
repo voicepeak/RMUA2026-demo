@@ -38,6 +38,8 @@ class RouteFollower(object):
         self.route_name = rospy.get_param("~route_name", "route_1_3")
         self.gates_file = rospy.get_param("~gates_file",
                                           os.path.join(cfg_dir, "gates_1_3.yaml"))
+        self.guides_file = rospy.get_param("~guides_file",
+                                           os.path.join(cfg_dir, "altitude_guides_1_3.yaml"))
         self.gate_z_uses_offset = bool(rospy.get_param("~gate_z_uses_offset", True))
 
         self.forward_speed = rospy.get_param("~forward_speed", 2.0)
@@ -83,6 +85,7 @@ class RouteFollower(object):
 
         self.route = self.load_route(self.route_file, self.route_name)
         self.gates = self.load_gates(self.gates_file)
+        self.guides = self.load_guides(self.guides_file)
         self.build_progress()
         for g in self.gates:
             g["s"] = self.project_s(g)
@@ -119,6 +122,14 @@ class RouteFollower(object):
         with open(path) as f:
             data = yaml.safe_load(f)
         return data.get("gates", []) if data else []
+
+    @staticmethod
+    def load_guides(path):
+        if not path or not os.path.exists(path):
+            return []
+        with open(path) as f:
+            data = yaml.safe_load(f)
+        return data.get("altitude_guides", []) if data else []
 
     def route_length(self):
         total = 0.0
@@ -181,8 +192,11 @@ class RouteFollower(object):
         anchors = [{"s": g["s"],
                     "z": g["z"] + (self.z_offset if self.gate_z_uses_offset else 0.0),
                     "valid": g.get("valid", False)} for g in self.gates]
+        guides = [{"s": gd["s"],
+                   "z": gd["z"] + (self.z_offset if self.gate_z_uses_offset else 0.0)}
+                  for gd in self.guides if gd.get("s") is not None]
         self.planner = AltitudePlanner(
-            0.0, p.z, self.seg_s[-1], goal_z, anchors,
+            0.0, p.z, self.seg_s[-1], goal_z, anchors, guides,
             self.gate_blend_start, self.gate_blend_full,
             self.z_rate_max, self.gate_z_max_jump)
         rospy.loginfo("entry segment=%d d_cross=%.2f z_offset=%.2f valid_gates=%d",

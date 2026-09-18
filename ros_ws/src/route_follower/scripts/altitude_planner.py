@@ -18,7 +18,7 @@ def smoothstep(t):
 
 class AltitudePlanner(object):
 
-    def __init__(self, start_s, start_z, goal_s, goal_z, gates,
+    def __init__(self, start_s, start_z, goal_s, goal_z, gates, guides=None,
                  gate_blend_start=15.0, gate_blend_full=5.0,
                  z_rate_max=1.0, gate_z_max_jump=15.0):
         self.gate_blend_start = gate_blend_start
@@ -26,10 +26,18 @@ class AltitudePlanner(object):
         self.z_rate_max = z_rate_max
         self.gate_z_max_jump = gate_z_max_jump
 
-        anchors = [(float(start_s), float(start_z))]
-        for g in gates:
-            if g.get("valid", False) and g.get("s") is not None:
-                anchors.append((float(g["s"]), float(g["z"])))
+        # 优先级: Gate > ALTITUDE_GUIDE > START/GOAL
+        gate_anchors = [(float(g["s"]), float(g["z"]))
+                        for g in gates if g.get("valid", False) and g.get("s") is not None]
+        anchors = [(float(start_s), float(start_z))] + gate_anchors
+        # 加入高度引导点, 但与 Gate 冲突(<1m)时保留 Gate
+        for gd in (guides or []):
+            if gd.get("s") is None:
+                continue
+            gs, gz = float(gd["s"]), float(gd["z"])
+            if any(abs(gs - s) < 1.0 for s, _ in gate_anchors):
+                continue
+            anchors.append((gs, gz))
         anchors.append((float(goal_s), float(goal_z)))
         anchors.sort(key=lambda a: a[0])
         self.anchors = anchors
