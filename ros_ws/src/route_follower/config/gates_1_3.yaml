@@ -9,6 +9,7 @@ gates:
   nz: 0.0
   approach_distance: 4.0
   speed: 1.5
+  valid: false
 - id: 1
   x: 277.063
   y: -56.909
@@ -18,6 +19,7 @@ gates:
   nz: 0.0
   approach_distance: 4.0
   speed: 1.5
+  valid: false
 - id: 2
   x: 414.965
   y: -144.216
@@ -27,6 +29,7 @@ gates:
   nz: 0.0
   approach_distance: 4.0
   speed: 1.5
+  valid: false
 - id: 3
   x: 616.011
   y: -87.578
@@ -36,6 +39,7 @@ gates:
   nz: 0.0
   approach_distance: 4.0
   speed: 1.5
+  valid: false
 - id: 4
   x: 696.573
   y: 117.55
@@ -45,6 +49,7 @@ gates:
   nz: 0.0
   approach_distance: 4.0
   speed: 1.5
+  valid: false
 - id: 5
   x: 728.341
   y: 348.59
@@ -54,3 +59,4 @@ gates:
   nz: 0.0
   approach_distance: 4.0
   speed: 1.5
+  valid: false

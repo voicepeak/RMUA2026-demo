@@ -11,6 +11,7 @@
 | Stage 2 | `docs/02_stage2_track_path_planning.md` | `ros_ws/src/route_follower` | 赛道约束下的参考路径跟踪 |
 | Stage 3 | `docs/03_stage3_z_axis_and_gates.md` | `route_follower`（Gate Manager） | 3D 路径 + 检测门穿越 |
 | Stage 4 | `docs/04_stage4_z_safety_and_gate_collection.md` | `route_follower`（Z Safety）+ `z_probe.py` | Z 合法高度包络 + 真实 Gate 采集 |
+| Stage 5 | `docs/05_stage5_xy_gate_anchors_z_planner.md` | `altitude_planner.py` + `route_follower` | Gate 锚点生成 z_ref(s)（Smoothstep/混合/限速/异常保护） |
 
 ## 系统与接口
 - 平台：Ubuntu 20.04 + ROS Noetic + 官方模拟器（NED 世界系）。

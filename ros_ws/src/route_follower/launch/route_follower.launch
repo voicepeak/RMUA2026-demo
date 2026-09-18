@@ -19,12 +19,14 @@
   <arg name="z_safe_max"     default="8.0"/>
   <arg name="z_soft_margin"  default="0.5"/>
   <arg name="z_err_slow"     default="1.0"/>
-  <arg name="gate_blend_start" default="25.0"/>
-  <arg name="gate_blend_full"  default="10.0"/>
+  <arg name="gate_blend_start" default="15.0"/>
+  <arg name="gate_blend_full"  default="5.0"/>
   <arg name="gate_align_dist"  default="12.0"/>
   <arg name="gate_speed"       default="1.5"/>
   <arg name="gate_xy_tol"      default="1.2"/>
   <arg name="gate_z_tol"       default="0.6"/>
+  <arg name="z_rate_max"       default="1.0"/>
+  <arg name="gate_z_max_jump"  default="15.0"/>
   <arg name="accel"          default="8"/>
   <arg name="control_rate"   default="20.0"/>
 
@@ -52,6 +54,8 @@
     <param name="gate_speed"       value="$(arg gate_speed)"/>
     <param name="gate_xy_tol"      value="$(arg gate_xy_tol)"/>
     <param name="gate_z_tol"       value="$(arg gate_z_tol)"/>
+    <param name="z_rate_max"       value="$(arg z_rate_max)"/>
+    <param name="gate_z_max_jump"  value="$(arg gate_z_max_jump)"/>
     <param name="accel"            value="$(arg accel)"/>
     <param name="control_rate"     value="$(arg control_rate)"/>
   </node>

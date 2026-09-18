@@ -75,6 +75,7 @@ class RouteRecorder(object):
             "nz": 0.0,
             "approach_distance": 4.0,
             "speed": 1.5,
+            "valid": True,
         }
         self.gates.append(g)
         return TriggerResponse(success=True, message="gate #%d (%.2f, %.2f, %.2f)"

@@ -55,6 +55,7 @@ def main():
             "nx": round(nx, 4), "ny": round(ny, 4), "nz": nz,
             "approach_distance": APPROACH,
             "speed": SPEED,
+            "valid": False,
         })
 
     with open(OUT, "w") as f:

@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""RMUA 2026 第三阶段: 3D 路径 + 检测门穿越。
+"""RMUA 2026 第四阶段: XY 路径 + Gate 高度锚点 -> z_ref(s)。
 
-在第二阶段 (Route Manager + Path Follower + Boundary Guard) 基础上新增:
-  - Z Profile      : z_ref 沿路径线性插值, 并做 path<->gate 高度融合
-  - Gate Manager   : gate_index 顺序管理下一道门
-  - Gate Alignment : 靠近门时对准门中心, 用 Approach->Center->Exit 穿过
-  - Gate Pass      : 通过门平面 + 横向/高度在容差内 => gate_index++
+在第三阶段基础上, Z 不再直接来自 route z 或固定值, 而是由 Altitude Planner
+根据 "路径进度 s" 与 "有效 Gate 高度锚点" 生成:
+  - 相邻锚点 Smoothstep 插值 -> z_route(s)
+  - 靠近下一道有效 Gate 时按距离做 Gate Z Blend
+  - Gate Z 异常保护 (跳变过大则该帧不采用)
+  - z_ref 变化率限制
+  - Gate 需 valid=true 才参与 (占位/未采集的门 valid=false)
 
-坐标: AirSim NED; vel_body_cmd 的 vz 向上为正。route/gate 的 z 通过进入时
-自动标定的 z_offset 映射到 pose 坐标系。
+XY 路径跟踪、Boundary Guard、Gate 顺序管理与三点穿越保持不变。
+坐标: AirSim NED; vel_body_cmd 的 vz 向上为正。
 """
 
 import math
 import os
+import sys
 
 import rospy
 import tf.transformations as tft
@@ -21,6 +24,9 @@ import yaml
 from geometry_msgs.msg import Point, PoseStamped
 
 from airsim_ros.msg import VelCmd
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from altitude_planner import AltitudePlanner  # noqa: E402
 
 
 class RouteFollower(object):
@@ -43,27 +49,31 @@ class RouteFollower(object):
         self.k_z = rospy.get_param("~k_z", 0.6)
         self.vmax_z = rospy.get_param("~vmax_z", 1.5)
         self.vmax_xy = rospy.get_param("~vmax_xy", 2.5)
-        self.z_ref = rospy.get_param("~z_ref", -1.5)
-        self.use_route_z = bool(rospy.get_param("~use_route_z", True))
+        self.z_ref = rospy.get_param("~z_ref", -3.5)
+        self.use_route_z = bool(rospy.get_param("~use_route_z", False))
 
-        # Z 合法高度包络 (pose 坐标系, 实测后填入; 默认很宽)
-        self.z_safe_min = rospy.get_param("~z_safe_min", -20.0)
-        self.z_safe_max = rospy.get_param("~z_safe_max", 10.0)
+        # Z 合法高度包络 (pose 坐标系)
+        self.z_safe_min = rospy.get_param("~z_safe_min", -4.9)
+        self.z_safe_max = rospy.get_param("~z_safe_max", 8.0)
         self.z_soft_margin = rospy.get_param("~z_soft_margin", 0.5)
 
-        self.gate_blend_start = rospy.get_param("~gate_blend_start", 25.0)
-        self.gate_blend_full = rospy.get_param("~gate_blend_full", 10.0)
+        # Gate / Altitude Planner
+        self.gate_blend_start = rospy.get_param("~gate_blend_start", 15.0)
+        self.gate_blend_full = rospy.get_param("~gate_blend_full", 5.0)
         self.gate_align_dist = rospy.get_param("~gate_align_dist", 12.0)
         self.gate_k = rospy.get_param("~gate_k", 1.2)
         self.gate_speed = rospy.get_param("~gate_speed", 1.5)
         self.gate_xy_tol = rospy.get_param("~gate_xy_tol", 1.2)
         self.gate_z_tol = rospy.get_param("~gate_z_tol", 0.6)
+        self.z_rate_max = rospy.get_param("~z_rate_max", 1.0)
+        self.gate_z_max_jump = rospy.get_param("~gate_z_max_jump", 15.0)
         self.z_err_slow = rospy.get_param("~z_err_slow", 1.0)
 
         self.segment_switch_t = rospy.get_param("~segment_switch_t", 0.85)
         self.goal_tolerance = rospy.get_param("~goal_tolerance", 1.5)
         self.accel = int(rospy.get_param("~accel", 8))
         self.control_rate = float(rospy.get_param("~control_rate", 20.0))
+        self.dt = 1.0 / self.control_rate
 
         self.pose = None
         self.yaw = 0.0
@@ -73,8 +83,12 @@ class RouteFollower(object):
 
         self.route = self.load_route(self.route_file, self.route_name)
         self.gates = self.load_gates(self.gates_file)
+        self.build_progress()
+        for g in self.gates:
+            g["s"] = self.project_s(g)
         self.gate_idx = 0
         self.prev_s = None
+        self.planner = None
         rospy.loginfo("route '%s': %d pts, %.1f m; gates: %d",
                       self.route_name, len(self.route), self.route_length(),
                       len(self.gates))
@@ -83,19 +97,19 @@ class RouteFollower(object):
             "/airsim_node/drone_1/vel_body_cmd", VelCmd, queue_size=1)
         rospy.Subscriber("/airsim_node/drone_1/debug/pose_gt",
                          PoseStamped, self.pose_cb)
-        rospy.Timer(rospy.Duration(1.0 / self.control_rate), self.control_loop)
+        rospy.Timer(rospy.Duration(self.dt), self.control_loop)
 
-    # ---------------- loaders ----------------
+    # ---------------- loaders / geometry ----------------
     @staticmethod
     def load_route(path, name):
         with open(path) as f:
             data = yaml.safe_load(f)
         routes = data["routes"]
         if name not in routes:
-            raise KeyError("route '%s' not in %s" % (name, path))
+            raise KeyError("route '%s' not in %s (have %s)" % (name, path, list(routes)))
         pts = [Point(float(p[0]), float(p[1]), float(p[2])) for p in routes[name]]
         if len(pts) < 2:
-            raise ValueError("route needs >= 2 points")
+            raise ValueError("route needs at least 2 points")
         return pts
 
     @staticmethod
@@ -112,6 +126,16 @@ class RouteFollower(object):
             total += math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2 + (b.z - a.z) ** 2)
         return total
 
+    def build_progress(self):
+        # XY 弧长 (用于 path progress s); z 由 Altitude Planner 单独处理
+        self.seg_len, self.seg_s = [], [0.0]
+        acc = 0.0
+        for a, b in zip(self.route[:-1], self.route[1:]):
+            L = math.hypot(b.x - a.x, b.y - a.y)
+            self.seg_len.append(L)
+            acc += L
+            self.seg_s.append(acc)
+
     def project_segment(self, idx, p):
         a, b = self.route[idx], self.route[idx + 1]
         dx, dy = b.x - a.x, b.y - a.y
@@ -123,6 +147,23 @@ class RouteFollower(object):
         c = Point(a.x + t * dx, a.y + t * dy, a.z + t * (b.z - a.z))
         return t, c, denom ** 0.5
 
+    def project_s(self, g):
+        best_s, best_d = 0.0, float("inf")
+        for i in range(len(self.route) - 1):
+            a, b = self.route[i], self.route[i + 1]
+            dx, dy = b.x - a.x, b.y - a.y
+            denom = dx * dx + dy * dy
+            t = 0.0 if denom < 1e-9 else ((g["x"] - a.x) * dx + (g["y"] - a.y) * dy) / denom
+            t = max(0.0, min(1.0, t))
+            cx, cy = a.x + t * dx, a.y + t * dy
+            d = math.hypot(g["x"] - cx, g["y"] - cy)
+            if d < best_d:
+                best_d, best_s = d, self.seg_s[i] + t * self.seg_len[i]
+        return best_s
+
+    def progress(self, idx, t):
+        return self.seg_s[idx] + t * self.seg_len[idx]
+
     def init_segment(self, p):
         best, best_d, best_c = 0, float("inf"), None
         for i in range(len(self.route) - 1):
@@ -132,8 +173,20 @@ class RouteFollower(object):
                 best, best_d, best_c = i, d, c
         self.seg = best
         self.z_offset = p.z - best_c.z
-        rospy.loginfo("entry segment=%d d_cross=%.2f z_offset=%.2f",
-                      best, best_d, self.z_offset)
+
+        # 构建 Altitude Planner: START 用进入时实际高度, GOAL 用最后一个有效 Gate Z
+        valid_z = [g["z"] + (self.z_offset if self.gate_z_uses_offset else 0.0)
+                   for g in self.gates if g.get("valid", False)]
+        goal_z = valid_z[-1] if valid_z else p.z
+        anchors = [{"s": g["s"],
+                    "z": g["z"] + (self.z_offset if self.gate_z_uses_offset else 0.0),
+                    "valid": g.get("valid", False)} for g in self.gates]
+        self.planner = AltitudePlanner(
+            0.0, p.z, self.seg_s[-1], goal_z, anchors,
+            self.gate_blend_start, self.gate_blend_full,
+            self.z_rate_max, self.gate_z_max_jump)
+        rospy.loginfo("entry segment=%d d_cross=%.2f z_offset=%.2f valid_gates=%d",
+                      best, best_d, self.z_offset, len(valid_z))
 
     def lookahead_point(self, idx, t, look):
         remaining = look
@@ -179,17 +232,6 @@ class RouteFollower(object):
         cmd.stop = 0
         self.cmd_pub.publish(cmd)
 
-    # ---------------- gate helper ----------------
-    def gate_info(self, g, p):
-        gz = g["z"] + (self.z_offset if self.gate_z_uses_offset else 0.0)
-        dx, dy, dz = p.x - g["x"], p.y - g["y"], p.z - gz
-        d_g = math.sqrt(dx * dx + dy * dy + dz * dz)
-        s = dx * g["nx"] + dy * g["ny"] + dz * g.get("nz", 0.0)
-        rx = dx - s * g["nx"]
-        ry = dy - s * g["ny"]
-        d_perp = math.hypot(rx, ry)
-        return gz, d_g, s, d_perp, dz
-
     # ---------------- main loop ----------------
     def control_loop(self, _event):
         if self.pose is None:
@@ -221,72 +263,61 @@ class RouteFollower(object):
         vwx = scale * vfx + vcx
         vwy = scale * vfy + vcy
 
-        # ---- 路径 z ----
-        if self.use_route_z:
-            z_path = a.z + t * (b.z - a.z) + self.z_offset
-        else:
-            z_path = self.z_ref
-
-        # ---- Gate 逻辑 ----
-        state = "PATH"
+        # ---- Gate 信息 (仅有效门参与 Z/对准) ----
+        s_prog = self.progress(self.seg, t)
+        plan_gate = None
+        d_g = float("inf")
+        gate = None
         if self.gate_idx < len(self.gates):
-            g = self.gates[self.gate_idx]
-            gz, d_g, s, d_perp, dz = self.gate_info(g, p)
-            alpha = (self.gate_blend_start - d_g) / max(
-                1e-6, self.gate_blend_start - self.gate_blend_full)
-            alpha = max(0.0, min(1.0, alpha))
+            gate = self.gates[self.gate_idx]
+            gz = gate["z"] + (self.z_offset if self.gate_z_uses_offset else 0.0)
+            dx, dy, dz = p.x - gate["x"], p.y - gate["y"], p.z - gz
+            d_g = math.sqrt(dx * dx + dy * dy + dz * dz)
+            s_plane = dx * gate["nx"] + dy * gate["ny"] + dz * gate.get("nz", 0.0)
+            d_perp = math.hypot(dx - s_plane * gate["nx"], dy - s_plane * gate["ny"])
+            plan_gate = {"s": gate["s"], "z": gz, "valid": gate.get("valid", False)}
 
-            # 穿门判定: 由平面负侧到正侧, 且横向/高度满足容差
-            if (self.prev_s is not None and self.prev_s < 0.0 <= s
+            # 穿门判定 (由平面负侧到正侧, 横向/高度满足容差)
+            if (self.prev_s is not None and self.prev_s < 0.0 <= s_plane
                     and d_perp < self.gate_xy_tol and abs(dz) < self.gate_z_tol):
                 rospy.loginfo("GATE %d PASSED (d_perp=%.2f dz=%.2f)",
-                              g.get("id", self.gate_idx), d_perp, dz)
+                              gate.get("id", self.gate_idx), d_perp, dz)
                 self.gate_idx += 1
                 self.prev_s = None
             else:
-                self.prev_s = s
+                self.prev_s = s_plane
 
-            if self.gate_idx < len(self.gates):
-                g = self.gates[self.gate_idx]
-                gz = g["z"] + (self.z_offset if self.gate_z_uses_offset else 0.0)
-                # path z 与 gate z 融合
-                z_ref = (1.0 - alpha) * z_path + alpha * gz
-                # 靠近门: 对准门中心(未过平面) / 推向出口(已过平面)
-                if d_g < self.gate_align_dist:
-                    if s < -1.0:
-                        tx, ty = g["x"], g["y"]
-                    else:
-                        d = g.get("approach_distance", 4.0)
-                        tx, ty = g["x"] + d * g["nx"], g["y"] + d * g["ny"]
-                    gsp = g.get("speed", self.gate_speed)
-                    vgx, vgy = self.gate_k * (tx - p.x), self.gate_k * (ty - p.y)
-                    sp = math.hypot(vgx, vgy)
-                    if sp > gsp and sp > 1e-6:
-                        vgx *= gsp / sp
-                        vgy *= gsp / sp
-                    vwx = (1.0 - alpha) * vwx + alpha * vgx
-                    vwy = (1.0 - alpha) * vwy + alpha * vgy
-                    state = "GATE"
+        # ---- Altitude Planner: z_ref(s) ----
+        z_ref, alt_mode, alpha = self.planner.compute(
+            s_prog, p.z, plan_gate, d_g, self.dt)
+
+        # ---- Gate 三点对准 (仅有效门, 靠近时) ----
+        if gate is not None and gate.get("valid", False) and d_g < self.gate_align_dist:
+            if s_plane < -1.0:
+                tx, ty = gate["x"], gate["y"]
             else:
-                z_ref = z_path
-        else:
-            z_ref = z_path
+                dd = gate.get("approach_distance", 4.0)
+                tx, ty = gate["x"] + dd * gate["nx"], gate["y"] + dd * gate["ny"]
+            gsp = gate.get("speed", self.gate_speed)
+            vgx, vgy = self.gate_k * (tx - p.x), self.gate_k * (ty - p.y)
+            sp = math.hypot(vgx, vgy)
+            if sp > gsp and sp > 1e-6:
+                vgx *= gsp / sp
+                vgy *= gsp / sp
+            vwx = (1.0 - alpha) * vwx + alpha * vgx
+            vwy = (1.0 - alpha) * vwy + alpha * vgy
 
-        # ---- 高度误差 -> vz (机体 z 向上为正) ----
-        # Z Safety Clamp: 任何来源的 z_ref 都限制在安全包络内
+        # ---- Z Safety Clamp ----
         z_ref = max(self.z_safe_min, min(self.z_safe_max, z_ref))
         z_err = p.z - z_ref
         vz = self.k_z * z_err
         vz = max(-self.vmax_z, min(self.vmax_z, vz))
+        if p.z <= self.z_safe_min + self.z_soft_margin:
+            vz = min(vz, 0.0)
+        if p.z >= self.z_safe_max - self.z_soft_margin:
+            vz = max(vz, 0.0)
 
-        # 软边界: 接近上限禁止继续上升, 接近下限禁止继续下降
-        # 正 vz = 上升(z 减小)
-        if p.z <= self.z_safe_min + self.z_soft_margin:   # 接近合法最高点
-            vz = min(vz, 0.0)                             # 禁止继续上升
-        if p.z >= self.z_safe_max - self.z_soft_margin:   # 接近合法最低点
-            vz = max(vz, 0.0)                             # 禁止继续下降
-
-        # ---- 高度误差大时减速 ----
+        state = alt_mode
         if abs(z_err) > self.z_err_slow:
             vwx *= 0.5
             vwy *= 0.5
@@ -318,11 +349,12 @@ class RouteFollower(object):
         self.publish_cmd(vx_b, vy_b, vz)
 
         rospy.loginfo_throttle(
-            1.0,
-            "%s SEG %d/%d t=%.2f CROSS=%.2f GATE %d/%d zErr=%.2f "
-            "VW(%.2f,%.2f,%.2f) dgoal=%.1f",
-            state, self.seg, len(self.route) - 2, t, d_cross,
-            self.gate_idx, len(self.gates), z_err, vwx, vwy, vz, d_goal)
+            2.0,
+            "%s s=%.1f SEG %d/%d CROSS=%.2f GATE %d/%d zRef=%.2f zErr=%.2f "
+            "a=%.2f VW(%.2f,%.2f,%.2f) dgoal=%.1f",
+            state, s_prog, self.seg, len(self.route) - 2, d_cross,
+            self.gate_idx, len(self.gates), z_ref, z_err, alpha,
+            vwx, vwy, vz, d_goal)
 
 
 if __name__ == "__main__":
