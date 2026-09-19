@@ -21,12 +21,14 @@
   <arg name="k_pursuit"      default="1.2"/>
 
   <!-- tracking 软限速阈值/系数 (方案 8, 29) -->
-  <arg name="z_slow1"        default="0.4"/>
-  <arg name="z_slow2"        default="0.8"/>
-  <arg name="z_slow3"        default="1.2"/>
-  <arg name="z_f2"           default="0.8"/>
-  <arg name="z_f3"           default="0.6"/>
-  <arg name="z_f4"           default="0.4"/>
+  <arg name="z_slow1"        default="0.3"/>
+  <arg name="z_slow2"        default="0.6"/>
+  <arg name="z_slow3"        default="1.0"/>
+  <arg name="z_slow4"        default="1.5"/>
+  <arg name="z_f2"           default="0.9"/>
+  <arg name="z_f3"           default="0.75"/>
+  <arg name="z_f4"           default="0.6"/>
+  <arg name="z_f5"           default="0.5"/>
   <arg name="gate_f1"        default="0.8"/>
   <arg name="gate_f2"        default="0.6"/>
   <arg name="gate_f3"        default="0.45"/>
@@ -47,13 +49,15 @@
   <arg name="fov_n_gates"    default="3"/>
 
   <!-- Z 前视/前馈 + Horizon -->
-  <arg name="z_preview_time" default="2.0"/>
+  <arg name="z_preview_time" default="1.75"/>
   <arg name="z_preview_min"  default="8.0"/>
-  <arg name="vz_up_safe"     default="3.0"/>
-  <arg name="vz_up_limit"    default="3.0"/>
-  <arg name="vz_down_limit"  default="2.5"/>
-  <arg name="vz_accel_limit" default="3.0"/>
+  <arg name="vz_up_safe"     default="4.0"/>
+  <arg name="vz_up_limit"    default="4.0"/>
+  <arg name="vz_down_limit"  default="3.0"/>
+  <arg name="vz_accel_limit" default="6.0"/>
   <arg name="slope_eta"      default="0.8"/>
+  <arg name="k_ff_z"         default="1.2"/>
+  <arg name="vz_capability_file" default="$(find route_follower)/config/vz_capability.yaml"/>
   <arg name="pred_time"      default="1.5"/>
   <arg name="z_horizon_time" default="2.0"/>
   <arg name="z_horizon_min"  default="10.0"/>
@@ -66,8 +70,8 @@
   <arg name="sigma_z_max"    default="0.6"/>
 
   <!-- Z 反馈/走廊 -->
-  <arg name="k_z"            default="0.6"/>
-  <arg name="z_rate_max"     default="1.5"/>
+  <arg name="k_z"            default="1.0"/>
+  <arg name="z_rate_max"     default="4.0"/>
   <arg name="corridor_half"  default="1.5"/>
   <arg name="gate_blend_start" default="25.0"/>
   <arg name="gate_blend_full"  default="8.0"/>
@@ -79,6 +83,12 @@
   <arg name="gate_pass_half_height" default="1.5"/>
   <arg name="gate_miss_margin" default="3.0"/>
   <arg name="gate_skip_s"      default="5.0"/>
+  <arg name="startup_z_jump_limit" default="1.0"/>
+  <arg name="ff_gate_margin"   default="4.0"/>
+  <arg name="trace_gate"       default="-1"/>
+  <arg name="trace_file"       default="/tmp/opencode/gate_trace.csv"/>
+  <arg name="trace_pre"        default="30.0"/>
+  <arg name="trace_post"       default="5.0"/>
   <arg name="slope_factor"   default="3.0"/>
   <arg name="slope_abs_max"  default="0.6"/>
   <arg name="xy_converge"    default="0.5"/>
@@ -108,9 +118,11 @@
     <param name="z_slow1"          value="$(arg z_slow1)"/>
     <param name="z_slow2"          value="$(arg z_slow2)"/>
     <param name="z_slow3"          value="$(arg z_slow3)"/>
+    <param name="z_slow4"          value="$(arg z_slow4)"/>
     <param name="z_f2"             value="$(arg z_f2)"/>
     <param name="z_f3"             value="$(arg z_f3)"/>
     <param name="z_f4"             value="$(arg z_f4)"/>
+    <param name="z_f5"             value="$(arg z_f5)"/>
     <param name="gate_f1"          value="$(arg gate_f1)"/>
     <param name="gate_f2"          value="$(arg gate_f2)"/>
     <param name="gate_f3"          value="$(arg gate_f3)"/>
@@ -134,6 +146,8 @@
     <param name="vz_down_limit"    value="$(arg vz_down_limit)"/>
     <param name="vz_accel_limit"   value="$(arg vz_accel_limit)"/>
     <param name="slope_eta"        value="$(arg slope_eta)"/>
+    <param name="k_ff_z"           value="$(arg k_ff_z)"/>
+    <param name="vz_capability_file" value="$(arg vz_capability_file)"/>
     <param name="pred_time"        value="$(arg pred_time)"/>
     <param name="z_horizon_time"   value="$(arg z_horizon_time)"/>
     <param name="z_horizon_min"    value="$(arg z_horizon_min)"/>
@@ -153,6 +167,12 @@
     <param name="gate_pass_half_height" value="$(arg gate_pass_half_height)"/>
     <param name="gate_miss_margin" value="$(arg gate_miss_margin)"/>
     <param name="gate_skip_s"      value="$(arg gate_skip_s)"/>
+    <param name="startup_z_jump_limit" value="$(arg startup_z_jump_limit)"/>
+    <param name="ff_gate_margin"   value="$(arg ff_gate_margin)"/>
+    <param name="trace_gate"       value="$(arg trace_gate)"/>
+    <param name="trace_file"       value="$(arg trace_file)"/>
+    <param name="trace_pre"        value="$(arg trace_pre)"/>
+    <param name="trace_post"       value="$(arg trace_post)"/>
     <param name="slope_factor"     value="$(arg slope_factor)"/>
     <param name="slope_abs_max"    value="$(arg slope_abs_max)"/>
     <param name="xy_converge"      value="$(arg xy_converge)"/>

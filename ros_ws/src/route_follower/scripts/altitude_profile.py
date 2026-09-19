@@ -40,6 +40,7 @@ class AltitudeProfile(object):
         anchors.sort(key=lambda a: a[0])
         self.anchors = anchors
         self.prev_z_ref = None
+        self.rate_limited = False       # 上一帧 z_ref 是否被 z_rate_max 限住 (调试用)
 
     def center(self, s):
         a = self.anchors
@@ -59,6 +60,14 @@ class AltitudeProfile(object):
     def corridor(self, s):
         c = self.center(s)
         return c - self.corridor_half, c + self.corridor_half   # (ceiling, floor)
+
+    def anchor_pair(self, s):
+        """返回包住 s 的两个锚点 (s0,z0),(s1,z1)。"""
+        a = self.anchors
+        for i in range(len(a) - 1):
+            if a[i][0] <= s <= a[i + 1][0]:
+                return a[i], a[i + 1]
+        return a[-1], a[-1]
 
     @staticmethod
     def horizon_s(s, s_now, horizon):
@@ -93,12 +102,15 @@ class AltitudeProfile(object):
                 z = (1.0 - alpha) * z + alpha * zg
                 if alpha > 0.0:
                     mode = "GATE"
+        self.rate_limited = False
         if self.prev_z_ref is not None and dt > 0.0:
             md = self.z_rate_max * dt
             if z > self.prev_z_ref + md:
                 z = self.prev_z_ref + md
+                self.rate_limited = True
             elif z < self.prev_z_ref - md:
                 z = self.prev_z_ref - md
+                self.rate_limited = True
         self.prev_z_ref = z
         return z, mode, alpha
 

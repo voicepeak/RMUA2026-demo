@@ -35,6 +35,7 @@ from command_arbiter import CommandArbiter        # noqa: E402
 from avoidance_interface import AvoidanceCommand  # noqa: E402
 from yaw_controller import YawController          # noqa: E402
 from speed_scheduler import SpeedScheduler        # noqa: E402
+from z_capability import load_capability         # noqa: E402
 
 
 class RouteFollower(object):
@@ -61,8 +62,8 @@ class RouteFollower(object):
         self.k_pursuit = rospy.get_param("~k_pursuit", 1.2)
 
         # z
-        self.k_z = rospy.get_param("~k_z", 0.6)
-        self.z_rate_max = rospy.get_param("~z_rate_max", 1.5)
+        self.k_z = rospy.get_param("~k_z", 1.0)
+        self.z_rate_max = rospy.get_param("~z_rate_max", 4.0)
         self.corridor_half = rospy.get_param("~corridor_half", 1.5)
         self.gate_blend_start = rospy.get_param("~gate_blend_start", 25.0)
         self.gate_blend_full = rospy.get_param("~gate_blend_full", 8.0)
@@ -75,28 +76,42 @@ class RouteFollower(object):
         self.gate_pass_half_height = rospy.get_param("~gate_pass_half_height", 1.5)
         self.gate_miss_margin = rospy.get_param("~gate_miss_margin", 3.0)
         self.gate_skip_s = rospy.get_param("~gate_skip_s", 5.0)
+        self.startup_z_jump_limit = rospy.get_param("~startup_z_jump_limit", 1.0)
+        self.ff_gate_margin = rospy.get_param("~ff_gate_margin", 4.0)
+        # Gate 链路 Trace (方案 29~31): 指定 gate id 时高频记录完整 Z 链路
+        self.trace_gate = int(rospy.get_param("~trace_gate", -1))
+        self.trace_file = rospy.get_param("~trace_file", "/tmp/opencode/gate_trace.csv")
+        self.trace_pre = rospy.get_param("~trace_pre", 30.0)   # 提前多少米开始记录
+        self.trace_post = rospy.get_param("~trace_post", 5.0)  # 过后多少米停止
+        self.trace_fh = None
         self.slope_factor = rospy.get_param("~slope_factor", 3.0)
         self.slope_abs_max = rospy.get_param("~slope_abs_max", 0.6)
         self.xy_converge = rospy.get_param("~xy_converge", 0.5)
         self.snap_gate_to_route = bool(rospy.get_param("~snap_gate_to_route", True))
 
-        # v4: Z 前视/前馈 + 坡度限速 + 掉高保护 + 速度/Z 斜坡
-        self.z_preview_time = rospy.get_param("~z_preview_time", 2.0)
+        # v7: Z 前视/前馈 (方案 4~12, 23~25 节): 放开软件限幅 + Kff
+        self.z_preview_time = rospy.get_param("~z_preview_time", 1.75)
         self.z_preview_min = rospy.get_param("~z_preview_min", 8.0)
-        self.vz_up_safe = rospy.get_param("~vz_up_safe", 3.0)
-        self.vz_up_limit = rospy.get_param("~vz_up_limit", 3.0)
-        self.vz_down_limit = rospy.get_param("~vz_down_limit", 2.5)
-        self.vz_accel_limit = rospy.get_param("~vz_accel_limit", 3.0)
+        self.vz_up_safe = rospy.get_param("~vz_up_safe", 4.0)
+        self.vz_up_limit = rospy.get_param("~vz_up_limit", 4.0)
+        self.vz_down_limit = rospy.get_param("~vz_down_limit", 3.0)
+        self.vz_accel_limit = rospy.get_param("~vz_accel_limit", 6.0)
+        self.k_ff_z = rospy.get_param("~k_ff_z", 1.2)
         self.slope_eta = rospy.get_param("~slope_eta", 0.8)
         self.pred_time = rospy.get_param("~pred_time", 1.5)
+        # 实测垂直能力表 vz_available(vxy) (方案 14~20)
+        self.vz_capability_file = rospy.get_param(
+            "~vz_capability_file", os.path.join(cfg, "vz_capability.yaml"))
 
-        # v6: v_tracking 软限速阈值/系数 (方案 8, 29 节)
-        self.z_slow1 = rospy.get_param("~z_slow1", 0.4)
-        self.z_slow2 = rospy.get_param("~z_slow2", 0.8)
-        self.z_slow3 = rospy.get_param("~z_slow3", 1.2)
-        self.z_f2 = rospy.get_param("~z_f2", 0.8)
-        self.z_f3 = rospy.get_param("~z_f3", 0.6)
-        self.z_f4 = rospy.get_param("~z_f4", 0.4)
+        # v7: v_tracking 软限速 Z 误差缩放 (方案 22 节)
+        self.z_slow1 = rospy.get_param("~z_slow1", 0.3)
+        self.z_slow2 = rospy.get_param("~z_slow2", 0.6)
+        self.z_slow3 = rospy.get_param("~z_slow3", 1.0)
+        self.z_slow4 = rospy.get_param("~z_slow4", 1.5)
+        self.z_f2 = rospy.get_param("~z_f2", 0.9)
+        self.z_f3 = rospy.get_param("~z_f3", 0.75)
+        self.z_f4 = rospy.get_param("~z_f4", 0.6)
+        self.z_f5 = rospy.get_param("~z_f5", 0.5)
         self.gate_f1 = rospy.get_param("~gate_f1", 0.8)
         self.gate_f2 = rospy.get_param("~gate_f2", 0.6)
         self.gate_f3 = rospy.get_param("~gate_f3", 0.45)
@@ -154,16 +169,18 @@ class RouteFollower(object):
         self.arbiter = CommandArbiter(self.avoidance)
         self.yaw_ctrl = YawController(lookahead=self.yaw_lookahead, k=self.k_yaw,
                                       rate_max=self.yaw_rate_max)
+        self.vz_cap = load_capability(self.vz_capability_file)
         self.speed_sched = SpeedScheduler(
             cruise_speed=self.cruise_speed, max_speed=self.max_speed,
             normal_speed_floor=self.normal_speed_floor, a_lat_max=self.a_lat_max,
             slope_eta=self.slope_eta, vz_up_safe=self.vz_up_safe,
-            a_up=self.a_up, a_down=self.a_down,
+            a_up=self.a_up, a_down=self.a_down, vz_capability=self.vz_cap,
             z_slow1=self.z_slow1, z_slow2=self.z_slow2, z_slow3=self.z_slow3,
-            z_f2=self.z_f2, z_f3=self.z_f3, z_f4=self.z_f4,
-            gate_f1=self.gate_f1, gate_f2=self.gate_f2, gate_f3=self.gate_f3,
-            yaw_slow1=self.yaw_slow1, yaw_slow2=self.yaw_slow2, yaw_slow3=self.yaw_slow3,
-            yaw_f1=self.yaw_f1, yaw_f2=self.yaw_f2, yaw_f3=self.yaw_f3)
+            z_slow4=self.z_slow4, z_f2=self.z_f2, z_f3=self.z_f3, z_f4=self.z_f4,
+            z_f5=self.z_f5, gate_f1=self.gate_f1, gate_f2=self.gate_f2,
+            gate_f3=self.gate_f3, yaw_slow1=self.yaw_slow1, yaw_slow2=self.yaw_slow2,
+            yaw_slow3=self.yaw_slow3, yaw_f1=self.yaw_f1, yaw_f2=self.yaw_f2,
+            yaw_f3=self.yaw_f3)
         self._lock = threading.RLock()
         self.start_z0 = None
         self.no_future_gate = True
@@ -174,7 +191,9 @@ class RouteFollower(object):
 
         self.route = self.load_route(self.route_file, self.route_name)
         self.gates = self.load_list(self.gates_file, "gates")
+        self.static_gates = [dict(g) for g in self.gates]     # verified static (优先级 2)
         self.guides = self.load_list(self.guides_file, "altitude_guides")
+        self.yaml_gate_z = {g.get("id"): g.get("z") for g in self.gates}
         self.build_route()
 
         rospy.loginfo("route '%s': %d pts, %.0f m; gates=%d", self.route_name, len(self.route),
@@ -183,6 +202,15 @@ class RouteFollower(object):
         rospy.Subscriber("/airsim_node/drone_1/debug/pose_gt", PoseStamped, self.pose_cb)
         if self.use_gate_map:
             rospy.Subscriber(self.gate_map_topic, String, self.gate_map_cb)
+            rospy.loginfo("[GateMap] ENABLED topic=%s min_support=%d (静态 gates 作为初始/兜底)",
+                          self.gate_map_topic, self.gate_map_min_support)
+        else:
+            rospy.logwarn("[WARN] Persistent Gate Map disabled -> 使用静态 gates_file: %s",
+                          self.gates_file)
+        rospy.loginfo("[Z] z_rate_max=%.1f vz_up_limit=%.1f vz_accel_limit=%.1f Kz=%.2f "
+                      "Kff_z=%.2f vz_available=%s",
+                      self.z_rate_max, self.vz_up_limit, self.vz_accel_limit, self.k_z,
+                      self.k_ff_z, self.vz_cap.as_list())
         rospy.Timer(rospy.Duration(self.dt), self.control_loop)
 
     # ---------- load ----------
@@ -277,6 +305,11 @@ class RouteFollower(object):
             if abs(g.get("sigma_z", 0.0)) > self.sigma_z_max:
                 g["z_suspect"] = True
         start_z = self.start_anchor_z if self.start_anchor_z is not None else p0z
+        # 启动高度保护 (方案 2,6,39): start_anchor 必须接近当前实际高度
+        if abs(start_z - p0z) > self.startup_z_jump_limit:
+            rospy.logwarn("[STARTUP] start_anchor_z=%.2f vs current=%.2f (jump>%.2f) "
+                          "-> 改用当前高度", start_z, p0z, self.startup_z_jump_limit)
+            start_z = p0z
         prof_gates = [dict(g, valid=(not g["z_suspect"])) for g in chain.gates]
         valid_prof = [g for g in prof_gates if g["valid"]]
         goal_z = valid_prof[-1]["z"] if valid_prof else start_z
@@ -303,6 +336,24 @@ class RouteFollower(object):
             self.suspect = self.chain.suspect_ids()
         rospy.loginfo("init seg=%d z_offset=%.2f gates=%d suspects=%s start_gate=%d",
                       i, self.z_offset, len(self.chain.gates), self.suspect, self.gate_idx)
+        zp = self.profile.center(s_now)
+        rospy.loginfo("[STARTUP] s=%.1f current_z=%.2f profile_z(s)=%.2f jump=%.2f",
+                      s_now, p.z, zp, abs(zp - p.z))
+        for g in self.chain.gates:               # 每个 Gate 的来源 (方案 11~12)
+            rospy.loginfo("[GATE] id=%s s=%.1f z=%.2f src=%s hard=%s sigma_z=%.2f support=%s",
+                          g.get("id"), g["s"], g["z"], g.get("source", "static_yaml"),
+                          g.get("hard_anchor", True), g.get("sigma_z", 0.0),
+                          g.get("support", "-"))
+        if self.trace_gate >= 0:
+            try:
+                self.trace_fh = open(self.trace_file, "w")
+                self.trace_fh.write(
+                    "t,s,gate_id,used_z,yaml_z,source,hard_anchor,sigma_z,support,"
+                    "z_ref_raw,z_ref,z_actual,dzds,dzds_prev,vz_ff,vz_fb,vz_target,"
+                    "vz_cmd,roll,pitch,yaw,prev_anchor_s,prev_anchor_z,next_anchor_s,next_anchor_z\n")
+                rospy.loginfo("[TRACE] gate %d -> %s", self.trace_gate, self.trace_file)
+            except IOError as e:
+                rospy.logwarn("[TRACE] cannot open %s: %s", self.trace_file, e)
 
     def gate_map_cb(self, msg):
         """持久 Gate Map 更新 (方案 7 节: Perception/Planning 解耦)。"""
@@ -314,8 +365,24 @@ class RouteFollower(object):
                  and g.get("support", 0) >= self.gate_map_min_support]
         if not gates:
             return
-        sig = tuple((g.get("id"), round(g["x"], 2), round(g["y"], 2), round(g["z"], 2))
-                    for g in gates)
+        # 数据源优先级 (方案 11, 40, 41): 静态 verified 优先; 只把"Hard"视觉门
+        # 补充到静态门未覆盖的区域; Soft/高 sigma 视觉门不得拉动 Z.
+        static_s = [self.project_gate_s(g) for g in self.static_gates]
+        merged = [dict(g) for g in self.static_gates]
+        added = 0
+        for g in gates:
+            if not g.get("hard_anchor", False):
+                continue
+            if g.get("sigma_z", 9.0) > self.sigma_z_max:
+                continue
+            gs = self.project_gate_s(g)
+            if any(abs(gs - s0) < 8.0 for s0 in static_s):
+                continue                        # 已有 verified 静态门 -> 不覆盖
+            merged.append(dict(g, s=gs))
+            added += 1
+        merged.sort(key=lambda g: self.project_gate_s(g))
+        sig = (added, tuple((g.get("id"), round(g["x"], 2), round(g["y"], 2), round(g["z"], 2))
+                            for g in merged))
         if sig == self._map_sig:
             return
         with self._lock:
@@ -325,13 +392,13 @@ class RouteFollower(object):
             i, t, d, c = self.project(p)
             s_now = self.seg_s[i] + t * self.seg_len[i]
             p0z = self.start_z0 if self.start_z0 is not None else p.z
-            chain, profile, idx = self._build(gates, s_now, p0z)
+            chain, profile, idx = self._build(merged, s_now, p0z)
             if self.profile is not None:            # 保持 Z 速率限幅连续
                 profile.prev_z_ref = self.profile.prev_z_ref
             self.chain, self.profile, self.gate_idx = chain, profile, idx
             self._map_sig = sig
-        rospy.loginfo_throttle(2.0, "GATE_MAP update: %d gates, next_idx=%d",
-                               len(gates), self.gate_idx)
+        rospy.loginfo_throttle(2.0, "GATE_MAP update: static=%d +hard=%d -> %d gates, next_idx=%d",
+                               len(self.static_gates), added, len(merged), self.gate_idx)
 
     # ---------- callbacks ----------
     def pose_cb(self, m):
@@ -404,6 +471,39 @@ class RouteFollower(object):
         hw, hh = self._gate_half_extents(ng)
         return max(lat_p / max(hw, 1e-3), abs(vert_p) / max(hh, 1e-3))
 
+    def _trace_z(self, s_now, ng, z_raw, z_ref, z_act, z_err, dzds, dzds_prev,
+                 vz_ff, vz_fb, vz_tgt, vz_clamp, vz_cmd, z_limit, a_prev, a_next):
+        """输出单个 Gate 的完整 Z 链路 (方案 30/31)。"""
+        gid = ng.get("id")
+        yaml_z = self.yaml_gate_z.get(gid)
+        gid_v = gid if gid is not None else -1
+        src = ng.get("source", "static_yaml")
+        hard = ng.get("hard_anchor", True)
+        sigz = ng.get("sigma_z", 0.0)
+        if self.trace_fh is not None:
+            try:
+                self.trace_fh.write("%.4f,%.2f,%s,%.3f,%s,%s,%s,%.3f,%s,%.3f,%.3f,"
+                                    "%.3f,%.5f,%.5f,%.3f,%.3f,%.3f,%.3f,%.4f,%.4f,%.4f,"
+                                    "%.2f,%.3f,%.2f,%.3f\n"
+                                    % (rospy.Time.now().to_sec(), s_now, gid_v, ng.get("z", 0.0),
+                                       ("%.3f" % yaml_z) if yaml_z is not None else "-", src,
+                                       hard, sigz, str(ng.get("support", "-")), z_raw, z_ref,
+                                       z_act, dzds, dzds_prev, vz_ff, vz_fb, vz_tgt, vz_cmd,
+                                       self.roll, self.pitch, self.yaw,
+                                       a_prev[0], a_prev[1], a_next[0], a_next[1]))
+                self.trace_fh.flush()
+            except Exception:
+                pass
+        rospy.loginfo_throttle(
+            0.2,
+            "[G%s] s=%.1f used_z=%.2f yaml_z=%s src=%s hard=%s sigz=%.2f dzds=%.4f "
+            "dzds_prev=%.4f | z_raw=%.2f z_ref=%.2f z=%.2f err=%.2f | ff=%.2f fb=%.2f "
+            "tgt=%.2f clamp=%.2f cmd=%.2f LIMIT=%s | anchor %.1f->%.1f",
+            gid_v, s_now, ng.get("z", 0.0),
+            ("%.2f" % yaml_z) if yaml_z is not None else "-", src, hard, sigz,
+            dzds, dzds_prev, z_raw, z_ref, z_act, z_err, vz_ff, vz_fb, vz_tgt,
+            vz_clamp, vz_cmd, z_limit, a_prev[0], a_next[0])
+
     def _clamp_corr_gate(self, profile, z, s, ng, alpha):
         """走廊钳位; 向门融合时把门锚点纳入走廊, 避免把 z_ref 钳离门 (方案 35 节)。"""
         ceil, floor = profile.corridor(s)
@@ -475,6 +575,11 @@ class RouteFollower(object):
         z_horizon = max(self.z_horizon_min,
                         min(self.z_horizon_max, self.z_horizon_time * v_s))
         s_ff = profile.horizon_s(s_now + Lz, s_now, z_horizon)
+        # Feedforward 前视坡度不得越过下一道门 (方案 19/20/23):
+        # 否则会把门后的下一段坡度提前算进来, 在门前错误地反向动作。
+        # 再留 dz_ds 窗口半宽 margin, 避免窗口跨过门.
+        if ng is not None:
+            s_ff = max(s_now, min(s_ff, ng["s"] - self.ff_gate_margin))
         kz_prev = 0.0 if self.no_future_gate else profile.dz_ds(s_ff)
 
         # ---- Yaw Path Following v6: 提前看向未来赛道 + 斜坡 (方案 17~29) ----
@@ -526,7 +631,7 @@ class RouteFollower(object):
                           and ng.get("hard_anchor", True)))
         v_target, self.speed_info = self.speed_sched.target(
             kap, kz_prev, slope_trusted, miss_ratio, e_z0,
-            z_worsening, pred_worse, math.degrees(yaw_err))
+            z_worsening, pred_worse, math.degrees(yaw_err), vxy=v_s)
         v = self.speed_sched.step(self.v_cmd_prev, v_target, self.dt)
         self.v_cmd_prev = v
         self.v_target = v_target
@@ -545,17 +650,38 @@ class RouteFollower(object):
         v_route = self.arbiter.arbitrate((vx, vy))
 
         # ---- Z: 反馈 + 前馈 (vz_ff = -dz/ds_preview * v) ----
+        z_raw = profile.center(s_now)                    # 未与门融合/未钳位
+        dzds_cur = profile.dz_ds(s_now)
+        a_prev, a_next = profile.anchor_pair(s_now)
         z_gate = {"z": float(ng["z"]), "valid": True} if ng is not None else None
         z_ref, z_mode, alpha = profile.compute(s_now, p.z, z_gate, d_g, self.dt)
         z_ref = self._clamp_corr_gate(profile, z_ref, s_now, ng, alpha)
         z_err = p.z - z_ref
         vz_fb = self.k_z * z_err
-        vz_ff = -kz_prev * v
-        vz_target = max(-self.vz_down_limit, min(self.vz_up_limit, vz_fb + vz_ff))
+        vz_ff = -self.k_ff_z * kz_prev * v            # 前馈带增益 Kff_z (方案 11)
+        vz_target = vz_fb + vz_ff
+        vz_clamped = max(-self.vz_down_limit, min(self.vz_up_limit, vz_target))
         dvz = max(-self.vz_accel_limit * self.dt,
-                  min(self.vz_accel_limit * self.dt, vz_target - self.vz_prev))
+                  min(self.vz_accel_limit * self.dt, vz_clamped - self.vz_prev))
         vz = self.vz_prev + dvz
         self.vz_prev = vz
+        # Z 限幅来源 (方案 40 节)
+        if profile.rate_limited:
+            z_limit = "Z_RATE_MAX"
+        elif abs(vz_clamped - vz_target) > 1e-4:
+            z_limit = "VZ_UP_LIMIT" if vz_target > vz_clamped else "VZ_DOWN_LIMIT"
+        elif abs(vz - vz_clamped) > 1e-4:
+            z_limit = "VZ_ACCEL"
+        else:
+            z_limit = "NONE"
+        z_actual_dot = z_dot   # NED: 实际上升 = -z_dot
+
+        # Gate 完整链路 Trace (方案 29~31)
+        if (self.trace_gate >= 0 and ng is not None and ng.get("id") == self.trace_gate
+                and (ng["s"] - self.trace_pre) <= s_now <= (ng["s"] + self.trace_post)):
+            self._trace_z(s_now, ng, z_raw, z_ref, p.z, z_err, dzds_cur, kz_prev,
+                          vz_ff, vz_fb, vz_target, vz_clamped, vz, z_limit,
+                          a_prev, a_next)
 
         # 水平限速
         sp = math.hypot(*v_route)
@@ -583,19 +709,27 @@ class RouteFollower(object):
         self.publish(vx_b, vy_b, vz, yaw_rate)
 
         si = self.speed_info
+        g_id = ng.get("id") if ng is not None else None
+        g_s = ng["s"] if ng is not None else -1.0
+        g_src = ng.get("source", "static_yaml") if ng is not None else "-"
+        g_hard = ng.get("hard_anchor", True) if ng is not None else "-"
+        g_sigz = ng.get("sigma_z", 0.0) if ng is not None else 0.0
         rospy.loginfo_throttle(
             2.0,
-            "PATH s=%.0f v=%.2f/%.2f CAP=%s(vC=%.1f vS=%.1f vT=%.1f) noFG=%s idx=%d "
-            "dG=%.1f lat=%.2f vert=%.2f miss=%s | yaw_src=%s yaw=%.1f yawT=%.1f "
-            "yawErr=%.1f yawCalc=%.1f yawSentDeg=%.1f eImg=%.3f | zRef=%.2f zErr=%.2f "
-            "ePred=%.2f zWorse=%s kz=%.3f vz=%.2f",
+            "PATH s=%.0f v=%.2f/%.2f CAP=%s(vC=%.1f vS=%.1f vT=%.1f vzAv=%.2f) noFG=%s "
+            "idx=%d next=%s@%.0f src=%s hard=%s sigz=%.2f dG=%.1f lat=%.2f vert=%.2f miss=%s | "
+            "yaw_src=%s yaw=%.1f yawT=%.1f yawErr=%.1f yawSentDeg=%.1f eImg=%.3f | "
+            "Z s=%.0f zRef=%.2f z=%.2f err=%.2f dzds=%.3f ff=%.2f fb=%.2f tgt=%.2f "
+            "clamp=%.2f cmd=%.2f act=%.2f LIMIT=%s",
             s_now, v, v_target, si.get("reason", ""),
             si.get("v_curve", 0.0), si.get("v_slope", 0.0), si.get("v_tracking", 0.0),
-            self.no_future_gate, self.gate_idx, d_g, lat, vert,
+            si.get("vz_available", 0.0), self.no_future_gate, self.gate_idx,
+            str(g_id), g_s, g_src, str(g_hard), g_sigz, d_g, lat, vert,
             ("%.2f" % miss_ratio) if miss_ratio is not None else "-",
             yaw_source, math.degrees(self.yaw), math.degrees(yaw_target),
-            math.degrees(yaw_err), math.degrees(yaw_calc), math.degrees(yaw_rate), e_img,
-            z_ref, z_err, e_pred, z_worsening, kz_prev, vz)
+            math.degrees(yaw_err), math.degrees(yaw_rate), e_img,
+            s_now, z_ref, p.z, z_err, kz_prev, vz_ff, vz_fb, vz_target,
+            vz_clamped, vz, -z_actual_dot, z_limit)
 
 
 if __name__ == "__main__":

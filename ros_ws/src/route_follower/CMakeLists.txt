@@ -22,5 +22,7 @@ catkin_install_python(PROGRAMS
   scripts/avoidance_interface.py
   scripts/yaw_controller.py
   scripts/speed_scheduler.py
+  scripts/z_capability.py
+  scripts/z_capability_probe.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
