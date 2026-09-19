@@ -24,7 +24,9 @@ RMUA2026-demo/
 │   ├── 10_stage9_yolo_gate_detection.md
 │   ├── 11_stage10_yaw_persistent_map_continuous3d.md
 │   ├── 12_stage11_gate_keypoints_timesync_reprojection.md
-│   └── 13_stage12_speed_yaw_fix.md
+│   ├── 13_stage12_speed_yaw_fix.md
+│   ├── 14_stage13_z_channel_capability.md
+│   └── 15_stage14_startup_height_gate6_trace.md
 ├── ros_ws/                  # 一级：ROS 工作空间源码
 │   └── src/
 │       ├── airsim_ros/          # 与模拟器匹配的 VelCmd/Takeoff/Land/Reset 消息服务
@@ -59,6 +61,8 @@ RMUA2026-demo/
 | Stage 10 | `docs/11` | `yaw_controller.py`, `speed_scheduler.py`, `gate_tracker.py`, `gate_map.py` | 转弯丢 Gate / Z 下坠 / 连续三维跟踪修复：Yaw 前视、持久 Gate Map、连续 Z 与 Horizon |
 | Stage 11 | `docs/12` | `stereo_keypoint_matcher.py`, `gate_geometry.py`, `timestamp_sync.py`, `gate_reprojection.py` | 四角关键点 + 逐角三角化 + 时间同步 + 反投影关联 + Yaw FOV correction |
 | Stage 12 | `docs/13` | `speed_scheduler.py`, `route_follower.py` | 转弯/爬升骤降速 & Yaw 不转向修复：物理限速 + 预测穿门 + 软限速 floor + Yaw 斜坡 |
+| Stage 13 | `docs/14` | `z_capability.py`, `z_capability_probe.py`, `route_follower.py` | Z 通道解限 + 垂直能力标定 + 陡坡高速通过（Kff、实测 `vz_available(vxy)`、Z LIMIT 日志） |
+| Stage 14 | `docs/15` | `route_follower.py` | 启动高度跳变保护 + Gate 完整 Z 链路 Trace（`start_anchor=当前高度`、`trace_gate` CSV、source/hard/sigma 日志） |
 
 ---
 
@@ -96,12 +100,18 @@ roslaunch start_to_goal start_to_goal.launch
 # 3) Stage2-12 主控制器（v6: 物理限速 + 预测穿门 + Yaw 斜坡 + 连续三维）
 roslaunch route_follower route_follower.launch \
   gates_file:=$(rospack find route_follower)/config/gates_vision_1_3.yaml \
-  gate_z_uses_offset:=false start_anchor_z:=-4.0 \
+  gate_z_uses_offset:=false \
   cruise_speed:=10.0 normal_speed_floor:=4.0 \
   yaw_control:=true yaw_lookahead:=25.0 k_yaw:=1.2 yaw_accel_limit:=2.0
+# 说明: 不再传 start_anchor_z=-4.0; 启动锚点自动取当前实际高度 (startup_z_jump_limit=1.0 保护)
+# Gate 链路追踪: trace_gate:=6 trace_file:=/tmp/opencode/gate6_trace.csv
 
 # 3b) 可选：订阅视觉端运行时持久 Gate Map（边飞边更新 3D 锚点）
-#     先启动视觉节点（见 4/5），再加 use_gate_map:=true
+#     先启动视觉节点（见 4/5），再加 use_gate_map:=true；启动日志会打印 [GateMap] ENABLED
+
+# 3c) Z 垂直能力标定（先生成实测表，再写回 config/vz_capability.yaml）
+rosrun route_follower z_capability_probe.py \
+  _vx_levels:="[0,5,10]" _vz_levels:="[1,2,3,4,5]" _out:=/tmp/opencode/zcap.csv
 
 # 4) 视觉: OpenCV 检测/可视化
 rosrun rmua_gate_vision gate_detect_viz.py     # 发布 /rmua/gate_detection/stereo
@@ -136,6 +146,22 @@ export PYTHONPATH=/opt/ros/noetic/lib/python3/dist-packages
   `normal_speed_floor=4`。日志含 `CAP=REASON` 与各分量 `vC/vS/vT`。
 - **Yaw（Stage12）**：`yaw_lookahead=25 m`，`K_yaw=1.2`，`yaw_rate_max=1.0`，
   新增 `yaw_accel_limit=2.0` 斜坡；日志含 `yaw_src=GATE_CHAIN/ROUTE`、`yawCalc`、`yawSentDeg`。
+- **启动高度保护（Stage14, docs/15）**：`start_anchor` 自动取当前实际高度；若显式 `start_anchor_z`
+  与当前高度差 `>startup_z_jump_limit(1.0m)` 则告警并改用当前高度，避免一启动就满速猛升撞起点结构。
+  启动打印 `[STARTUP] current_z/profile_z` 与每个 Gate 的 `[GATE] id/s/z/src/hard/sigma_z/support`。
+- **Gate 6 高度认知修复（Stage14 关键）**：Trace 证明地图/YAML z 正确（`-7.181`）、`z_ref` 也能到
+  `-7.18`，但 **前馈前视坡度越过了门**，把门后下一段上坡提前算进来 → 门前错误向上 →
+  Gate6 偏高。修复：前馈查询点钳到 `min(s+Lz, next_gate.s - ff_gate_margin(4m))`。
+  实测（静态门）：**5 m/s Gate6 `vert=-0.03`，10 m/s `vert=0.00`，10/10 全通过**。
+- **Gate Z 链路 Trace（Stage14）**：`trace_gate:=6 trace_file:=...csv` 时，进入该门前 `trace_pre`
+  米到过后 `trace_post` 米高频记录/落 CSV：`used_z/yaml_z/source/hard/sigma`、`z_ref_raw/z_ref/z`、
+  `dzds/dzds_prev`、`vz_ff/fb/target/cmd`、`roll/pitch/yaw`、锚点对。用于按 docs/15 判断
+  "感知/地图/曲线/控制/飞控" 哪一层出错。
+- **Z 通道（Stage13, docs/14）**：放软限幅 `z_rate_max=4.0 / vz_up_limit=4.0 / vz_accel_limit=6.0 /
+  k_z=1.0`，新增前馈增益 `k_ff_z=1.2`；`z_capability_probe.py` 实测 `vz_available(vxy)`
+  （默认表在 `config/vz_capability.yaml`，Speed Scheduler 用它算 `v_slope` 而非固定 3.0）；
+  日志含 `LIMIT=Z_RATE_MAX/VZ_UP_LIMIT/VZ_ACCEL/NONE` 与 `zRef/z/err/dzds/ff/fb/tgt/clamp/cmd/act`。
+  陡坡测试建议 `start_gate/end_gate` 只跑坡段。
 - **【关键】`VelCmd.yawRate` 单位是 度/秒, 不是 rad/s**（官方 `basic_dev` 注释 `yaw, deg`，
   本机实测：`yawRate=30` 持续 2 s → 约 49°，`yawRate=1` 且 vx=0 → 0°，且**必须有前向速度才生效**）。
   控制器内部用 rad/s，`publish()` 处统一 `math.degrees()` 转换后下发；此前直接发 rad/s 导致机头
