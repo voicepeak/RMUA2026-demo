@@ -60,6 +60,13 @@ class AltitudeProfile(object):
         c = self.center(s)
         return c - self.corridor_half, c + self.corridor_half   # (ceiling, floor)
 
+    @staticmethod
+    def horizon_s(s, s_now, horizon):
+        """把查询点限制在 [s_now, s_now+horizon] 内 (方案 17 节: Z 外推有 Horizon)。"""
+        if horizon is None or horizon <= 0.0:
+            return s
+        return max(s_now, min(s, s_now + horizon))
+
     def dz_ds(self, s, h=4.0):
         s0 = max(self.anchors[0][0], s - h)
         s1 = min(self.anchors[-1][0], s + h)

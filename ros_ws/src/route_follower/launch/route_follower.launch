@@ -1,26 +1,52 @@
 <?xml version="1.0"?>
 <launch>
-  <!-- RMUA 2026 Stage 7 v3: Multi-Gate Lookahead + Ordered Chain + 动态 Z + 提速 -->
+  <!-- RMUA 2026 v6: 预测/动力学限速 + Yaw 真实转向 + 连续三维 -->
 
   <arg name="route"          default="route_1_3"/>
   <arg name="route_file"     default="$(find route_follower)/config/route_1_3.yaml"/>
-  <arg name="gates_file"     default="$(find route_follower)/config/gates_1_3.yaml"/>
+  <arg name="gates_file"     default="$(find route_follower)/config/gates_vision_1_3.yaml"/>
   <arg name="guides_file"    default="$(find route_follower)/config/none.yaml"/>
-  <arg name="gate_z_uses_offset" default="true"/>
+  <arg name="gate_z_uses_offset" default="false"/>
   <arg name="start_anchor_z" default="-999.0"/>
 
-  <!-- 速度调度 -->
-  <arg name="cruise_speed"   default="6.0"/>
-  <arg name="max_speed"      default="10.0"/>
-  <arg name="min_speed"      default="2.5"/>
-  <arg name="gate_slow_speed" default="1.5"/>
-  <arg name="k_curv"         default="1.0"/>
-  <arg name="eta_z"          default="1.0"/>
-  <arg name="lookahead_base" default="5.0"/>
-  <arg name="lookahead_kv"   default="1.5"/>
+  <!-- 速度: 巡航/物理限速/斜坡 (方案 13~16) -->
+  <arg name="cruise_speed"   default="10.0"/>
+  <arg name="max_speed"      default="12.0"/>
+  <arg name="normal_speed_floor" default="4.0"/>
+  <arg name="a_lat_max"      default="6.0"/>
+  <arg name="a_up"           default="4.0"/>
+  <arg name="a_down"         default="5.0"/>
+  <arg name="lookahead_base" default="8.0"/>
+  <arg name="lookahead_kv"   default="0.7"/>
   <arg name="k_pursuit"      default="1.2"/>
 
-  <!-- v4: Z 前视/前馈 + 坡度限速 + 掉高保护 + 斜坡 -->
+  <!-- tracking 软限速阈值/系数 (方案 8, 29) -->
+  <arg name="z_slow1"        default="0.4"/>
+  <arg name="z_slow2"        default="0.8"/>
+  <arg name="z_slow3"        default="1.2"/>
+  <arg name="z_f2"           default="0.8"/>
+  <arg name="z_f3"           default="0.6"/>
+  <arg name="z_f4"           default="0.4"/>
+  <arg name="gate_f1"        default="0.8"/>
+  <arg name="gate_f2"        default="0.6"/>
+  <arg name="gate_f3"        default="0.45"/>
+  <arg name="yaw_slow1"      default="10.0"/>
+  <arg name="yaw_slow2"      default="20.0"/>
+  <arg name="yaw_slow3"      default="30.0"/>
+  <arg name="yaw_f1"         default="0.9"/>
+  <arg name="yaw_f2"         default="0.8"/>
+  <arg name="yaw_f3"         default="0.6"/>
+
+  <!-- Yaw Path Following (方案 22~29) -->
+  <arg name="yaw_control"    default="true"/>
+  <arg name="yaw_lookahead"  default="25.0"/>
+  <arg name="k_yaw"          default="1.2"/>
+  <arg name="yaw_rate_max"   default="1.0"/>
+  <arg name="yaw_accel_limit" default="2.0"/>
+  <arg name="k_vision"       default="0.15"/>
+  <arg name="fov_n_gates"    default="3"/>
+
+  <!-- Z 前视/前馈 + Horizon -->
   <arg name="z_preview_time" default="2.0"/>
   <arg name="z_preview_min"  default="8.0"/>
   <arg name="vz_up_safe"     default="3.0"/>
@@ -28,17 +54,19 @@
   <arg name="vz_down_limit"  default="2.5"/>
   <arg name="vz_accel_limit" default="3.0"/>
   <arg name="slope_eta"      default="0.8"/>
-  <arg name="z_error_slow1"  default="0.25"/>
-  <arg name="z_error_slow2"  default="0.5"/>
-  <arg name="z_error_stop"   default="0.9"/>
-  <arg name="a_plan"         default="5.0"/>
-  <arg name="k_steep"        default="0.15"/>
   <arg name="pred_time"      default="1.5"/>
+  <arg name="z_horizon_time" default="2.0"/>
+  <arg name="z_horizon_min"  default="10.0"/>
+  <arg name="z_horizon_max"  default="20.0"/>
 
-  <!-- Z -->
+  <!-- 持久 Gate Map 订阅 -->
+  <arg name="use_gate_map"   default="false"/>
+  <arg name="gate_map_topic" default="/rmua/gate_map"/>
+  <arg name="gate_map_min_support" default="2"/>
+  <arg name="sigma_z_max"    default="0.6"/>
+
+  <!-- Z 反馈/走廊 -->
   <arg name="k_z"            default="0.6"/>
-  <arg name="vmax_z"         default="1.5"/>
-  <arg name="z_err_slow"     default="1.0"/>
   <arg name="z_rate_max"     default="1.5"/>
   <arg name="corridor_half"  default="1.5"/>
   <arg name="gate_blend_start" default="25.0"/>
@@ -46,7 +74,11 @@
 
   <!-- Gate chain / pass -->
   <arg name="aperture_xy_tol" default="1.2"/>
-  <arg name="aperture_z_tol"  default="0.6"/>
+  <arg name="aperture_z_tol"  default="1.0"/>
+  <arg name="gate_pass_half_width"  default="1.5"/>
+  <arg name="gate_pass_half_height" default="1.5"/>
+  <arg name="gate_miss_margin" default="3.0"/>
+  <arg name="gate_skip_s"      default="5.0"/>
   <arg name="slope_factor"   default="3.0"/>
   <arg name="slope_abs_max"  default="0.6"/>
   <arg name="xy_converge"    default="0.5"/>
@@ -66,13 +98,35 @@
     <param name="start_anchor_z"   value="$(arg start_anchor_z)"/>
     <param name="cruise_speed"     value="$(arg cruise_speed)"/>
     <param name="max_speed"        value="$(arg max_speed)"/>
-    <param name="min_speed"        value="$(arg min_speed)"/>
-    <param name="gate_slow_speed"  value="$(arg gate_slow_speed)"/>
-    <param name="k_curv"           value="$(arg k_curv)"/>
-    <param name="eta_z"            value="$(arg eta_z)"/>
+    <param name="normal_speed_floor" value="$(arg normal_speed_floor)"/>
+    <param name="a_lat_max"        value="$(arg a_lat_max)"/>
+    <param name="a_up"             value="$(arg a_up)"/>
+    <param name="a_down"           value="$(arg a_down)"/>
     <param name="lookahead_base"   value="$(arg lookahead_base)"/>
     <param name="lookahead_kv"     value="$(arg lookahead_kv)"/>
     <param name="k_pursuit"        value="$(arg k_pursuit)"/>
+    <param name="z_slow1"          value="$(arg z_slow1)"/>
+    <param name="z_slow2"          value="$(arg z_slow2)"/>
+    <param name="z_slow3"          value="$(arg z_slow3)"/>
+    <param name="z_f2"             value="$(arg z_f2)"/>
+    <param name="z_f3"             value="$(arg z_f3)"/>
+    <param name="z_f4"             value="$(arg z_f4)"/>
+    <param name="gate_f1"          value="$(arg gate_f1)"/>
+    <param name="gate_f2"          value="$(arg gate_f2)"/>
+    <param name="gate_f3"          value="$(arg gate_f3)"/>
+    <param name="yaw_slow1"        value="$(arg yaw_slow1)"/>
+    <param name="yaw_slow2"        value="$(arg yaw_slow2)"/>
+    <param name="yaw_slow3"        value="$(arg yaw_slow3)"/>
+    <param name="yaw_f1"           value="$(arg yaw_f1)"/>
+    <param name="yaw_f2"           value="$(arg yaw_f2)"/>
+    <param name="yaw_f3"           value="$(arg yaw_f3)"/>
+    <param name="yaw_control"      value="$(arg yaw_control)"/>
+    <param name="yaw_lookahead"    value="$(arg yaw_lookahead)"/>
+    <param name="k_yaw"            value="$(arg k_yaw)"/>
+    <param name="yaw_rate_max"     value="$(arg yaw_rate_max)"/>
+    <param name="yaw_accel_limit"  value="$(arg yaw_accel_limit)"/>
+    <param name="k_vision"         value="$(arg k_vision)"/>
+    <param name="fov_n_gates"      value="$(arg fov_n_gates)"/>
     <param name="z_preview_time"   value="$(arg z_preview_time)"/>
     <param name="z_preview_min"    value="$(arg z_preview_min)"/>
     <param name="vz_up_safe"       value="$(arg vz_up_safe)"/>
@@ -80,21 +134,25 @@
     <param name="vz_down_limit"    value="$(arg vz_down_limit)"/>
     <param name="vz_accel_limit"   value="$(arg vz_accel_limit)"/>
     <param name="slope_eta"        value="$(arg slope_eta)"/>
-    <param name="z_error_slow1"    value="$(arg z_error_slow1)"/>
-    <param name="z_error_slow2"    value="$(arg z_error_slow2)"/>
-    <param name="z_error_stop"     value="$(arg z_error_stop)"/>
-    <param name="a_plan"           value="$(arg a_plan)"/>
-    <param name="k_steep"          value="$(arg k_steep)"/>
     <param name="pred_time"        value="$(arg pred_time)"/>
+    <param name="z_horizon_time"   value="$(arg z_horizon_time)"/>
+    <param name="z_horizon_min"    value="$(arg z_horizon_min)"/>
+    <param name="z_horizon_max"    value="$(arg z_horizon_max)"/>
+    <param name="use_gate_map"     value="$(arg use_gate_map)"/>
+    <param name="gate_map_topic"   value="$(arg gate_map_topic)"/>
+    <param name="gate_map_min_support" value="$(arg gate_map_min_support)"/>
+    <param name="sigma_z_max"      value="$(arg sigma_z_max)"/>
     <param name="k_z"              value="$(arg k_z)"/>
-    <param name="vmax_z"           value="$(arg vmax_z)"/>
-    <param name="z_err_slow"       value="$(arg z_err_slow)"/>
     <param name="z_rate_max"       value="$(arg z_rate_max)"/>
     <param name="corridor_half"    value="$(arg corridor_half)"/>
     <param name="gate_blend_start" value="$(arg gate_blend_start)"/>
     <param name="gate_blend_full"  value="$(arg gate_blend_full)"/>
     <param name="aperture_xy_tol"  value="$(arg aperture_xy_tol)"/>
     <param name="aperture_z_tol"   value="$(arg aperture_z_tol)"/>
+    <param name="gate_pass_half_width"  value="$(arg gate_pass_half_width)"/>
+    <param name="gate_pass_half_height" value="$(arg gate_pass_half_height)"/>
+    <param name="gate_miss_margin" value="$(arg gate_miss_margin)"/>
+    <param name="gate_skip_s"      value="$(arg gate_skip_s)"/>
     <param name="slope_factor"     value="$(arg slope_factor)"/>
     <param name="slope_abs_max"    value="$(arg slope_abs_max)"/>
     <param name="xy_converge"      value="$(arg xy_converge)"/>

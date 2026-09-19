@@ -16,5 +16,11 @@ catkin_install_python(PROGRAMS
   scripts/splines_to_yaml.py
   scripts/make_gates.py
   scripts/z_probe.py
+  scripts/altitude_profile.py
+  scripts/gate_chain.py
+  scripts/command_arbiter.py
+  scripts/avoidance_interface.py
+  scripts/yaw_controller.py
+  scripts/speed_scheduler.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
