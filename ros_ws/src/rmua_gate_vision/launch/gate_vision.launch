@@ -10,7 +10,7 @@
     <param name="route_name"    value="$(arg route_name)"/>
     <param name="out_file"      value="$(arg out_file)"/>
     <param name="cluster_radius" value="3.0"/>
-    <param name="min_support"   value="8"/>
+    <param name="min_support"   value="4"/>
     <param name="max_d_cross"   value="5.0"/>
     <param name="save_images"   value="false"/>
   </node>

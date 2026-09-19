@@ -28,6 +28,7 @@ from std_srvs.srv import Trigger, TriggerResponse
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from gate_detector_opencv import detect_gates, gate_frame_mask, draw  # noqa: E402
 import gate_stereo as gs  # noqa: E402
+from gate_map import GateMap  # noqa: E402
 
 
 class GateVision(object):
@@ -39,7 +40,7 @@ class GateVision(object):
         self.route_name = rospy.get_param("~route_name", "route_1_3")
         self.out_file = rospy.get_param("~out_file", os.path.join(cfg, "gates_vision_1_3.yaml"))
         self.cluster_radius = rospy.get_param("~cluster_radius", 3.0)
-        self.min_support = rospy.get_param("~min_support", 8)
+        self.min_support = rospy.get_param("~min_support", 4)
         self.max_d_cross = rospy.get_param("~max_d_cross", 5.0)
         self.save_images = bool(rospy.get_param("~save_images", False))
         self.img_dir = rospy.get_param("~img_dir", "/tmp/opencode/gate_imgs")
@@ -50,13 +51,14 @@ class GateVision(object):
             "min_area": rospy.get_param("~min_area", 800),
         }
         self.pose = None
-        self.obs = []            # list of world(3) np
         self.bridge = cv_bridge.CvBridge()
         self.sgbm = gs.build_sgbm()
         self.pub = rospy.Publisher("/rmua/gate_observations", String, queue_size=5)
+        self.pub_map = rospy.Publisher("/rmua/gate_map", String, queue_size=2)
 
         self.route = self.load_route(self.route_file, self.route_name)
         self.build_route_s()
+        self.gate_map = GateMap(self.route, assoc_radius=self.cluster_radius)
 
         rospy.Service("~save", Trigger, self.save)
         rospy.Service("~clear", Trigger, self.clear)
@@ -67,6 +69,7 @@ class GateVision(object):
         self.sync.registerCallback(self.pair_cb)
         if self.save_images:
             os.makedirs(self.img_dir, exist_ok=True)
+        rospy.Timer(rospy.Duration(0.25), self.publish_map)
         rospy.loginfo("GateVision ready: route=%s out=%s", self.route_name, self.out_file)
 
     # ---- route ----
@@ -80,19 +83,6 @@ class GateVision(object):
         r = self.route
         self.seg_len = np.hypot(np.diff(r[:, 0]), np.diff(r[:, 1]))
         self.seg_s = np.concatenate([[0.0], np.cumsum(self.seg_len)])
-
-    def project_route(self, xy):
-        best_d, best_s = 1e9, 0.0
-        for i in range(len(self.route) - 1):
-            a, b = self.route[i], self.route[i + 1]
-            d = b[:2] - a[:2]
-            L2 = d @ d
-            t = 0.0 if L2 < 1e-9 else float(np.clip((xy - a[:2]) @ d / L2, 0, 1))
-            c = a[:2] + t * d
-            dd = float(np.linalg.norm(xy - c))
-            if dd < best_d:
-                best_d, best_s = dd, self.seg_s[i] + t * self.seg_len[i]
-        return best_s, best_d
 
     # ---- callbacks ----
     def pose_cb(self, m):
@@ -113,6 +103,7 @@ class GateVision(object):
         q = self.pose.orientation
         pos = np.array([px.x, px.y, px.z])
         quat = (q.x, q.y, q.z, q.w)
+        now_stamp = ml.header.stamp.to_sec()
         obs_json = []
         for cand in cl:
             res = gs.gate_center_from_frame(cand, disp, fmask)
@@ -124,65 +115,34 @@ class GateVision(object):
             world = gs.body_to_world(gs.camera_to_body(center_cam), pos, quat)
             if not np.all(np.isfinite(world)):
                 continue
-            self.obs.append(world.copy())
+            t = self.gate_map.observe(world, now_stamp, depth)
             obs_json.append({"world": world.tolist(), "depth": float(depth),
-                             "npix": npx, "conf": float(cand["confidence"])})
+                             "npix": npx, "conf": float(cand["confidence"]),
+                             "track_id": int(t.id), "sigma_z": float(t.sigma()[2])})
         self.pub.publish(String(data=json.dumps(obs_json)))
         if self.save_images and obs_json:
             cv2.imwrite(os.path.join(self.img_dir, "L_%d.jpg" % ml.header.stamp.to_nsec()),
                         draw(left, cl))
-        rospy.loginfo_throttle(2.0, "obs total=%d, this=%d", len(self.obs), len(obs_json))
-
-    def route_tangent(self, s):
-        for i in range(len(self.route) - 1):
-            if self.seg_s[i] <= s <= self.seg_s[i + 1]:
-                d = self.route[i + 1][:2] - self.route[i][:2]
-                L = np.linalg.norm(d)
-                if L > 1e-9:
-                    d = d / L
-                return np.array([d[0], d[1], 0.0])
-        return np.array([1.0, 0.0, 0.0])
+        self.gate_map.prune(now_stamp)
+        rospy.loginfo_throttle(
+            2.0, "obs=%d tracks=%d map=%s", len(obs_json),
+            len(self.gate_map.tracker.tracks),
+            [(g["id"], round(g["s"], 1), round(g["z"], 2)) for g in self.gate_map.gates(2)])
 
     # ---- save ----
-    def cluster(self):
-        clusters = []
-        for w in self.obs:
-            for c in clusters:
-                if np.linalg.norm(w - c["sum"] / c["n"]) < self.cluster_radius:
-                    c["sum"] += w
-                    c["n"] += 1
-                    c["ws"].append(w)
-                    break
-            else:
-                clusters.append({"sum": w.copy(), "n": 1, "ws": [w]})
-        return [c for c in clusters if c["n"] >= self.min_support]
+    def publish_map(self, _e=None):
+        self.pub_map.publish(String(data=self.gate_map.to_json(min_support=self.min_support)))
 
     def save(self, _req):
-        clusters = self.cluster()
-        gates = []
-        for c in clusters:
-            w = np.median(np.array(c["ws"]), axis=0)
-            s, dcross = self.project_route(w[:2])
-            if dcross > self.max_d_cross:
-                continue
-            n = self.route_tangent(s)
-            gates.append({"x": float(w[0]), "y": float(w[1]), "z": float(w[2]),
-                          "nx": float(n[0]), "ny": float(n[1]), "nz": float(n[2]),
-                          "s": float(s), "d_cross": float(dcross),
-                          "support": int(c["n"]), "valid": True,
-                          "source": "opencv_stereo"})
-        gates.sort(key=lambda g: g["s"])
-        for i, g in enumerate(gates):
-            g["id"] = i
-        with open(self.out_file, "w") as f:
-            yaml.safe_dump({"gates": gates}, f, default_flow_style=False, sort_keys=False)
-        rospy.loginfo("saved %d gates to %s", len(gates), self.out_file)
-        return TriggerResponse(success=True, message="saved %d gates" % len(gates))
+        n = self.gate_map.save_yaml(self.out_file, min_support=self.min_support,
+                                    source="opencv_stereo", max_d_cross=self.max_d_cross)
+        rospy.loginfo("saved %d gates to %s", n, self.out_file)
+        return TriggerResponse(success=True, message="saved %d gates" % n)
 
     def clear(self, _req):
-        n = len(self.obs)
-        self.obs = []
-        return TriggerResponse(success=True, message="cleared %d observations" % n)
+        n = len(self.gate_map.tracker.tracks)
+        self.gate_map = GateMap(self.route, assoc_radius=self.cluster_radius)
+        return TriggerResponse(success=True, message="cleared %d tracks" % n)
 
 
 if __name__ == "__main__":

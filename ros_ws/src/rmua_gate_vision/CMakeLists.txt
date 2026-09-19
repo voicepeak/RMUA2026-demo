@@ -13,5 +13,16 @@ catkin_package()
 
 catkin_install_python(PROGRAMS
   scripts/gate_vision_node.py
+  scripts/gate_detect_viz.py
+  scripts/gate_yolo_node.py
+  scripts/gate_detector_opencv.py
+  scripts/gate_stereo.py
+  scripts/gate_tracker.py
+  scripts/gate_map.py
+  scripts/gate_dataset_capture.py
+  scripts/timestamp_sync.py
+  scripts/gate_geometry.py
+  scripts/stereo_keypoint_matcher.py
+  scripts/gate_reprojection.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

@@ -24,41 +24,6 @@ def projection_matrices():
     return K, P1, P2
 
 
-def match_gates(left, right, max_dv=60.0, max_cost=120.0):
-    pairs = []
-    for gl in left:
-        best, best_cost = None, 1e9
-        for gr in right:
-            dv = abs(gl["center"][1] - gr["center"][1])
-            if dv > max_dv:
-                continue
-            disp = gl["center"][0] - gr["center"][0]
-            if disp <= 1.0 or disp > 400.0:
-                continue
-            size_ratio = abs(gl["area"] - gr["area"]) / max(gl["area"], gr["area"])
-            cost = dv + 40.0 * size_ratio
-            if cost < best_cost:
-                best_cost, best = cost, gr
-        if best is not None and best_cost < max_cost:
-            pairs.append((gl, best, best_cost))
-    return pairs
-
-
-def triangulate_gate(gl, gr):
-    _, P1, P2 = projection_matrices()
-    pl = gl["corners"].T.astype(np.float64)
-    pr = gr["corners"].T.astype(np.float64)
-    X = cv2.triangulatePoints(P1, P2, pl, pr)
-    X = (X[:3] / X[3]).T.astype(np.float64)      # 4x3, 左相机光学系
-    center = X.mean(axis=0)
-    v1 = X[1] - X[0]        # TR - TL
-    v2 = X[3] - X[0]        # BL - TL
-    n = np.cross(v1, v2)
-    nn = np.linalg.norm(n)
-    normal = n / nn if nn > 1e-9 else np.array([0.0, 0.0, 1.0])
-    return X, center, normal
-
-
 def quat_to_R(q):
     x, y, z, w = q
     return np.array([
@@ -74,18 +39,6 @@ def camera_to_body(P_cam):
 def body_to_world(P_body, pos, quat):
     R = quat_to_R(quat)
     return (R @ np.asarray(P_body, dtype=np.float64).T).T + np.asarray(pos)
-
-
-def gate_world(gl, gr, pos, quat):
-    """返回世界系中心与法向。"""
-    X, center, normal = triangulate_gate(gl, gr)
-    center_body = camera_to_body(center)
-    world = body_to_world(center_body, pos, quat)
-    n_body = R_BC @ normal
-    n_world = quat_to_R(quat) @ n_body
-    nn = np.linalg.norm(n_world)
-    n_world = n_world / nn if nn > 1e-9 else n_world
-    return world, n_world, center, X
 
 
 # ---------------- 基于稠密视差的 Gate 定位 ----------------
