@@ -123,7 +123,7 @@ class GateYolo(object):
         self.route = self.load_route()
         self.gate_map = GateMap(self.route, assoc_radius=self.assoc_radius,
                                 max_age=self.max_age)
-        self.last_prune = rospy.Time.now()
+        self.last_prune = rospy.Time.now().to_sec()
         rospy.Timer(rospy.Duration(0.25), self.publish_map)
 
     def load_route(self):
