@@ -71,9 +71,14 @@ export PYTHONPATH=/opt/ros/noetic/lib/python3/dist-packages
   _imgsz:=960 _conf:=0.35
 ```
 
-- 发布：`/rmua/gate_detection/{left,right,stereo}`（可视化）、`/rmua/gate_observations`（JSON）；
-- 服务：`~save`（把稳定观测写成 gates_yaml）、`~clear`；
-- 下游（双目匹配 / Gate Chain / 动态 Z / v4 控制）**不需要改**。
+- 发布：`/rmua/gate_detection/{left,right,stereo}`（可视化）、`/rmua/gate_observations`（JSON）、
+  `/rmua/gate_map`（持久世界坐标 Gate Map，供控制端 `use_gate_map:=true` 订阅）；
+- 服务：`~save`（把持久 Gate Map 写成 gates_yaml）、`~clear`；
+- 常用参数：`_conf _imgsz _assoc_radius _min_support _max_age _use_imu _use_keypoints`
+  （`_use_imu:=true` 姿态改用 IMU；`_use_keypoints:=true` 且模型为 pose 时用 4 关键点，
+   否则退化为 bbox 四角，稠密视差仅兜底）；几何阈值 `_plane_rmse_max` 等；
+- Stage11 管线：四角 -> 逐角三角化 -> 几何质量检查 -> 时间同步位姿 -> World -> Gate Map -> 反投影关联；
+- 下游（Gate Chain / 动态 Z / Yaw / 控制）**不需要改**。
 
 ## 6. 与 OpenCV 版的关系
 
