@@ -21,6 +21,8 @@ Stage11 管线 (替代 "bbox 中心 + 稠密视差"):
 import json
 import os
 import sys
+import threading
+import time
 
 import cv2
 import message_filters
@@ -37,6 +39,7 @@ from gate_detector_opencv import gate_frame_mask  # noqa: E402
 import gate_stereo as gs  # noqa: E402
 from gate_map import GateMap  # noqa: E402
 from gate_geometry import GateGeometry  # noqa: E402
+from latest_frame import LatestFrame
 from timestamp_sync import PoseBuffer  # noqa: E402
 import stereo_keypoint_matcher as skm  # noqa: E402
 from gate_reprojection import reproject_gate  # noqa: E402
@@ -87,11 +90,12 @@ class GateYolo(object):
         self.use_imu = bool(rospy.get_param("~use_imu", False))
         self.use_keypoints = bool(rospy.get_param("~use_keypoints", True))
         self.corner_only = bool(rospy.get_param("~corner_only", False))
-        self.sync_max_age = rospy.get_param("~sync_max_age", 1.0)
+        self.sync_max_age = rospy.get_param("~sync_max_age", 3.0)
         self.fallback_center = bool(rospy.get_param("~fallback_dense_center", True))
 
         from ultralytics import YOLO
         self.model = YOLO(self.model_path)
+        cv2.setNumThreads(2)
         rospy.loginfo("YOLO loaded: %s", self.model_path)
 
         self.geom = GateGeometry(
@@ -106,6 +110,9 @@ class GateYolo(object):
         self.pose = None
         self.imu_quat = None
         self.pose_buf = PoseBuffer(max_age=self.sync_max_age)
+        self.pose_lock=threading.RLock()
+        self.map_lock=threading.RLock()
+        self.frames=LatestFrame()
         self.pub_l = rospy.Publisher("/rmua/gate_detection/left", Image, queue_size=2)
         self.pub_r = rospy.Publisher("/rmua/gate_detection/right", Image, queue_size=2)
         self.pub_s = rospy.Publisher("/rmua/gate_detection/stereo", Image, queue_size=2)
@@ -121,12 +128,14 @@ class GateYolo(object):
         sr = message_filters.Subscriber("/airsim_node/drone_1/front_right/Scene", Image,
                                         queue_size=1, buff_size=8 * 1024 * 1024)
         message_filters.ApproximateTimeSynchronizer([sl, sr], queue_size=5, slop=0.03) \
-            .registerCallback(self.cb)
+            .registerCallback(self.enqueue_pair)
         self.route = self.load_route()
         self.gate_map = GateMap(self.route, assoc_radius=self.assoc_radius,
                                 max_age=self.max_age)
         self.last_prune = None
         rospy.Timer(rospy.Duration(0.25), self.publish_map)
+        self.worker=threading.Thread(target=self.inference_loop,daemon=True)
+        self.worker.start()
 
     def load_route(self):
         with open(self.route_file) as f:
@@ -143,13 +152,18 @@ class GateYolo(object):
         t = _stamp_to_sec(m.header.stamp)
         if t <= 0.0:
             t = rospy.Time.now().to_sec()
-        self.pose_buf.add(t, (p.x, p.y, p.z), (q.x, q.y, q.z, q.w))
+        with self.pose_lock:
+            self.pose_buf.add(t, (p.x, p.y, p.z), (q.x, q.y, q.z, q.w))
 
     def imu_cb(self, m):
         q = m.orientation
         self.imu_quat = (q.x, q.y, q.z, q.w)
 
-    def current_pose(self, t_img):
+    def current_pose(self,t_img):
+        with self.pose_lock:
+            return self._current_pose(t_img)
+
+    def _current_pose(self, t_img):
         """返回 (pos, quat) —— 优先时间同步插值, 否则退回最近位姿。"""
         pos = quat = None
         if self.pose_buf.ready():
@@ -167,6 +181,9 @@ class GateYolo(object):
 
     def detect(self, bgr):
         res = self.model.predict(bgr, imgsz=self.imgsz, conf=self.conf, iou=.5, verbose=False)[0]
+        return self.candidates(res,bgr)
+
+    def candidates(self,res,bgr):
         cands = []
         if res.boxes is None or len(res.boxes) == 0:
             return cands, False
@@ -236,20 +253,43 @@ class GateYolo(object):
                     "u": float(uv[0]), "v": float(uv[1]), "keypoints": gl.get("keypoints", False)})
         return True
 
-    def cb(self, ml, mr):
+    def enqueue_pair(self,ml,mr):
+        stamp=.5*(ml.header.stamp.to_sec()+mr.header.stamp.to_sec())
+        aligned=self.current_pose(stamp)
+        if aligned[0] is not None:
+            self.frames.put((ml,mr,aligned))
+
+    def inference_loop(self):
+        while not rospy.is_shutdown():
+            item=self.frames.take()
+            if item is None:continue
+            try:
+                with self.map_lock:
+                    self.cb(*item)
+            except Exception as error:
+                rospy.logerr_throttle(2.,"Gate inference failed: %s",error)
+
+    def cb(self, ml, mr, aligned_pose=None):
+        started=time.perf_counter()
         if self.pose is None:
             return
         left = imgmsg_to_bgr(ml)
         right = imgmsg_to_bgr(mr)
-        cl, kp_l = self.detect(left)
-        cr, _ = self.detect(right)
         tl = _stamp_to_sec(ml.header.stamp)
         tr = _stamp_to_sec(mr.header.stamp)
         t_img = 0.5 * (tl + tr) if (tl > 0 and tr > 0) else rospy.Time.now().to_sec()
-        pos, quat = self.current_pose(t_img)
+        pos, quat = aligned_pose if aligned_pose is not None else self.current_pose(t_img)
         if pos is None:
-            rospy.logwarn_throttle(2.0, "Discarding image without time-aligned pose")
+            rospy.logwarn_throttle(2.0, "Discarding image without time-aligned pose (image=%.3f latest=%.3f)",
+                                  t_img,self.pose_buf.buf[-1][0] if self.pose_buf.buf else 0.)
             return
+
+        # Snapshot the image-time pose BEFORE inference. Otherwise a slow GPU
+        # evicts that pose from the rolling buffer and every image is discarded.
+        results=self.model.predict([left,right],imgsz=self.imgsz,conf=self.conf,iou=.5,verbose=False)
+        cl,kp_l=self.candidates(results[0],left)
+        cr,_=self.candidates(results[1],right)
+        inferred=time.perf_counter()
 
         # 用当前位姿反投影旧 track, 供本帧关联 (方案 27/28)
         self.gate_map.predict(pos, quat)
@@ -301,6 +341,8 @@ class GateYolo(object):
             self.gate_map.prune(t_img)
             self.last_prune = t_img
         tracks = len(self.gate_map.tracker.tracks)
+        rospy.loginfo_throttle(2.,"VISION_TIMING inference=%.3f geometry=%.3f dropped=%d",
+                              inferred-started,time.perf_counter()-inferred,self.frames.dropped)
         rospy.loginfo_throttle(
             2.0, "YOLO L=%d R=%d obs=%d kp=%s tracks=%d map=%s",
             len(cl), len(cr), len(obs), kp_l, tracks,
@@ -308,14 +350,23 @@ class GateYolo(object):
               g["hard_anchor"], g["geometry_valid"]) for g in self.gate_map.gates(2)])
 
     def publish_map(self, _e=None):
-        self.pub_map.publish(String(data=self.gate_map.to_json(min_support=self.min_support)))
+        with self.map_lock:
+            self.pub_map.publish(String(data=self.gate_map.to_json(min_support=self.min_support)))
 
-    def save(self, _req):
+    def save(self,req):
+        with self.map_lock:
+            return self._save(req)
+
+    def _save(self, _req):
         n = self.gate_map.save_yaml(self.out_file, min_support=self.min_support,
                                     max_d_cross=self.max_d_cross)
         return TriggerResponse(success=True, message="saved %d gates (yolo)" % n)
 
-    def clear(self, _req):
+    def clear(self,req):
+        with self.map_lock:
+            return self._clear(req)
+
+    def _clear(self, _req):
         n = len(self.gate_map.tracker.tracks)
         self.gate_map = GateMap(self.route, assoc_radius=self.assoc_radius,
                                 max_age=self.max_age)

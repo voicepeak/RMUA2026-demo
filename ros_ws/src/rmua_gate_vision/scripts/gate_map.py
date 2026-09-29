@@ -44,17 +44,15 @@ class GateMap(object):
         self.seg_s = np.concatenate([[0.0], np.cumsum(self.seg_len)])
 
     def project(self, xy):
-        best_d, best_s = 1e9, 0.0
-        for i in range(len(self.route) - 1):
-            a, b = self.route[i], self.route[i + 1]
-            d = b[:2] - a[:2]
-            L2 = d @ d
-            t = 0.0 if L2 < 1e-9 else float(np.clip((xy - a[:2]) @ d / L2, 0, 1))
-            c = a[:2] + t * d
-            dd = float(np.linalg.norm(xy - c))
-            if dd < best_d:
-                best_d, best_s = dd, self.seg_s[i] + t * self.seg_len[i]
-        return best_s, best_d
+        # Vectorized projection keeps perception cost independent of Python loops
+        # over hundreds of route points for every detection.
+        delta=self.route[1:,:2]-self.route[:-1,:2]
+        length2=np.sum(delta*delta,axis=1)
+        t=np.clip(np.sum((np.asarray(xy)-self.route[:-1,:2])*delta,axis=1)/np.maximum(length2,1e-9),0.,1.)
+        closest=self.route[:-1,:2]+t[:,None]*delta
+        distance2=np.sum((closest-np.asarray(xy))**2,axis=1)
+        index=int(np.argmin(distance2))
+        return float(self.seg_s[index]+t[index]*self.seg_len[index]),float(np.sqrt(distance2[index]))
 
     def tangent(self, s):
         for i in range(len(self.route) - 1):
