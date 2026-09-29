@@ -12,6 +12,7 @@
 import math
 
 from altitude_profile import AltitudeProfile
+from route_height_prior import RouteHeightPrior
 from gate_chain import GateChain, VERIFIED, HARD, SOFT
 
 DEFAULT_CONTROL_RATE = 20.0
@@ -106,8 +107,11 @@ class ReferencePlanner(object):
                  corridor_half=1.5, gate_blend_start=25.0, gate_blend_full=8.0,
                  z_rate_max=4.0,
                  z_extrap_m=50.0, z_extrap_slope_max=0.5,
-                 z_soft_guide_max=60.0, z_soft_slope_max=0.5):
+                 z_soft_guide_max=120.0, z_soft_slope_max=0.5):
         self.route = route
+        self.height_prior = RouteHeightPrior(route)
+        self.trend_horizon = None
+        self.evidence_horizon = None
         self.start_gate = int(start_gate)
         self.gate_z_uses_offset = bool(gate_z_uses_offset)
         self.snap_gate_to_route = bool(snap_gate_to_route)
@@ -150,6 +154,8 @@ class ReferencePlanner(object):
                 gg["y"] = float(gg["y"]) + float(corr.get("dy", 0.0))
                 gg["z"] = float(gg["z"]) + float(corr.get("dz", 0.0))
             gg["s"] = self.route.project_gate(gg["x"], gg["y"])
+            # Guidance regularization must never move the measured scoring plane.
+            gg["measurement_center"] = (gg["x"],gg["y"],gg["z"])
             if self.snap_gate_to_route:
                 tx, ty, _ = self.route.point_at(gg["s"])
                 gg["x"], gg["y"] = tx, ty
@@ -177,6 +183,8 @@ class ReferencePlanner(object):
         start_z = start_anchor_z if start_anchor_z is not None else p0z
         if abs(start_z - p0z) > self.startup_z_jump_limit:
             start_z = p0z
+        self.height_prior.fit(chain.gates)
+        self.trend_horizon = None
         anchors = chain.anchors()
         anchor_gates = [{"s": s, "z": z, "valid": True} for s, z in anchors]
         goal_z = anchors[-1][1] if anchors else start_z
@@ -189,6 +197,8 @@ class ReferencePlanner(object):
         if trend and soft_guides and self.z_soft_guide_max > 0.0:
             last_s, last_z = trend[-1]
             for gs, gz in soft_guides:
+                if not self.height_prior.consistent(gs,gz+off):
+                    continue
                 ds = gs - last_s
                 if ds < 5.0 or ds > self.z_soft_guide_max:
                     continue
@@ -197,7 +207,20 @@ class ReferencePlanner(object):
                 last_s, last_z = gs, last_z + dz
                 guides_adj.append({"s": last_s, "z": last_z})
                 trend.append((last_s, last_z))
-        if self.z_extrap_m > 0.0 and len(trend) >= 2:
+        self.evidence_horizon = trend[-1][0] if trend else None
+        if self.height_prior.valid and trend:
+            last_s,last_z=trend[-1]
+            self.trend_horizon=self.height_prior.horizon(last_s)
+            correction=max(-1.,min(1.,last_z-self.height_prior.center(last_s)))
+            s=last_s+10.
+            # Keep the height curve valid through braking and the bounded search.
+            # A map horizon is a speed constraint, not a command to level the hill.
+            while s <= min(self.route.total_s,self.trend_horizon+50.):
+                z=self.height_prior.center(s)+correction*max(0.,1.-(s-last_s)/40.)
+                guides_adj.append(dict(s=s,z=z))
+                goal_z=z
+                s+=10.
+        elif self.z_extrap_m > 0.0 and len(trend) >= 2:
             (s1, z1), (s0, z0) = trend[-1], trend[-2]
             ds = s1 - s0
             if ds > 1.0:

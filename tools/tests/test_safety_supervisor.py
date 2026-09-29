@@ -41,6 +41,11 @@ class SafetySupervisorTests(unittest.TestCase):
         self.assertFalse(self.safety.stuck_step(0.5, 5.0, prev, (0.0, 0.0, 0.0)))
         self.assertFalse(self.safety.stuck_step(0.5, 5.0, prev, (5.0, 0.0, 0.0)))
 
+    def test_vertical_collision_bouncing_does_not_hide_horizontal_stall(self):
+        for i in range(3):
+            aborted=self.safety.stuck_step(.5,5.,(0,0,i%2),(0,0,(i+1)%2))
+        self.assertTrue(aborted)
+
     def test_finalize_limits(self):
         vx, vy, vz, yaw = self.safety.finalize(20.0, 0.0, 4.0, 3.0)
         self.assertAlmostEqual((vx ** 2 + vy ** 2) ** 0.5, 12.0)

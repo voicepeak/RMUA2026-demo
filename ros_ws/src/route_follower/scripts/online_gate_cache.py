@@ -33,6 +33,7 @@ class OnlineGateCache:
         self.static_corrections = {}
         self._static_pending = {}
         self._pending = []
+        self._published = {}
         self.stable_frames = int(stable_frames if stable_frames is not None
                                  else DEFAULTS["stable_frames"])
         self.xy_threshold = float(xy_threshold if xy_threshold is not None
@@ -97,23 +98,25 @@ class OnlineGateCache:
             g["s"] = float(project(g))
             sg = self._match_static(g, static_gates)
             if sg is not None:
-                changed |= self._update_static(g, sg)
+                if sg.get("id") not in completed and sg["s"] > s_now + 5.:
+                    changed |= self._update_static(g, sg)
                 continue
             if not static_gates and any(abs(g["s"] - s) < self.static_assoc_s
                                         for s in static_s):
                 continue
             old = self._match(g)
             if old is not None:
-                if old["id"] in completed or old["s"] < s_now \
+                if old["id"] in completed or old["s"] < s_now + 5. \
                         or g.get("last_seen", 0) <= old["last_seen"]:
                     continue
-                deltas = {k: abs(0.3 * (g[k] - old[k])) for k in ("x", "y", "z", "s")}
+                published = self._published.get(old["id"], dict(old))
                 for key in ("x", "y", "z", "s"):
                     g[key] = .7 * old[key] + .3 * g[key]
                 g["id"] = old["id"]
                 if obs_track_id is not None:
                     self.by_track_id[obs_track_id] = old
                 old.update(g)
+                deltas = {k: abs(old[k]-published[k]) for k in ("x","y","z","s")}
                 if deltas["x"] > self.xy_threshold or deltas["y"] > self.xy_threshold \
                         or deltas["z"] > self.z_threshold or deltas["s"] > self.s_threshold:
                     changed = True
@@ -122,6 +125,8 @@ class OnlineGateCache:
                 continue
             pending = self._match_pending(g)
             if pending is not None:
+                if g.get("last_seen",0) <= pending.get("last_seen",0):
+                    continue
                 pending.update(g)
                 pending["_stable"] = pending.get("_stable", 1) + 1
                 if obs_track_id is not None:
@@ -137,6 +142,8 @@ class OnlineGateCache:
             if self.stable_frames <= 1:
                 self._commit(g)
                 changed = True
+        if changed:
+            self._published = {g["id"]: dict(g) for g in self.gates}
         return changed
 
     def _commit(self, g):
@@ -185,6 +192,9 @@ class OnlineGateCache:
         if pending is None:
             pending = {"count": 0, "dx": 0.0, "dy": 0.0, "dz": 0.0}
             self._static_pending[gate_id] = pending
+        if g.get("last_seen",0) <= pending.get("last_seen",-1):
+            return False
+        pending["last_seen"] = g.get("last_seen",0)
         pending["count"] += 1
         pending["dx"] = 0.7 * pending["dx"] + 0.3 * dx * scale
         pending["dy"] = 0.7 * pending["dy"] + 0.3 * dy * scale
@@ -199,7 +209,8 @@ class OnlineGateCache:
         changed = (abs(new_corr["dx"] - committed["dx"]) > self.xy_threshold
                    or abs(new_corr["dy"] - committed["dy"]) > self.xy_threshold
                    or abs(new_corr["dz"] - committed["dz"]) > self.z_threshold)
-        self.static_corrections[gate_id] = new_corr
+        if changed:
+            self.static_corrections[gate_id] = new_corr
         return changed
 
     def reset(self):

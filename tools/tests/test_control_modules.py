@@ -25,23 +25,34 @@ class XYTrackerTests(unittest.TestCase):
         self.assertAlmostEqual(tx, 15.0)
         self.assertAlmostEqual(ty, 0.0)
 
-    def test_gate_pull_uses_smoothstep_bounds(self):
-        self.assertAlmostEqual(self.tracker.gate_pull_weight(25.0), 0.0)
-        self.assertAlmostEqual(self.tracker.gate_pull_weight(8.0), 0.5)
-        self.assertAlmostEqual(self.tracker.gate_pull_weight(0.0), 0.5)
-        self.assertGreater(self.tracker.gate_pull_weight(12.0), 0.0)
+    def configure(self, gates):
+        from reference_planner import RouteGeometry
+        self.tracker.configure(RouteGeometry([(0,0,0),(200,0,0)]), gates)
 
-    def test_exit_blend_continuous_with_gate_pull(self):
-        self.assertAlmostEqual(self.tracker.exit_weight(0.0),
-                               self.tracker.gate_pull_weight(0.0))
-        self.assertAlmostEqual(self.tracker.exit_weight(4.0), 0.0)
+    def test_valid_off_center_crossing_keeps_route(self):
+        self.configure([dict(s=20., x=20., y=.8)])
+        self.assertAlmostEqual(self.tracker.point_at(20.)[1], 0.)
 
-    def test_target_blends_towards_gate_center(self):
-        gate = {"x": 10.0, "y": 5.0, "s": 0.0}
-        tx, ty = self.tracker.target((0.0, 0.0), 0.0, 10.0, gate, 8.0, None,
-                                     lambda s: (s, 0.0, 0))
-        self.assertAlmostEqual(tx, 0.5 * 15.0 + 0.5 * 10.0)
-        self.assertAlmostEqual(ty, 0.5 * 5.0)
+    def test_crossing_does_not_stop_or_reverse(self):
+        gate = dict(s=20., x=20., y=0.)
+        self.configure([gate, dict(s=40.,x=40.,y=0.)])
+        self.tracker.previous_velocity = (6.,0.)
+        for s in (19.9,20.,20.1,21.,24.):
+            target = self.tracker.target((s,0),s,6.,gate,20-s,gate,None)
+            vx,vy = self.tracker.velocity((s,0),target,6.)
+            self.assertAlmostEqual(vx,6.)
+            self.assertAlmostEqual(vy,0.)
+
+    def test_offset_gate_path_stays_inside_opening(self):
+        self.configure([dict(s=20.,x=20.,y=3.),dict(s=40.,x=40.,y=-3.)])
+        for s,y in ((20.,3.),(40.,-3.)):
+            self.assertLessEqual(abs(self.tracker.point_at(s)[1]-y),1.100001)
+
+    def test_task_gate_switch_does_not_change_target(self):
+        self.configure([dict(s=20.,x=20.,y=0.)])
+        before=self.tracker.target((20,0),20,6,dict(s=20,x=20,y=0),0,None,None)
+        after=self.tracker.target((20,0),20,6,None,1e9,dict(s=20,x=20,y=0),None)
+        self.assertEqual(before,after)
 
 
 class ZControllerTests(unittest.TestCase):

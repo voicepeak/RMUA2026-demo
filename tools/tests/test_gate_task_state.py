@@ -17,6 +17,16 @@ class GateTaskStateTests(unittest.TestCase):
         self.state = GateTaskState(half_width=1.5, half_height=1.5,
                                    miss_margin=3.0, skip_s=5.0, miss_radius=6.0)
 
+    def test_reverse_crossing_does_not_count_as_pass(self):
+        self.assertIsNone(GateTaskState().crossing(gate(),(1.,0.,0.),(-1.,0.,0.)))
+
+    def test_guidance_snapping_cannot_fabricate_a_pass(self):
+        g=gate()
+        g['measurement_center']=(0.,4.,0.)
+        hit=GateTaskState().crossing(g,(-1.,0.,0.),(1.,0.,0.))
+        self.assertIsNotNone(hit)
+        self.assertFalse(hit[2])
+
     def test_plane_crossing_inside_aperture_passes(self):
         gates = [gate(s=10.0)]
         idx, events = self.state.step(gates, 0, (-2.0, 0.0, 0.0), (2.0, 0.0, 0.0), 10.0)

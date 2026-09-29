@@ -4,6 +4,7 @@ project(route_follower)
 find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
+  sensor_msgs
   geometry_msgs
   airsim_ros
   std_srvs
@@ -32,6 +33,10 @@ catkin_install_python(PROGRAMS
   scripts/mission_state.py
   scripts/reference_planner.py
   scripts/safety_supervisor.py
+  scripts/lidar_clearance.py
+  scripts/route_height_prior.py
+  scripts/persistent_guides.py
+  scripts/spatial_curve.py
   scripts/xy_tracker.py
   scripts/z_controller.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

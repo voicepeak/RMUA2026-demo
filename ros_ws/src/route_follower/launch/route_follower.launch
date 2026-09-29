@@ -10,7 +10,7 @@
   <arg name="start_anchor_z" default="-999.0"/>
 
   <!-- 速度: 巡航/物理限速/斜坡 (方案 13~16) -->
-  <arg name="cruise_speed"   default="10.0"/>
+  <arg name="cruise_speed"   default="8.0"/>
   <arg name="max_speed"      default="12.0"/>
   <arg name="normal_speed_floor" default="4.0"/>
   <arg name="a_lat_max"      default="6.0"/>
@@ -56,7 +56,7 @@
   <arg name="vz_down_limit"  default="3.0"/>
   <arg name="vz_accel_limit" default="6.0"/>
   <arg name="slope_eta"      default="0.8"/>
-  <arg name="k_ff_z"         default="1.2"/>
+  <arg name="k_ff_z"         default="1.0"/>
   <arg name="vz_capability_file" default="$(find route_follower)/config/vz_capability.yaml"/>
   <arg name="pred_time"      default="1.5"/>
   <arg name="z_horizon_time" default="2.0"/>
@@ -93,7 +93,7 @@
   <arg name="map_update_xy_threshold"  default="0.15"/>
   <arg name="map_update_z_threshold"   default="0.10"/>
   <arg name="map_update_s_threshold"   default="0.20"/>
-  <arg name="map_commit_stable_frames" default="3"/>
+  <arg name="map_commit_stable_frames" default="1"/>
   <arg name="static_correction_max"    default="1.5"/>
   <arg name="profile_switch_time"      default="0.4"/>
   <arg name="gate_exit_blend_distance" default="4.0"/>
@@ -104,7 +104,7 @@
   <arg name="z_anticipate_dist"  default="25.0"/>
 
   <!-- 持久 Gate Map 订阅 -->
-  <arg name="use_gate_map"   default="false"/>
+  <arg name="use_gate_map"   default="true"/>
   <arg name="gate_map_topic" default="/rmua/gate_map"/>
   <arg name="gate_map_min_support" default="2"/>
   <arg name="sigma_z_max"    default="0.6"/>
@@ -132,12 +132,19 @@
   <arg name="slope_factor"   default="3.0"/>
   <arg name="slope_abs_max"  default="0.6"/>
   <arg name="xy_converge"    default="0.5"/>
-  <arg name="snap_gate_to_route" default="true"/>
+  <arg name="snap_gate_to_route" default="false"/>
   <arg name="start_gate"     default="0"/>
   <arg name="end_gate"       default="-1"/>
 
   <arg name="accel"          default="8"/>
   <arg name="control_rate"   default="20.0"/>
+
+  <arg name="gate_center_pull_max" default="2.0"/>
+  <arg name="z_soft_guide_max" default="120.0"/>
+  <arg name="z_soft_slope_max" default="0.5"/>
+  <arg name="z_extrap_m" default="50.0"/>
+  <arg name="z_extrap_slope_max" default="0.5"/>
+  <arg name="z_response_time" default="0.25"/>
 
   <node pkg="route_follower" type="route_follower.py" name="route_follower" output="screen">
     <param name="route_file"       value="$(arg route_file)"/>
@@ -249,5 +256,11 @@
     <param name="end_gate"         value="$(arg end_gate)"/>
     <param name="accel"            value="$(arg accel)"/>
     <param name="control_rate"     value="$(arg control_rate)"/>
+    <param name="gate_center_pull_max" value="$(arg gate_center_pull_max)"/>
+    <param name="z_soft_guide_max" value="$(arg z_soft_guide_max)"/>
+    <param name="z_soft_slope_max" value="$(arg z_soft_slope_max)"/>
+    <param name="z_extrap_m" value="$(arg z_extrap_m)"/>
+    <param name="z_extrap_slope_max" value="$(arg z_extrap_slope_max)"/>
+    <param name="z_response_time" value="$(arg z_response_time)"/>
   </node>
 </launch>

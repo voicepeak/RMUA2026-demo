@@ -1,69 +1,101 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""XY Tracker: 参考路径 look-ahead + Gate 门心平滑拉拽 + 门后 exit blend。
-
-方案 17: 门心拉拽权重用 smoothstep, 近门不再突然加强; 刚过门的
-gate_exit_blend_distance 米内, 从上一门的拉拽平滑衰减到当前轨迹切线,
-避免 PASS 瞬间目标方向突变。
-"""
-
+"""Continuous gate-corridor path; crossing a gate never switches the target."""
 import math
+from spatial_curve import SpatialCurve
 
-from altitude_profile import smoothstep
-
-
-def _clamp01(x):
-    return max(0.0, min(1.0, x))
-
-
-class XYTracker(object):
-
-    def __init__(self, lookahead_base=8.0, lookahead_kv=0.7, k_pursuit=1.2,
-                 xy_converge=0.5, gate_blend_start=25.0, gate_blend_full=8.0,
-                 exit_blend_distance=4.0):
+class XYTracker:
+    def __init__(self, lookahead_base=8., lookahead_kv=.7, k_pursuit=1.2,
+                 xy_converge=.5, gate_blend_start=25., gate_blend_full=8.,
+                 exit_blend_distance=4., half_width=1.5, margin=.4, acceleration=4.):
         self.lookahead_base = float(lookahead_base)
         self.lookahead_kv = float(lookahead_kv)
         self.k_pursuit = float(k_pursuit)
-        self.xy_converge = float(xy_converge)
-        self.gate_blend_start = float(gate_blend_start)
-        self.gate_blend_full = float(gate_blend_full)
-        self.exit_blend_distance = float(exit_blend_distance)
+        self.clearance = max(.1, half_width-margin)
+        self.acceleration = acceleration
+        self.reset()
 
-    def lookahead(self, v):
-        return self.lookahead_base + self.lookahead_kv * v
+    def reset(self):
+        self.route = self.offset = None
+        self.previous_velocity = (0., 0.)
+        self.last_s = 0.
 
-    def gate_pull_weight(self, d_gate):
-        a = _clamp01((self.gate_blend_start - d_gate) /
-                     max(1e-6, self.gate_blend_start - self.gate_blend_full))
-        return self.xy_converge * smoothstep(a)
+    def lookahead(self, v): return self.lookahead_base+self.lookahead_kv*v
 
-    def exit_weight(self, dist_after):
-        if self.exit_blend_distance <= 0.0 or dist_after < 0.0 \
-                or dist_after >= self.exit_blend_distance:
-            return 0.0
-        return self.xy_converge * (1.0 - smoothstep(dist_after / self.exit_blend_distance))
+    def basis(self, s):
+        a,b = self.route.point_at(max(0.,s-.5)), self.route.point_at(s+.5)
+        dx,dy = b[0]-a[0], b[1]-a[1]
+        length = max(1e-6, math.hypot(dx,dy))
+        return dx/length,dy/length
 
-    def target(self, p_xy, s_now, v, next_gate, d_gate, last_gate, point_at):
-        tx, ty, _ = point_at(s_now + self.lookahead(v))
-        if last_gate is not None:
-            w_out = self.exit_weight(s_now - last_gate["s"])
-            if w_out > 0.0:
-                tx = (1.0 - w_out) * tx + w_out * last_gate["x"]
-                ty = (1.0 - w_out) * ty + w_out * last_gate["y"]
-        if next_gate is not None:
-            w = self.gate_pull_weight(d_gate)
-            if w > 0.0:
-                tx = (1.0 - w) * tx + w * next_gate["x"]
-                ty = (1.0 - w) * ty + w * next_gate["y"]
-        return tx, ty
+    def configure(self, route, gates, s_now=0.):
+        old = self.offset
+        self.route = route
+        rows = []
+        for g in gates:
+            if not g.get('valid',True) or g['s'] <= s_now+3.: continue
+            s = g['s']
+            x,y,_ = route.point_at(s)
+            dx,dy = self.basis(s)
+            lateral = -(g['x']-x)*dy+(g['y']-y)*dx
+            lo,hi = lateral-self.clearance,lateral+self.clearance
+            rows.append([s,lo,hi,max(lo,min(hi,0.))])
+        rows.sort()
+        # Prefer a straight line through overlapping openings, rather than gate centers.
+        for _ in range(16):
+            for i,row in enumerate(rows):
+                numerator,denominator = 0.,.02
+                for j in (i-1,i+1):
+                    if 0 <= j < len(rows):
+                        weight = 1./max(1.,abs(rows[j][0]-row[0]))
+                        numerator += weight*rows[j][3]
+                        denominator += weight
+                row[3] = max(row[1],min(row[2],numerator/denominator))
+        anchors = [(0.,0.)] if old is None else [(max(0.,s_now-2.),old.center(max(0.,s_now-2.))),
+                                                 (s_now,old.center(s_now))]
+        anchors += [(r[0],r[3]) for r in rows]
+        anchors += [(max(s_now+30.,anchors[-1][0]+30.),anchors[-1][1])]
+        self.offset = SpatialCurve(anchors)
 
-    def velocity(self, p_xy, target_xy, v_max, arbiter=None):
-        vx = self.k_pursuit * (target_xy[0] - p_xy[0])
-        vy = self.k_pursuit * (target_xy[1] - p_xy[1])
-        sp = math.hypot(vx, vy)
-        if sp > v_max and sp > 1e-6:
-            vx *= v_max / sp
-            vy *= v_max / sp
-        if arbiter is not None:
-            return arbiter.arbitrate((vx, vy))
-        return vx, vy
+    def point_at(self,s):
+        x,y,z = self.route.point_at(s)
+        dx,dy = self.basis(s)
+        lateral = self.offset.center(s)
+        return x-dy*lateral,y+dx*lateral,z
+
+    def tangent(self,s):
+        a,b = self.point_at(max(0.,s-.5)),self.point_at(s+.5)
+        dx,dy = b[0]-a[0],b[1]-a[1]
+        length = max(1e-6,math.hypot(dx,dy))
+        return dx/length,dy/length
+
+    def curvature(self,s):
+        a,b = self.tangent(max(0.,s-2.)),self.tangent(s+2.)
+        return math.hypot(b[0]-a[0],b[1]-a[1])/4.
+
+    def target(self,p_xy,s_now,v,next_gate,d_gate,last_gate,point_at):
+        self.last_s = s_now
+        fn = self.point_at if self.route is not None else point_at
+        return fn(s_now+self.lookahead(v))[:2]
+
+    def velocity(self,p_xy,target_xy,v_max,arbiter=None,dt=.05):
+        if self.route is None:
+            dx,dy = target_xy[0]-p_xy[0],target_xy[1]-p_xy[1]
+            length = max(1e-6,math.hypot(dx,dy))
+            vx,vy = dx*v_max/length,dy*v_max/length
+        else:
+            dx,dy = self.tangent(self.last_s+max(.5,.25*v_max))
+            x,y,_ = self.point_at(self.last_s)
+            error = -(x-p_xy[0])*dy+(y-p_xy[1])*dx
+            lateral = max(-.65*v_max,min(.65*v_max,self.k_pursuit*error))
+            vx,vy = v_max*dx-lateral*dy,v_max*dy+lateral*dx
+            length = max(v_max,math.hypot(vx,vy),1e-6)
+            vx,vy = vx*v_max/length,vy*v_max/length
+        px,py = self.previous_velocity
+        delta = math.hypot(vx-px,vy-py)
+        blend = min(1.,self.acceleration*dt/max(1e-6,delta))
+        vx,vy = px+blend*(vx-px),py+blend*(vy-py)
+        length = math.hypot(vx,vy)
+        if length > v_max and length > 1e-6:
+            vx,vy = vx*v_max/length,vy*v_max/length
+        self.previous_velocity = vx,vy
+        return arbiter.arbitrate((vx,vy)) if arbiter is not None else (vx,vy)

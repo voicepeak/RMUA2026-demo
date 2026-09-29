@@ -12,6 +12,8 @@
 """
 
 
+from spatial_curve import SpatialCurve
+
 def smoothstep(t):
     t = max(0.0, min(1.0, t))
     return 3.0 * t * t - 2.0 * t * t * t
@@ -41,21 +43,10 @@ class AltitudeProfile(object):
         anchors.append((float(goal_s), float(goal_z)))
         anchors.sort(key=lambda a: a[0])
         self.anchors = anchors
+        self.curve = SpatialCurve(anchors)
 
     def center(self, s):
-        a = self.anchors
-        if s <= a[0][0]:
-            return a[0][1]
-        if s >= a[-1][0]:
-            return a[-1][1]
-        for i in range(len(a) - 1):
-            s0, z0 = a[i]
-            s1, z1 = a[i + 1]
-            if s0 <= s <= s1:
-                if s1 - s0 < 1e-6:
-                    return z1
-                return z0 + smoothstep((s - s0) / (s1 - s0)) * (z1 - z0)
-        return a[-1][1]
+        return self.curve.center(s)
 
     def corridor(self, s):
         c = self.center(s)
@@ -77,11 +68,19 @@ class AltitudeProfile(object):
         return max(s_now, min(s, s_now + horizon))
 
     def dz_ds(self, s, h=4.0):
-        s0 = max(self.anchors[0][0], s - h)
-        s1 = min(self.anchors[-1][0], s + h)
-        if s1 - s0 < 1e-6:
-            return 0.0
-        return (self.center(s1) - self.center(s0)) / (s1 - s0)
+        return self.curve.dz_ds(s)
+
+
+class FrozenBlend:
+    """Flatten an interrupted transition so successive map updates stay continuous."""
+    def __init__(self, previous, current, beta):
+        components = getattr(previous, 'components', [(1., previous)])
+        self.components = [(w*(1-beta), p) for w,p in components if w*(1-beta)>1e-8]
+        self.components.append((beta,current))
+        total = sum(w for w,p in self.components)
+        self.components = [(w/total,p) for w,p in self.components]
+    def center(self,s): return sum(w*p.center(s) for w,p in self.components)
+    def dz_ds(self,s,h=4.): return sum(w*p.dz_ds(s,h) for w,p in self.components)
 
 
 class ProfileBlender(object):
@@ -102,7 +101,9 @@ class ProfileBlender(object):
         if self.current is None:
             self.set_initial(profile, stamp)
             return
-        self.previous = self.current
+        beta = self.beta(stamp)
+        self.previous = (FrozenBlend(self.previous, self.current, beta)
+                         if self.previous is not None and beta < 1. else self.current)
         self.current = profile
         self.switch_stamp = stamp
 

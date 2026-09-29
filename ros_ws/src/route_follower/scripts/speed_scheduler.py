@@ -72,7 +72,10 @@ class SpeedScheduler(object):
         return math.sqrt(self.a_lat_max / (abs(kap) + 1e-3))
 
     def slope_limit(self, kz, trusted=True, vxy=0.0):
-        vz_safe = self.slope_eta * self.vz_available(vxy)
+        available = (self.vz_capability.down(vxy)
+                     if kz > 0. and self.vz_capability is not None
+                     else self.vz_available(vxy))
+        vz_safe = self.slope_eta * available
         v = vz_safe / (abs(kz) + 1e-3)
         if not trusted:
             v = max(v, self.floor)

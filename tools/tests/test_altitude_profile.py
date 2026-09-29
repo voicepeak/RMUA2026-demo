@@ -19,6 +19,26 @@ class AltitudeProfileTests(unittest.TestCase):
         self.assertGreater(p.center(25.0), -10.0)
         self.assertLess(p.center(25.0), 0.0)
 
+    def test_continuous_climb_does_not_flatten_at_gate(self):
+        p = profile(goal_z=-20., gates=[dict(s=50.,z=-10.,valid=True)])
+        self.assertAlmostEqual(p.dz_ds(50.),-.2)
+        self.assertAlmostEqual(p.dz_ds(49.999),p.dz_ds(50.001),places=5)
+
+    def test_monotone_segments_never_overshoot(self):
+        p = profile(goal_z=-11., gates=[dict(s=20.,z=-10.,valid=True)])
+        values = [p.center(s) for s in range(101)]
+        self.assertTrue(all(b <= a for a,b in zip(values,values[1:])))
+        self.assertGreaterEqual(min(values),-11.)
+
+    def test_interrupted_blend_preserves_value_and_slope(self):
+        b=ProfileBlender(1.)
+        b.set_initial(profile(goal_z=0.))
+        b.switch(profile(goal_z=-10.),10.)
+        value,slope=b.center(40.,10.2),b.dz_ds(40.,stamp=10.2)
+        b.switch(profile(goal_z=-20.),10.2)
+        self.assertAlmostEqual(b.center(40.,10.2),value)
+        self.assertAlmostEqual(b.dz_ds(40.,stamp=10.2),slope)
+
     def test_corridor_is_center_plus_minus_half(self):
         p = profile(goal_z=-5.0)
         ceil, floor = p.corridor(50.0)

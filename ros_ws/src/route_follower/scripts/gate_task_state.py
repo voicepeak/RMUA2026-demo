@@ -79,7 +79,8 @@ class GateTaskState(object):
 
     def crossing(self, gate, p0, p1):
         """返回 (u_off, v_off, in_aperture) 或 None。"""
-        C = np.array([float(gate["x"]), float(gate["y"]), float(gate["z"])])
+        C = np.asarray(gate.get("measurement_center",
+                               (gate["x"],gate["y"],gate["z"])),dtype=float)
         n = gate_normal(gate)
         P0 = np.asarray(p0, dtype=float)
         P1 = np.asarray(p1, dtype=float)
@@ -87,7 +88,7 @@ class GateTaskState(object):
         d1 = float((P1 - C) @ n)
         if abs(d0) < 1e-9 and abs(d1) < 1e-9:
             return None
-        if d0 * d1 > 0.0:
+        if not (d0 < 0.0 <= d1):
             return None
         denom = d0 - d1
         if abs(denom) < 1e-9:

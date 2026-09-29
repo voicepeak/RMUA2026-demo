@@ -48,7 +48,7 @@ class SafetySupervisor(object):
     def stuck_step(self, dt, v_cmd, prev_pose, pose):
         if self.aborted or prev_pose is None or dt <= 0.0:
             return False
-        v_act = math.dist(prev_pose, (pose[0], pose[1], pose[2])) / dt
+        v_act = math.hypot(pose[0]-prev_pose[0], pose[1]-prev_pose[1]) / dt
         if v_cmd > self.stuck_speed and v_act < self.stuck_act_speed:
             self.stuck_seconds += dt
         else:

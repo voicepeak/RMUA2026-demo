@@ -41,13 +41,26 @@ class OnlineGateCacheTests(unittest.TestCase):
 
     def test_new_gate_requires_stable_frames(self):
         cache = OnlineGateCache(stable_frames=3)
-        for _ in range(2):
-            self.assertFalse(cache.ingest([observation(s=100.0)], [], 0.0, 10.5,
+        for i in range(2):
+            self.assertFalse(cache.ingest([observation(s=100.0,last_seen=10.+i*.1)], [], 0.0, 10.5,
                                           project, set()))
             self.assertEqual(cache.gates, [])
-        self.assertTrue(cache.ingest([observation(s=100.0)], [], 0.0, 10.5,
+        self.assertTrue(cache.ingest([observation(s=100.0,last_seen=10.2)], [], 0.0, 10.5,
                                      project, set()))
         self.assertEqual(len(cache.gates), 1)
+
+    def test_republished_frame_does_not_count_as_new_evidence(self):
+        cache = OnlineGateCache(stable_frames=3)
+        for _ in range(10):
+            self.assertFalse(cache.ingest([observation()],[],0.,10.5,project,set()))
+        self.assertEqual(cache.gates,[])
+
+    def test_small_updates_accumulate_against_last_publication(self):
+        self.ingest(observation(x=0.))
+        changes=[]
+        for i in range(1,8):
+            changes.append(self.ingest(observation(x=i*.1,last_seen=10.+i),now=10.5+i))
+        self.assertTrue(any(changes))
 
     def test_existing_update_over_threshold_triggers_changed(self):
         self.ingest(observation(s=100.0, x=0.0, last_seen=10.0), now=10.5)
@@ -129,8 +142,8 @@ class OnlineGateCacheTests(unittest.TestCase):
     def test_near_static_gate_is_associated_instead_of_discarded(self):
         cache = OnlineGateCache(stable_frames=3)
         gate = static_gate()
-        for _ in range(2):
-            changed = cache.ingest([observation(s=101.0, x=0.2, y=0.1, z=-3.4)],
+        for i in range(2):
+            changed = cache.ingest([observation(s=101.0, x=0.2, y=0.1, z=-3.4, last_seen=10.+i*.1)],
                                    [100.0], 0.0, 10.5, project, set(),
                                    static_gates=[gate])
             self.assertFalse(changed)

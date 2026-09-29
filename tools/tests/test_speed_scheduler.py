@@ -62,5 +62,11 @@ class SpeedSchedulerTests(unittest.TestCase):
         self.assertAlmostEqual(v, 0.4)
 
 
+class DescentCapabilityTests(unittest.TestCase):
+    def test_descent_uses_down_capability(self):
+        from z_capability import VzCapability
+        scheduler=SpeedScheduler(vz_capability=VzCapability([(0.,4.)],[(0.,2.)]))
+        self.assertLess(scheduler.slope_limit(.5),scheduler.slope_limit(-.5))
+
 if __name__ == "__main__":
     unittest.main()
