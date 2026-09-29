@@ -19,12 +19,18 @@ def project(g):
     return g["s"]
 
 
+def static_gate(gid=900, s=100.0, x=0.0, y=0.0, z=-3.0):
+    return dict(id=gid, s=s, x=x, y=y, z=z)
+
+
 class OnlineGateCacheTests(unittest.TestCase):
     def setUp(self):
-        self.cache = OnlineGateCache()
+        self.cache = OnlineGateCache(stable_frames=1)
 
-    def ingest(self, obs, s_now=0.0, now=10.5, static_s=(), completed=()):
-        return self.cache.ingest([obs], static_s, s_now, now, project, set(completed))
+    def ingest(self, obs, s_now=0.0, now=10.5, static_s=(), completed=(),
+               static_gates=None):
+        return self.cache.ingest([obs], static_s, s_now, now, project,
+                                 set(completed), static_gates=static_gates)
 
     def test_accepts_stable_hard_anchor_ahead(self):
         self.assertTrue(self.ingest(observation(s=100.0)))
@@ -33,9 +39,23 @@ class OnlineGateCacheTests(unittest.TestCase):
         self.assertEqual(gate["id"], 100000)
         self.assertAlmostEqual(gate["s"], 100.0)
 
-    def test_rejects_static_overlap(self):
-        self.assertFalse(self.ingest(observation(s=103.0), static_s=[100.0]))
-        self.assertEqual(self.cache.gates, [])
+    def test_new_gate_requires_stable_frames(self):
+        cache = OnlineGateCache(stable_frames=3)
+        for _ in range(2):
+            self.assertFalse(cache.ingest([observation(s=100.0)], [], 0.0, 10.5,
+                                          project, set()))
+            self.assertEqual(cache.gates, [])
+        self.assertTrue(cache.ingest([observation(s=100.0)], [], 0.0, 10.5,
+                                     project, set()))
+        self.assertEqual(len(cache.gates), 1)
+
+    def test_existing_update_over_threshold_triggers_changed(self):
+        self.ingest(observation(s=100.0, x=0.0, last_seen=10.0), now=10.5)
+        self.assertFalse(self.ingest(observation(s=100.0, x=0.3, last_seen=11.0),
+                                     now=11.5))
+        self.assertTrue(self.ingest(observation(s=100.0, x=1.0, last_seen=12.0),
+                                    now=12.5))
+        self.assertGreater(self.cache.gates[0]["x"], 0.3)
 
     def test_rejects_untrusted_observations(self):
         cases = dict(
@@ -93,16 +113,45 @@ class OnlineGateCacheTests(unittest.TestCase):
 
     def test_track_id_change_reassociates_spatially_and_by_new_id(self):
         self.ingest(observation(s=100.0, x=0.0, last_seen=10.0, tid=1))
-        changed = self.ingest(observation(s=100.5, x=0.5, last_seen=11.0, tid=2),
+        changed = self.ingest(observation(s=100.5, x=1.0, last_seen=11.0, tid=2),
                               now=11.5)
         self.assertTrue(changed)
         self.assertEqual(len(self.cache.gates), 1)
         self.assertIs(self.cache.by_track_id[1], self.cache.gates[0])
         self.assertIs(self.cache.by_track_id[2], self.cache.gates[0])
 
-    def test_static_exclusion_covers_8m(self):
+    def test_static_overlap_is_rejected_without_static_gates(self):
+        self.assertFalse(self.ingest(observation(s=103.0), static_s=[100.0]))
+        self.assertEqual(self.cache.gates, [])
         self.assertFalse(self.ingest(observation(s=107.5), static_s=[100.0]))
         self.assertTrue(self.ingest(observation(s=110.5), static_s=[100.0]))
+
+    def test_near_static_gate_is_associated_instead_of_discarded(self):
+        cache = OnlineGateCache(stable_frames=3)
+        gate = static_gate()
+        for _ in range(2):
+            changed = cache.ingest([observation(s=101.0, x=0.2, y=0.1, z=-3.4)],
+                                   [100.0], 0.0, 10.5, project, set(),
+                                   static_gates=[gate])
+            self.assertFalse(changed)
+        changed = cache.ingest([observation(s=101.0, x=0.2, y=0.1, z=-3.4,
+                                            last_seen=11.0)],
+                               [100.0], 0.0, 11.5, project, set(),
+                               static_gates=[gate])
+        self.assertTrue(changed)
+        self.assertEqual(cache.gates, [])
+        corr = cache.correction_for(900)
+        self.assertIsNotNone(corr)
+        self.assertLess(corr["dz"], 0.0)
+        self.assertLess(abs(corr["dx"]), 0.2)
+
+    def test_far_observation_from_static_creates_online_gate(self):
+        cache = OnlineGateCache(stable_frames=1)
+        changed = cache.ingest([observation(s=120.0, x=20.0, y=0.0)],
+                               [100.0], 0.0, 10.5, project, set(),
+                               static_gates=[static_gate()])
+        self.assertTrue(changed)
+        self.assertEqual(len(cache.gates), 1)
 
 
 if __name__ == "__main__":
