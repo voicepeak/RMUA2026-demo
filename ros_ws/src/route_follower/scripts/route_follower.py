@@ -158,6 +158,11 @@ class RouteFollower(object):
         # soft 门高度引导 (仅高度趋势, 有坡度和距离上限, 不能覆盖 hard 锚点)
         self.z_soft_guide_max = float(rospy.get_param("~z_soft_guide_max", 60.0))
         self.z_soft_slope_max = float(rospy.get_param("~z_soft_slope_max", 0.5))
+        # 路线/门心混合: 门心相对路线的横向偏差限幅 (m); 0=不限制, <0=按 snap 参数处理
+        self.gate_center_pull_max = float(rospy.get_param("~gate_center_pull_max", 2.0))
+        # 上升预测: 临近门时按"到达门前所需爬升率"提前给前馈
+        self.z_anticipate_dist = float(rospy.get_param("~z_anticipate_dist", 25.0))
+        self.k_anticipate = float(rospy.get_param("~k_anticipate", 1.0))
 
         self.v_cmd_prev = 0.0
         self.vz_prev = 0.0
@@ -331,6 +336,14 @@ class RouteFollower(object):
             if self.snap_gate_to_route:      # 门在道路中心: XY 吸附到路线中心线
                 tx_, ty_, _ = self.point_at(gg["s"])
                 gg["x"], gg["y"] = tx_, ty_
+            elif self.gate_center_pull_max >= 0.0:
+                # 混合: 保留测量门心, 但对偏离路线过大的锚点限幅, 保证安全裕度
+                tx_, ty_, _ = self.point_at(gg["s"])
+                dx, dy = gg["x"] - tx_, gg["y"] - ty_
+                d = math.hypot(dx, dy)
+                if self.gate_center_pull_max > 0.0 and d > self.gate_center_pull_max:
+                    gg["x"] = tx_ + dx / d * self.gate_center_pull_max
+                    gg["y"] = ty_ + dy / d * self.gate_center_pull_max
             gates_adj.append(gg)
         chain = GateChain(gates_adj, slope_factor=self.slope_factor,
                           slope_abs_max=self.slope_abs_max)
@@ -547,6 +560,26 @@ class RouteFollower(object):
         lat = float(math.hypot(r[0] - e_n * n[0], r[1] - e_n * n[1]))
         return float(np.linalg.norm(r)), lat, vert, e_n
 
+    def _gate_crossing_error(self, ng, pc):
+        """穿门点相对门中心的横向/垂直误差; 有门法向用门平面, 否则用路线切线近似。"""
+        C = np.array([ng["x"], ng["y"], ng["z"]], dtype=float)
+        n = np.array([ng.get("nx", 0.0), ng.get("ny", 0.0), ng.get("nz", 0.0)], dtype=float)
+        if float(np.linalg.norm(n)) < 1e-6:
+            tx, ty, _ = self.point_at(ng["s"])
+            tx2, ty2, _ = self.point_at(min(ng["s"] + 4.0, self.seg_s[-1]))
+            t = np.array([tx2 - tx, ty2 - ty, 0.0], dtype=float)
+            if float(np.linalg.norm(t)) < 1e-6:
+                t = np.array([1.0, 0.0, 0.0])
+            n = t / np.linalg.norm(t)
+        else:
+            n = n / np.linalg.norm(n)
+        r = pc - C
+        e_n = float(r @ n)
+        r_in = r - e_n * n
+        lat_c = float(math.hypot(r_in[0], r_in[1]))
+        vert_c = float(r[2] - e_n * n[2])
+        return lat_c, vert_c
+
     def _gate_half_extents(self, ng):
         """门洞半宽/半高: 优先用 Gate Map 的四角尺寸, 否则退回容差参数。"""
         hw = self.gate_pass_half_width
@@ -667,9 +700,8 @@ class RouteFollower(object):
             a = (ng["s"] - self.prev_s) / max(1e-6, s_now - self.prev_s)
             pv = np.asarray(self.prev_pose, dtype=float)
             pc = pv + a * (pn - pv)
-            rx, ry, _ = self.point_at(ng["s"])
-            lat_c = float(math.hypot(pc[0] - rx, pc[1] - ry))
-            vert_c = float(pc[2] - ng["z"])
+            # 混合判定: 有测量门心时按门中心/门平面算, 不再用路线中心自欺
+            lat_c, vert_c = self._gate_crossing_error(ng, pc)
             hw, hh = self._gate_half_extents(ng)
             ok = (lat_c < hw and abs(vert_c) < hh)
             rospy.loginfo("GATE %s %s (lat=%.2f/%.2f vert=%.2f/%.2f)",
@@ -858,6 +890,14 @@ class RouteFollower(object):
         if self.recon_active and self.recon_start_z is not None \
                 and p.z > self.recon_start_z - self.recon_max_climb:
             vz_target += self.recon_climb       # 搜扫时缓慢爬升, 越过坡顶重捕获门
+        # 上升预测: 用"当前位置到门的高度差"算所需爬升率; 只在确实需要爬升时叠加,
+        # 不覆盖下降指令 (否则会一直偏高)。
+        if ng is not None and self.k_anticipate > 0.0 \
+                and 0.5 < d_g < self.z_anticipate_dist:
+            t_gate = max(d_g / max(v, 0.6), self.dt)
+            need_up = (p.z - ng["z"]) / t_gate   # NED: p.z 更大 = 更低, 需要向上
+            if need_up > max(0.0, vz_target):
+                vz_target = min(self.k_anticipate * need_up, self.vz_up_limit)
         vz_clamped = max(-self.vz_down_limit, min(self.vz_up_limit, vz_target))
         dvz = max(-self.vz_accel_limit * self.dt,
                   min(self.vz_accel_limit * self.dt, vz_clamped - self.vz_prev))
