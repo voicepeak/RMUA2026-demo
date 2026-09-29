@@ -4,6 +4,17 @@
 分支 `RMUA2026-01`）上，从 0 到 1 开发无人机自主飞行的完整过程：
 **每个阶段 = 一份设计方案（docs/）+ 对应代码（ros_ws/、yolo/）**。
 
+2026-09-29 全程推进审查：[全程算法审查与推进方案](docs/16_full_course_audit.md)。
+当前默认静态门只有 10 个，控制器 `PASSED` 日志不能替代独立比赛验收。
+可运行 `python3 tools/audit_course.py --log ../frames/run_log.txt` 复现离线覆盖检查。
+
+工作包 1 已开始落地：[运行归档与独立几何评估](docs/17_run_recording_and_scoring.md)。
+`tools/run_experiment.py` 默认只准备运行快照；加 `--execute` 后录制 ROS 全话题并启动控制，
+`tools/evaluate_run.py` 使用独立核验的门洞几何评估 pose，未知官方成绩始终保留 `UNKNOWN`。
+
+工作包 3 已落地在线门缓存：`online_gate_cache.py` + 视觉修复，两轮仿真验证静态 10 门 + 在线 7/12 门，
+均在可信高度图末端 `MAP_HORIZON` 保守停车（见 docs/17；仍不等于全程飞行验收）。
+
 ---
 
 ## 目录结构（分三级）
