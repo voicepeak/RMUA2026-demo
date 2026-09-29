@@ -18,11 +18,10 @@ from gate_stereo import CX, CY, FX, FY, BASELINE, projection_matrices
 
 def match_gate_corners(left, right, max_dv=60.0, max_disp=400.0, max_cost=60.0):
     """左右 Gate 门级匹配, 返回 [(gl, gr, cost), ...]。"""
-    pairs = []
-    for gl in left:
+    candidates = []
+    for li, gl in enumerate(left):
         cl = np.asarray(gl["corners"], dtype=float)
-        best, best_cost = None, 1e9
-        for gr in right:
+        for ri, gr in enumerate(right):
             cr = np.asarray(gr["corners"], dtype=float)
             dv = abs(float(gl["center"][1]) - float(gr["center"][1]))
             disp = float(gl["center"][0]) - float(gr["center"][0])
@@ -33,10 +32,15 @@ def match_gate_corners(left, right, max_dv=60.0, max_disp=400.0, max_cost=60.0):
             shift = np.array([disp, 0.0])
             resid = float(np.mean(np.linalg.norm((cl - shift) - cr, axis=1)))
             cost = dv + 30.0 * area_ratio + resid
-            if cost < best_cost:
-                best_cost, best = cost, gr
-        if best is not None and best_cost < max_cost:
-            pairs.append((gl, best, best_cost))
+            if cost < max_cost:
+                candidates.append((cost, li, ri))
+    pairs, used_left, used_right = [], set(), set()
+    for cost, li, ri in sorted(candidates):
+        if li in used_left or ri in used_right:
+            continue
+        used_left.add(li)
+        used_right.add(ri)
+        pairs.append((left[li], right[ri], cost))
     return pairs
 
 

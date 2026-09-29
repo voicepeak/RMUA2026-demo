@@ -3,6 +3,7 @@ project(route_follower)
 
 find_package(catkin REQUIRED COMPONENTS
   rospy
+  std_msgs
   geometry_msgs
   airsim_ros
   std_srvs
@@ -12,6 +13,7 @@ catkin_package()
 
 catkin_install_python(PROGRAMS
   scripts/route_follower.py
+  scripts/online_gate_cache.py
   scripts/route_recorder.py
   scripts/splines_to_yaml.py
   scripts/make_gates.py

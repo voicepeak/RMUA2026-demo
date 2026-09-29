@@ -116,14 +116,16 @@ class GateYolo(object):
         rospy.Subscriber("/airsim_node/drone_1/debug/pose_gt", PoseStamped, self.pose_cb)
         if self.use_imu:
             rospy.Subscriber("/airsim_node/drone_1/imu/imu", Imu, self.imu_cb)
-        sl = message_filters.Subscriber("/airsim_node/drone_1/front_left/Scene", Image)
-        sr = message_filters.Subscriber("/airsim_node/drone_1/front_right/Scene", Image)
+        sl = message_filters.Subscriber("/airsim_node/drone_1/front_left/Scene", Image,
+                                        queue_size=1, buff_size=8 * 1024 * 1024)
+        sr = message_filters.Subscriber("/airsim_node/drone_1/front_right/Scene", Image,
+                                        queue_size=1, buff_size=8 * 1024 * 1024)
         message_filters.ApproximateTimeSynchronizer([sl, sr], queue_size=5, slop=0.03) \
             .registerCallback(self.cb)
         self.route = self.load_route()
         self.gate_map = GateMap(self.route, assoc_radius=self.assoc_radius,
                                 max_age=self.max_age)
-        self.last_prune = rospy.Time.now().to_sec()
+        self.last_prune = None
         rospy.Timer(rospy.Duration(0.25), self.publish_map)
 
     def load_route(self):
@@ -151,6 +153,8 @@ class GateYolo(object):
         """返回 (pos, quat) —— 优先时间同步插值, 否则退回最近位姿。"""
         pos = quat = None
         if self.pose_buf.ready():
+            if t_img < self.pose_buf.buf[0][0] or t_img > self.pose_buf.buf[-1][0] + .1:
+                return None, None
             pos, quat, _ = self.pose_buf.sample(t_img)
         if pos is None:
             px = self.pose.position
@@ -162,7 +166,7 @@ class GateYolo(object):
         return np.asarray(pos, dtype=float), quat
 
     def detect(self, bgr):
-        res = self.model.predict(bgr, imgsz=self.imgsz, conf=self.conf, verbose=False)[0]
+        res = self.model.predict(bgr, imgsz=self.imgsz, conf=self.conf, iou=.5, verbose=False)[0]
         cands = []
         if res.boxes is None or len(res.boxes) == 0:
             return cands, False
@@ -243,6 +247,9 @@ class GateYolo(object):
         tr = _stamp_to_sec(mr.header.stamp)
         t_img = 0.5 * (tl + tr) if (tl > 0 and tr > 0) else rospy.Time.now().to_sec()
         pos, quat = self.current_pose(t_img)
+        if pos is None:
+            rospy.logwarn_throttle(2.0, "Discarding image without time-aligned pose")
+            return
 
         # 用当前位姿反投影旧 track, 供本帧关联 (方案 27/28)
         self.gate_map.predict(pos, quat)
@@ -289,10 +296,10 @@ class GateYolo(object):
         self.pub_s.publish(bgr_to_imgmsg(st, now, "drone_1"))
         self.pub_o.publish(String(data=json.dumps(obs)))
 
-        stamp = rospy.Time.now().to_sec()
-        if stamp - self.last_prune > self.max_age:
-            self.gate_map.prune(stamp)
-            self.last_prune = stamp
+        # Pose/image stamps share the simulator clock; wall-clock ROS now drifts from it.
+        if self.last_prune is None or t_img - self.last_prune > self.max_age:
+            self.gate_map.prune(t_img)
+            self.last_prune = t_img
         tracks = len(self.gate_map.tracker.tracks)
         rospy.loginfo_throttle(
             2.0, "YOLO L=%d R=%d obs=%d kp=%s tracks=%d map=%s",

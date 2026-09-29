@@ -66,6 +66,13 @@ def gate_center_from_frame(cand, disp, frame_mask, min_pixels=25):
     if x1 <= x0 or y1 <= y0:
         return None
     m = frame_mask[y0:y1, x0:x1]
+    # The opening contains smaller distant gates. Use the outside frame band only,
+    # otherwise their pixels bias the median depth away from the detected gate.
+    m = m.copy()
+    band_x, band_y = max(1, int(w * .22)), max(1, int(h * .22))
+    inner_x0, inner_x1 = max(0, x + band_x - x0), min(x1 - x0, x + w - band_x - x0)
+    inner_y0, inner_y1 = max(0, y + band_y - y0), min(y1 - y0, y + h - band_y - y0)
+    m[inner_y0:inner_y1, inner_x0:inner_x1] = False
     dv = disp[y0:y1, x0:x1][m]
     dv = dv[dv > 0]
     if dv.size < min_pixels:
@@ -76,4 +83,3 @@ def gate_center_from_frame(cand, disp, frame_mask, min_pixels=25):
                        (cv_ - CY) * depth / FY,
                        depth])
     return center, depth, int(dv.size)
-

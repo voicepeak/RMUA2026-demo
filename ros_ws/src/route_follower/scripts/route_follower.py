@@ -36,6 +36,7 @@ from avoidance_interface import AvoidanceCommand  # noqa: E402
 from yaw_controller import YawController          # noqa: E402
 from speed_scheduler import SpeedScheduler        # noqa: E402
 from z_capability import load_capability         # noqa: E402
+from online_gate_cache import OnlineGateCache
 
 
 class RouteFollower(object):
@@ -142,6 +143,22 @@ class RouteFollower(object):
         self.gate_map_min_support = int(rospy.get_param("~gate_map_min_support", 2))
         self.sigma_z_max = rospy.get_param("~sigma_z_max", 0.6)
 
+        # 低空搜扫: 视野耗尽后慢速前进+缓慢爬升, 有限距离内重捕获门
+        self.recon_speed = float(rospy.get_param("~recon_speed", 2.0))
+        self.recon_climb = float(rospy.get_param("~recon_climb", 0.6))
+        self.recon_max_dist = float(rospy.get_param("~recon_max_dist", 30.0))
+        self.recon_max_climb = float(rospy.get_param("~recon_max_climb", 4.0))
+        self.z_lag_slow = float(rospy.get_param("~z_lag_slow", 1.5))
+        self.z_lag_gain = float(rospy.get_param("~z_lag_gain", 5.0))
+        self.stuck_speed = float(rospy.get_param("~stuck_speed", 0.4))
+        self.stuck_time = float(rospy.get_param("~stuck_time", 2.5))
+        # 无门区坡度外推: 最后一段门间坡度延伸 z_extrap_m 米后转平, 避免坡顶撞地
+        self.z_extrap_m = float(rospy.get_param("~z_extrap_m", 50.0))
+        self.z_extrap_slope_max = float(rospy.get_param("~z_extrap_slope_max", 0.5))
+        # soft 门高度引导 (仅高度趋势, 有坡度和距离上限, 不能覆盖 hard 锚点)
+        self.z_soft_guide_max = float(rospy.get_param("~z_soft_guide_max", 60.0))
+        self.z_soft_slope_max = float(rospy.get_param("~z_soft_slope_max", 0.5))
+
         self.v_cmd_prev = 0.0
         self.vz_prev = 0.0
         self.z_prev = None
@@ -153,18 +170,31 @@ class RouteFollower(object):
         self.dt = 1.0 / self.control_rate
 
         self.pose = None
+        self.pose_stamp = None
+        self.event_sequence = 0
         self.yaw = 0.0
         self.roll = 0.0
         self.pitch = 0.0
         self.seg = None
         self.z_offset = 0.0
         self.reached = False
+        self.stopping = False
         self.prev_s_plane = None
         self.prev_s = None
         self.prev_pose = None
         self.chain = None
         self.profile = None
         self._map_sig = None
+        self.online_cache = OnlineGateCache()
+        self.completed_gate_ids = set()
+        self.soft_horizon_s = None
+        self.soft_horizon_stamp = None
+        self.recon_start_s = None
+        self.recon_start_z = None
+        self.recon_active = False
+        self.stuck_count = 0
+        self.aborted = False
+        self.soft_guides = []
         self.avoidance = AvoidanceCommand()
         self.arbiter = CommandArbiter(self.avoidance)
         self.yaw_ctrl = YawController(lookahead=self.yaw_lookahead, k=self.k_yaw,
@@ -199,6 +229,9 @@ class RouteFollower(object):
         rospy.loginfo("route '%s': %d pts, %.0f m; gates=%d", self.route_name, len(self.route),
                       self.seg_s[-1], len(self.gates))
         self.cmd_pub = rospy.Publisher("/airsim_node/drone_1/vel_body_cmd", VelCmd, queue_size=1)
+        self.event_pub = rospy.Publisher("/rmua/controller/events", String, queue_size=100, latch=True)
+        self.telemetry_pub = rospy.Publisher("/rmua/controller/telemetry", String, queue_size=100)
+        rospy.on_shutdown(self.shutdown)
         rospy.Subscriber("/airsim_node/drone_1/debug/pose_gt", PoseStamped, self.pose_cb)
         if self.use_gate_map:
             rospy.Subscriber(self.gate_map_topic, String, self.gate_map_cb)
@@ -315,6 +348,30 @@ class RouteFollower(object):
         goal_z = valid_prof[-1]["z"] if valid_prof else start_z
         guides_adj = [{"s": gd["s"], "z": gd["z"] + off}
                       for gd in self.guides if gd.get("s") is not None]
+        trend = [(g["s"], g["z"]) for g in valid_prof]
+        # soft 门只提供高度趋势: 每段坡度受 z_soft_slope_max 限制, 距离受 z_soft_guide_max 限制
+        if trend and self.soft_guides and self.z_soft_guide_max > 0.0:
+            last_s, last_z = trend[-1]
+            for gs, gz in self.soft_guides:
+                ds = gs - last_s
+                if ds < 5.0 or ds > self.z_soft_guide_max:
+                    continue
+                dz = max(-self.z_soft_slope_max * ds,
+                         min(self.z_soft_slope_max * ds, (gz + off) - last_z))
+                last_s, last_z = gs, last_z + dz
+                guides_adj.append({"s": last_s, "z": last_z})
+                trend.append((last_s, last_z))
+        # 无门区坡度外推: 最后一段高度趋势延伸 z_extrap_m 米后转平, 避免坡顶撞地
+        if self.z_extrap_m > 0.0 and len(trend) >= 2:
+            (s1, z1), (s0, z0) = trend[-1], trend[-2]
+            ds = s1 - s0
+            if ds > 1.0:
+                slope = (z1 - z0) / ds
+                slope = max(-self.z_extrap_slope_max,
+                            min(self.z_extrap_slope_max, slope))
+                ext_z = z1 + slope * self.z_extrap_m
+                guides_adj.append({"s": s1 + self.z_extrap_m, "z": ext_z})
+                goal_z = ext_z          # 终点锚点也抬到外推高度, 避免插值回落
         profile = AltitudeProfile(
             0.0, start_z, self.seg_s[-1], goal_z,
             prof_gates, guides_adj,
@@ -334,6 +391,7 @@ class RouteFollower(object):
         with self._lock:
             self.chain, self.profile, self.gate_idx = self._build(self.gates, s_now, p.z)
             self.suspect = self.chain.suspect_ids()
+            self.completed_gate_ids.update(g.get("id") for g in self.chain.gates[:self.gate_idx])
         rospy.loginfo("init seg=%d z_offset=%.2f gates=%d suspects=%s start_gate=%d",
                       i, self.z_offset, len(self.chain.gates), self.suspect, self.gate_idx)
         zp = self.profile.center(s_now)
@@ -361,53 +419,110 @@ class RouteFollower(object):
             gates = json.loads(msg.data)
         except ValueError:
             return
-        gates = [g for g in gates if g.get("valid", True)
-                 and g.get("support", 0) >= self.gate_map_min_support]
-        if not gates:
-            return
-        # 数据源优先级 (方案 11, 40, 41): 静态 verified 优先; 只把"Hard"视觉门
-        # 补充到静态门未覆盖的区域; Soft/高 sigma 视觉门不得拉动 Z.
-        static_s = [self.project_gate_s(g) for g in self.static_gates]
-        merged = [dict(g) for g in self.static_gates]
-        added = 0
-        for g in gates:
-            if not g.get("hard_anchor", False):
-                continue
-            if g.get("sigma_z", 9.0) > self.sigma_z_max:
-                continue
-            gs = self.project_gate_s(g)
-            if any(abs(gs - s0) < 8.0 for s0 in static_s):
-                continue                        # 已有 verified 静态门 -> 不覆盖
-            merged.append(dict(g, s=gs))
-            added += 1
-        merged.sort(key=lambda g: self.project_gate_s(g))
-        sig = (added, tuple((g.get("id"), round(g["x"], 2), round(g["y"], 2), round(g["z"], 2))
-                            for g in merged))
-        if sig == self._map_sig:
+        if not isinstance(gates, list):
             return
         with self._lock:
-            if self.pose is None:
+            if self.pose is None or self.chain is None:
                 return
             p = self.pose.position
             i, t, d, c = self.project(p)
             s_now = self.seg_s[i] + t * self.seg_len[i]
+            now = self.pose_stamp if self.pose_stamp is not None else 0.0
+            ahead = []
+            soft = []
+            for g in gates:
+                if not g.get("valid", True):
+                    continue
+                ls = g.get("last_seen", 0)
+                if not (0.0 <= now - ls <= 1.5):
+                    continue
+                gs = self.project_gate_s(g)
+                if 0.0 <= now - ls <= 1.0 and gs > s_now + 2.0:
+                    ahead.append(gs)
+                if g.get("hard_anchor", False):
+                    continue
+                if g.get("support", 0) < 8 or g.get("sigma_z", 9) > 1.0:
+                    continue
+                if (g.get("confidence") or 0) < 0.45:
+                    continue
+                soft.append((gs, float(g["z"])))
+            if ahead:
+                self.soft_horizon_s = max(ahead)
+                self.soft_horizon_stamp = now
+            soft.sort()
+            merged = []
+            for gs, gz in soft:
+                if not merged or gs - merged[-1][0] > 3.0:
+                    merged.append((gs, gz))
+            self.soft_guides = merged
+            static_s = [self.project_gate_s(g) for g in self.static_gates]
+            if not self.online_cache.ingest(gates, static_s, s_now, self.pose_stamp,
+                                            self.project_gate_s, self.completed_gate_ids):
+                return
+            merged = self.static_gates + self.online_cache.gates
+            added = len(self.online_cache.gates)
             p0z = self.start_z0 if self.start_z0 is not None else p.z
             chain, profile, idx = self._build(merged, s_now, p0z)
+            idx = 0
+            while idx < len(chain.gates) and chain.gates[idx].get("id") in self.completed_gate_ids:
+                idx += 1
             if self.profile is not None:            # 保持 Z 速率限幅连续
                 profile.prev_z_ref = self.profile.prev_z_ref
             self.chain, self.profile, self.gate_idx = chain, profile, idx
-            self._map_sig = sig
         rospy.loginfo_throttle(2.0, "GATE_MAP update: static=%d +hard=%d -> %d gates, next_idx=%d",
                                len(self.static_gates), added, len(merged), self.gate_idx)
 
     # ---------- callbacks ----------
     def pose_cb(self, m):
-        self.pose = m.pose
-        q = m.pose.orientation
-        self.roll, self.pitch, self.yaw = tft.euler_from_quaternion(
-            [q.x, q.y, q.z, q.w])
+        with self._lock:
+            self.pose_stamp = m.header.stamp.to_sec()
+            self.pose = m.pose
+            q = m.pose.orientation
+            self.roll, self.pitch, self.yaw = tft.euler_from_quaternion(
+                [q.x, q.y, q.z, q.w])
+
+    def _on_teleport(self, s_now):
+        """瞬移/reset 后清空任务账本与在线地图, 否则会把旧门当已通过。"""
+        rospy.logwarn("[TELEPORT] s %.1f -> %.1f; 重置任务账本与在线地图",
+                      self.prev_s, s_now)
+        self.completed_gate_ids = set()
+        self.online_cache = OnlineGateCache()
+        self.soft_horizon_s = None
+        self.soft_horizon_stamp = None
+        self.recon_start_s = None
+        self.recon_start_z = None
+        self.recon_active = False
+        self.stuck_count = 0
+        self.aborted = False
+        self.chain = None
+        self.profile = None
+        self.gate_idx = 0
+        self.seg = None
+        self.prev_s = None
+        self.prev_pose = None
+        self.prev_s_plane = None
+        self.reached = False
+        self.start_z0 = None
+        self.v_cmd_prev = 0.0
+
+    def event(self, kind, **fields):
+        """Controller diagnostics only; never independent race scoring."""
+        self.event_sequence += 1
+        payload = dict(schema_version=1, source="controller", sequence=self.event_sequence,
+                       stamp=rospy.Time.now().to_sec(), pose_stamp=self.pose_stamp, kind=kind)
+        payload.update(fields)
+        self.event_pub.publish(String(data=json.dumps(payload, allow_nan=False)))
+
+    def shutdown(self):
+        self.stopping = True
+        self.publish(0.0, 0.0, 0.0, 0.0)
+        self.event("TERMINATION", reason="ROS_SHUTDOWN", controller_reached=self.reached)
+        if self.trace_fh is not None:
+            self.trace_fh.close()
 
     def publish(self, vx, vy, vz, yaw_rate=0.0):
+        if self.stopping:
+            vx = vy = vz = yaw_rate = 0.0
         c = VelCmd()
         c.header.stamp = rospy.Time.now()
         c.header.frame_id = "drone_1"
@@ -516,9 +631,17 @@ class RouteFollower(object):
 
     # ---------- main ----------
     def control_loop(self, _e):
-        if self.pose is None:
+        with self._lock:
+            return self._control_loop(_e)
+
+    def _control_loop(self, _e):
+        with self._lock:
+            if self.pose is None or self.stopping:
+                return
+            p, pose_stamp = self.pose.position, self.pose_stamp
+        if self.aborted:
+            self.publish(0.0, 0.0, 0.0, 0.0)
             return
-        p = self.pose.position
         if self.seg is None:
             self.init_once(p)
         pn = np.array([p.x, p.y, p.z])
@@ -526,6 +649,11 @@ class RouteFollower(object):
         i, t, d_cross, c = self.project(p)
         self.seg = i
         s_now = self.seg_s[i] + t * self.seg_len[i]
+
+        # 瞬移/reset 检测: 清空已完成账本, 支持途中复位后重飞
+        if self.prev_s is not None and s_now < self.prev_s - 20.0:
+            self._on_teleport(s_now)
+            return
 
         chain, profile = self.chain, self.profile
 
@@ -547,6 +675,13 @@ class RouteFollower(object):
             rospy.loginfo("GATE %s %s (lat=%.2f/%.2f vert=%.2f/%.2f)",
                           ng.get("id", self.gate_idx), "PASSED" if ok else "MISSED",
                           lat_c, hw, vert_c, hh)
+            self.event("GATE", status="PASS" if ok else "MISS",
+                       pose_stamp=pose_stamp,
+                       gate_id=ng.get("id", self.gate_idx), gate_index=self.gate_idx,
+                       gate_source=ng.get("source", "static_yaml"), s=s_now,
+                       lateral_error=lat_c, vertical_error=vert_c,
+                       basis="route_progress_and_planning_reference")
+            self.completed_gate_ids.add(ng.get("id"))
             self.gate_idx += 1
             self.prev_s_plane = None
             ng = chain.gates[self.gate_idx] if self.gate_idx < len(chain.gates) else None
@@ -560,6 +695,12 @@ class RouteFollower(object):
                           "SKIP" if behind else "MISSED",
                           chain.gates[self.gate_idx].get("id"),
                           chain.gates[self.gate_idx]["s"], s_now)
+            self.event("GATE", status="SKIP" if behind else "MISS",
+                       pose_stamp=pose_stamp,
+                       gate_id=ng.get("id"), gate_index=self.gate_idx,
+                       gate_source=ng.get("source", "static_yaml"), s=s_now,
+                       basis="gate_behind_route_progress")
+            self.completed_gate_ids.add(ng.get("id"))
             self.gate_idx += 1
             self.prev_s_plane = None
             ng = chain.gates[self.gate_idx] if self.gate_idx < len(chain.gates) else None
@@ -632,9 +773,63 @@ class RouteFollower(object):
         v_target, self.speed_info = self.speed_sched.target(
             kap, kz_prev, slope_trusted, miss_ratio, e_z0,
             z_worsening, pred_worse, math.degrees(yaw_err), vxy=v_s)
+        if self.use_gate_map:
+            # 高度图可信末端前保守限速; 可见(soft)但未 hard 的门也延长视野。
+            # 若视野完全耗尽, 进入低空搜扫: 慢速前进+缓慢爬升, 有限距离内
+            # 重新捕获下一道门, 而不是永久悬停 (死锁)。
+            horizon_s = max((g["s"] for g in chain.gates), default=None)
+            soft = self.soft_horizon_s
+            if soft is not None and self.soft_horizon_stamp is not None \
+                    and self.pose_stamp is not None \
+                    and 0.0 <= self.pose_stamp - self.soft_horizon_stamp <= 1.0 \
+                    and soft > s_now + 2.0:
+                horizon_s = soft if horizon_s is None else max(horizon_s, soft)
+            if horizon_s is not None and horizon_s > s_now + 2.0:
+                self.recon_start_s = None
+                self.recon_start_z = None
+                self.recon_active = False
+                remaining = max(0.0, horizon_s + 3.0 - s_now)
+                visibility_cap = math.sqrt(2.0 * 1.5 * remaining)
+            else:
+                if self.recon_start_s is None:
+                    self.recon_start_s = s_now
+                    self.recon_start_z = p.z
+                if s_now - self.recon_start_s < self.recon_max_dist:
+                    self.recon_active = True
+                    visibility_cap = self.recon_speed
+                else:
+                    self.recon_active = False
+                    visibility_cap = 0.0
+            self.speed_info["v_visibility"] = visibility_cap
+            self.speed_info["recon_active"] = self.recon_active
+            if visibility_cap < v_target:
+                v_target = visibility_cap
+                self.speed_info["reason"] = "RECON" if self.recon_active else "MAP_HORIZON"
+        # Z 掉队硬限速: 低于剖面过多时先爬升, 避免高速撞坡
+        if e_z0 > self.z_lag_slow:
+            v_zlag = self.z_lag_gain * self.z_lag_slow / e_z0
+            self.speed_info["v_z_lag"] = v_zlag
+            if v_zlag < v_target:
+                v_target = v_zlag
+                self.speed_info["reason"] = "Z_LAG"
         v = self.speed_sched.step(self.v_cmd_prev, v_target, self.dt)
         self.v_cmd_prev = v
         self.v_target = v_target
+
+        # 卡死检测: 有速度指令但实际几乎不动 -> 判定为卡滞并停止
+        if self.prev_pose is not None:
+            v_act = math.dist(self.prev_pose, (p.x, p.y, p.z)) / max(1e-3, self.dt)
+            if v > self.stuck_speed and v_act < 0.3:
+                self.stuck_count += 1
+            else:
+                self.stuck_count = 0
+            if self.stuck_count > int(self.stuck_time / self.dt):
+                rospy.logerr("STUCK: cmd=%.2f m/s act=%.2f m/s -> abort", v, v_act)
+                self.event("TERMINATION", reason="STUCK", s=s_now, v_cmd=v,
+                           v_actual=v_act)
+                self.aborted = True
+                self.publish(0.0, 0.0, 0.0, 0.0)
+                return
 
         # ---- 动态 look-ahead 目标 ----
         L = self.lookahead_base + self.lookahead_kv * v
@@ -660,6 +855,9 @@ class RouteFollower(object):
         vz_fb = self.k_z * z_err
         vz_ff = -self.k_ff_z * kz_prev * v            # 前馈带增益 Kff_z (方案 11)
         vz_target = vz_fb + vz_ff
+        if self.recon_active and self.recon_start_z is not None \
+                and p.z > self.recon_start_z - self.recon_max_climb:
+            vz_target += self.recon_climb       # 搜扫时缓慢爬升, 越过坡顶重捕获门
         vz_clamped = max(-self.vz_down_limit, min(self.vz_up_limit, vz_target))
         dvz = max(-self.vz_accel_limit * self.dt,
                   min(self.vz_accel_limit * self.dt, vz_clamped - self.vz_prev))
@@ -691,15 +889,28 @@ class RouteFollower(object):
         self.prev_pose = (p.x, p.y, p.z)
         self.prev_s = s_now
 
+        self.telemetry_pub.publish(String(data=json.dumps(dict(
+            schema_version=1, stamp=rospy.Time.now().to_sec(), pose_stamp=pose_stamp,
+            s=s_now, gate_index=self.gate_idx, next_gate_id=ng.get("id") if ng else None,
+            no_future_gate=self.no_future_gate, z=p.z, z_ref_raw=z_raw, z_ref=z_ref,
+            dzds=kz_prev, vz_ff=vz_ff, vz_fb=vz_fb, vz_target=vz_target,
+            vz_command=vz, z_limit=z_limit, speed=v, speed_target=v_target,
+            speed_limits=self.speed_info, yaw_target=yaw_target,
+            yaw_rate_rad_s=yaw_rate), allow_nan=False)))
+
         # ---- 到达 ----
         if self.end_gate >= 0 and self.gate_idx > self.end_gate:
             self.publish(0.0, 0.0, 0.0, 0.0)
+            if not self.reached:
+                self.event("TERMINATION", reason="END_GATE_LIMIT", s=s_now)
             self.reached = True
             return
         if self.gate_idx >= len(chain.gates) and s_now > self.seg_s[-1] - 5.0:
             self.publish(0.0, 0.0, 0.0, 0.0)
             if not self.reached:
                 rospy.loginfo("GOAL_REACHED")
+                self.event("TERMINATION", reason="ROUTE_END", s=s_now,
+                           official_result="UNKNOWN")
             self.reached = True
             return
 

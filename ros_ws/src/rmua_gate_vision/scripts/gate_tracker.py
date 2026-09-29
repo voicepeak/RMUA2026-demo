@@ -12,6 +12,7 @@
 """
 
 import math
+from collections import deque
 
 import numpy as np
 
@@ -35,6 +36,7 @@ class GateTrack(object):
         self.depth = depth
         self._mean = w.copy()
         self._m2 = np.zeros(3)
+        self.recent = deque([w.copy()], maxlen=12)
         self.hard_anchor = False
         # 几何 / 外观
         self.width = geom["width"] if geom else None
@@ -53,8 +55,11 @@ class GateTrack(object):
 
     def update(self, world, route_s, stamp, beta, depth=None, geom=None,
                uv=None, conf=None):
+        if stamp <= self.last_seen:
+            return
         w = np.asarray(world, dtype=float)
         self.mean = (1.0 - beta) * self.mean + beta * w
+        self.recent.append(w.copy())
         n_new = self.support + 1
         delta = w - self._mean
         self._mean = self._mean + delta / n_new
@@ -83,7 +88,8 @@ class GateTrack(object):
     def sigma(self):
         if self.support < 2:
             return np.array([1e3, 1e3, 1e3])
-        return np.sqrt(self._m2 / (self.support - 1))
+        # Far-range depth noise must not permanently disqualify later close observations.
+        return np.std(np.asarray(self.recent), axis=0, ddof=1)
 
     def geometry_ok_ratio(self):
         return self.geom_ok_frames / self.geom_frames if self.geom_frames else 0.0
@@ -127,6 +133,9 @@ class GateTracker(object):
 
     def _assoc_cost(self, t, world, route_s, depth, uv):
         """返回 (cost, mode) 或 (None, None) 表示不匹配。"""
+        # Nested gates can project to almost the same pixel. Never merge their depths.
+        if float(np.linalg.norm(world - t.mean)) > self.assoc_radius:
+            return None, None
         if uv is not None and t.predicted_u is not None:
             pix = math.hypot(uv[0] - t.predicted_u, uv[1] - t.predicted_v)
             if pix > self.max_pixel_dist:
@@ -164,7 +173,7 @@ class GateTracker(object):
 
     def prune(self, stamp):
         dead = [tid for tid, t in self.tracks.items()
-                if (stamp - t.last_seen) > self.max_age]
+                if not t.hard_anchor and (stamp - t.last_seen) > self.max_age]
         for tid in dead:
             del self.tracks[tid]
         return dead
@@ -172,9 +181,11 @@ class GateTracker(object):
     def refresh_hard(self):
         for t in self.tracks.values():
             s = t.sigma()
-            geom_ok = t.geom_frames == 0 or t.geometry_valid
+            geom_ok = (t.geometry_valid if t.geom_frames else
+                       t.support >= 8 and (t.confidence or 0) >= .65)
             t.hard_anchor = (t.support >= self.min_support_hard and
-                             float(np.max(s)) <= self.sigma_hard and geom_ok)
+                             float(np.max(s[:2])) <= 1.0 and
+                             float(s[2]) <= self.sigma_hard and geom_ok)
         return self.tracks
 
     def sorted_tracks(self, s_now=None):
