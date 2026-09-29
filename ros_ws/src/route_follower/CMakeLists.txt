@@ -26,5 +26,13 @@ catkin_install_python(PROGRAMS
   scripts/speed_scheduler.py
   scripts/z_capability.py
   scripts/z_capability_probe.py
+  scripts/climb_feasibility.py
+  scripts/curve_preview.py
+  scripts/gate_task_state.py
+  scripts/mission_state.py
+  scripts/reference_planner.py
+  scripts/safety_supervisor.py
+  scripts/xy_tracker.py
+  scripts/z_controller.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

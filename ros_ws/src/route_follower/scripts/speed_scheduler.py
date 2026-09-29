@@ -1,21 +1,28 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Speed Scheduler v3: 动力学/预测限速 + 实测垂直能力 (方案 13~22, 33, 45 节)。
+"""Speed Scheduler: 唯一水平速度 authority (方案 5, 7)。
 
-限制来源:
-  v_curve   = sqrt(a_lat_max / (|κ|+ε))                横向加速度能力
-  v_slope   = slope_eta * vz_available(vxy) / |dz/ds|  实测垂直能力 (非固定 3.0)
-  v_tracking= 预测穿门误差 / Z 掉队 / Yaw 误差         软限制
+限制来源全部统一为 cap, 取最严格值:
+  v_cruise    巡航速度
+  v_curve     min(局部曲率, 前方 curve braking envelope)
+  v_climb     min(局部坡度, 前方 climb feasibility preview)
+  v_map       在线地图可见性/搜扫上限 (RECON/MAP_HORIZON)
+  v_tracking  tracking 软限制 (穿门预测 / Z 误差 / Yaw 误差)
 
-hard_cap = min(cruise, v_curve, v_slope)   物理硬限制, 可低于 floor
-soft_cap = max(normal_speed_floor, v_tracking)
-v_target = min(hard_cap, soft_cap)
+  hard_cap = min(v_cruise, v_curve, v_climb, v_map)
+  soft_cap = max(normal_speed_floor, v_tracking)
+  v_target = min(hard_cap, soft_cap)
 
-Z 误差只做连续降速 (方案 22), 不停车:
-  <0.3 -> 1.0x, 0.3~0.6 -> 0.9x, 0.6~1.0 -> 0.75x, 1.0~1.5 -> 0.6x, >1.5 -> 0.5x
+物理硬约束优先于 normal_speed_floor (方案 5.2): 陡坡真的需要 2.5 m/s 时,
+即使 floor=4 也必须允许 2.5。
+
+step() 支持 hard_cap 即时 clamp (方案 7): 平滑斜坡不能拖延物理硬限速,
+最终命令 v_cmd = min(v_smooth, hard_cap)。
 """
 
 import math
+
+INF = float("inf")
 
 
 class SpeedScheduler(object):
@@ -58,15 +65,15 @@ class SpeedScheduler(object):
 
     def vz_available(self, vxy):
         if self.vz_capability is not None:
-            return self.vz_capability.available(vxy)
+            return self.vz_capability.up(vxy)
         return self.vz_up_safe
 
     def curve_limit(self, kap):
         return math.sqrt(self.a_lat_max / (abs(kap) + 1e-3))
 
     def slope_limit(self, kz, trusted=True, vxy=0.0):
-        vz_safe = self.vz_available(vxy)
-        v = self.slope_eta * vz_safe / (abs(kz) + 1e-3)
+        vz_safe = self.slope_eta * self.vz_available(vxy)
+        v = vz_safe / (abs(kz) + 1e-3)
         if not trusted:
             v = max(v, self.floor)
         return min(self.cruise, v)
@@ -99,28 +106,44 @@ class SpeedScheduler(object):
         return self.cruise * f
 
     def target(self, kap, kz, slope_trusted, miss_ratio, z_err, z_worsening,
-               pred_worse, yaw_err_deg, vxy=0.0):
+               pred_worse, yaw_err_deg, vxy=0.0,
+               v_curve_preview=None, v_climb_preview=None, v_map=None):
         v_curve = min(self.cruise, self.curve_limit(kap))
+        if v_curve_preview is not None:
+            v_curve = min(v_curve, float(v_curve_preview))
         v_slope = self.slope_limit(kz, slope_trusted, vxy)
+        v_climb = v_slope
+        if v_climb_preview is not None:
+            v_climb = min(v_climb, float(v_climb_preview))
         v_track = self.tracking_limit(miss_ratio, z_err, z_worsening,
                                       pred_worse, yaw_err_deg)
-        hard = min(self.cruise, v_curve, v_slope)
+        hard = min(self.cruise, v_curve, v_climb)
+        if v_map is not None:
+            hard = min(hard, float(v_map))
         soft = max(self.floor, v_track)
         v = min(hard, soft)
         if hard >= soft:
-            reason = "TRACKING"
-        elif v_curve < self.cruise and v_curve <= v_slope:
-            reason = "CURVE"
-        elif v_slope < self.cruise:
-            reason = "SLOPE"
+            reason = "TRACKING" if v_track < self.cruise else "CRUISE"
         else:
-            reason = "CRUISE"
-        info = {"v_cruise": self.cruise, "v_curve": v_curve, "v_slope": v_slope,
+            candidates = [("CURVE", v_curve), ("SLOPE", v_slope), ("CLIMB", v_climb)]
+            if v_map is not None:
+                candidates.append(("MAP", float(v_map)))
+            reason = min(candidates, key=lambda kv: kv[1])[0]
+        info = {"v_cruise": self.cruise, "v_curve": v_curve,
+                "v_curve_preview": (float(v_curve_preview)
+                                    if v_curve_preview is not None else None),
+                "v_slope": v_slope, "v_climb": v_climb,
+                "v_climb_preview": (float(v_climb_preview)
+                                    if v_climb_preview is not None else None),
+                "v_map": (float(v_map) if v_map is not None else None),
                 "v_tracking": v_track, "hard_cap": hard, "soft_cap": soft,
                 "vz_available": self.vz_available(vxy), "reason": reason}
         return v, info
 
-    def step(self, v_prev, v_target, dt):
+    def step(self, v_prev, v_target, dt, hard_cap=None):
         a = self.a_up if v_target >= v_prev else self.a_down
         dv = max(-a * dt, min(a * dt, v_target - v_prev))
-        return max(0.0, min(self.max_speed, v_prev + dv))
+        v = max(0.0, min(self.max_speed, v_prev + dv))
+        if hard_cap is not None:
+            v = min(v, max(0.0, float(hard_cap)))
+        return v

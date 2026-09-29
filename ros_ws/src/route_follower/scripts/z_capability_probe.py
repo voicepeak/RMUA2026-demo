@@ -10,9 +10,11 @@
   <out>.csv      逐帧记录
   <out>_cap.csv  每档位汇总 (vxy, vz_cmd, actual_climb)
 可直接整理成 vz_capability.yaml 给 route_follower 使用。
+vz_levels 含负值即可同时标定下降能力 (up/down 分开)。
 
 用法:
   rosrun route_follower z_capability_probe.py _vx_levels:="[0,5,10]" _vz_levels:="[1,2,3,4,5]"
+  rosrun route_follower z_capability_probe.py _vx_levels:="[0,5,10]" _vz_levels:="[-1,-2,-3]"
 """
 
 import csv
@@ -157,15 +159,24 @@ class ZCapabilityProbe(object):
             w = csv.writer(f)
             w.writerow(["vxy", "vz_cmd", "actual_climb"])
             w.writerows(self.summary)
-        # 每档位取最大实际爬升作为 vz_available
-        best = {}
+        # 每档位分别取最大实际爬升/最大下降作为 up/down 能力 (方案 4.5)
+        best_up, best_down = {}, {}
         for vx, vz, climb in self.summary:
-            best[vx] = max(best.get(vx, 0.0), climb)
+            if vz >= 0.0:
+                best_up[vx] = max(best_up.get(vx, 0.0), climb)
+            else:
+                best_down[vx] = max(best_down.get(vx, 0.0), -climb)
         yml = os.path.splitext(self.out)[0] + "_capability.yaml"
         with open(yml, "w") as f:
             f.write("vz_available:\n")
-            for vx in sorted(best):
-                f.write("  - vxy: %.1f\n    vz_up: %.2f\n" % (vx, best[vx]))
+            if best_up:
+                f.write("  up:\n")
+                for vx in sorted(best_up):
+                    f.write("    - vxy: %.1f\n      vz: %.2f\n" % (vx, best_up[vx]))
+            if best_down:
+                f.write("  down:\n")
+                for vx in sorted(best_down):
+                    f.write("    - vxy: %.1f\n      vz: %.2f\n" % (vx, best_down[vx]))
         # 悬停
         for _ in range(25):
             self._publish(0.0, 0.0)

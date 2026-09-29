@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Altitude Profile + 动态 Z 走廊。
+"""Altitude Profile: 由 Gate/Guide 锚点插值出的赛道高度几何 + 平滑切换。
 
-- z_center(s): 由 Gate 锚点/Altitude Guide 用 Smoothstep 插值得到赛道中心高度
-- z_ref: 靠近 Gate 时向 gate.z 融合, 并做变化率限制与异常保护
-- corridor(s): 沿赛道的局部安全高度包络 [z_ceiling, z_floor] (NED, 上界更负)
-
-取代全局固定的 z_safe_min/z_safe_max。
+方案职责划分 (文档第 12/33 节):
+  - AltitudeProfile 只负责几何: z_center(s) / dz_ds(s) / corridor(s);
+  - 不再做 "靠近下一门时再融合一次 gate.z" 的重复控制 (若门已是锚点,
+    center(s) 已包含它);
+  - z_ref 的变化率限制与反馈/前馈由 ZController 负责;
+  - GateMap 在线刷新时用 ProfileBlender 在 profile_switch_time 内平滑过渡
+    旧/新 profile, 避免 z_ref 与 dz/ds 同时跳变。
 """
 
 
@@ -39,8 +41,6 @@ class AltitudeProfile(object):
         anchors.append((float(goal_s), float(goal_z)))
         anchors.sort(key=lambda a: a[0])
         self.anchors = anchors
-        self.prev_z_ref = None
-        self.rate_limited = False       # 上一帧 z_ref 是否被 z_rate_max 限住 (调试用)
 
     def center(self, s):
         a = self.anchors
@@ -83,37 +83,56 @@ class AltitudeProfile(object):
             return 0.0
         return (self.center(s1) - self.center(s0)) / (s1 - s0)
 
-    def compute(self, s, current_z, next_gate, dist_to_gate, dt):
-        z = self.center(s)
-        alpha = 0.0
-        mode = "ROUTE"
-        if next_gate is not None and next_gate.get("valid", False):
-            d = dist_to_gate
-            if d <= self.gate_blend_full:
-                alpha = 1.0
-            elif d < self.gate_blend_start:
-                alpha = ((self.gate_blend_start - d) /
-                         max(1e-6, self.gate_blend_start - self.gate_blend_full))
-            alpha = max(0.0, min(1.0, alpha))
-            zg = next_gate["z"]
-            if abs(zg - current_z) > self.gate_z_max_jump:
-                alpha = 0.0
-            else:
-                z = (1.0 - alpha) * z + alpha * zg
-                if alpha > 0.0:
-                    mode = "GATE"
-        self.rate_limited = False
-        if self.prev_z_ref is not None and dt > 0.0:
-            md = self.z_rate_max * dt
-            if z > self.prev_z_ref + md:
-                z = self.prev_z_ref + md
-                self.rate_limited = True
-            elif z < self.prev_z_ref - md:
-                z = self.prev_z_ref - md
-                self.rate_limited = True
-        self.prev_z_ref = z
-        return z, mode, alpha
 
-    def clamp_corridor(self, z, s):
-        ceil, floor = self.corridor(s)
-        return max(ceil, min(floor, z))
+class ProfileBlender(object):
+    """在线重建 profile 时, 在 switch_time 秒内做 smoothstep 混合 (方案 12.2)。"""
+
+    def __init__(self, switch_time=0.4):
+        self.switch_time = max(1e-3, float(switch_time))
+        self.current = None
+        self.previous = None
+        self.switch_stamp = None
+
+    def set_initial(self, profile, stamp=None):
+        self.current = profile
+        self.previous = None
+        self.switch_stamp = None
+
+    def switch(self, profile, stamp):
+        if self.current is None:
+            self.set_initial(profile, stamp)
+            return
+        self.previous = self.current
+        self.current = profile
+        self.switch_stamp = stamp
+
+    def beta(self, stamp):
+        if self.previous is None or self.switch_stamp is None or stamp is None:
+            return 1.0
+        return smoothstep(min(1.0, max(0.0, (stamp - self.switch_stamp) / self.switch_time)))
+
+    def is_switching(self, stamp):
+        return self.previous is not None and self.beta(stamp) < 1.0
+
+    def center(self, s, stamp=None):
+        z = self.current.center(s)
+        b = self.beta(stamp)
+        if b < 1.0:
+            z = (1.0 - b) * self.previous.center(s) + b * z
+        return z
+
+    def dz_ds(self, s, h=4.0, stamp=None):
+        z = self.current.dz_ds(s, h)
+        b = self.beta(stamp)
+        if b < 1.0:
+            z = (1.0 - b) * self.previous.dz_ds(s, h) + b * z
+        return z
+
+    def corridor(self, s):
+        return self.current.corridor(s)
+
+    def anchor_pair(self, s):
+        return self.current.anchor_pair(s)
+
+    def horizon_s(self, s, s_now, horizon):
+        return AltitudeProfile.horizon_s(s, s_now, horizon)

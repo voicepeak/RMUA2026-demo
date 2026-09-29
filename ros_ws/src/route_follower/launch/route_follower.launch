@@ -63,6 +63,46 @@
   <arg name="z_horizon_min"  default="10.0"/>
   <arg name="z_horizon_max"  default="20.0"/>
 
+  <!-- Climb Feasibility Preview (方案 4, 26): 前方累计高度需求 -> 水平限速 -->
+  <arg name="climb_preview_time"   default="3.5"/>
+  <arg name="climb_preview_min"    default="20.0"/>
+  <arg name="climb_preview_max"    default="50.0"/>
+  <arg name="climb_preview_step"   default="5.0"/>
+  <arg name="climb_response_time"  default="0.4"/>
+
+  <!-- Curve Braking Envelope (方案 8, 26) -->
+  <arg name="curve_preview_time"   default="3.0"/>
+  <arg name="curve_preview_min"    default="20.0"/>
+  <arg name="curve_preview_max"    default="40.0"/>
+  <arg name="curve_preview_step"   default="3.0"/>
+  <arg name="curve_brake_a"        default="4.0"/>
+
+  <!-- RECON 独立 mode / 地图可见性 (方案 10, 38.2) -->
+  <arg name="recon_speed"        default="2.0"/>
+  <arg name="recon_climb"        default="0.6"/>
+  <arg name="recon_max_dist"     default="30.0"/>
+  <arg name="recon_max_climb"    default="4.0"/>
+  <arg name="map_brake_a"        default="1.5"/>
+
+  <!-- Safety Recovery (原 Z_LAG 降级, 方案 6.1) + pose timeout (方案 22) -->
+  <arg name="safety_z_error"     default="2.0"/>
+  <arg name="safety_z_gain"      default="5.0"/>
+  <arg name="pose_timeout"       default="0.3"/>
+
+  <!-- 在线地图更新 / profile 平滑切换 (方案 12, 13, 26) -->
+  <arg name="map_update_xy_threshold"  default="0.15"/>
+  <arg name="map_update_z_threshold"   default="0.10"/>
+  <arg name="map_update_s_threshold"   default="0.20"/>
+  <arg name="map_commit_stable_frames" default="3"/>
+  <arg name="static_correction_max"    default="1.5"/>
+  <arg name="profile_switch_time"      default="0.4"/>
+  <arg name="gate_exit_blend_distance" default="4.0"/>
+  <arg name="gate_miss_radius"         default="6.0"/>
+
+  <!-- 上升预测: 仅 A/B 对照保留, 默认 0.0 = 关闭 (方案 2.1/27) -->
+  <arg name="k_anticipate"       default="0.0"/>
+  <arg name="z_anticipate_dist"  default="25.0"/>
+
   <!-- 持久 Gate Map 订阅 -->
   <arg name="use_gate_map"   default="false"/>
   <arg name="gate_map_topic" default="/rmua/gate_map"/>
@@ -152,6 +192,34 @@
     <param name="z_horizon_time"   value="$(arg z_horizon_time)"/>
     <param name="z_horizon_min"    value="$(arg z_horizon_min)"/>
     <param name="z_horizon_max"    value="$(arg z_horizon_max)"/>
+    <param name="climb_preview_time"  value="$(arg climb_preview_time)"/>
+    <param name="climb_preview_min"   value="$(arg climb_preview_min)"/>
+    <param name="climb_preview_max"   value="$(arg climb_preview_max)"/>
+    <param name="climb_preview_step"  value="$(arg climb_preview_step)"/>
+    <param name="climb_response_time" value="$(arg climb_response_time)"/>
+    <param name="curve_preview_time"  value="$(arg curve_preview_time)"/>
+    <param name="curve_preview_min"   value="$(arg curve_preview_min)"/>
+    <param name="curve_preview_max"   value="$(arg curve_preview_max)"/>
+    <param name="curve_preview_step"  value="$(arg curve_preview_step)"/>
+    <param name="curve_brake_a"       value="$(arg curve_brake_a)"/>
+    <param name="recon_speed"         value="$(arg recon_speed)"/>
+    <param name="recon_climb"         value="$(arg recon_climb)"/>
+    <param name="recon_max_dist"      value="$(arg recon_max_dist)"/>
+    <param name="recon_max_climb"     value="$(arg recon_max_climb)"/>
+    <param name="map_brake_a"         value="$(arg map_brake_a)"/>
+    <param name="safety_z_error"      value="$(arg safety_z_error)"/>
+    <param name="safety_z_gain"       value="$(arg safety_z_gain)"/>
+    <param name="pose_timeout"        value="$(arg pose_timeout)"/>
+    <param name="map_update_xy_threshold"  value="$(arg map_update_xy_threshold)"/>
+    <param name="map_update_z_threshold"   value="$(arg map_update_z_threshold)"/>
+    <param name="map_update_s_threshold"   value="$(arg map_update_s_threshold)"/>
+    <param name="map_commit_stable_frames" value="$(arg map_commit_stable_frames)"/>
+    <param name="static_correction_max"    value="$(arg static_correction_max)"/>
+    <param name="profile_switch_time"      value="$(arg profile_switch_time)"/>
+    <param name="gate_exit_blend_distance" value="$(arg gate_exit_blend_distance)"/>
+    <param name="gate_miss_radius"         value="$(arg gate_miss_radius)"/>
+    <param name="k_anticipate"      value="$(arg k_anticipate)"/>
+    <param name="z_anticipate_dist" value="$(arg z_anticipate_dist)"/>
     <param name="use_gate_map"     value="$(arg use_gate_map)"/>
     <param name="gate_map_topic"   value="$(arg gate_map_topic)"/>
     <param name="gate_map_min_support" value="$(arg gate_map_min_support)"/>

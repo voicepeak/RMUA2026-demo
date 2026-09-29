@@ -1,10 +1,19 @@
-# 垂直能力表 vz_available(vxy) —— 初始为估值, 请用 z_capability_probe.py 实测后覆盖
+# 垂直能力表 vz_available(vxy) —— 上升/下降分开标定 (方案 4.5)
+# 初始为估值, 请用 z_capability_probe.py 实测后覆盖。
 # 实测: rosrun route_follower z_capability_probe.py _vx_levels:="[0,5,10]" _vz_levels:="[1,2,3,4,5]"
-# 生成 <out>_capability.yaml 后复制到本文件
+# 生成 <out>_capability.yaml 后复制到本文件 (旧格式只有 up 时, down 取 up 表)。
 vz_available:
-  - vxy: 0.0
-    vz_up: 4.0
-  - vxy: 5.0
-    vz_up: 3.6
-  - vxy: 10.0
-    vz_up: 3.0
+  up:
+    - vxy: 0.0
+      vz: 4.0
+    - vxy: 5.0
+      vz: 3.6
+    - vxy: 10.0
+      vz: 3.0
+  down:
+    - vxy: 0.0
+      vz: 3.0
+    - vxy: 5.0
+      vz: 3.0
+    - vxy: 10.0
+      vz: 3.0
