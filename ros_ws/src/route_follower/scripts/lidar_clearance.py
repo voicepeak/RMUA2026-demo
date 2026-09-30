@@ -9,7 +9,7 @@ import math
 import numpy as np
 
 class LidarClearance:
-    def __init__(self, margin=.8):
+    def __init__(self, margin=1.0):
         self.margin=margin
         self.previous=np.zeros(2)
 
@@ -23,7 +23,9 @@ class LidarClearance:
         side=np.array([-f[1],f[0],0.])
         longitudinal=points[:,:2]@f
         lateral=points@side
-        mask=(longitudinal>.5)&(longitudinal<distance+1.)&(abs(lateral)<7.)&(abs(points[:,2])<abs(end[2])+6.)
+        # Keep imminent surfaces: filtering everything within half a metre
+        # made a blocking wall disappear just before contact.
+        mask=(longitudinal>.15)&(longitudinal<distance+1.)&(abs(lateral)<7.)&(abs(points[:,2])<abs(end[2])+6.)
         points=points[mask]
         if len(points)<10:return empty
         # Spatial subsampling bounds CPU cost without deleting narrow frames.
@@ -53,7 +55,10 @@ class LidarClearance:
         close=np.sqrt(np.maximum(0.,squared[:,zero]))<self.margin
         ahead=np.maximum(.0,points[:,:2]@f)
         obstacle=float(np.min(ahead[close])) if np.any(close) else distance
-        cap=max(1.,obstacle/1.5)
-        if clearance[index]<.35:cap=0.
+        # Slow early enough to achieve the requested displacement. Large
+        # offsets cannot develop in the same time as a small correction.
+        response=max(1.5,abs(choices[index,0])*.8+abs(choices[index,1])*.5+.4)
+        cap=max(0.,obstacle/response)
+        if not np.any(feasible):cap=0.
         return dict(lateral=float(choices[index,0]),vertical=float(choices[index,1]),
                     cap=cap,clearance=float(clearance[zero]),selected_clearance=float(clearance[index]),active=True)

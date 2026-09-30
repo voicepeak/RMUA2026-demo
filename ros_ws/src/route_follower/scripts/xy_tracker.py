@@ -6,7 +6,7 @@ from spatial_curve import SpatialCurve
 class XYTracker:
     def __init__(self, lookahead_base=8., lookahead_kv=.7, k_pursuit=1.2,
                  xy_converge=.5, gate_blend_start=25., gate_blend_full=8.,
-                 exit_blend_distance=4., half_width=1.5, margin=.4, acceleration=4.):
+                 exit_blend_distance=4., half_width=1.5, margin=.8, acceleration=4.):
         self.lookahead_base = float(lookahead_base)
         self.lookahead_kv = float(lookahead_kv)
         self.k_pursuit = float(k_pursuit)
@@ -77,15 +77,24 @@ class XYTracker:
         fn = self.point_at if self.route is not None else point_at
         return fn(s_now+self.lookahead(v))[:2]
 
-    def velocity(self,p_xy,target_xy,v_max,arbiter=None,dt=.05):
-        if self.route is None:
+    def velocity(self,p_xy,target_xy,v_max,arbiter=None,dt=.05,lateral_offset=0.,
+                 terminal_position=None):
+        if terminal_position is not None:
+            dx,dy=terminal_position[0]-p_xy[0],terminal_position[1]-p_xy[1]
+            distance=math.hypot(dx,dy)
+            speed=min(v_max,self.k_pursuit*distance,
+                      math.sqrt(2.*self.acceleration*distance))
+            vx,vy=dx*speed/max(distance,1e-6),dy*speed/max(distance,1e-6)
+        elif self.route is None:
             dx,dy = target_xy[0]-p_xy[0],target_xy[1]-p_xy[1]
             length = max(1e-6,math.hypot(dx,dy))
             vx,vy = dx*v_max/length,dy*v_max/length
         else:
             dx,dy = self.tangent(self.last_s+max(.5,.25*v_max))
             x,y,_ = self.point_at(self.last_s)
-            error = -(x-p_xy[0])*dy+(y-p_xy[1])*dx
+            # The obstacle displacement is a reference position, not an extra
+            # velocity that the route feedback immediately cancels.
+            error = -(x-p_xy[0])*dy+(y-p_xy[1])*dx+lateral_offset
             lateral = max(-.65*v_max,min(.65*v_max,self.k_pursuit*error))
             vx,vy = v_max*dx-lateral*dy,v_max*dy+lateral*dx
             length = max(v_max,math.hypot(vx,vy),1e-6)

@@ -1,4 +1,5 @@
 import sys
+import math
 import unittest
 from pathlib import Path
 
@@ -30,8 +31,12 @@ class XYTrackerTests(unittest.TestCase):
         self.tracker.configure(RouteGeometry([(0,0,0),(200,0,0)]), gates)
 
     def test_valid_off_center_crossing_keeps_route(self):
-        self.configure([dict(s=20., x=20., y=.8)])
+        self.configure([dict(s=20., x=20., y=.6)])
         self.assertAlmostEqual(self.tracker.point_at(20.)[1], 0.)
+
+    def test_reference_reserves_room_for_curved_path_tracking_error(self):
+        self.configure([dict(s=20.,x=20.,y=3.)])
+        self.assertLessEqual(abs(self.tracker.point_at(20.)[1]-3.),.700001)
 
     def test_crossing_does_not_stop_or_reverse(self):
         gate = dict(s=20., x=20., y=0.)
@@ -53,6 +58,27 @@ class XYTrackerTests(unittest.TestCase):
         before=self.tracker.target((20,0),20,6,dict(s=20,x=20,y=0),0,None,None)
         after=self.tracker.target((20,0),20,6,None,1e9,dict(s=20,x=20,y=0),None)
         self.assertEqual(before,after)
+
+    def test_obstacle_displacement_remains_reachable_off_route(self):
+        self.configure([])
+        self.tracker.previous_velocity=(4.,0.)
+        self.tracker.last_s=20.
+        # The old separate, capped velocity correction settled at 1.67m
+        # even when the obstacle required a 4m displacement.
+        vx,vy=self.tracker.velocity((20.,2.),(30.,0.),4.,dt=1.,lateral_offset=4.)
+        self.assertGreater(vy,0.)
+        self.assertLessEqual(math.hypot(vx,vy),4.+1e-6)
+
+    def test_terminal_control_reaches_published_goal_beyond_route_stop(self):
+        self.configure([])
+        self.tracker.last_s=195.
+        vx,vy=self.tracker.velocity((195.,0.),(200.,0.),4.,dt=1.,
+                                    terminal_position=(190.,2.))
+        self.assertLess(vx,0.)
+        self.assertGreater(vy,0.)
+        vx,vy=self.tracker.velocity((190.,2.),(200.,0.),4.,dt=1.,
+                                    terminal_position=(190.,2.))
+        self.assertEqual((vx,vy),(0.,0.))
 
 
 class ZControllerTests(unittest.TestCase):

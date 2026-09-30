@@ -22,3 +22,17 @@ class ClearanceTests(unittest.TestCase):
     def test_obstacle_behind_is_not_a_reason_to_turn_back(self):
         points=np.array([(-1.,y,z) for y in np.arange(-2.,2.,.2) for z in (-.2,.2)])
         self.assertFalse(LidarClearance().evaluate(points,(12.,0.,0.))['active'])
+
+    def test_closed_wall_requires_stop_even_if_best_gap_is_too_small(self):
+        points=np.array([(3.,y,z) for y in np.arange(-12.,12.,.2)
+                         for z in np.arange(-8.,8.,.2)])
+        result=LidarClearance().evaluate(points,(12.,0.,0.))
+        self.assertTrue(result['active'])
+        self.assertEqual(result['cap'],0.)
+
+    def test_imminent_wall_does_not_disappear_inside_half_metre(self):
+        points=np.array([(.3,y,z) for y in np.arange(-3.,3.,.1)
+                         for z in np.arange(-2.,2.,.1)])
+        result=LidarClearance().evaluate(points,(8.,0.,0.))
+        self.assertTrue(result['active'])
+        self.assertEqual(result['cap'],0.)

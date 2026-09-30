@@ -5,6 +5,14 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'ros_ws/src/rmua_gate_
 from latest_frame import LatestFrame
 
 class LatestFrameTests(unittest.TestCase):
+    def test_reset_discards_queued_image_from_previous_flight(self):
+        box=LatestFrame()
+        box.put(('old_frame','old_pose'))
+        box.clear()
+        self.assertIsNone(box.take(timeout=0.))
+        box.put(('new_frame','new_pose'))
+        self.assertEqual(box.take(),('new_frame','new_pose'))
+
     def test_slow_inference_receives_latest_frame_with_its_original_pose(self):
         box=LatestFrame()
         box.put(('frame1','pose1'))

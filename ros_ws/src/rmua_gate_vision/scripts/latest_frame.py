@@ -19,3 +19,7 @@ class LatestFrame:
             self.condition.wait_for(lambda:self.value is not None,timeout=timeout)
             value,self.value=self.value,None
             return value
+
+    def clear(self):
+        with self.condition:
+            self.value=None

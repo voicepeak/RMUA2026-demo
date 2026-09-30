@@ -303,6 +303,8 @@ class RouteFollower(object):
         self.v_target = 0.0
         self.last_pose_stamp = None
         self.last_stale_event = None
+        self.race_goal = None
+        self.race_goal_changed = False
 
         self.route = self.load_route(self.route_file, self.route_name)
         self.gates = self.load_list(self.gates_file, "gates")
@@ -334,6 +336,7 @@ class RouteFollower(object):
         rospy.on_shutdown(self.shutdown)
         rospy.Subscriber("/airsim_node/drone_1/debug/pose_gt", PoseStamped, self.pose_cb)
         rospy.Subscriber("/airsim_node/drone_1/lidar", PointCloud2,self.lidar_cb,queue_size=1,buff_size=4*1024*1024)
+        rospy.Subscriber('/airsim_node/end_goal',PoseStamped,self.race_goal_cb,queue_size=1)
         if self.use_gate_map:
             rospy.Subscriber(self.gate_map_topic, String, self.gate_map_cb)
             rospy.loginfo("[GateMap] ENABLED topic=%s min_support=%d (静态 gates 作为初始/兜底)",
@@ -418,6 +421,14 @@ class RouteFollower(object):
             return
         if not isinstance(gates, list):
             return
+        # Dense bbox tracks carry a tangent from the vision node's route.
+        # That route can have the opposite direction on the next race leg.
+        # Only measured plane geometry may keep its own normal.
+        gates = [dict(g) for g in gates]
+        for g in gates:
+            if not g.get('geometry_valid', False):
+                for key in ('nx', 'ny', 'nz'):
+                    g.pop(key, None)
         with self._lock:
             if self.pose is None or self.chain is None:
                 return
@@ -457,6 +468,17 @@ class RouteFollower(object):
             len(self.online_cache.static_corrections))
 
     # ---------- callbacks ----------
+    def race_goal_cb(self,msg):
+        p=msg.pose.position
+        goal=np.array([p.x,p.y,p.z])
+        with self._lock:
+            if self.race_goal is None:
+                # A later leg must match its own published endpoint.
+                if np.linalg.norm(goal[:2]-np.array(self.route.points[-1][:2]))<35.:
+                    self.race_goal=goal
+            elif np.linalg.norm(goal-self.race_goal)>20.:
+                self.race_goal_changed=True
+
     def lidar_cb(self,msg):
         fields={f.name:f for f in msg.fields}
         if any(k not in fields or fields[k].datatype!=7 for k in ('x','y','z')):return
@@ -649,8 +671,11 @@ class RouteFollower(object):
             if self.pose is None or self.stopping:
                 return
             p, pose_stamp = self.pose.position, self.pose_stamp
-        if self.safety.aborted or self.mission.mode == ABORT:
+        if self.reached or self.safety.aborted or self.mission.mode == ABORT:
             self.publish(0.0, 0.0, 0.0, 0.0)
+            return
+        if self.race_goal_changed:
+            self.publish(0.0,0.0,0.0,0.0)
             return
 
         # ---- pose timeout: 立即输出零速度 (方案 22.2) ----
@@ -755,6 +780,10 @@ class RouteFollower(object):
                 self.clearance_info=self.clearance.evaluate(
                     self.lidar_points-pn,(ex-p.x,ey-p.y,base_center(s_now+distance)-p.z))
                 self.clearance_checked=pose_stamp
+        elif self.clearance_info.get('active', False):
+            # A delayed cloud cannot authorize acceleration into a surface
+            # that the last fresh cloud said was blocking the path.
+            self.clearance_info=dict(self.clearance_info,cap=0.,stale=True)
         else:
             self.clearance_info=dict(cap=None,active=False)
         active=self.clearance_info.get('active',False)
@@ -762,6 +791,14 @@ class RouteFollower(object):
         self.clearance_z+=blend*(self.clearance_info.get('vertical',0.)-self.clearance_z)
         self.clearance_y+=blend*(self.clearance_info.get('lateral',0.)-self.clearance_y)
         center_fn = lambda s: base_center(s)+self.clearance_z
+        terminal = self.race_goal is not None and s_now > self.route.total_s-25.
+        if terminal:
+            old_center=center_fn
+            def center_fn(s):
+                blend=max(0.,min(1.,(s-self.route.total_s+25.)/20.))
+                # Published marker locations are at road level, like the
+                # initial pose. Enter the 5m-high trigger above that surface.
+                return (1.-blend)*old_center(s)+blend*(self.race_goal[2]-2.5)
         e_z0 = p.z - center_fn(s_now)
         z_dot = 0.0
         if self.z_prev is not None and dt > 0:
@@ -845,15 +882,10 @@ class RouteFollower(object):
         tx, ty = self.xy_tracker.target(
             (p.x, p.y), s_now, v, ng, d_g, self.task_state.last_resolved,
             self.route.point_at)
-        v_route = self.xy_tracker.velocity((p.x, p.y), (tx, ty), v, arbiter=self.arbiter, dt=dt)
-
-        if abs(self.clearance_y)>.01:
-            dx,dy=self.xy_tracker.tangent(s_now)
-            correction=max(-2.,min(2.,self.xy_tracker.k_pursuit*self.clearance_y))
-            v_route=np.asarray(v_route)+np.array([-dy,dx])*correction
-            norm=float(np.linalg.norm(v_route))
-            local_speed=max(v,abs(correction))
-            if norm>local_speed and norm>1e-6:v_route*=local_speed/norm
+        v_route = self.xy_tracker.velocity(
+            (p.x, p.y), (tx, ty), v, arbiter=self.arbiter, dt=dt,
+            lateral_offset=self.clearance_y,
+            terminal_position=self.race_goal[:2] if terminal else None)
 
         # ---- Z: 正常 TRACK 只有 FF+FB; RECON/HOLD 独立 (方案 9, 10) ----
         z_raw = profile.center(s_now)
@@ -903,6 +935,7 @@ class RouteFollower(object):
             yaw_rate_rad_s=yaw_rate, gate_ledger=ledgers,
             climb_preview=climb["v_climb_preview"], curve_preview=curve["v_curve_preview"],
             clearance=self.clearance_info, clearance_z=self.clearance_z,
+            clearance_y=self.clearance_y,
             height_prior_valid=self.planner.height_prior.valid,
             height_prior_error=self.planner.height_prior.error,
             planning_horizon=self.planner.trend_horizon,
@@ -915,7 +948,10 @@ class RouteFollower(object):
                 self.event("TERMINATION", reason="END_GATE_LIMIT", s=s_now)
             self.reached = True
             return
-        if self.gate_idx >= len(chain.gates) and s_now > self.route.total_s - 5.0:
+        if self.gate_idx >= len(chain.gates) and s_now > self.route.total_s - 5.0 \
+                and (self.race_goal is None or
+                     (np.linalg.norm(pn[:2]-self.race_goal[:2])<1. \
+                      and abs(p.z-(self.race_goal[2]-2.5))<1.)):
             self.publish(0.0, 0.0, 0.0, 0.0)
             if not self.reached:
                 rospy.loginfo("GOAL_REACHED")

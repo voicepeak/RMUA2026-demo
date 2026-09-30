@@ -113,6 +113,8 @@ class GateYolo(object):
         self.pose_lock=threading.RLock()
         self.map_lock=threading.RLock()
         self.frames=LatestFrame()
+        self.frame_generation=0
+        self.map_reset_pending=False
         self.pub_l = rospy.Publisher("/rmua/gate_detection/left", Image, queue_size=2)
         self.pub_r = rospy.Publisher("/rmua/gate_detection/right", Image, queue_size=2)
         self.pub_s = rospy.Publisher("/rmua/gate_detection/stereo", Image, queue_size=2)
@@ -146,6 +148,14 @@ class GateYolo(object):
         return r
 
     def pose_cb(self, m):
+        if self.pose is not None:
+            old=self.pose.position;new=m.pose.position
+            if np.linalg.norm(np.array([new.x-old.x,new.y-old.y,new.z-old.z]))>30.:
+                self.frame_generation+=1
+                self.map_reset_pending=True
+                self.frames.clear()
+                with self.pose_lock:
+                    self.pose_buf=PoseBuffer(max_age=self.sync_max_age)
         self.pose = m.pose
         p = m.pose.position
         q = m.pose.orientation
@@ -257,7 +267,7 @@ class GateYolo(object):
         stamp=.5*(ml.header.stamp.to_sec()+mr.header.stamp.to_sec())
         aligned=self.current_pose(stamp)
         if aligned[0] is not None:
-            self.frames.put((ml,mr,aligned))
+            self.frames.put((ml,mr,aligned,self.frame_generation))
 
     def inference_loop(self):
         while not rospy.is_shutdown():
@@ -265,7 +275,13 @@ class GateYolo(object):
             if item is None:continue
             try:
                 with self.map_lock:
-                    self.cb(*item)
+                    ml,mr,aligned,generation=item
+                    if generation!=self.frame_generation:continue
+                    if self.map_reset_pending:
+                        self.gate_map=GateMap(self.route,assoc_radius=self.assoc_radius,max_age=self.max_age)
+                        self.map_reset_pending=False
+                        self.last_prune=None
+                    self.cb(ml,mr,aligned)
             except Exception as error:
                 rospy.logerr_throttle(2.,"Gate inference failed: %s",error)
 
@@ -351,6 +367,7 @@ class GateYolo(object):
 
     def publish_map(self, _e=None):
         with self.map_lock:
+            if self.map_reset_pending:return
             self.pub_map.publish(String(data=self.gate_map.to_json(min_support=self.min_support)))
 
     def save(self,req):
@@ -367,6 +384,8 @@ class GateYolo(object):
             return self._clear(req)
 
     def _clear(self, _req):
+        self.frame_generation+=1
+        self.frames.clear()
         n = len(self.gate_map.tracker.tracks)
         self.gate_map = GateMap(self.route, assoc_radius=self.assoc_radius,
                                 max_age=self.max_age)
