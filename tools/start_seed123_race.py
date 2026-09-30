@@ -18,7 +18,7 @@ def inspect():
     result=subprocess.run(['docker','inspect','rmua_noetic'],capture_output=True,text=True,check=True)
     return json.loads(result.stdout)[0]['State']
 old=inspect()
-check=subprocess.run(['docker','exec','rmua_noetic','pgrep','-f','RMUA-Linux'],capture_output=True)
+check=subprocess.run(['docker','exec','rmua_noetic','pgrep','-f','RMUA-Linux|rosmaster'],capture_output=True)
 had_sim=check.returncode==0
 sim=subprocess.Popen([str(workspace/'run_sim.sh'),'123',args.mode],cwd=workspace,
                      stdout=(out/'simulator.log').open('w'),stderr=subprocess.STDOUT)

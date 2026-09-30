@@ -24,12 +24,14 @@ def goal_matches_road(splines,road,goal):
     point=splines[road-1][0]
     return math.hypot(point[0]-goal[0],point[1]-goal[1])<35.
 
-def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=False):
+def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=False,adaptive_speed=False):
     command=['roslaunch','route_follower','route_follower.launch',
             'route_file:='+str(route_file),'route:=race_leg',
             'gates_file:='+str(gates_file),'guides_file:='+str(guides_file),
             'gate_center_pull_max:=0','cruise_speed:='+str(cruise),
             'max_speed:='+str(max(12.,cruise))]
+    if adaptive_speed:command+=['adaptive_speed:=true','lidar_braking:=8','curve_preview_max:=100',
+                               'curve_preview_step:=1','z_response_time:=0.15']
     if fast_descent:
         config=Path(__file__).resolve().parents[1]/'ros_ws/src/route_follower/config'
         command+=['slope_eta:=0.95','vz_down_limit:=4.5','z_rate_max:=5',
@@ -55,6 +57,23 @@ def build_leg(splines,start,finish,goal,measured):
     for i,g in enumerate(gates):g['id']=i
     return route.points,gates
 
+def recorded_return_guides(route,incoming,height_trace):
+    guides=[]
+    for p in height_trace:
+        _,_,distance,_=incoming.project(p)
+        if distance>10.:continue
+        s=route.project_gate(p[0],p[1])
+        # The previous controller lowered to the marker to trigger the stage.
+        # Replaying that maneuver in reverse hits the departure window sill.
+        # Let the current pose and the first gate anchor define departure.
+        if s<40.:continue
+        guides.append(dict(s=s,z=p[2]))
+    guides.sort(key=lambda g:g['s'])
+    sampled=[]
+    for g in guides:
+        if not sampled or g['s']-sampled[-1]['s']>=8.:sampled.append(g)
+    return sampled
+
 def main():
     import rospy
     from geometry_msgs.msg import PoseStamped
@@ -71,6 +90,7 @@ def main():
     ap.add_argument('--height-trace',type=Path,
                     help='JSONL flight telemetry used only as return-road height guides')
     ap.add_argument('--fast-descent',action='store_true')
+    ap.add_argument('--adaptive-speed',action='store_true')
     a=ap.parse_args();a.out.mkdir(parents=True,exist_ok=True)
     if not 0<=a.stage<3:ap.error('--stage must be 0, 1 or 2 for implemented racing legs')
     root=Path(__file__).resolve().parents[1]
@@ -132,16 +152,8 @@ def main():
                 except ValueError:continue  # Recorder may be writing its final line.
                 if row.get('topic')=='telemetry':
                     data=row['data']
-                    height_trace.append((*data['path_xy'],data['z_ref']))
-        for p in height_trace:
-            i,t,d,_=incoming.project(p)
-            if d>10.:continue
-            s=route.project_gate(p[0],p[1])
-            guides.append(dict(s=s,z=p[2]))
-        guides.sort(key=lambda g:g['s'])
-        sampled=[]
-        for g in guides:
-            if not sampled or g['s']-sampled[-1]['s']>=8.:sampled.append(g)
+                    height_trace.append((*data['path_xy'],data.get('z_ref_raw',data['z_ref'])))
+        sampled=recorded_return_guides(route,incoming,height_trace)
         folder=a.out/('leg_%d_%d'%(SEQUENCE[stage],SEQUENCE[stage+1]));folder.mkdir(exist_ok=True)
         route_file=folder/'route.yaml';gates_file=folder/'gates.yaml';guides_file=folder/'guides.yaml'
         route_file.write_text(yaml.safe_dump({'routes':{'race_leg':points}}))
@@ -155,10 +167,11 @@ def main():
         subprocess.Popen(['/opt/conda/envs/xal/bin/python',
                           str(root/'ros_ws/src/rmua_gate_vision/scripts/gate_yolo_node.py'),
                           '_model:='+str(root/'yolo/weights/best.pt'),
+                          '_car_model:='+str(root/'yolo/weights/car_score91_best.pt'),
                           '_route_file:='+str(route_file),'_route_name:=race_leg',
                           '_imgsz:=960','_conf:=0.35'],
                          stdout=(folder/'vision.log').open('w'),stderr=subprocess.STDOUT)
-        command=controller_command(route_file,gates_file,guides_file,a.cruise,a.fast_descent)
+        command=controller_command(route_file,gates_file,guides_file,a.cruise,a.fast_descent,a.adaptive_speed)
         child=subprocess.Popen(command,stdout=(folder/'controller.log').open('w'),stderr=subprocess.STDOUT)
         event('CONTROLLER_STARTED',leg=[SEQUENCE[stage],SEQUENCE[stage+1]],
               cause=cause,official_completion='UNKNOWN',command=command)
