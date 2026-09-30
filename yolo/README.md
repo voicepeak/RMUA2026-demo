@@ -89,3 +89,30 @@ gate_stereo -> 世界系 -> GateChain -> AltitudeProfile -> CommandArbiter -> ve
 ```
 
 只替换最上面一层。
+
+## 7. 汽车检测（2026-09-30）
+
+用户的原始标注在工作区 `datasets/car_score91/images`。转换快照在
+`datasets/car_score91_yolo`，48 张训练、12 张验证、3 张因时间邻近排除，
+分别有 312、91、21 个框。转换保留原生 JSON，按时间分组并留 3 秒间隔，
+避免直接随机划分连续截图。`data.yaml` 的路径用于 `/workspace` Docker 挂载。
+
+```bash
+python3 repo/yolo/tools/prepare_car_dataset.py --help
+docker exec -e PYTHONUNBUFFERED=1 -e WANDB_MODE=disabled rmua_noetic \
+  /opt/conda/envs/xal/bin/python /workspace/repo/yolo/tools/train_car.py \
+  --data /workspace/datasets/car_score91_yolo/data.yaml \
+  --project /workspace/experiments/car_training_20260930
+```
+
+YOLO11n、960px、batch6，RTX 3060 GPU 上早停至 156 epoch。部署权重
+`weights/car_score91_best.pt`，门检测仍使用 `weights/best.pt`。验证集
+Precision=88.8%、Recall=90.1%、mAP50=93.9%、mAP50-95=55.5%；
+这是少量同赛道截图的验证结果，尚未验证不同随机种子。
+
+启动视觉节点时增加 `_car_model:=<abs>/yolo/weights/car_score91_best.pt`
+和 `_car_conf:=0.5`。节点发布 `/rmua/car_observations` JSON，包含前脸框及
+在视差可靠时的三维位置，并过滤被门模型误认成门的汽车前脸。
+当前轨迹避障仍依赖 LiDAR，汽车三维观测尚未直接控制绕行轨迹。
+标注多数覆盖汽车前脸，LiDAR 负责车身占用范围，不能把前脸框当作完整车身尺寸。
+训练图表及部署指标在工作区 `experiments/car_training_20260930`。

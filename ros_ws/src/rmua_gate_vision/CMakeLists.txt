@@ -15,6 +15,7 @@ catkin_install_python(PROGRAMS
   scripts/gate_vision_node.py
   scripts/gate_detect_viz.py
   scripts/latest_frame.py
+  scripts/car_geometry.py
   scripts/gate_yolo_node.py
   scripts/gate_detector_opencv.py
   scripts/gate_stereo.py

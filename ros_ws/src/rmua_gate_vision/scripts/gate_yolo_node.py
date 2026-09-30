@@ -40,6 +40,7 @@ import gate_stereo as gs  # noqa: E402
 from gate_map import GateMap  # noqa: E402
 from gate_geometry import GateGeometry  # noqa: E402
 from latest_frame import LatestFrame
+from car_geometry import car_boxes,locate_car,overlaps_car
 from timestamp_sync import PoseBuffer  # noqa: E402
 import stereo_keypoint_matcher as skm  # noqa: E402
 from gate_reprojection import reproject_gate  # noqa: E402
@@ -95,6 +96,9 @@ class GateYolo(object):
 
         from ultralytics import YOLO
         self.model = YOLO(self.model_path)
+        car_path=rospy.get_param('~car_model','')
+        self.car_model=YOLO(car_path) if car_path else None
+        self.car_conf=float(rospy.get_param('~car_conf',.5))
         cv2.setNumThreads(2)
         rospy.loginfo("YOLO loaded: %s", self.model_path)
 
@@ -120,6 +124,7 @@ class GateYolo(object):
         self.pub_s = rospy.Publisher("/rmua/gate_detection/stereo", Image, queue_size=2)
         self.pub_o = rospy.Publisher("/rmua/gate_observations", String, queue_size=5)
         self.pub_map = rospy.Publisher("/rmua/gate_map", String, queue_size=2)
+        self.pub_cars=rospy.Publisher('/rmua/car_observations',String,queue_size=2)
         rospy.Service("~save", Trigger, self.save)
         rospy.Service("~clear", Trigger, self.clear)
         rospy.Subscriber("/airsim_node/drone_1/debug/pose_gt", PoseStamped, self.pose_cb)
@@ -305,12 +310,20 @@ class GateYolo(object):
         results=self.model.predict([left,right],imgsz=self.imgsz,conf=self.conf,iou=.5,verbose=False)
         cl,kp_l=self.candidates(results[0],left)
         cr,_=self.candidates(results[1],right)
+        cars_l,cars_r=[],[]
+        if self.car_model is not None:
+            car_results=self.car_model.predict([left,right],imgsz=self.imgsz,
+                conf=self.car_conf,iou=.5,verbose=False)
+            cars_l,cars_r=[car_boxes(r,self.car_conf) for r in car_results]
+            cl=[g for g in cl if not overlaps_car(g,cars_l)]
+            cr=[g for g in cr if not overlaps_car(g,cars_r)]
         inferred=time.perf_counter()
 
         # 用当前位姿反投影旧 track, 供本帧关联 (方案 27/28)
         self.gate_map.predict(pos, quat)
 
         obs = []
+        disp=None
         if not self.corner_only:
             for gl, gr, _ in skm.match_gate_corners(cl, cr):
                 self._observe_corner_pair(gl, gr, pos, quat, t_img, obs)
@@ -340,7 +353,20 @@ class GateYolo(object):
                                 "sigma_z": float(t.sigma()[2]), "geometry_valid": False,
                                 "keypoints": c.get("keypoints", False)})
 
+        car_observations=[]
+        if cars_l:
+            if disp is None:
+                disp=gs.compute_disparity(cv2.cvtColor(left,cv2.COLOR_BGR2GRAY),
+                    cv2.cvtColor(right,cv2.COLOR_BGR2GRAY),self.sgbm)
+            car_observations=[locate_car(car,disp,pos,quat) for car in cars_l]
+        self.pub_cars.publish(String(data=json.dumps(dict(stamp=t_img,detections=car_observations))))
         vl, vr = self.draw(left, cl), self.draw(right, cr)
+        for view,cars in ((vl,cars_l),(vr,cars_r)):
+            for car in cars:
+                a,b,c,d=[int(v) for v in car['bbox']]
+                cv2.rectangle(view,(a,b),(c,d),(255,100,0),2)
+                cv2.putText(view,'car %.2f'%car['confidence'],(a,max(15,b-5)),
+                    cv2.FONT_HERSHEY_SIMPLEX,.5,(255,100,0),1)
         st = cv2.hconcat([vl, vr])
         cv2.putText(st, "YOLO LEFT%s" % (" KP" if kp_l else " bbox"),
                     (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 255), 2)
