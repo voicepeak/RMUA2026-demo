@@ -116,6 +116,21 @@ RMUA2026-demo/
   ROS 日志跨会话可见 23 个门 id）后 STUCK；
   `d1` s≈797 m / 15 门（7 MISS，横向 1.56–4.64 m）后异常复位。
 
+### L7 比赛推进：起跑窗口 / 返程 / 汽车 / 自适应速度（当前最新）
+| 提交 | 内容 |
+| --- | --- |
+| `043325d` `a6de45e` | 规则文档 + 推进报告；雷达感知路径跟踪、枢纽出口与终点离地修正、seed123 录制门图/引导 |
+| `52a9140` `d84c2c8` `2769685` | `race_runner` 分段观察器/进度账本、`race_start_watch`、`start_seed123_race.py` 一键启动器 |
+| `1f756a8` `750cf58` | 起跑 30s 窗口计时修复、15 m/s 能力表、返程纵向/雷达恢复修复 |
+| `394da60` `b40df5b` | 汽车 YOLO 训练（63 图/424 框，mAP50 93.9%）+ 数据集/训练工具 + 车体几何 |
+| `4740d5a` | 自适应速度、运动估计、横向硬限修正平滑、传感器分工（docs/23） |
+
+- 方案：`docs/19`–`23`；目标：从 1→3 接管继续推进，按官方 `end_goal`/HUD State 切段。
+- 关键成果：fast_f4 **正式完成第一段**（`end_goal` 3→5、HUD State2、第一段约 178.832s）；
+  返程遇到悬浮汽车，通过首辆车（HUD Score 91），第二段尚未完成。
+- 现状：返程第二辆车挡路（净空 0.93 m < 1 m，安全停车 `PERCEPTION_REQUIRED`）；
+  汽车模型已训练但尚未接入绕行决策；工厂巡检未实现。
+
 ---
 
 ## 3. 提交索引
@@ -154,7 +169,17 @@ RMUA2026-demo/
 | 30 | `ba20d1d` | L6 | 模块化控制管线 |
 | 31 | `b5c7b8e` | L6 | 高度先验 + 持久引导 + C1 曲线 + lidar |
 | 32 | `c57c2ec` | L6 | 视觉异步 latest-frame |
-| 33 | `<本轮>` | L6 | README 分层迭代路线（本文件） |
+| 33 | `6e296a3` | L6 | README 分层迭代路线 |
+| 34 | `043325d` | L7 | docs：规则 + 推进报告 |
+| 35 | `a6de45e` | L7 | 雷达路径跟踪 + 枢纽出口/终点离地 + 录制门图 |
+| 36 | `52a9140` | L7 | race_runner 阶段观察 + 进度账本 |
+| 37 | `1f756a8` | L7 | docs：起跑窗口/返程提速/Score91 |
+| 38 | `750cf58` | L7 | 起跑窗口计时 + 15m/s 能力表 + 返程恢复 |
+| 39 | `d84c2c8` | L7 | seed123 一键启动器 + 起跑监视 |
+| 40 | `394da60` | L7 | docs：汽车训练/自适应速度/陡坡平滑 |
+| 41 | `b40df5b` | L7 | 汽车 YOLO 模型 + 数据/训练工具 |
+| 42 | `4740d5a` | L7 | 自适应速度 + 运动估计 + 横向平滑 |
+| 43 | `2769685` | L7 | 启动器/race_runner 自适应速度更新 |
 
 ---
 
@@ -174,6 +199,11 @@ RMUA2026-demo/
    现在软视野 + RECON 搜扫（2 m/s、限 30 m）+ 卡死检测兜底。
 6. **GPU 会被打挂**：UE4 Vulkan 反复崩后驱动报
    `uvm global fatal error 0x60 / Node Reboot Required`，必须重启主机；优先用 offscreen 跑。
+7. **"没计时"是起跑超窗**：模拟器开始运行到控制器起飞若 >30s，该轮判无效
+   （HUD `Time:0 / State:Finished`，但穿门仍加 Score）。必须用一键启动器及时起飞
+   （`fast_f2` 及时起跑后 HUD `State1 / Time:32.017`）。
+8. **官方里程碑与计分口径**：`fast_f4` 第一段正式完成——`end_goal` 3→5、HUD `State2`、
+   第一段约 **178.832s**；官方分以 HUD `Score` 为准（car_f5 到 91），内部 PASS 只是感知门几何记录。
 
 ---
 
@@ -181,13 +211,15 @@ RMUA2026-demo/
 
 | # | 问题 | 证据 | 方向 |
 | --- | --- | --- | --- |
-| A | 路线 ≠ 门心，偏移门必然 MISS | d1 7 MISS，横向 1.56–4.64 m | planner 做路线→门心的局部修正（门间直线/偏移样条），或明确信任门心 |
-| B | 末端 STUCK（撞结构/地形） | s≈396–433、c7≈690、d1≈797 后卡停 `cmd≈8 act=0` | `lidar_clearance` 实飞验证 + 窄段减速/偏置/绕行 |
-| C | 感知连续性 | 坡顶 L=0/R=1、右目 ~2 Hz、hard 锚点断续、后段无门事件 | 单目/单帧兜底、相机帧率、锚点延迟压缩 |
-| D | 门账本/ID 一致性 | c7 出现 `100005` 在 s=630 才通过；探针与 ROS 日志统计不一致 | 复核 GateTaskState 与锚点 s 更新/ID 复用 |
-| E | `reset` 语义未知 | 飞行中 `/airsim_node/reset` 返回 `success:false` | 确认官方 reset/成绩接口；`race_success` 保持 UNKNOWN |
-| F | 高度先验边界 | 已飞到 z≈-98 m（约 98 m 高）、s≈797 m | datum/tilt 只在有门段标定，外推区间需验证 |
-| G | 速度-感知矛盾 | >6 m/s 门锚点易滞后；8 m/s 能飞远但 MISS/卡滞 | 感知提速后再做全程速度规划 |
+| A | 路线 ≠ 门心（换 seed/新道路仍需在线感知） | seed123 已录制 18 门 + 静态修正；其他 seed 无图 | 新道路在线建图 + 门间路线修正 |
+| B | 返程悬浮汽车挡路 | car_f5 停点净空 0.93 m < 1 m；第二处车 s≈554 | 接入汽车 YOLO + 三维绕行/重规划（模型已训） |
+| C | 感知连续性 | 坡顶 L=0/R=1、右目低帧率、hard 锚点断续 | 单目/单帧兜底、相机帧率、锚点延迟压缩 |
+| D | 门账本/ID 与官方触发不一致 | 内部 30-36 PASS；HUD Score 到 91 | 以 HUD Score 为 KPI，复核门序/触发对账 |
+| E | `reset` 语义 / 官方成绩接口 | 飞行中 `reset` 返回 `success:false`；无成绩话题 | 确认 reset/成绩接口；`race_success` 保持 UNKNOWN |
+| F | 高度先验外推边界 | 实飞 s=1449 m、z≈-135 m；datum 只在有门段标定 | 关键窗口高度用实测修正（3 号窗口已修） |
+| G | 15 m/s 未实飞验收 | 单元测试覆盖，实飞待独占模拟器验证 | 用一键启动器跑 15 m/s 基线 |
+| H | 工厂巡检未实现 | 8-12/12-10/10-7 需巡检；`meter_report` 定义未入库 | 进厂/识别三红灯设备/读表/上报；GPS 失效处理 |
+| I | 第二段（3→5）超时 | fast_f4：首车避障耗时致第二段超时；car_f5 卡在第二辆车 | 汽车绕行提速 + 起跑即计时的时间预算 |
 
 ---
 
@@ -213,30 +245,30 @@ GPU:      NVIDIA RTX 3060 Laptop（UE4 Vulkan 易 Xid；off 屏更稳，崩后�
 ## 7. 运行
 
 ```bash
-# 0) 启动官方模拟器（容器内运行；会自动清理旧实例）
+# 0) 一键启动（推荐；固定 seed123；自动清旧模拟器→重启容器→30s 内及时起飞→并行加载视觉→记录+监听切段）
+cd /home/tianbot/RUMA-by-helinjun/repo
+rsync -rt --exclude=__pycache__ ros_ws/src/route_follower/ ../rmua_ws/src/route_follower/
+python3 tools/start_seed123_race.py --mode render      # 或 --mode offscreen（正式验证用）
+```
+
+> ⚠️ 不要"先开模拟器再慢慢加载视觉/手动敲命令"：**起跑必须 ≤30s**，否则该轮判无效
+> （HUD `Time:0 / State:Finished`，Score 仍会涨但与官方赛时无关）。
+
+```bash
+# 手动分步（仅调试用）
 cd /home/tianbot/RUMA-by-helinjun
-./run_sim.sh 123 render      # 渲染窗口（易崩）
-./run_sim.sh 123 offscreen   # 后台模式（稳，推荐长跑）
-
-# 1) 视觉（另开终端；等 ~20s 模型加载）
-./run_yolo.sh                # 发布 /rmua/gate_map 等
-
-# 2a) 最新默认（8 m/s，codex L6 参数；直接 roslaunch 即用 launch 默认值）
-./enter_rmua.sh
-roslaunch route_follower route_follower.launch
-
-# 2b) 保守 5 m/s 档（含混合引导参数）
-./run_route_vision.sh        # = cruise 5 / floor 3 + 混合参数
-
-# 2c) 纯静态模式（只认 gates_vision_1_3.yaml 的 10 个门）
-./run_route.sh
+./run_sim.sh 123 render|offscreen   # 模拟器（自动清理旧实例）
+./run_yolo.sh                       # 视觉，发布 /rmua/gate_map 等
+./enter_rmua.sh                     # 进入容器后 roslaunch route_follower route_follower.launch
+./run_route_vision.sh               # 保守 5 m/s + 混合引导档
+./run_route.sh                      # 纯静态模式（只认 gates_vision_1_3.yaml 的 10 个门）
 ```
 
 - 观测：`rostopic echo /rmua/controller/events`（latch，门事件/终止原因）、
   `/rmua/controller/telemetry`（20Hz JSON：s/z_ref/vz/限速/yaw）。
 - 数据采集：`docker exec rmua_noetic python3 /workspace/frames/flight_probe.py
   --out /workspace/frames/<名字> --seconds 300`。
-- 回归：`python3 -m unittest discover -s tools/tests`（当前 **120 项全过**）。
+- 回归：`python3 -m unittest discover -s tools/tests`（当前 **166 项全过**）。
 - 停止：`docker exec rmua_noetic pkill -f route_follower.py`；
   关模拟器：`docker exec rmua_noetic bash -lc 'pkill -f RMUA; pkill -f rosmaster'`。
 
@@ -256,8 +288,9 @@ roslaunch route_follower route_follower.launch
 
 ## 9. 交接要点（保留）
 
-- **控制链路已跑通**：早期 Stage7/8 实测 10/10 静态门（当时按路线中心判定，见 §4 结论 1）；
-  L6 架构最好 s≈797 m / 8 m/s。
+- **控制链路已跑通**：L7 实飞整段 1→3（s=1449 m）抵达 3 号点；`fast_f4` 官方切段
+  （`end_goal` 3→5、State2、第一段约 178.8s）；car_f5 返程 HUD Score 91，第二段受悬浮汽车阻挡未完成。
+  早期 Stage7/8 曾实测 10/10 静态门（当时按路线中心判定，见 §4 结论 1）。
 - **视觉两种 Detector 可互换**：OpenCV（`gate_detector_opencv.py`）与 YOLO（`gate_yolo_node.py`），
   输出统一 `GateObservation`；`_use_keypoints` 自动检测 bbox/pose 模型。
 - **持久 Gate Map**：`gate_tracker.py`/`gate_map.py` + `online_gate_cache.py`（route_follower），
@@ -269,6 +302,8 @@ roslaunch route_follower route_follower.launch
 - **启动高度保护（Stage14）**：`start_anchor` 自动取当前实际高度，跳变 >1 m 告警并改用当前高度。
 - **Gate 6 高度认知修复**：Trace 证明地图/YAML z 正确，问题在前馈前视越门；修复为
   `s_ff` 钳到 `min(s+Lz, next_gate.s - ff_gate_margin)`。L6 的预测爬升在此基础上工作。
-- **模型**：`yolo/weights/best.pt` 是检测(bbox)模型（~40 图，mAP50≈0.7，Recall≈0.5），
-  上比赛需按 `yolo/README.md` 标注 500+ 图重训；`_use_keypoints:=true` 可自动启用 pose 关键点。
-- **避障**：`avoidance_interface.py` 仍是预留（`active=False`）；`lidar_clearance.py` 已接入但未实飞验证。
+- **模型**：门检测 `yolo/weights/best.pt`（~40 图，mAP50≈0.7、Recall≈0.5；建议按 `yolo/README.md`
+  标 500+ 图重训）；汽车检测 `yolo/weights/car_score91_best.pt`（63 图/424 框，mAP50 93.9%、
+  Recall 90.1%，尚未接入绕行闭环）；`_use_keypoints:=true` 可自动启用 pose 关键点。
+- **避障**：`lidar_clearance.py` 已实飞参与路径跟踪与停车保护（返程悬浮汽车处即由它安全停车并报
+  `PERCEPTION_REQUIRED`）；`avoidance_interface.py` 仍是预留（`active=False`）；汽车 YOLO 尚未接入绕行决策。
