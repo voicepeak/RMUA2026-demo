@@ -1,0 +1,17 @@
+provenance: Experimental descent envelope; validate measured tracking before accepting
+  as calibrated capability.
+vz_available:
+  down:
+  - vxy: 0.0
+    vz: 4.5
+  - vxy: 5.0
+    vz: 4.5
+  - vxy: 10.0
+    vz: 4.5
+  up:
+  - vxy: 0.0
+    vz: 4.0
+  - vxy: 5.0
+    vz: 4.0
+  - vxy: 10.0
+    vz: 4.0

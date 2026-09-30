@@ -38,15 +38,21 @@ class ClimbFeasibility(object):
         h = self.preview_time * max(0.0, float(vxy))
         return max(self.preview_min, min(self.preview_max, h))
 
-    def _point_cap(self, ds, dz_up, vz_avail):
+    def _point_cap(self, ds, dz_up, vz_avail, velocity_up=0.):
         """dz_up>0 需要爬升; 返回该点允许的 vxy。"""
         if ds <= 1e-6:
             return float("inf")
         t_z = abs(dz_up) / max(1e-3, vz_avail)
-        t_required = t_z + self.response_time
+        if t_z < 1e-6:return float("inf")
+        direction=1. if dz_up>=0. else -1.
+        # Response latency belongs to starting/reversing vertical motion.
+        # Reapplying it at every preview point caps even a level road at
+        # preview_step / response_time (formerly 12.5 m/s).
+        remaining=max(0.,min(1.,1.-direction*velocity_up/max(1e-3,vz_avail)))
+        t_required = t_z + min(t_z,self.response_time)*remaining
         return ds / max(1e-3, t_required)
 
-    def evaluate(self, s_now, z_now, center_fn, capability, v_test):
+    def evaluate(self, s_now, z_now, center_fn, capability, v_test, velocity_up=0.):
         """返回 dict(v_climb_preview, horizon, worst_s, worst_dz, vz_up, vz_down)。
 
         center_fn(s) -> z_ref(s) (可为 blended profile)
@@ -66,7 +72,7 @@ class ClimbFeasibility(object):
                 s_i = s_now + ds
                 dz_up = float(z_now) - float(center_fn(s_i))
                 vz_avail = vz_up if dz_up >= 0.0 else vz_down
-                v_cap = self._point_cap(ds, dz_up, vz_avail)
+                v_cap = self._point_cap(ds, dz_up, vz_avail, velocity_up)
                 if v_cap < cap:
                     cap = v_cap
                     worst_s, worst_dz = s_i, dz_up

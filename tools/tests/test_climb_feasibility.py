@@ -30,6 +30,19 @@ class ClimbFeasibilityTests(unittest.TestCase):
         result = self.feas.evaluate(0.0, -5.0, lambda s: -5.0, self.cap, 10.0)
         self.assertAlmostEqual(result["v_climb_preview"], 10.0)
 
+    def test_flat_profile_allows_fifteen(self):
+        result=self.feas.evaluate(0.,-5.,lambda s:-5.,self.cap,15.)
+        self.assertAlmostEqual(result['v_climb_preview'],15.)
+
+    def test_established_climb_does_not_pay_startup_latency_again(self):
+        result=self.feas.evaluate(0.,0.,lambda s:-.5*s,self.cap,15.,velocity_up=3.)
+        self.assertAlmostEqual(result['v_climb_preview'],6.)
+
+    def test_wrong_way_vertical_motion_keeps_response_allowance(self):
+        stationary=self.feas.evaluate(0.,0.,lambda s:-.5*s,self.cap,15.)
+        descending=self.feas.evaluate(0.,0.,lambda s:-.5*s,self.cap,15.,velocity_up=-3.)
+        self.assertLessEqual(descending['v_climb_preview'],stationary['v_climb_preview'])
+
     def test_rising_profile_limits_speed(self):
         # NED: z_ref 变小 = 变高; 坡度 0.5 上升, vz 能力 3 m/s
         result = self.feas.evaluate(0.0, 0.0, lambda s: -0.5 * s, self.cap, 10.0)

@@ -78,7 +78,8 @@ class XYTracker:
         return fn(s_now+self.lookahead(v))[:2]
 
     def velocity(self,p_xy,target_xy,v_max,arbiter=None,dt=.05,lateral_offset=0.,
-                 terminal_position=None):
+                 terminal_position=None,lateral_speed_limit=None):
+        command_limit=max(v_max,float(lateral_speed_limit or 0.))
         if terminal_position is not None:
             dx,dy=terminal_position[0]-p_xy[0],terminal_position[1]-p_xy[1]
             distance=math.hypot(dx,dy)
@@ -95,16 +96,17 @@ class XYTracker:
             # The obstacle displacement is a reference position, not an extra
             # velocity that the route feedback immediately cancels.
             error = -(x-p_xy[0])*dy+(y-p_xy[1])*dx+lateral_offset
-            lateral = max(-.65*v_max,min(.65*v_max,self.k_pursuit*error))
+            lateral_limit=max(.65*v_max,float(lateral_speed_limit or 0.))
+            lateral = max(-lateral_limit,min(lateral_limit,self.k_pursuit*error))
             vx,vy = v_max*dx-lateral*dy,v_max*dy+lateral*dx
-            length = max(v_max,math.hypot(vx,vy),1e-6)
-            vx,vy = vx*v_max/length,vy*v_max/length
+            length = max(command_limit,math.hypot(vx,vy),1e-6)
+            vx,vy = vx*command_limit/length,vy*command_limit/length
         px,py = self.previous_velocity
         delta = math.hypot(vx-px,vy-py)
         blend = min(1.,self.acceleration*dt/max(1e-6,delta))
         vx,vy = px+blend*(vx-px),py+blend*(vy-py)
         length = math.hypot(vx,vy)
-        if length > v_max and length > 1e-6:
-            vx,vy = vx*v_max/length,vy*v_max/length
+        if length > command_limit and length > 1e-6:
+            vx,vy = vx*command_limit/length,vy*command_limit/length
         self.previous_velocity = vx,vy
         return arbiter.arbitrate((vx,vy)) if arbiter is not None else (vx,vy)

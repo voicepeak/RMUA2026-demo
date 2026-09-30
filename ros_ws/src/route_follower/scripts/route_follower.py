@@ -81,6 +81,7 @@ class RouteFollower(object):
         # z
         self.k_z = rospy.get_param("~k_z", 1.0)
         self.z_rate_max = rospy.get_param("~z_rate_max", 4.0)
+        self.terminal_hover_height = float(rospy.get_param('~terminal_hover_height',1.5))
         self.corridor_half = rospy.get_param("~corridor_half", 1.5)
         self.gate_blend_start = rospy.get_param("~gate_blend_start", 25.0)
         self.gate_blend_full = rospy.get_param("~gate_blend_full", 8.0)
@@ -305,6 +306,10 @@ class RouteFollower(object):
         self.last_stale_event = None
         self.race_goal = None
         self.race_goal_changed = False
+        self.departure_aligned = False
+        self.departure_turn_announced = False
+        self.blocked_since = None
+        self.last_perception_event = None
 
         self.route = self.load_route(self.route_file, self.route_name)
         self.gates = self.load_list(self.gates_file, "gates")
@@ -771,14 +776,35 @@ class RouteFollower(object):
                        min(self.yaw_rate_prev + dyr, yaw_rate_target))
         self.yaw_rate_prev = yaw_rate
 
+        # A return leg begins facing away from the road. Rotate before moving,
+        # so the forward cameras observe the new obstacles before departure.
+        if not self.departure_aligned:
+            if self.yaw_control and abs(yaw_err) > math.radians(25.):
+                if not self.departure_turn_announced:
+                    self.event('TURN_AROUND', pose_stamp=pose_stamp,
+                               yaw_error_deg=math.degrees(yaw_err))
+                    self.departure_turn_announced = True
+                self.publish(0., 0., 0., yaw_rate)
+                return
+            self.departure_aligned = True
+            if self.departure_turn_announced:
+                self.event('TURN_AROUND_COMPLETE', pose_stamp=pose_stamp)
+
         # ---- 高度误差 / 预测 tracking ----
         base_center = lambda s: self.blender.center(s, pose_stamp)
+        rx,ry,_=self.xy_tracker.point_at(s_now)
+        fx,fy=self.xy_tracker.tangent(s_now)
+        current_lateral=-(p.x-rx)*fy+(p.y-ry)*fx
+        current_vertical=p.z-base_center(s_now)
         if self.lidar_points is not None and 0. <= pose_stamp-self.lidar_stamp < .5:
             if self.clearance_checked is None or pose_stamp-self.clearance_checked >= .2:
-                distance=max(8.,min(15.,2.*v_s))
-                ex,ey,_=self.xy_tracker.point_at(s_now+distance)
-                self.clearance_info=self.clearance.evaluate(
-                    self.lidar_points-pn,(ex-p.x,ey-p.y,base_center(s_now+distance)-p.z))
+                distance=self.clearance.preview_distance(max(v_s,self.v_cmd_prev))
+                reference=[]
+                for ahead in np.linspace(0.,distance,max(3,int(distance/3.)+1)):
+                    ex,ey,_=self.xy_tracker.point_at(s_now+ahead)
+                    reference.append((ex-p.x,ey-p.y,base_center(s_now+ahead)-p.z))
+                self.clearance_info=self.clearance.evaluate_path(
+                    self.lidar_points-pn,reference,(current_lateral,current_vertical))
                 self.clearance_checked=pose_stamp
         elif self.clearance_info.get('active', False):
             # A delayed cloud cannot authorize acceleration into a surface
@@ -787,9 +813,23 @@ class RouteFollower(object):
         else:
             self.clearance_info=dict(cap=None,active=False)
         active=self.clearance_info.get('active',False)
+        if active and not self.clearance_info.get('feasible',False):
+            if self.blocked_since is None:self.blocked_since=pose_stamp
+            if (pose_stamp-self.blocked_since>3. and
+                    (self.last_perception_event is None or pose_stamp-self.last_perception_event>15.)):
+                self.event('PERCEPTION_REQUIRED',pose_stamp=pose_stamp,s=s_now,
+                           position=[p.x,p.y,p.z],reason='NO_SAFE_LIDAR_CORRIDOR')
+                self.last_perception_event=pose_stamp
+        else:
+            self.blocked_since=None
         blend=1.-math.exp(-dt/(.25 if active else 1.5))
-        self.clearance_z+=blend*(self.clearance_info.get('vertical',0.)-self.clearance_z)
-        self.clearance_y+=blend*(self.clearance_info.get('lateral',0.)-self.clearance_y)
+        target_z=self.clearance_info.get('vertical',0.)
+        target_y=self.clearance_info.get('lateral',0.)
+        if active and (not self.clearance_info.get('feasible',False) or self.clearance_info.get('stale',False)):
+            target_z=current_vertical
+            target_y=current_lateral
+        self.clearance_z+=blend*(target_z-self.clearance_z)
+        self.clearance_y+=blend*(target_y-self.clearance_y)
         center_fn = lambda s: base_center(s)+self.clearance_z
         terminal = self.race_goal is not None and s_now > self.route.total_s-25.
         if terminal:
@@ -798,7 +838,7 @@ class RouteFollower(object):
                 blend=max(0.,min(1.,(s-self.route.total_s+25.)/20.))
                 # Published marker locations are at road level, like the
                 # initial pose. Enter the 5m-high trigger above that surface.
-                return (1.-blend)*old_center(s)+blend*(self.race_goal[2]-2.5)
+                return (1.-blend)*old_center(s)+blend*(self.race_goal[2]-self.terminal_hover_height)
         e_z0 = p.z - center_fn(s_now)
         z_dot = 0.0
         if self.z_prev is not None and dt > 0:
@@ -819,7 +859,8 @@ class RouteFollower(object):
         # 会被当作上限, 形成越慢越上不去的死锁。
         feedback_speed = self.v_cmd_prev if self.v_cmd_prev > 0.5 else self.cruise_speed
         preview_speed = max(feedback_speed, self.cruise_speed)
-        climb = self.climb_feas.evaluate(s_now, p.z, center_fn, self.vz_cap, preview_speed)
+        climb = self.climb_feas.evaluate(s_now, p.z, center_fn, self.vz_cap, preview_speed,
+                                         velocity_up=-z_dot)
         curve = self.curve_env.evaluate(s_now, self.xy_tracker.curvature, self.a_lat_max,
                                         preview_speed, cruise=self.cruise_speed)
 
@@ -827,6 +868,8 @@ class RouteFollower(object):
         horizon_s = max((g["s"] for g in chain.gates), default=None)
         if self.planner.trend_horizon is not None:
             horizon_s=max(horizon_s or 0.,self.planner.trend_horizon)
+        if self.race_goal is not None and self.route.total_s-s_now<30.:
+            horizon_s=max(horizon_s or 0.,self.route.total_s+10.)
         soft = self.planner.evidence_horizon
         if soft is not None and self.soft_horizon_stamp is not None \
                 and pose_stamp is not None \
@@ -851,6 +894,11 @@ class RouteFollower(object):
         self.speed_info["v_climb_worst_dz"] = climb["climb_worst_dz"]
 
         obstacle_cap=self.clearance_info.get('cap')
+        if active:
+            obstacle_cap,aligned=self.clearance.progress_cap(
+                self.clearance_info,current_lateral,current_vertical,
+                self.clearance_info.get('lateral',0.),self.clearance_info.get('vertical',0.))
+            self.clearance_info=dict(self.clearance_info,aligned=aligned)
         if obstacle_cap is not None:
             v_target=min(v_target,obstacle_cap)
             self.speed_info['hard_cap']=min(self.speed_info['hard_cap'],obstacle_cap)
@@ -885,7 +933,10 @@ class RouteFollower(object):
         v_route = self.xy_tracker.velocity(
             (p.x, p.y), (tx, ty), v, arbiter=self.arbiter, dt=dt,
             lateral_offset=self.clearance_y,
-            terminal_position=self.race_goal[:2] if terminal else None)
+            terminal_position=self.race_goal[:2] if terminal else None,
+            lateral_speed_limit=(1.5 if active and
+                                 self.clearance_info.get('feasible', False) and
+                                 not self.clearance_info.get('stale', False) else None))
 
         # ---- Z: 正常 TRACK 只有 FF+FB; RECON/HOLD 独立 (方案 9, 10) ----
         z_raw = profile.center(s_now)
@@ -951,7 +1002,7 @@ class RouteFollower(object):
         if self.gate_idx >= len(chain.gates) and s_now > self.route.total_s - 5.0 \
                 and (self.race_goal is None or
                      (np.linalg.norm(pn[:2]-self.race_goal[:2])<1. \
-                      and abs(p.z-(self.race_goal[2]-2.5))<1.)):
+                      and abs(p.z-(self.race_goal[2]-self.terminal_hover_height))<.5)):
             self.publish(0.0, 0.0, 0.0, 0.0)
             if not self.reached:
                 rospy.loginfo("GOAL_REACHED")

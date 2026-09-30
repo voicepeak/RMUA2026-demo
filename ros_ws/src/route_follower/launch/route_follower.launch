@@ -112,6 +112,7 @@
   <!-- Z 反馈/走廊 -->
   <arg name="k_z"            default="1.0"/>
   <arg name="z_rate_max"     default="4.0"/>
+  <arg name="terminal_hover_height" default="1.5"/>
   <arg name="corridor_half"  default="1.5"/>
   <arg name="gate_blend_start" default="25.0"/>
   <arg name="gate_blend_full"  default="8.0"/>
@@ -233,6 +234,7 @@
     <param name="sigma_z_max"      value="$(arg sigma_z_max)"/>
     <param name="k_z"              value="$(arg k_z)"/>
     <param name="z_rate_max"       value="$(arg z_rate_max)"/>
+    <param name="terminal_hover_height" value="$(arg terminal_hover_height)"/>
     <param name="corridor_half"    value="$(arg corridor_half)"/>
     <param name="gate_blend_start" value="$(arg gate_blend_start)"/>
     <param name="gate_blend_full"  value="$(arg gate_blend_full)"/>

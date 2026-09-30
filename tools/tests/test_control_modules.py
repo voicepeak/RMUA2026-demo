@@ -9,6 +9,24 @@ from mission_state import MissionState, TRACK, RECON, HOLD, ABORT  # noqa: E402
 from xy_tracker import XYTracker  # noqa: E402
 from z_controller import ZController  # noqa: E402
 
+class ObstacleAlignmentTests(unittest.TestCase):
+    def test_forward_stop_still_allows_bounded_sideways_alignment(self):
+        from reference_planner import RouteGeometry
+        tracker=XYTracker()
+        tracker.configure(RouteGeometry([(0.,0.,0.),(100.,0.,0.)]),[])
+        tracker.last_s=10.
+        vx,vy=tracker.velocity((10.,0.),(20.,0.),0.,dt=.1,
+                               lateral_offset=2.,lateral_speed_limit=1.5)
+        self.assertAlmostEqual(vx,0.)
+        self.assertGreater(vy,0.)
+        self.assertLessEqual(math.hypot(vx,vy),.4+1e-6)
+
+    def test_closed_wall_stop_has_no_sideways_permission(self):
+        from reference_planner import RouteGeometry
+        tracker=XYTracker()
+        tracker.configure(RouteGeometry([(0.,0.,0.),(100.,0.,0.)]),[])
+        self.assertEqual(tracker.velocity((0.,0.),(10.,0.),0.,lateral_offset=2.),(0.,0.))
+
 
 class XYTrackerTests(unittest.TestCase):
     def setUp(self):
