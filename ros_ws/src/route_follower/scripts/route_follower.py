@@ -50,6 +50,7 @@ from speed_scheduler import SpeedScheduler                                      
 from lidar_clearance import LidarClearance
 from persistent_guides import PersistentGuides
 from xy_tracker import XYTracker                                                 # noqa: E402
+from motion_estimator import MotionEstimator
 from yaw_controller import YawController                                         # noqa: E402
 from z_capability import load_capability                                         # noqa: E402
 from z_controller import ZController                                             # noqa: E402
@@ -71,6 +72,10 @@ class RouteFollower(object):
         self.cruise_speed = rospy.get_param("~cruise_speed", 8.0)
         self.max_speed = rospy.get_param("~max_speed", 12.0)
         self.normal_speed_floor = rospy.get_param("~normal_speed_floor", 4.0)
+        self.adaptive_speed=bool(rospy.get_param('~adaptive_speed',False))
+        self.lidar_range=float(rospy.get_param('~lidar_range',30.))
+        self.lidar_braking=float(rospy.get_param('~lidar_braking',8. if self.adaptive_speed else 4.))
+        self.sensor_reaction=float(rospy.get_param('~sensor_reaction',.35))
         self.a_lat_max = rospy.get_param("~a_lat_max", 6.0)
         self.a_up = rospy.get_param("~a_up", 4.0)
         self.a_down = rospy.get_param("~a_down", 5.0)
@@ -216,7 +221,7 @@ class RouteFollower(object):
         self.pose_stamp = None
         self.lidar_points = None
         self.lidar_stamp = None
-        self.clearance = LidarClearance()
+        self.clearance = LidarClearance(braking=self.lidar_braking)
         self.clearance_z = 0.
         self.clearance_y = 0.
         self.clearance_checked = None
@@ -254,13 +259,16 @@ class RouteFollower(object):
             z_f5=self.z_f5, gate_f1=self.gate_f1, gate_f2=self.gate_f2,
             gate_f3=self.gate_f3, yaw_slow1=self.yaw_slow1, yaw_slow2=self.yaw_slow2,
             yaw_slow3=self.yaw_slow3, yaw_f1=self.yaw_f1, yaw_f2=self.yaw_f2,
-            yaw_f3=self.yaw_f3)
+            yaw_f3=self.yaw_f3,adaptive_speed=self.adaptive_speed,
+            braking_accel=self.lidar_braking,reaction_time=self.sensor_reaction,
+            jerk_limit=20. if self.adaptive_speed else 0.)
+        self.motion=MotionEstimator()
         self.xy_tracker = XYTracker(
             lookahead_base=self.lookahead_base, lookahead_kv=self.lookahead_kv,
             k_pursuit=self.k_pursuit, xy_converge=self.xy_converge,
             gate_blend_start=self.gate_blend_start, gate_blend_full=self.gate_blend_full,
             exit_blend_distance=self.gate_exit_blend_distance,
-            half_width=self.gate_pass_half_width)
+            half_width=self.gate_pass_half_width,acceleration=self.accel)
         self.z_ctrl = ZController(
             k_z=self.k_z, k_ff_z=self.k_ff_z, z_rate_max=self.z_rate_max,
             vz_up_limit=self.vz_up_limit, vz_down_limit=self.vz_down_limit,
@@ -390,7 +398,7 @@ class RouteFollower(object):
                 verified_ids=self.verified_ids, start_anchor_z=self.start_anchor_z)
             self.chain, self.profile = chain, profile
             self.blender.set_initial(profile, self.pose_stamp)
-            self.xy_tracker.configure(self.route, chain.gates, s_now)
+            self.xy_tracker.configure(self.route, chain.gates, s_now,stamp=self.pose_stamp)
             self.gate_idx = self.planner.initial_index(chain, s_now)
             for g in chain.gates[:self.gate_idx]:
                 self.task_state.resolved_gate_ids.add(g.get("id"))
@@ -465,7 +473,7 @@ class RouteFollower(object):
             idx = self.planner.resolve_index(chain, self.task_state.resolved_gate_ids)
             self.chain, self.profile, self.gate_idx = chain, profile, idx
             self.blender.switch(profile, self.pose_stamp)
-            self.xy_tracker.configure(self.route, chain.gates, s_now)
+            self.xy_tracker.configure(self.route, chain.gates, s_now,stamp=self.pose_stamp)
         rospy.loginfo_throttle(
             2.0, "GATE_MAP update: static=%d +online=%d -> %d gates, next_idx=%d, "
             "static_corrections=%d", len(self.static_gates),
@@ -500,7 +508,10 @@ class RouteFollower(object):
             R=tft.quaternion_matrix((q.x,q.y,q.z,q.w))[:3,:3]
             points[:,2]-=.05
             self.lidar_points=points@R.T+np.array([p.x,p.y,p.z])
-            self.lidar_stamp=stamp
+            # Geometry used this pose. A lidar callback can arrive a fraction
+            # before the matching pose callback; do not date transformed
+            # points later than the pose used for their world transform.
+            self.lidar_stamp=min(stamp,self.pose_stamp)
 
     def pose_cb(self, m):
         with self._lock:
@@ -531,6 +542,8 @@ class RouteFollower(object):
         self.mission.reset()
         self.safety.reset()
         self.z_ctrl.reset()
+        self.motion.reset()
+        self.speed_sched.reset()
         self.xy_tracker.reset()
         self.lidar_points = None
         self.clearance_z = self.clearance_y = 0.
@@ -676,6 +689,9 @@ class RouteFollower(object):
             if self.pose is None or self.stopping:
                 return
             p, pose_stamp = self.pose.position, self.pose_stamp
+            # Keep pose and cloud from one callback snapshot. Reading a newer
+            # cloud after releasing the lock creates a negative cloud age.
+            lidar_points, lidar_stamp = self.lidar_points, self.lidar_stamp
         if self.reached or self.safety.aborted or self.mission.mode == ABORT:
             self.publish(0.0, 0.0, 0.0, 0.0)
             return
@@ -704,8 +720,18 @@ class RouteFollower(object):
         if pose_stamp is not None:
             self.last_pose_stamp = pose_stamp
 
+        # Establish flight height before constructing the departure profile.
+        # The initial spawn origin may settle below the rendered road surface;
+        # treating that floor as an arbitrary obstacle prevents takeoff.
+        # This applies only at the official origin, never at an in-course car.
+        if (self.seg is None and math.hypot(*self.route.points[0][:2])<3.
+                and math.hypot(p.x,p.y)<3. and p.z> -1.65):
+            takeoff=self.z_ctrl.recon(p.z,0.,1.8,min(1.5,max(.4,2.*(p.z+1.8))),dt)
+            self.publish(0.,0.,takeoff['vz_cmd'],0.)
+            return
 
         if self.seg is None:
+            self.z_ctrl.reset()
             self.init_once(p)
         pn = np.array([p.x, p.y, p.z])
 
@@ -720,6 +746,8 @@ class RouteFollower(object):
 
         chain, profile = self.chain, self.profile
         p_prev = np.asarray(self.prev_pose, dtype=float) if self.prev_pose is not None else pn
+        measured_progress,measured_up=self.motion.update(p_prev,pn,dt,self.route.tangent(s_now))
+        self.xy_tracker.stamp=pose_stamp
 
         # ---- Gate Task State: 真实 Gate plane crossing + 账本分离 (方案 15, 16) ----
         gate_idx, gate_events = self.task_state.step(chain.gates, self.gate_idx, p_prev, pn, s_now)
@@ -747,7 +775,7 @@ class RouteFollower(object):
 
         # ---- Z 前视 Horizon ----
         # Only compensate short actuator response; the climb profile already anticipates gates.
-        Lz = min(2.0, self.z_response_time * v_s)
+        Lz = min(2.0, self.z_response_time * (measured_progress if self.adaptive_speed else v_s))
         z_horizon = max(self.z_horizon_min, min(self.z_horizon_max, self.z_horizon_time*v_s))
         s_ff = s_now + Lz
         kz_prev = self.blender.dz_ds(s_ff, stamp=pose_stamp)
@@ -796,15 +824,21 @@ class RouteFollower(object):
         fx,fy=self.xy_tracker.tangent(s_now)
         current_lateral=-(p.x-rx)*fy+(p.y-ry)*fx
         current_vertical=p.z-base_center(s_now)
-        if self.lidar_points is not None and 0. <= pose_stamp-self.lidar_stamp < .5:
+        cloud_age=pose_stamp-lidar_stamp if lidar_stamp is not None else None
+        cloud_fresh=lidar_points is not None and 0. <= cloud_age < .5
+        measured_vxy=float(np.linalg.norm((pn-p_prev)[:2]))/dt
+        available_cruise=self.speed_sched.set_visibility(
+            self.lidar_range if cloud_fresh else 8.,cloud_age if cloud_fresh else .5)
+        if cloud_fresh:
             if self.clearance_checked is None or pose_stamp-self.clearance_checked >= .2:
-                distance=self.clearance.preview_distance(max(v_s,self.v_cmd_prev))
+                distance=min(self.lidar_range,self.clearance.preview_distance(
+                    max(v_s,self.v_cmd_prev,measured_vxy),braking=self.lidar_braking,latency=self.sensor_reaction))
                 reference=[]
                 for ahead in np.linspace(0.,distance,max(3,int(distance/3.)+1)):
                     ex,ey,_=self.xy_tracker.point_at(s_now+ahead)
                     reference.append((ex-p.x,ey-p.y,base_center(s_now+ahead)-p.z))
                 self.clearance_info=self.clearance.evaluate_path(
-                    self.lidar_points-pn,reference,(current_lateral,current_vertical))
+                    lidar_points-pn,reference,(current_lateral,current_vertical))
                 self.clearance_checked=pose_stamp
         elif self.clearance_info.get('active', False):
             # A delayed cloud cannot authorize acceleration into a surface
@@ -843,6 +877,7 @@ class RouteFollower(object):
         z_dot = 0.0
         if self.z_prev is not None and dt > 0:
             z_dot = (p.z - self.z_prev) / dt
+        if self.adaptive_speed:z_dot=-measured_up
         self.z_prev = p.z
         s_pred = profile.horizon_s(s_now + max(2.0, v_s * self.pred_time),
                                    s_now, z_horizon)
@@ -857,12 +892,12 @@ class RouteFollower(object):
         # ---- Preview feasibility: climb + curve (方案 4, 8) ----
         # 预览距离按 "恢复到巡航后" 的最坏情况估计, 否则低速时 preview 自身
         # 会被当作上限, 形成越慢越上不去的死锁。
-        feedback_speed = self.v_cmd_prev if self.v_cmd_prev > 0.5 else self.cruise_speed
-        preview_speed = max(feedback_speed, self.cruise_speed)
+        feedback_speed = self.v_cmd_prev if self.v_cmd_prev > 0.5 else available_cruise
+        preview_speed = max(feedback_speed, available_cruise)
         climb = self.climb_feas.evaluate(s_now, p.z, center_fn, self.vz_cap, preview_speed,
                                          velocity_up=-z_dot)
         curve = self.curve_env.evaluate(s_now, self.xy_tracker.curvature, self.a_lat_max,
-                                        preview_speed, cruise=self.cruise_speed)
+                                        preview_speed, cruise=available_cruise)
 
         # ---- Mission mode: TRACK / RECON / HOLD (方案 10, 38.2) ----
         horizon_s = max((g["s"] for g in chain.gates), default=None)
@@ -883,15 +918,26 @@ class RouteFollower(object):
                           transition["to"], s_now)
             self.event("MODE", pose_stamp=pose_stamp, **transition)
 
+        cross_track_error=current_lateral-self.clearance_y
+        cross_cap=None
+        if self.adaptive_speed:
+            tracking_error=max(abs(cross_track_error),abs(e_z0))
+            cross_cap=self.speed_sched.cruise*max(.35,min(1.,.6/max(.6,tracking_error)))
         # ---- SpeedScheduler: 唯一水平速度 authority (方案 5) ----
         v_target, self.speed_info = self.speed_sched.target(
             self.xy_tracker.curvature(s_now), kz_prev, slope_trusted, miss_ratio, e_z0,
             z_worsening, pred_worse, math.degrees(yaw_err), vxy=v_s,
             v_curve_preview=curve["v_curve_preview"],
-            v_climb_preview=climb["v_climb_preview"], v_map=v_map)
+            v_climb_preview=climb["v_climb_preview"], v_map=v_map,v_tracking_cap=cross_cap)
         self.speed_info["mode"] = mode
         self.speed_info["v_curve_envelope"] = curve["curve_worst_v"]
         self.speed_info["v_climb_worst_dz"] = climb["climb_worst_dz"]
+        if self.adaptive_speed:
+            if cross_cap==v_target:
+                self.speed_info['reason']='CROSS_TRACK'
+            self.speed_info['v_cross_track']=cross_cap
+            self.speed_info['tracking_error']=tracking_error
+        self.speed_info['cross_track_error']=cross_track_error
 
         obstacle_cap=self.clearance_info.get('cap')
         if active:
@@ -946,7 +992,8 @@ class RouteFollower(object):
         else:
             # Search changes horizontal speed, not the known spatial climbing trajectory.
             z_ref, z_rate_limited = self.z_ctrl.reference(center_fn, s_ff, dt)
-            zres = self.z_ctrl.track(z_ref, p.z, kz_prev, v, dt,
+            v_feed_forward=measured_progress if self.adaptive_speed else v
+            zres = self.z_ctrl.track(z_ref, p.z, kz_prev, v_feed_forward, dt,
                                      next_gate=ng, d_gate=d_g)
             zres["z_ref"] = z_ref
             if z_rate_limited and zres["z_limit"] == "NONE":
@@ -981,6 +1028,8 @@ class RouteFollower(object):
             dzds=kz_prev, vz_ff=vz_ff, vz_fb=vz_fb, vz_target=vz_target,
             vz_command=vz, z_limit=z_limit, speed=v, speed_target=v_target,
             velocity_world=[float(v_route[0]),float(v_route[1])],
+            measured_progress_speed=measured_progress,lidar_age=cloud_age,
+            attitude_rad=[self.roll,self.pitch,self.yaw],
             path_xy=list(self.xy_tracker.point_at(s_now)[:2]),
             speed_limits=self.speed_info, yaw_target=yaw_target,
             yaw_rate_rad_s=yaw_rate, gate_ledger=ledgers,

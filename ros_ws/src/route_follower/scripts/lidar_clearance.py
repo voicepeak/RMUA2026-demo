@@ -9,8 +9,9 @@ import math
 import numpy as np
 
 class LidarClearance:
-    def __init__(self, margin=1.0):
+    def __init__(self, margin=1.0, braking=4.):
         self.margin=margin
+        self.braking=float(braking)
         self.previous=np.zeros(2)
 
     @staticmethod
@@ -26,6 +27,11 @@ class LidarClearance:
             # and the aircraft has already reached its offset.
             cap=max(cap or 0.,result.get('path_cap',
                     min(2.,result.get('obstacle_distance',0.)/1.5)))
+        elif (result.get('active',False) and result.get('feasible',False)
+              and result.get('obstacle_distance',float('inf'))<8.):
+            # evaluate_path checks an initial shift in place. Close to the
+            # surface, execute that shift before moving along its clear path.
+            cap=0.
         return cap,aligned
 
     @staticmethod
@@ -109,24 +115,30 @@ class LidarClearance:
         # motion away from each close surface, with no loss of separation.
         shift_clear=np.sqrt(np.min(np.sum((points[:,None,:]-shifted[0][None,:,:])**2,axis=2),axis=0))
         feasible=np.all(minimum>=threshold[:,None]-1e-6,axis=0)&(shift_clear>=self.margin)
-        if initial<.5:feasible[:]=False
         clearance=np.sqrt(np.min(minimum,axis=0))
         zero=int(np.flatnonzero(np.all(choices==0.,axis=1))[0])
         if feasible[zero] and initial>=self.margin:
             self.previous*=.5
             return dict(empty,clearance=float(clearance[zero]),initial_clearance=initial)
         effort=np.sum(choices*choices,axis=1)+.25*np.sum((choices-self.previous)**2,axis=1)
-        if np.any(feasible):index=int(np.argmin(np.where(feasible,effort,np.inf)))
+        if np.any(feasible):
+            index=int(np.argmin(np.where(feasible,effort,np.inf)))
+            previous_index=int(np.argmin(np.sum((choices-self.previous)**2,axis=1)))
+            if (np.linalg.norm(self.previous)>.25 and feasible[previous_index]
+                    and np.linalg.norm(choices[previous_index]-self.previous)<.1):
+                # Keep a safe side until the baseline is clear. Alternating
+                # above/below between clouds never lets the aircraft align.
+                index=previous_index
         else:index=int(np.argmax(clearance-.015*effort))
         self.previous=choices[index]
         baseline_close=minimum[:,zero]<self.margin**2
         obstacle=float(np.min(np.maximum(0.,longitudinal[baseline_close]))) if np.any(baseline_close) else distance
         remaining=np.abs(choices[index]-np.asarray(current_offset))
         response=max(.3,remaining[0]/1.5+remaining[1]/1.5+.3)
-        path_cap=math.sqrt(2.*4.*max(0.,distance-self.margin-1.))
+        path_cap=math.sqrt(2.*self.braking*max(0.,distance-self.margin-1.))
         recovery=initial<self.margin
         if recovery:path_cap=min(path_cap,1.)
-        braking=math.sqrt(2.*4.*max(0.,obstacle-self.margin-.3))
+        braking=math.sqrt(2.*self.braking*max(0.,obstacle-self.margin-.3))
         cap=min(path_cap,obstacle/response,braking)
         if not np.any(feasible):cap=0.
         return dict(lateral=float(choices[index,0]),vertical=float(choices[index,1]),

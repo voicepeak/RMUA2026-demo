@@ -1,5 +1,6 @@
 import sys
 import unittest
+from unittest.mock import Mock
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]
@@ -72,6 +73,21 @@ class GateChainAnchorTests(unittest.TestCase):
 
 
 class ReferencePlannerTests(unittest.TestCase):
+    def test_recorded_guides_override_fitted_extrapolation(self):
+        route = RouteGeometry([(0., 0., 0.), (200., 0., 0.)])
+        planner = ReferencePlanner(route)
+        planner.height_prior = Mock(valid=True)
+        planner.height_prior.center.return_value = -30.
+        planner.height_prior.horizon.return_value = 120.
+        guides = [{"s": s, "z": -5.} for s in range(60, 201, 10)]
+        _, profile = planner.build(
+            [{"id": 1, "x": 40., "y": 0., "z": -5., "s": 40.,
+              "source": "static_yaml"}], guides, [], 0., 0., verified_ids={1})
+        self.assertAlmostEqual(profile.center(100.), -5.)
+        self.assertAlmostEqual(profile.center(200.), -5.)
+        self.assertEqual(planner.evidence_horizon, 200.)
+        self.assertEqual(planner.trend_horizon, 200.)
+
     def test_build_keeps_verified_gate_anchor(self):
         route = RouteGeometry(ROUTE)
         planner = ReferencePlanner(route, snap_gate_to_route=True,

@@ -2,6 +2,7 @@
 """Continuous gate-corridor path; crossing a gate never switches the target."""
 import math
 from spatial_curve import SpatialCurve
+from altitude_profile import ProfileBlender
 
 class XYTracker:
     def __init__(self, lookahead_base=8., lookahead_kv=.7, k_pursuit=1.2,
@@ -18,6 +19,8 @@ class XYTracker:
         self.route = self.offset = None
         self.previous_velocity = (0., 0.)
         self.last_s = 0.
+        self.offset_blender=ProfileBlender(.4)
+        self.stamp=None
 
     def lookahead(self, v): return self.lookahead_base+self.lookahead_kv*v
 
@@ -27,8 +30,9 @@ class XYTracker:
         length = max(1e-6, math.hypot(dx,dy))
         return dx/length,dy/length
 
-    def configure(self, route, gates, s_now=0.):
+    def configure(self, route, gates, s_now=0.,stamp=None):
         old = self.offset
+        previous_center=lambda s:self.offset_blender.center(s,stamp)
         self.route = route
         rows = []
         for g in gates:
@@ -50,16 +54,19 @@ class XYTracker:
                         numerator += weight*rows[j][3]
                         denominator += weight
                 row[3] = max(row[1],min(row[2],numerator/denominator))
-        anchors = [(0.,0.)] if old is None else [(max(0.,s_now-2.),old.center(max(0.,s_now-2.))),
-                                                 (s_now,old.center(s_now))]
+        anchors = [(0.,0.)] if old is None else [(max(0.,s_now-2.),previous_center(max(0.,s_now-2.))),
+                                                 (s_now,previous_center(s_now))]
         anchors += [(r[0],r[3]) for r in rows]
         anchors += [(max(s_now+30.,anchors[-1][0]+30.),anchors[-1][1])]
         self.offset = SpatialCurve(anchors)
+        if old is None:self.offset_blender.set_initial(self.offset,stamp)
+        else:self.offset_blender.switch(self.offset,stamp)
+        self.stamp=stamp
 
     def point_at(self,s):
         x,y,z = self.route.point_at(s)
         dx,dy = self.basis(s)
-        lateral = self.offset.center(s)
+        lateral = self.offset_blender.center(s,self.stamp)
         return x-dy*lateral,y+dx*lateral,z
 
     def tangent(self,s):

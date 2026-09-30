@@ -35,7 +35,9 @@ class SpeedScheduler(object):
                  z_f2=0.9, z_f3=0.75, z_f4=0.6, z_f5=0.5,
                  gate_f1=0.8, gate_f2=0.6, gate_f3=0.45,
                  yaw_slow1=10.0, yaw_slow2=20.0, yaw_slow3=30.0,
-                 yaw_f1=0.9, yaw_f2=0.8, yaw_f3=0.6):
+                 yaw_f1=0.9, yaw_f2=0.8, yaw_f3=0.6,
+                 adaptive_speed=False, braking_accel=8., reaction_time=.35,
+                 stopping_margin=4.,jerk_limit=0.):
         self.cruise = float(cruise_speed)
         self.max_speed = float(max_speed)
         self.floor = float(normal_speed_floor)
@@ -62,6 +64,26 @@ class SpeedScheduler(object):
         self.yaw_f1 = float(yaw_f1)
         self.yaw_f2 = float(yaw_f2)
         self.yaw_f3 = float(yaw_f3)
+        self.adaptive_speed=bool(adaptive_speed)
+        self.requested_cruise=self.cruise
+        self.braking_accel=max(.1,float(braking_accel))
+        self.reaction_time=max(0.,float(reaction_time))
+        self.stopping_margin=max(0.,float(stopping_margin))
+        self.visibility_cap=None
+        self.jerk_limit=max(0.,float(jerk_limit))
+        self.acceleration=0.
+
+    def reset(self):
+        self.acceleration=0.
+
+    def set_visibility(self,distance,age=0.):
+        if self.adaptive_speed:
+            delay=self.reaction_time+max(0.,float(age))
+            available=max(0.,float(distance)-self.stopping_margin)
+            a=self.braking_accel
+            self.visibility_cap=max(0.,math.sqrt((a*delay)**2+2.*a*available)-a*delay)
+            self.cruise=min(self.requested_cruise,self.max_speed,self.visibility_cap)
+        return self.cruise
 
     def vz_available(self, vxy):
         if self.vz_capability is not None:
@@ -110,7 +132,8 @@ class SpeedScheduler(object):
 
     def target(self, kap, kz, slope_trusted, miss_ratio, z_err, z_worsening,
                pred_worse, yaw_err_deg, vxy=0.0,
-               v_curve_preview=None, v_climb_preview=None, v_map=None):
+               v_curve_preview=None, v_climb_preview=None, v_map=None,
+               v_tracking_cap=None):
         v_curve = min(self.cruise, self.curve_limit(kap))
         if v_curve_preview is not None:
             v_curve = min(v_curve, float(v_curve_preview))
@@ -120,6 +143,8 @@ class SpeedScheduler(object):
             v_climb = min(v_climb, float(v_climb_preview))
         v_track = self.tracking_limit(miss_ratio, z_err, z_worsening,
                                       pred_worse, yaw_err_deg)
+        if v_tracking_cap is not None:
+            v_track=min(v_track,float(v_tracking_cap))
         hard = min(self.cruise, v_curve, v_climb)
         if v_map is not None:
             hard = min(hard, float(v_map))
@@ -140,13 +165,28 @@ class SpeedScheduler(object):
                                     if v_climb_preview is not None else None),
                 "v_map": (float(v_map) if v_map is not None else None),
                 "v_tracking": v_track, "hard_cap": hard, "soft_cap": soft,
-                "vz_available": self.vz_available(vxy), "reason": reason}
+                "vz_available": self.vz_available(vxy), "reason": reason,
+                "adaptive_speed":self.adaptive_speed,"v_visibility":self.visibility_cap}
         return v, info
 
     def step(self, v_prev, v_target, dt, hard_cap=None):
         a = self.a_up if v_target >= v_prev else self.a_down
-        dv = max(-a * dt, min(a * dt, v_target - v_prev))
+        if self.jerk_limit>0. and dt>0.:
+            error=v_target-v_prev
+            # Ramp acceleration and begin removing it before reaching the
+            # requested speed. Small residual error avoids a final snap.
+            magnitude=min(a,math.sqrt(2.*self.jerk_limit*abs(error)),
+                          max(0.,abs(error)/dt-.5*self.jerk_limit*dt))
+            desired=math.copysign(magnitude,error)
+            da=self.jerk_limit*dt
+            self.acceleration=max(-self.a_down,min(self.a_up,
+                max(self.acceleration-da,min(self.acceleration+da,desired))))
+            dv=self.acceleration*dt
+        else:
+            dv = max(-a * dt, min(a * dt, v_target - v_prev))
         v = max(0.0, min(self.max_speed, v_prev + dv))
         if hard_cap is not None:
-            v = min(v, max(0.0, float(hard_cap)))
+            limited=min(v,max(0.0,float(hard_cap)))
+            if limited<v:self.acceleration=0.
+            v=limited
         return v

@@ -191,12 +191,19 @@ class ReferencePlanner(object):
         off = z_offset if self.gate_z_uses_offset else 0.0
         guides_adj = [{"s": gd["s"], "z": float(gd["z"]) + off}
                       for gd in (guides or []) if gd.get("s") is not None]
+        # Recorded guides are measured evidence. Do not interleave a fitted
+        # extrapolation with their covered section of the road.
+        guide_end = max((float(g["s"]) for g in guides_adj), default=0.0)
+        if guides_adj and guide_end >= self.route.total_s - 1.0:
+            goal_z = max(guides_adj, key=lambda g: float(g["s"]))["z"]
         trend = [(float(s), float(z)) for s, z in anchors]
         trend += [(g["s"], g["z"]) for g in chain.trend_gates()]
         trend.sort(key=lambda p: p[0])
         if trend and soft_guides and self.z_soft_guide_max > 0.0:
             last_s, last_z = trend[-1]
             for gs, gz in soft_guides:
+                if gs <= guide_end:
+                    continue
                 if not self.height_prior.consistent(gs,gz+off):
                     continue
                 ds = gs - last_s
@@ -207,15 +214,18 @@ class ReferencePlanner(object):
                 last_s, last_z = gs, last_z + dz
                 guides_adj.append({"s": last_s, "z": last_z})
                 trend.append((last_s, last_z))
-        self.evidence_horizon = trend[-1][0] if trend else None
+        self.evidence_horizon = max(trend[-1][0] if trend else 0.0, guide_end) or None
         if self.height_prior.valid and trend:
             last_s,last_z=trend[-1]
-            self.trend_horizon=self.height_prior.horizon(last_s)
+            self.trend_horizon=max(guide_end,self.height_prior.horizon(last_s))
             correction=max(-1.,min(1.,last_z-self.height_prior.center(last_s)))
             s=last_s+10.
             # Keep the height curve valid through braking and the bounded search.
             # A map horizon is a speed constraint, not a command to level the hill.
             while s <= min(self.route.total_s,self.trend_horizon+50.):
+                if s <= guide_end:
+                    s += 10.
+                    continue
                 z=self.height_prior.center(s)+correction*max(0.,1.-(s-last_s)/40.)
                 guides_adj.append(dict(s=s,z=z))
                 goal_z=z
@@ -228,8 +238,9 @@ class ReferencePlanner(object):
                 slope = max(-self.z_extrap_slope_max,
                             min(self.z_extrap_slope_max, slope))
                 ext_z = z1 + slope * self.z_extrap_m
-                guides_adj.append({"s": s1 + self.z_extrap_m, "z": ext_z})
-                goal_z = ext_z
+                if s1 + self.z_extrap_m > guide_end:
+                    guides_adj.append({"s": s1 + self.z_extrap_m, "z": ext_z})
+                    goal_z = ext_z
         profile = AltitudeProfile(
             0.0, start_z, self.route.total_s, goal_z, anchor_gates, guides_adj,
             corridor_half=self.corridor_half, gate_blend_start=self.gate_blend_start,

@@ -12,6 +12,10 @@
   <!-- 速度: 巡航/物理限速/斜坡 (方案 13~16) -->
   <arg name="cruise_speed"   default="8.0"/>
   <arg name="max_speed"      default="12.0"/>
+  <arg name="adaptive_speed" default="false"/>
+  <arg name="lidar_range" default="30.0"/>
+  <arg name="lidar_braking" default="4.0"/>
+  <arg name="sensor_reaction" default="0.35"/>
   <arg name="normal_speed_floor" default="4.0"/>
   <arg name="a_lat_max"      default="6.0"/>
   <arg name="a_up"           default="4.0"/>
@@ -156,6 +160,10 @@
     <param name="start_anchor_z"   value="$(arg start_anchor_z)"/>
     <param name="cruise_speed"     value="$(arg cruise_speed)"/>
     <param name="max_speed"        value="$(arg max_speed)"/>
+    <param name="adaptive_speed" value="$(arg adaptive_speed)"/>
+    <param name="lidar_range" value="$(arg lidar_range)"/>
+    <param name="lidar_braking" value="$(arg lidar_braking)"/>
+    <param name="sensor_reaction" value="$(arg sensor_reaction)"/>
     <param name="normal_speed_floor" value="$(arg normal_speed_floor)"/>
     <param name="a_lat_max"        value="$(arg a_lat_max)"/>
     <param name="a_up"             value="$(arg a_up)"/>

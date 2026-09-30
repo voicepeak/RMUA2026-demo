@@ -29,6 +29,19 @@ class ObstacleAlignmentTests(unittest.TestCase):
 
 
 class XYTrackerTests(unittest.TestCase):
+    def test_online_gate_update_keeps_position_and_direction_continuous(self):
+        from reference_planner import RouteGeometry
+        route=RouteGeometry([(0.,0.,0.),(100.,0.,0.)])
+        tracker=XYTracker()
+        tracker.configure(route,[dict(s=50.,x=50.,y=3.)],stamp=0.)
+        before=tracker.point_at(30.)
+        direction=tracker.tangent(30.)
+        tracker.configure(route,[dict(s=50.,x=50.,y=4.)],s_now=10.,stamp=1.)
+        self.assertEqual(tracker.point_at(30.),before)
+        self.assertEqual(tracker.tangent(30.),direction)
+        tracker.stamp=1.4
+        self.assertGreater(tracker.point_at(30.)[1],before[1])
+
     def setUp(self):
         self.tracker = XYTracker(lookahead_base=8.0, lookahead_kv=0.7,
                                  k_pursuit=1.2, xy_converge=0.5,

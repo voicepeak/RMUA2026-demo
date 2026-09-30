@@ -25,6 +25,7 @@ catkin_install_python(PROGRAMS
   scripts/avoidance_interface.py
   scripts/yaw_controller.py
   scripts/speed_scheduler.py
+  scripts/motion_estimator.py
   scripts/z_capability.py
   scripts/z_capability_probe.py
   scripts/climb_feasibility.py

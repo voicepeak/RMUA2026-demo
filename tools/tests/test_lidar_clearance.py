@@ -6,6 +6,22 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'ros_ws/src/route_foll
 from lidar_clearance import LidarClearance
 
 class ClearanceTests(unittest.TestCase):
+    def test_close_obstacle_requires_alignment_before_forward_progress(self):
+        cap,aligned=LidarClearance.progress_cap(dict(active=True,feasible=True,cap=4.,
+            obstacle_distance=7.,path_cap=12.),0.,0.,2.,.5)
+        self.assertFalse(aligned)
+        self.assertEqual(cap,0.)
+
+    def test_safe_bypass_side_persists_across_cloud_updates(self):
+        points=np.array([(8.,y,z) for y in np.arange(-.8,.81,.1)
+                         for z in np.arange(-.8,.81,.1)])
+        planner=LidarClearance()
+        planner.previous=np.array([2.,0.])
+        result=planner.evaluate_path(points,[(0.,0.,0.),(6.,0.,0.),(12.,0.,0.)])
+        self.assertTrue(result['feasible'])
+        self.assertEqual(result['lateral'],2.)
+        self.assertEqual(result['vertical'],0.)
+
     def test_preview_includes_braking_distance_at_15(self):
         self.assertGreater(LidarClearance.preview_distance(15.),15.*15./8.+.5*15.)
 
@@ -34,6 +50,16 @@ class ClearanceTests(unittest.TestCase):
         self.assertGreaterEqual(result['selected_clearance'],.75-1e-6)
         self.assertGreaterEqual(result['shift_clearance'],1.)
         self.assertLessEqual(result['path_cap'],1.)
+
+    def test_near_contact_can_escape_without_reducing_separation(self):
+        points=np.array([(x,y,-.14) for x in np.arange(-1.,2.1,.1)
+                         for y in np.arange(-2.,2.1,.2)])
+        reference=[(0.,0.,1.3),(3.,0.,1.3),(6.,0.,1.3),(12.,0.,1.3)]
+        result=LidarClearance().evaluate_path(points,reference,current_offset=(0.,-1.3))
+        self.assertTrue(result['feasible'])
+        self.assertTrue(result['recovery'])
+        self.assertGreaterEqual(result['selected_clearance'],.14-1e-6)
+        self.assertGreaterEqual(result['shift_clearance'],1.)
 
     def test_path_checker_does_not_escape_through_closed_wall(self):
         points=np.array([(3.,y,z) for y in np.arange(-10.,10.,.2)
