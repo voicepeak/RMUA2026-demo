@@ -9,6 +9,7 @@ import struct
 import subprocess
 import time
 from PIL import Image
+from race_monitor_policy import should_stop_controller_event
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--out',type=Path,required=True)
@@ -36,8 +37,7 @@ while True:
             try:row=json.loads(line)
             except ValueError:continue
             data=row.get('data',{})
-            if (row.get('topic')=='events' and data.get('event',data.get('kind'))=='TERMINATION'
-                    and data.get('reason') not in ('ROS_SHUTDOWN','RACE_GOAL_CHANGED')):
+            if row.get('topic')=='events' and should_stop_controller_event(data):
                 stop('CONTROLLER_TERMINATION',controller=data);raise SystemExit
             if row.get('topic')!='telemetry':continue
             last_telemetry=now;s=float(data['s'])

@@ -40,6 +40,9 @@ command=['roslaunch','route_follower','route_follower.launch',
          'terminal_hover_height:=1.5','debug_cloud_dir:='+str(args.out/'clouds'),
          'slope_eta:=0.95','vz_down_limit:=4.5',
          'z_rate_max:=5','vz_capability_file:='+str(config/'vz_capability_seed123_fast.yaml')]
+trace=subprocess.Popen(['python3',str(root/'tools/control_trace.py'),
+                        '--out',str(args.out/'control_trace'),'--save-clouds'],
+                       stdout=(args.out/'control_trace.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
 child=subprocess.Popen(command,stdout=(args.out/'controller.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
 (args.out/'startup.json').write_text(json.dumps(dict(wall_time=time.time(),
     first_pose_stamp=pose.header.stamp.to_sec(),command=command),indent=2))
@@ -74,16 +77,22 @@ try:
         if runner.poll() is not None:raise SystemExit(runner.returncode)
         time.sleep(.2)
 finally:
-    for process in (child,runner,recorder,vision):
+    for process in (child,runner,recorder,vision,trace):
         try:os.killpg(process.pid,signal.SIGTERM)
         except ProcessLookupError:pass
-    for process in (child,runner,recorder,vision):
+    for process in (child,runner,recorder,vision,trace):
         try:process.wait(timeout=5.)
         except subprocess.TimeoutExpired:
             try:os.killpg(process.pid,signal.SIGKILL)
             except ProcessLookupError:pass
     # A stage switch in progress can launch descendants after the first TERM.
     # All group leaders have now exited; remove any remaining descendants.
-    for process in (child,runner,recorder,vision):
+    for process in (child,runner,recorder,vision,trace):
         try:os.killpg(process.pid,signal.SIGKILL)
         except ProcessLookupError:pass
+    # roslaunch may give a switched controller its own process group. Remove
+    # its registered nodes too, after the runner can no longer launch a leg.
+    try:
+        subprocess.run(['rosnode','kill','/route_follower','/gate_yolo'],
+                       stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=5.)
+    except subprocess.TimeoutExpired:pass

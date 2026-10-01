@@ -8,15 +8,19 @@ import sys
 import time
 import hashlib
 import shutil
+from system_health import snapshot as system_health_snapshot
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--mode',choices=('render','offscreen','background'),default='render')
 parser.add_argument('--clock-speed',type=float,default=1.)
+parser.add_argument('--clock-type',choices=('auto','ScalableClock','SteppableClock'),default='auto')
+parser.add_argument('--lidar-point-rate',type=int,help='Optional lidar points/second; default preserves simulator settings')
 parser.add_argument('--stall-seconds',type=float,default=20.)
 parser.add_argument('--obstacle-backend',choices=('lidar_nav','legacy'),default='lidar_nav')
 parser.add_argument('--out',type=Path)
 args=parser.parse_args()
 if not 0.<args.clock_speed<=2.:parser.error('--clock-speed must be in (0, 2]')
+if args.lidar_point_rate is not None and args.lidar_point_rate<=0:parser.error('--lidar-point-rate must be positive')
 workspace=Path(__file__).resolve().parents[2]
 out=(args.out or workspace/'frames'/time.strftime('race_%Y%m%d_%H%M%S')).resolve()
 out.relative_to(workspace)  # The container mount must be able to see recordings.
@@ -24,17 +28,37 @@ out.mkdir(parents=True,exist_ok=True)
 container_out=Path('/workspace')/out.relative_to(workspace)
 settings=json.loads((workspace/'simulator/simulator_12.0.0.5/settings.json').read_text())
 settings['ClockSpeed']=args.clock_speed
+if args.clock_type!='auto':settings['ClockType']=args.clock_type
+if args.lidar_point_rate is not None:settings['Vehicles']['drone_1']['Sensors']['lidar']['PointsPerSecond']=args.lidar_point_rate
 (out/'settings.json').write_text(json.dumps(settings,indent=2)+'\n')
 source=workspace/'rmua_ws/src/route_follower'
 snapshot=out/'controller_sources'
 if snapshot.exists():raise RuntimeError('Use a new experiment directory; controller snapshot already exists')
 shutil.copytree(source,snapshot,ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
+native=workspace/'rmua_ws/devel/lib/libvelocity_response_native.so'
+if native.exists():
+    (snapshot/'native').mkdir()
+    shutil.copy2(native,snapshot/'native'/native.name)
 hashes={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdigest()
         for path in sorted(snapshot.rglob('*')) if path.is_file()}
+tool_snapshot=out/'tool_sources';tool_snapshot.mkdir(exist_ok=False)
+for name in ('start_seed123_race.py','race_start_watch.py','race_runner.py','watch_debug_race.py',
+             'race_monitor_policy.py','summarize_debug_race.py','control_trace.py','system_health.py'):
+    shutil.copy2(Path(__file__).with_name(name),tool_snapshot/name)
+tool_hashes={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdigest()
+             for path in sorted(tool_snapshot.glob('*.py'))}
+sim_snapshot=out/'sim_launch_sources';sim_snapshot.mkdir(exist_ok=False)
+for path in (workspace/'run_sim.sh',workspace/'simulator/simulator_12.0.0.5/run_simulator.sh',
+             workspace/'simulator/simulator_12.0.0.5/run_simulator_offscreen.sh'):
+    shutil.copy2(path,sim_snapshot/path.name)
+sim_hashes={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in sorted(sim_snapshot.glob('*'))}
 (out/'controller_versions.json').write_text(json.dumps(dict(wall_time=time.time(),seed=123,
     requested_clock_speed=args.clock_speed,mode=args.mode,backend=args.obstacle_backend,
+    requested_clock_type=args.clock_type,
+    lidar_points_per_second=settings['Vehicles']['drone_1']['Sensors']['lidar']['PointsPerSecond'],
     car_model_enabled=args.obstacle_backend=='legacy',snapshot_kind='runtime package captured before launch',
-    sha256=hashes),indent=2)+'\n')
+    sha256=hashes,tools_sha256=tool_hashes,sim_launch_sha256=sim_hashes),indent=2)+'\n')
 def inspect():
     result=subprocess.run(['docker','inspect','rmua_noetic'],capture_output=True,text=True,check=True)
     return json.loads(result.stdout)[0]['State']
@@ -56,6 +80,7 @@ command=['docker','exec','rmua_noetic','bash','-c',
          'race-start',str(container_out),str(20.*args.clock_speed),args.obstacle_backend]
 print('Recording:',out,flush=True)
 monitor=None
+health_stamp=None
 if args.mode=='background':
     monitor=subprocess.Popen([sys.executable,str(workspace/'repo/tools/watch_debug_race.py'),
         '--out',str(out),'--display',':2','--stall-seconds',str(args.stall_seconds)],
@@ -63,6 +88,10 @@ if args.mode=='background':
 try:
     watcher=subprocess.Popen(command,cwd=workspace)
     while watcher.poll() is None:
+        if health_stamp is None or time.monotonic()-health_stamp>=5.:
+            health_stamp=time.monotonic()
+            with (out/'system_health.jsonl').open('a') as file:
+                file.write(json.dumps(system_health_snapshot())+'\n')
         if monitor is not None and monitor.poll() is not None and not (out/'stop.json').exists():
             (out/'stop.json').write_text(json.dumps(dict(reason='DEBUG_MONITOR_EXITED',
                 returncode=monitor.returncode,wall_time=time.time(),official_result='UNKNOWN'),indent=2)+'\n')
