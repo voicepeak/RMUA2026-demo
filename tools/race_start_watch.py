@@ -8,6 +8,8 @@ import argparse
 import json
 from pathlib import Path
 import subprocess
+import os
+import signal
 import time
 
 import rospy
@@ -15,6 +17,8 @@ from geometry_msgs.msg import PoseStamped
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--out',type=Path,required=True)
+parser.add_argument('--control-rate',type=float,default=20.)
+parser.add_argument('--obstacle-backend',choices=('lidar_nav','legacy'),default='lidar_nav')
 args=parser.parse_args()
 args.out.mkdir(parents=True,exist_ok=True)
 root=Path(__file__).resolve().parents[1]
@@ -26,6 +30,8 @@ position=pose.pose.position
 if abs(position.x)>3. or abs(position.y)>3.:
     raise RuntimeError('Fresh seed123 start position required')
 command=['roslaunch','route_follower','route_follower.launch',
+         'control_rate:='+str(args.control_rate),
+         'obstacle_backend:='+args.obstacle_backend,
          'gates_file:='+str(config/'gates_seed123_recorded.yaml'),
          'guides_file:='+str(config/'guides_seed123_recorded.yaml'),
          'gate_center_pull_max:=0','static_correction_max:=2',
@@ -34,35 +40,50 @@ command=['roslaunch','route_follower','route_follower.launch',
          'terminal_hover_height:=1.5','debug_cloud_dir:='+str(args.out/'clouds'),
          'slope_eta:=0.95','vz_down_limit:=4.5',
          'z_rate_max:=5','vz_capability_file:='+str(config/'vz_capability_seed123_fast.yaml')]
-child=subprocess.Popen(command,stdout=(args.out/'controller.log').open('w'),stderr=subprocess.STDOUT)
+child=subprocess.Popen(command,stdout=(args.out/'controller.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
 (args.out/'startup.json').write_text(json.dumps(dict(wall_time=time.time(),
     first_pose_stamp=pose.header.stamp.to_sec(),command=command),indent=2))
 recorder=subprocess.Popen(['python3',str(workspace/'frames/flight_probe.py'),
                   '--out',str(args.out/'flight'),'--seconds','1200',
                   '--image-interval','0.5','--save-right'],
-                 stdout=(args.out/'probe.log').open('w'),stderr=subprocess.STDOUT)
+                 stdout=(args.out/'probe.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
 vision=subprocess.Popen(['/opt/conda/envs/xal/bin/python',
                   str(workspace/'rmua_ws/src/rmua_gate_vision/scripts/gate_yolo_node.py'),
                   '_model:='+str(root/'yolo/weights/best.pt'),
-                  '_car_model:='+str(root/'yolo/weights/car_score91_best.pt'),
+                  '_car_model:='+(str(root/'yolo/weights/car_score91_best.pt') if args.obstacle_backend=='legacy' else ''),
                   '_route_file:='+str(config/'route_1_3.yaml'),'_imgsz:=960','_conf:=0.35'],
-                 stdout=(args.out/'vision.log').open('w'),stderr=subprocess.STDOUT)
+                 stdout=(args.out/'vision.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
 runner=subprocess.Popen(['python3',str(root/'tools/race_runner.py'),
                          '--out',str(args.out/'mission'),'--cruise','40',
-                         '--fast-descent','--adaptive-speed','--height-trace',str(args.out/'flight/streams.jsonl')],
-                        stdout=(args.out/'runner.log').open('w'),stderr=subprocess.STDOUT)
+                         '--fast-descent','--adaptive-speed','--control-rate',str(args.control_rate),
+                         '--obstacle-backend',args.obstacle_backend,
+                         '--height-trace',str(args.out/'flight/streams.jsonl')],
+                        stdout=(args.out/'runner.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
 last_pose_arrival=time.monotonic()
 def received_pose(_):
     global last_pose_arrival
     last_pose_arrival=time.monotonic()
 rospy.Subscriber('/airsim_node/drone_1/debug/pose_gt',PoseStamped,received_pose,queue_size=1)
-while not rospy.is_shutdown():
-    if time.monotonic()-last_pose_arrival>3.:
-        (args.out/'simulator_lost.json').write_text(json.dumps(dict(reason='POSE_STREAM_LOST',wall_time=time.time())))
-        for process in (child,runner,recorder,vision):
-            if process.poll() is None:process.terminate()
-        raise SystemExit('Simulator pose stream disappeared; see simulator.log')
-    if child.poll() is not None and child.returncode:
-        raise SystemExit(child.returncode)
-    if runner.poll() is not None:raise SystemExit(runner.returncode)
-    time.sleep(.2)
+try:
+    while not rospy.is_shutdown():
+        if (args.out/'stop.json').exists():break
+        if time.monotonic()-last_pose_arrival>3.:
+            (args.out/'simulator_lost.json').write_text(json.dumps(dict(reason='POSE_STREAM_LOST',wall_time=time.time())))
+            raise SystemExit('Simulator pose stream disappeared; see simulator.log')
+        if child.poll() is not None and child.returncode:raise SystemExit(child.returncode)
+        if runner.poll() is not None:raise SystemExit(runner.returncode)
+        time.sleep(.2)
+finally:
+    for process in (child,runner,recorder,vision):
+        try:os.killpg(process.pid,signal.SIGTERM)
+        except ProcessLookupError:pass
+    for process in (child,runner,recorder,vision):
+        try:process.wait(timeout=5.)
+        except subprocess.TimeoutExpired:
+            try:os.killpg(process.pid,signal.SIGKILL)
+            except ProcessLookupError:pass
+    # A stage switch in progress can launch descendants after the first TERM.
+    # All group leaders have now exited; remove any remaining descendants.
+    for process in (child,runner,recorder,vision):
+        try:os.killpg(process.pid,signal.SIGKILL)
+        except ProcessLookupError:pass

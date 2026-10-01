@@ -24,11 +24,12 @@ def goal_matches_road(splines,road,goal):
     point=splines[road-1][0]
     return math.hypot(point[0]-goal[0],point[1]-goal[1])<35.
 
-def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=False,adaptive_speed=False):
+def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=False,adaptive_speed=False,control_rate=20.,obstacle_backend='lidar_nav'):
     command=['roslaunch','route_follower','route_follower.launch',
             'route_file:='+str(route_file),'route:=race_leg',
             'gates_file:='+str(gates_file),'guides_file:='+str(guides_file),
-            'gate_center_pull_max:=0','cruise_speed:='+str(cruise),
+            'gate_center_pull_max:=0','cruise_speed:='+str(cruise),'control_rate:='+str(control_rate),
+            'obstacle_backend:='+obstacle_backend,
             'max_speed:='+str(max(12.,cruise))]
     if adaptive_speed:command+=['adaptive_speed:=true','lidar_braking:=8','curve_preview_max:=100',
                                'terminal_hover_height:=1.5','debug_cloud_dir:='+str(Path(route_file).parent/'clouds'),
@@ -92,6 +93,8 @@ def main():
                     help='JSONL flight telemetry used only as return-road height guides')
     ap.add_argument('--fast-descent',action='store_true')
     ap.add_argument('--adaptive-speed',action='store_true')
+    ap.add_argument('--control-rate',type=float,default=20.)
+    ap.add_argument('--obstacle-backend',choices=('lidar_nav','legacy'),default='lidar_nav')
     a=ap.parse_args();a.out.mkdir(parents=True,exist_ok=True)
     if not 0<=a.stage<3:ap.error('--stage must be 0, 1 or 2 for implemented racing legs')
     root=Path(__file__).resolve().parents[1]
@@ -168,11 +171,11 @@ def main():
         subprocess.Popen(['/opt/conda/envs/xal/bin/python',
                           str(root/'ros_ws/src/rmua_gate_vision/scripts/gate_yolo_node.py'),
                           '_model:='+str(root/'yolo/weights/best.pt'),
-                          '_car_model:='+str(root/'yolo/weights/car_score91_best.pt'),
+                          '_car_model:='+(str(root/'yolo/weights/car_score91_best.pt') if a.obstacle_backend=='legacy' else ''),
                           '_route_file:='+str(route_file),'_route_name:=race_leg',
                           '_imgsz:=960','_conf:=0.35'],
                          stdout=(folder/'vision.log').open('w'),stderr=subprocess.STDOUT)
-        command=controller_command(route_file,gates_file,guides_file,a.cruise,a.fast_descent,a.adaptive_speed)
+        command=controller_command(route_file,gates_file,guides_file,a.cruise,a.fast_descent,a.adaptive_speed,a.control_rate,a.obstacle_backend)
         if cause=='OFFICIAL_ENDPOINT_CHANGED' and previous is not None:
             command+=['departure_hover_z:='+str(previous[2]-1.5)]
         child=subprocess.Popen(command,stdout=(folder/'controller.log').open('w'),stderr=subprocess.STDOUT)

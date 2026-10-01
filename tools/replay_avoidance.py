@@ -3,6 +3,7 @@
 import argparse
 import bisect
 import json
+import inspect
 import sys
 import time
 from pathlib import Path
@@ -18,6 +19,9 @@ def main():
     parser.add_argument('--max-s',type=float,default=132.5)
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--scripts-dir',type=Path)
+    parser.add_argument('--before-received',type=float,help='Last valid HUD wall timestamp')
+    parser.add_argument('--limit',type=int)
+    parser.add_argument('--budget',type=float,default=1.5)
     args=parser.parse_args()
     scripts=Path(__file__).resolve().parents[1]/'ros_ws/src/route_follower/scripts'
     sys.path.insert(0,str(scripts))
@@ -33,7 +37,24 @@ def main():
     telemetry=[]
     for line in (args.run/'flight/streams.jsonl').open():
         row=json.loads(line)
-        if row['topic']=='telemetry' and row['received']>=start:telemetry.append(row)
+        if (row['topic']=='telemetry' and row['received']>=start and
+                (args.before_received is None or row['received']<=args.before_received)):
+            telemetry.append(row)
+    if not telemetry:parser.error('No telemetry in the requested valid time window')
+    telemetry.sort(key=lambda r:r['data']['pose_stamp'])
+    departure_floor_offset=None
+    initial_center=None
+    for meta in sorted((leg/'clouds').glob('*.json')):
+        saved=json.loads(meta.read_text())
+        if abs(saved['s'])<1e-6:
+            with np.load(meta.with_suffix('.npz')) as data:initial_center=float(data['reference'][0,2])
+            break
+    for event in events:
+        if event.get('kind')=='CONTROLLER_STARTED' and event.get('leg')==[3,5]:
+            for value in event.get('command',[]):
+                if value.startswith('departure_hover_z:='):
+                    if initial_center is not None:
+                        departure_floor_offset=float(value.split(':=')[1])+.25-initial_center
     # This is an observed progress window, NOT an inferred official stage
     # timeout. HUD State was not recorded, and clocks diverge significantly.
     window=[]
@@ -59,21 +80,32 @@ def main():
         center=lambda station:float(np.interp(station,ss,reference[:,2]))
         stamp=saved['pose_stamp']
         idx=min(len(telemetry)-1,bisect.bisect_left(stamps,stamp))
+        idx=min((idx,max(0,idx-1)),key=lambda i:abs(stamps[i]-stamp))
+        if abs(stamps[idx]-stamp)>.2:continue
         row=telemetry[idx]['data']
-        velocity=np.array([*row['velocity_world'], -row['vz_command']])
+        if saved.get('measured_velocity_world') is not None:
+            velocity=np.asarray(saved['measured_velocity_world']);basis='archived measured world-NED velocity'
+        elif row.get('measured_velocity_world') is not None:
+            velocity=np.asarray(row['measured_velocity_world']);basis='nearest measured world-NED velocity within 0.2 s'
+        else:
+            velocity=np.array([*row['velocity_world'], -row['vz_command']]);basis='command proxy; measured velocity unavailable'
         cars=[dict(c,world=np.array(c['world'])) for c in saved['cars']]
-        planner=PredictiveAvoidance(margin=1.15,braking=8.)
+        planner=PredictiveAvoidance(margin=1.15,braking=8.,budget=args.budget)
+        floor=saved.get('departure_floor_offset',departure_floor_offset)
+        kwargs=({'departure_floor_offset':floor}
+                if 'departure_floor_offset' in inspect.signature(planner.evaluate).parameters else {})
         started=time.monotonic()
-        info=planner.evaluate(s,position,velocity,xy,center,route,points,cars,stamp,max(.5,row['speed']),gates)
+        info=planner.evaluate(s,position,velocity,xy,center,route,points,cars,stamp,max(.5,row['speed']),gates,**kwargs)
         elapsed=1000.*(time.monotonic()-started)
         guard=ExecutionGuard()
         verified=guard.evaluate(s,position,velocity,xy,center,planner.plan,points,
                                 stamp-(row.get('lidar_age') or 0.),stamp)
         results.append(dict(sample=meta.name,s=s,points=len(points),planning_ms=elapsed,
                             planner=info,guard=verified,
-                            velocity_basis='nearest telemetry XY command and vertical command; measured 3D velocity not archived',
+                            velocity_basis=basis,departure_floor_applied=bool(kwargs and floor is not None),
                             terminal_offset=planner.plan.offset(planner.plan.end).tolist() if planner.plan is not None else None,
                             terminal_slope=planner.plan.slope(planner.plan.end).tolist() if planner.plan is not None else None))
+        if args.limit is not None and len(results)>=args.limit:break
     args.out.parent.mkdir(parents=True,exist_ok=True)
     args.out.write_text(json.dumps(dict(audit=audit,replays=results),ensure_ascii=False,indent=2))
     print(json.dumps(dict(audit=audit,replays=len(results),feasible=sum(r['planner'].get('feasible',False) for r in results),
