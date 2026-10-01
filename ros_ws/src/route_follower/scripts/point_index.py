@@ -2,6 +2,10 @@
 """Exact point queries, optionally augmented by measured ceiling patches."""
 import cv2
 import numpy as np
+try:
+    from scipy.spatial import cKDTree
+except ImportError:
+    cKDTree=None
 
 
 def measured_car_faces(tracks,route,stamp):
@@ -31,7 +35,8 @@ class PointIndex:
         # Randomized KDTree can still overestimate nearest distances with
         # checks=-1 in this OpenCV build. Single KDTree exhaustive queries
         # avoid that unsafe dependence on the global random generator.
-        self.tree=(cv2.flann_Index(self.points,dict(algorithm=4)) if len(points) else None)
+        self.tree=((cKDTree(self.points) if cKDTree is not None else
+                    cv2.flann_Index(self.points,dict(algorithm=4))) if len(points) else None)
         self.roof=None
         if origin is not None:self._roof(np.asarray(origin,dtype=float))
 
@@ -58,7 +63,30 @@ class PointIndex:
         if best is None or np.sum(best)<30 or np.mean(best)<.3:return
         coeff=np.linalg.lstsq(design[best],q[best,2],rcond=None)[0]
         if np.linalg.norm(coeff[:2])>.65:return
-        support=q[best,:2]
+        # Returns on two vertical walls can fit a horizontal plane at the
+        # same laser elevation. Their convex hull spans empty air across the
+        # road, so covariance/area alone cannot certify a ceiling. Require
+        # actual local surface normals to agree with the fitted plane. Use
+        # the original cloud, including neighbors below the overhead band.
+        support=q[best]
+        count=min(32,len(self.points))
+        ids,distance=self.neighbors(support+origin,count)
+        local=self.points[ids].astype(float)
+        weights=(distance<=1.5**2).astype(float)
+        samples=np.sum(weights,axis=1)
+        mean=np.sum(local*weights[:,:,None],axis=1)/np.maximum(samples,1.)[:,None]
+        delta=local-mean[:,None,:]
+        covariance=np.einsum('nki,nkj,nk->nij',delta,delta,weights)/np.maximum(samples,1.)[:,None,None]
+        values,vectors=np.linalg.eigh(covariance)
+        normal=np.r_[-coeff[:2],1.];normal/=np.linalg.norm(normal)
+        supported=((samples>=6)&(values[:,1]>1e-4)&
+                   (values[:,0]<=.1*values[:,1])&
+                   (abs(vectors[:,:,0]@normal)>=np.cos(np.pi/6.)))
+        if np.sum(supported)<30 or np.mean(supported)<.3:return
+        support=support[supported]
+        coeff=np.linalg.lstsq(np.column_stack((support[:,:2],np.ones(len(support)))),support[:,2],rcond=None)[0]
+        if np.linalg.norm(coeff[:2])>.65:return
+        support=support[:,:2]
         if np.min(np.linalg.eigvalsh(np.cov(support.T)))<.5:return
         hull=cv2.convexHull(support.astype(np.float32)).reshape(-1,2)
         # Never extrapolate a fitted surface beyond its measured convex hull.
@@ -103,9 +131,16 @@ class PointIndex:
             result=np.minimum(result,distance)
         return result
 
-    def distance(self,queries):
+    def distance(self,queries,limit=None):
         queries=np.ascontiguousarray(queries,dtype=np.float32).reshape(-1,3)
         if self.tree is None:return np.minimum(self.surface_distance(queries),self.face_distance(queries))
-        _,distance=self.tree.knnSearch(queries,1,params=dict(checks=-1))
+        _,distance=self.neighbors(queries,1,float('inf') if limit is None else limit)
         return np.minimum(np.minimum(np.sqrt(np.maximum(0.,distance[:,0])),self.surface_distance(queries)),
                           self.face_distance(queries))
+
+    def neighbors(self,queries,count,limit=float('inf')):
+        if cKDTree is not None:
+            distance,indices=self.tree.query(queries,k=count,eps=0.,distance_upper_bound=limit)
+            return np.asarray(indices).reshape(-1,count),np.asarray(distance).reshape(-1,count)**2
+        return self.tree.knnSearch(np.ascontiguousarray(queries,dtype=np.float32),count,
+                                   params=dict(checks=-1))

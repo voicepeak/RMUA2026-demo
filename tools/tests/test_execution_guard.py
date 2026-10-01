@@ -13,6 +13,33 @@ from path_sampling import swept_samples
 
 
 class ExecutionGuardTests(unittest.TestCase):
+    def test_two_wall_laser_bands_do_not_form_a_ceiling_across_empty_air(self):
+        cloud=np.array([(x,y,z) for x in np.arange(-8.,8.1,.25)
+                        for y in (-5.,5.) for z in np.arange(-4.,2.1,.25)])
+        index=PointIndex(cloud,origin=np.zeros(3),road_height=5.)
+        self.assertIsNone(index.roof)
+        self.assertAlmostEqual(index.distance([[0.,0.,0.]])[0],5.,places=5)
+        self.assertTrue(np.isnan(index.floor_limit([[0.,0.,0.]],1.25)[0]))
+        command,info=self.guard.filter_command(np.zeros(3),np.zeros(3),np.array([0.,0.,1.]),cloud,10.,10.1)
+        np.testing.assert_allclose(command,[0.,0.,1.])
+        self.assertEqual(info['command_reason'],'COMMAND_CLEAR')
+
+    def test_sloped_wall_edges_do_not_form_an_overhead_surface(self):
+        cloud=np.array([(x,y,-1.-.08*x+z) for x in np.arange(-8.,8.1,.25)
+                        for y in (-5.,5.) for z in np.arange(0.,4.1,.25)])
+        index=PointIndex(cloud,origin=np.zeros(3),road_height=5.)
+        self.assertIsNone(index.roof)
+        self.assertGreater(index.distance([[0.,0.,0.]])[0],4.9)
+
+    def test_real_ceiling_is_kept_among_vertical_wall_returns(self):
+        roof=self.roof_cloud()
+        walls=np.array([(x,y,z) for x in np.arange(-8.,8.1,.25)
+                        for y in (-5.,5.) for z in np.arange(-2.,2.1,.25)])
+        index=PointIndex(np.vstack((roof,walls)),origin=np.zeros(3),road_height=5.)
+        self.assertIsNotNone(index.roof)
+        self.assertAlmostEqual(index.distance([[0.,0.,-2.]])[0],0.,places=5)
+        self.assertAlmostEqual(index.floor_limit([[0.,0.,0.]],1.25)[0],1.75,places=5)
+
     def test_narrow_certified_shift_gap_between_half_meter_grid_cells(self):
         walls=np.array([(x,y,z) for x in np.arange(-2.,8.1,.25)
                         for y in (-.9,2.35) for z in np.arange(-3.,3.1,.25)])

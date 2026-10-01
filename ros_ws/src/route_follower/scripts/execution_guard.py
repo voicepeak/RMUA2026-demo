@@ -76,6 +76,30 @@ class ExecutionGuard:
         return dict(cap=self._cap(free,latency) if len(blocked) or stop>length else float('inf'),
                     distance=free,clearance=float(np.min(distances)),stop=stop)
 
+    def command_envelope(self,position,velocity,command,age):
+        """Shared actuator response, reaction, immediate target and full stop."""
+        position=np.asarray(position);velocity=np.asarray(velocity);command=np.asarray(command)
+        latency=self.reaction+age
+        speed=float(np.linalg.norm(command))
+        tau=max(self.settling,float(np.linalg.norm(velocity))/(2.*self.braking),speed/(2.*self.braking),.01)
+        hold=self.reaction
+        response=position+velocity*latency
+        times=np.linspace(0.,hold,max(3,int(hold/.05)+1))
+        driven=response+times[:,None]*command+tau*(1.-np.exp(-times/tau))[:,None]*(velocity-command)
+        last_velocity=command+(velocity-command)*math.exp(-hold/tau)
+        fractions=np.linspace(0.,1.,max(3,int(np.linalg.norm(last_velocity)*tau/.15)+2))
+        braking=driven[-1]+fractions[:,None]*last_velocity*tau
+        path=np.concatenate(([position],driven,braking))
+        # Acceleration can be faster than the measured stopping response,
+        # especially on Z. Also cover reaching the target immediately.
+        immediate=np.array([position,position+command*latency,
+            position+command*(latency+max(self.settling,speed/(2.*self.braking)))])
+        queries,_,_=swept_samples(path)
+        other,_,_=swept_samples(immediate)
+        queries=np.concatenate((queries,other))
+        extent=float(np.max(np.linalg.norm(np.concatenate((path,immediate))-position,axis=1)))
+        return queries,extent
+
     def filter_command(self, position, velocity, desired, points, cloud_stamp, pose_stamp):
         """Certify the final world-NED XYZ command, not just its reference.
 
@@ -86,29 +110,9 @@ class ExecutionGuard:
         if error:return np.zeros(3),dict(command_reason=error,command_scale=0.)
         position=np.asarray(position);velocity=np.asarray(velocity);desired=np.asarray(desired)
         latency=self.reaction+age
-        # Model the actual velocity after a new command, then a full stop.
-        # A zero target still travels velocity*tau after the reaction prefix.
-        # Checking only the zero command's ray hid that entire displacement.
-        hold=self.reaction
         def check(command):
-            speed=float(np.linalg.norm(command))
-            tau=max(self.settling,float(np.linalg.norm(velocity))/(2.*self.braking),speed/(2.*self.braking),.01)
-            response=position+velocity*latency
-            times=np.linspace(0.,hold,max(3,int(hold/.05)+1))
-            driven=response+times[:,None]*command+tau*(1.-np.exp(-times/tau))[:,None]*(velocity-command)
-            last_velocity=command+(velocity-command)*math.exp(-hold/tau)
-            fractions=np.linspace(0.,1.,max(3,int(np.linalg.norm(last_velocity)*tau/.15)+2))
-            braking=driven[-1]+fractions[:,None]*last_velocity*tau
-            path=np.concatenate(([position],driven,braking))
-            # Acceleration can be faster than the measured stopping response,
-            # especially on Z. Also cover reaching the target immediately.
-            immediate=np.array([position,position+command*latency,
-                position+command*(latency+max(self.settling,speed/(2.*self.braking)))])
-            queries,_,_=swept_samples(path)
-            other,_,_=swept_samples(immediate)
-            queries=np.concatenate((queries,other))
+            queries,extent=self.command_envelope(position,velocity,command,age)
             clearance=float(np.min(self.index.distance(queries)))
-            extent=float(np.max(np.linalg.norm(np.concatenate((path,immediate))-position,axis=1)))
             return clearance,clearance>=self.margin+.1 and extent<=self.horizon
         clearance,safe=check(desired)
         command=desired.copy()

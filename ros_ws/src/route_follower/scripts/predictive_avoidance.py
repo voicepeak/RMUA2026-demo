@@ -14,6 +14,21 @@ from lattice_detour import search as lattice_search
 from path_sampling import swept_samples
 
 
+def departure_floor_limits(stations, positions, center, floor_offset, index, margin):
+    """Shared NED floor bound during departure; measured floor takes priority."""
+    stations=np.asarray(stations)
+    limits=np.full(len(stations),np.inf)
+    if floor_offset is None:return limits
+    departure=stations<20.
+    unique,inverse=np.unique(stations[departure],return_inverse=True)
+    limits[departure]=np.array([center(s)+floor_offset for s in unique])[inverse]
+    if index is not None:
+        measured=index.floor_limit(positions,margin)
+        supported=departure & np.isfinite(measured)
+        limits[supported]=measured[supported]
+    return limits
+
+
 def smooth(t):
     t=np.clip(t,0.,1.)
     return t*t*t*(10.+t*(-15.+6.*t))
@@ -160,7 +175,7 @@ class PredictiveAvoidance:
             if first is not None:break
         return first is None,minimum,first
 
-    def evaluate(self,s,position,velocity,xy,center,route,points,tracks,stamp,speed,gates=()):
+    def evaluate(self,s,position,velocity,xy,center,route,points,tracks,stamp,speed,gates=(),departure_floor_offset=None):
         started=time.monotonic();deadline=started+self.budget
         candidate_deadline=started+.45*self.budget
         self.speed=max(0.,float(speed))
@@ -213,12 +228,22 @@ class PredictiveAvoidance:
             path=dense_nominal+offsets[:,0,None]*dense_sides
             path[:,2]+=offsets[:,1];path[0]=position
             return path
+        def certify_plan(plan):
+            path=dense_path_for(plan)
+            limits=departure_floor_limits(dense_stations,path,center,departure_floor_offset,
+                                           self.index,self.margin+.1)
+            if np.any(path[:,2]>limits):return False,0.,None
+            return self.certify(path,points,cars,position)
         clear,minclear,first=self.certify(baseline,points,cars,position)
+        floor_limits=departure_floor_limits(stations,baseline,center,departure_floor_offset,
+                                           self.index,self.margin+.1)
+        violations=np.flatnonzero(baseline[:,2]>floor_limits)
+        if len(violations):clear=False;first=int(violations[0]);minclear=0.
         # Keep the full spatial plan until the aircraft has returned to the
         # nominal corridor. Rebuilding its ramp at every cloud never completes.
         if self.plan is not None and (s<self.plan.end or not clear):
             path,_=path_for(self.plan)
-            ok,minclear,_=self.certify(dense_path_for(self.plan),points,cars,position)
+            ok,minclear,_=certify_plan(self.plan)
             if ok:return self._result(stations,path,minclear,observed_cars)
         previous=self.plan
         if clear and (previous is None or
@@ -245,13 +270,18 @@ class PredictiveAvoidance:
             for length in (12.,22.,32.):
                 plan=Detour(s,start,(0.,0.),length,s+length,start_slope=slope)
                 path,_=path_for(plan)
-                ok,mc,_=self.certify(dense_path_for(plan),points,cars,position)
+                ok,mc,_=certify_plan(plan)
                 if ok:
                     self.plan=plan
                     return self._result(stations,path,mc,observed_cars)
         lengths=sorted(set([max(4.,min(28.,obstacle-2.)),max(4.,min(16.,obstacle-2.))]),reverse=True)
         targets=[(y,z) for y in (-3.,-2.5,-2.,-1.5,-1.,0.,1.,1.5,2.,2.5,3.)
                  for z in np.arange(-self.vertical_limit,self.vertical_limit+.01,.5)]
+        if departure_floor_offset is not None and s<20.:
+            # Include a smooth ramp just above the floor instead of rounding
+            # it down to the coarse 0.5 m vertical search grid.
+            bound=max(-self.vertical_limit,departure_floor_offset-.02)
+            targets=list(set((y,min(z,bound)) for y,z in targets))
         targets.sort(key=lambda yz:(yz[0]**2+1.5*yz[1]**2))
         for length in lengths:
             for target in targets:
@@ -259,7 +289,7 @@ class PredictiveAvoidance:
                 if target[0]**2+1.5*target[1]**2>=score:continue
                 plan=Detour(s,start,target,length,hold,start_slope=slope)
                 path,offsets=path_for(plan)
-                ok,mc,_=self.certify(dense_path_for(plan),points,cars,position)
+                ok,mc,_=certify_plan(plan)
                 if not ok:continue
                 if np.max(abs(offsets[:,0]))>3.15 or np.max(abs(offsets[:,1]))>1.65:continue
                 # Gate windows are sampled at their exact station. Penalize
@@ -282,8 +312,7 @@ class PredictiveAvoidance:
             if options:
                 for plan in options:
                     path,_=path_for(plan)
-                    full=dense_path_for(plan)
-                    ok,mc,_=self.certify(full,points,cars,position)
+                    ok,mc,_=certify_plan(plan)
                     if ok:
                         best=(plan,path,mc);break
             if best is None and cars:

@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'ros_ws/src/route_follower/scripts'))
-from predictive_avoidance import CarTracks,Detour,PredictiveAvoidance
+from predictive_avoidance import CarTracks,Detour,PredictiveAvoidance,departure_floor_limits
 from reference_planner import RouteGeometry
 from altitude_profile import AltitudeProfile
 from terrain_speed import TerrainSpeedEnvelope
@@ -15,6 +15,25 @@ import threading
 
 
 class PredictiveRouteTests(unittest.TestCase):
+    def test_departure_floor_shares_measured_bound_and_ends_at_20m(self):
+        class Floor:
+            def floor_limit(self,positions,margin):return np.array([np.nan,-1.,np.nan])
+        limits=departure_floor_limits(np.array([0.,10.,20.]),np.zeros((3,3)),
+                                     lambda s:-.1*s,.483,Floor(),1.25)
+        np.testing.assert_allclose(limits[:2],[.483,-1.])
+        self.assertTrue(np.isinf(limits[2]))
+
+    def test_departure_detour_respects_floor_between_vertical_grid_steps(self):
+        p=PredictiveAvoidance(margin=1.15,budget=3.)
+        points=np.array([(x,y,z) for x in (9.,10.,11.)
+                         for y in np.arange(-.8,.81,.2) for z in np.arange(-.8,.81,.2)])
+        info=p.evaluate(0.,np.zeros(3),np.zeros(3),self.xy,lambda s:0.,self.route,
+                        points,[],1.,1.,departure_floor_offset=.483)
+        self.assertTrue(info['feasible'])
+        path=p.positions(np.arange(0.,20.,.1),self.xy,lambda s:0.,p.plan)
+        self.assertTrue(np.all(path[:,2]<=.483))
+        self.assertGreaterEqual(info['selected_clearance'],1.25)
+
     def setUp(self):
         self.route=RouteGeometry([(0.,0.,0.),(100.,0.,0.)])
         self.xy=lambda s:(s,0.,0.)

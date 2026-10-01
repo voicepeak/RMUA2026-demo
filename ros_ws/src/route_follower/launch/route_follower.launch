@@ -13,6 +13,7 @@
   <arg name="cruise_speed"   default="8.0"/>
   <arg name="max_speed"      default="12.0"/>
   <arg name="adaptive_speed" default="false"/>
+  <arg name="obstacle_backend" default="lidar_nav"/>
   <arg name="lidar_range" default="30.0"/>
   <arg name="lidar_braking" default="4.0"/>
   <arg name="sensor_reaction" default="0.35"/>
@@ -163,6 +164,7 @@
     <param name="cruise_speed"     value="$(arg cruise_speed)"/>
     <param name="max_speed"        value="$(arg max_speed)"/>
     <param name="adaptive_speed" value="$(arg adaptive_speed)"/>
+    <param name="obstacle_backend" value="$(arg obstacle_backend)"/>
     <param name="lidar_range" value="$(arg lidar_range)"/>
     <param name="lidar_braking" value="$(arg lidar_braking)"/>
     <param name="sensor_reaction" value="$(arg sensor_reaction)"/>
