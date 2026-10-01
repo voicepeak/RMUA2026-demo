@@ -31,6 +31,7 @@ command=['roslaunch','route_follower','route_follower.launch',
          'gate_center_pull_max:=0','static_correction_max:=2',
          'cruise_speed:=40','max_speed:=40','adaptive_speed:=true','lidar_braking:=8',
          'curve_preview_max:=100','curve_preview_step:=1','z_response_time:=0.15',
+         'terminal_hover_height:=1.5','debug_cloud_dir:='+str(args.out/'clouds'),
          'slope_eta:=0.95','vz_down_limit:=4.5',
          'z_rate_max:=5','vz_capability_file:='+str(config/'vz_capability_seed123_fast.yaml')]
 child=subprocess.Popen(command,stdout=(args.out/'controller.log').open('w'),stderr=subprocess.STDOUT)

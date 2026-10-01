@@ -31,6 +31,7 @@ def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=Fal
             'gate_center_pull_max:=0','cruise_speed:='+str(cruise),
             'max_speed:='+str(max(12.,cruise))]
     if adaptive_speed:command+=['adaptive_speed:=true','lidar_braking:=8','curve_preview_max:=100',
+                               'terminal_hover_height:=1.5','debug_cloud_dir:='+str(Path(route_file).parent/'clouds'),
                                'curve_preview_step:=1','z_response_time:=0.15']
     if fast_descent:
         config=Path(__file__).resolve().parents[1]/'ros_ws/src/route_follower/config'
@@ -172,6 +173,8 @@ def main():
                           '_imgsz:=960','_conf:=0.35'],
                          stdout=(folder/'vision.log').open('w'),stderr=subprocess.STDOUT)
         command=controller_command(route_file,gates_file,guides_file,a.cruise,a.fast_descent,a.adaptive_speed)
+        if cause=='OFFICIAL_ENDPOINT_CHANGED' and previous is not None:
+            command+=['departure_hover_z:='+str(previous[2]-1.5)]
         child=subprocess.Popen(command,stdout=(folder/'controller.log').open('w'),stderr=subprocess.STDOUT)
         event('CONTROLLER_STARTED',leg=[SEQUENCE[stage],SEQUENCE[stage+1]],
               cause=cause,official_completion='UNKNOWN',command=command)
