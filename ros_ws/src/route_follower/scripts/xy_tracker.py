@@ -21,6 +21,7 @@ class XYTracker:
         self.last_s = 0.
         self.offset_blender=ProfileBlender(.4)
         self.stamp=None
+        self.detour=None
 
     def lookahead(self, v): return self.lookahead_base+self.lookahead_kv*v
 
@@ -63,11 +64,20 @@ class XYTracker:
         else:self.offset_blender.switch(self.offset,stamp)
         self.stamp=stamp
 
-    def point_at(self,s):
+    def base_point_at(self,s):
         x,y,z = self.route.point_at(s)
         dx,dy = self.basis(s)
         lateral = self.offset_blender.center(s,self.stamp)
         return x-dy*lateral,y+dx*lateral,z
+
+    def point_at(self,s):
+        x,y,z=self.base_point_at(s)
+        if self.detour is not None:
+            a,b=self.base_point_at(s-.3),self.base_point_at(s+.3)
+            dx,dy=b[0]-a[0],b[1]-a[1];length=max(1e-6,math.hypot(dx,dy))
+            lateral=float(self.detour.offset(s)[0])
+            x-=dy/length*lateral;y+=dx/length*lateral
+        return x,y,z
 
     def tangent(self,s):
         a,b = self.point_at(max(0.,s-.5)),self.point_at(s+.5)

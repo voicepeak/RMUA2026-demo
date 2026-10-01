@@ -10,6 +10,7 @@
 """
 
 import math
+from bisect import bisect_left
 
 from altitude_profile import AltitudeProfile
 from route_height_prior import RouteHeightPrior
@@ -37,13 +38,10 @@ class RouteGeometry(object):
 
     def point_at(self, s):
         s = max(0.0, min(self.seg_s[-1], float(s)))
-        for i in range(len(self.seg_len)):
-            if self.seg_s[i] <= s <= self.seg_s[i + 1]:
-                r = (s - self.seg_s[i]) / self.seg_len[i] if self.seg_len[i] > 1e-9 else 0.0
-                a, b = self.points[i], self.points[i + 1]
-                return (a[0] + r * (b[0] - a[0]), a[1] + r * (b[1] - a[1]), i)
-        a, b = self.points[-2], self.points[-1]
-        return (b[0], b[1], len(self.points) - 2)
+        i=max(0,min(len(self.seg_len)-1,bisect_left(self.seg_s,s)-1))
+        r = (s - self.seg_s[i]) / self.seg_len[i] if self.seg_len[i] > 1e-9 else 0.0
+        a, b = self.points[i], self.points[i + 1]
+        return (a[0] + r * (b[0] - a[0]), a[1] + r * (b[1] - a[1]), i)
 
     def project(self, p):
         px, py = float(p[0]), float(p[1])
@@ -107,8 +105,9 @@ class ReferencePlanner(object):
                  corridor_half=1.5, gate_blend_start=25.0, gate_blend_full=8.0,
                  z_rate_max=4.0,
                  z_extrap_m=50.0, z_extrap_slope_max=0.5,
-                 z_soft_guide_max=120.0, z_soft_slope_max=0.5):
+                 z_soft_guide_max=120.0, z_soft_slope_max=0.5, corridor_guidance=False):
         self.route = route
+        self.corridor_guidance=bool(corridor_guidance)
         self.height_prior = RouteHeightPrior(route)
         self.trend_horizon = None
         self.evidence_horizon = None
@@ -244,7 +243,8 @@ class ReferencePlanner(object):
         profile = AltitudeProfile(
             0.0, start_z, self.route.total_s, goal_z, anchor_gates, guides_adj,
             corridor_half=self.corridor_half, gate_blend_start=self.gate_blend_start,
-            gate_blend_full=self.gate_blend_full, z_rate_max=self.z_rate_max)
+            gate_blend_full=self.gate_blend_full, z_rate_max=self.z_rate_max,
+            corridor_guidance=self.corridor_guidance)
         return chain, profile
 
     def initial_index(self, chain, s_now):

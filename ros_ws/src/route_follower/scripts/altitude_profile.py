@@ -13,6 +13,7 @@
 
 
 from spatial_curve import SpatialCurve
+import math
 
 def smoothstep(t):
     t = max(0.0, min(1.0, t))
@@ -23,7 +24,7 @@ class AltitudeProfile(object):
 
     def __init__(self, start_s, start_z, goal_s, goal_z, gates, guides,
                  corridor_half=1.5, gate_blend_start=20.0, gate_blend_full=6.0,
-                 z_rate_max=1.0, gate_z_max_jump=15.0):
+                 z_rate_max=1.0, gate_z_max_jump=15.0, corridor_guidance=False):
         self.corridor_half = corridor_half
         self.gate_blend_start = gate_blend_start
         self.gate_blend_full = gate_blend_full
@@ -44,6 +45,26 @@ class AltitudeProfile(object):
         anchors.sort(key=lambda a: a[0])
         self.anchors = anchors
         self.curve = SpatialCurve(anchors)
+        if corridor_guidance and len(guides or [])>=2:
+            # Recorded road height and a gate center are different constraints.
+            # Interleaving both as exact anchors a few metres apart makes the
+            # slope reverse at each gate, even on a continuously descending road.
+            lo=min(float(g['s']) for g in guides);hi=max(float(g['s']) for g in guides)
+            road=[(float(start_s),float(start_z))]
+            road += [(s,z) for s,z in gate_anchors if s<lo or s>hi]
+            road += [(float(g['s']),float(g['z'])) for g in guides]
+            road += [(float(goal_s),float(goal_z))]
+            nominal=SpatialCurve(road)
+            stations=sorted(set([float(start_s),float(goal_s)]+[s for s,z in gate_anchors]+
+                               [float(start_s)+2.*i for i in range(int((goal_s-start_s)/2.)+1)]))
+            corrections=[]
+            for gs,gz in gate_anchors:
+                if not lo<=gs<=hi:continue
+                value=nominal.center(gs)+sum(d*math.exp(-((gs-c)/12.)**2) for c,d in corrections)
+                target=max(gz-.85,min(gz+.85,value))
+                if abs(target-value)>1e-4:corrections.append((gs,target-value))
+            self.anchors=[(s,nominal.center(s)+sum(d*math.exp(-((s-c)/12.)**2) for c,d in corrections)) for s in stations]
+            self.curve=SpatialCurve(self.anchors)
 
     def center(self, s):
         return self.curve.center(s)

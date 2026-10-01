@@ -24,6 +24,8 @@ import math
 import os
 import sys
 import threading
+import copy
+import time
 
 import numpy as np
 import rospy
@@ -51,6 +53,12 @@ from lidar_clearance import LidarClearance
 from persistent_guides import PersistentGuides
 from xy_tracker import XYTracker                                                 # noqa: E402
 from motion_estimator import MotionEstimator
+from terrain_speed import TerrainSpeedEnvelope
+from predictive_avoidance import PredictiveAvoidance, CarTracks, JoinedDetour
+from execution_guard import ExecutionGuard
+from pose_history import PoseHistory
+from lidar_points import valid_points
+from async_planner import AsyncPlanner
 from yaw_controller import YawController                                         # noqa: E402
 from z_capability import load_capability                                         # noqa: E402
 from z_controller import ZController                                             # noqa: E402
@@ -87,6 +95,7 @@ class RouteFollower(object):
         self.k_z = rospy.get_param("~k_z", 1.0)
         self.z_rate_max = rospy.get_param("~z_rate_max", 4.0)
         self.terminal_hover_height = float(rospy.get_param('~terminal_hover_height',1.5))
+        self.departure_hover_z=float(rospy.get_param('~departure_hover_z',-999.))
         self.corridor_half = rospy.get_param("~corridor_half", 1.5)
         self.gate_blend_start = rospy.get_param("~gate_blend_start", 25.0)
         self.gate_blend_full = rospy.get_param("~gate_blend_full", 8.0)
@@ -221,11 +230,27 @@ class RouteFollower(object):
         self.pose_stamp = None
         self.lidar_points = None
         self.lidar_stamp = None
-        self.clearance = LidarClearance(braking=self.lidar_braking)
+        self.pose_history=PoseHistory()
+        self.pending_cloud=None
+        self.cloud_history=[]
+        self.raw_cloud=None
+        self.debug_cloud_dir=rospy.get_param('~debug_cloud_dir','')
+        self.debug_cloud_stamp=None
+        if self.debug_cloud_dir:os.makedirs(self.debug_cloud_dir,exist_ok=True)
+        self.car_tracks=CarTracks()
+        self.predictive=PredictiveAvoidance(margin=1.15,braking=self.lidar_braking)
+        self.planning=AsyncPlanner()
+        self.executing_plan=None
+        self.execution_guard=ExecutionGuard(margin=1.15,braking=self.lidar_braking,
+                                             reaction=self.sensor_reaction,horizon=self.lidar_range)
+        self.planner_info={}
+        self.plan_sequence=0
+        self.terrain=TerrainSpeedEnvelope(braking=4.,response=.4)
+        self.clearance = LidarClearance(margin=1.15 if self.adaptive_speed else 1.,braking=self.lidar_braking)
         self.clearance_z = 0.
         self.clearance_y = 0.
         self.clearance_checked = None
-        self.clearance_info = dict(cap=None,active=False)
+        self.clearance_info = dict(cap=0. if self.adaptive_speed else None,active=False,source='PENDING')
         self.pose_arrival = None
         self.event_sequence = 0
         self.yaw = 0.0
@@ -338,7 +363,7 @@ class RouteFollower(object):
             gate_blend_full=self.gate_blend_full, z_rate_max=self.z_rate_max,
             z_extrap_m=self.z_extrap_m, z_extrap_slope_max=self.z_extrap_slope_max,
             z_soft_guide_max=self.z_soft_guide_max,
-            z_soft_slope_max=self.z_soft_slope_max)
+            z_soft_slope_max=self.z_soft_slope_max,corridor_guidance=self.adaptive_speed)
 
         rospy.loginfo("route '%s': %d pts, %.0f m; gates=%d",
                       self.route_name, len(self.route.points), self.route.total_s,
@@ -349,6 +374,7 @@ class RouteFollower(object):
         rospy.on_shutdown(self.shutdown)
         rospy.Subscriber("/airsim_node/drone_1/debug/pose_gt", PoseStamped, self.pose_cb)
         rospy.Subscriber("/airsim_node/drone_1/lidar", PointCloud2,self.lidar_cb,queue_size=1,buff_size=4*1024*1024)
+        rospy.Subscriber('/rmua/car_observations',String,self.car_cb,queue_size=1)
         rospy.Subscriber('/airsim_node/end_goal',PoseStamped,self.race_goal_cb,queue_size=1)
         if self.use_gate_map:
             rospy.Subscriber(self.gate_map_topic, String, self.gate_map_cb)
@@ -500,18 +526,33 @@ class RouteFollower(object):
                             offsets=[fields[k].offset for k in ('x','y','z')],itemsize=msg.point_step))
         raw=np.frombuffer(msg.data,dtype=dtype)
         points=np.column_stack([raw[k] for k in ('x','y','z')])
-        points=points[np.all(np.isfinite(points),axis=1)]
+        points=valid_points(points)
         stamp=msg.header.stamp.to_sec()
         with self._lock:
-            if self.pose is None or abs(self.pose_stamp-stamp)>.25:return
-            q=self.pose.orientation;p=self.pose.position
-            R=tft.quaternion_matrix((q.x,q.y,q.z,q.w))[:3,:3]
-            points[:,2]-=.05
-            self.lidar_points=points@R.T+np.array([p.x,p.y,p.z])
-            # Geometry used this pose. A lidar callback can arrive a fraction
-            # before the matching pose callback; do not date transformed
-            # points later than the pose used for their world transform.
-            self.lidar_stamp=min(stamp,self.pose_stamp)
+            self.pending_cloud=(stamp,points)
+            self._transform_cloud()
+
+    def _transform_cloud(self):
+        if self.pending_cloud is None:return
+        stamp,points=self.pending_cloud
+        pose=self.pose_history.sample(stamp)
+        if pose is None:return
+        p,q=pose;R=tft.quaternion_matrix(q)[:3,:3]
+        points=points.copy();points[:,2]-=.05
+        world=points@R.T+p
+        self.raw_cloud=points
+        self.cloud_history=[(t,c) for t,c in self.cloud_history if 0.<=stamp-t<.15]
+        self.cloud_history.append((stamp,world))
+        self.lidar_points=np.concatenate([c for t,c in self.cloud_history],axis=0)
+        self.lidar_stamp=stamp
+        self.pending_cloud=None
+
+    def car_cb(self,msg):
+        try:
+            data=json.loads(msg.data)
+            with self._lock:self.car_tracks.update(float(data['stamp']),data.get('detections',[]))
+        except (ValueError,TypeError,KeyError):
+            rospy.logwarn_throttle(5.,'Invalid car observation')
 
     def pose_cb(self, m):
         with self._lock:
@@ -521,6 +562,9 @@ class RouteFollower(object):
             self.pose_arrival = rospy.Time.now().to_sec()
             self.pose = m.pose
             q = m.pose.orientation
+            p=m.pose.position
+            self.pose_history.add(self.pose_stamp,(p.x,p.y,p.z),(q.x,q.y,q.z,q.w))
+            self._transform_cloud()
             self.roll, self.pitch, self.yaw = tft.euler_from_quaternion(
                 [q.x, q.y, q.z, q.w])
 
@@ -546,6 +590,16 @@ class RouteFollower(object):
         self.speed_sched.reset()
         self.xy_tracker.reset()
         self.lidar_points = None
+        self.pending_cloud=None
+        self.cloud_history=[]
+        self.car_tracks=CarTracks()
+        self.planning.reset()
+        self.predictive=PredictiveAvoidance(margin=1.15,braking=self.lidar_braking)
+        self.executing_plan=None
+        self.execution_guard=ExecutionGuard(margin=1.15,braking=self.lidar_braking,
+                                             reaction=self.sensor_reaction,horizon=self.lidar_range)
+        self.planner_info={}
+        self.plan_sequence=0
         self.clearance_z = self.clearance_y = 0.
         self.clearance_checked = None
         self.chain = None
@@ -572,6 +626,7 @@ class RouteFollower(object):
         self.stopping = True
         self.publish(0.0, 0.0, 0.0, 0.0)
         self.event("TERMINATION", reason="ROS_SHUTDOWN", controller_reached=self.reached)
+        self.planning.close()
         if self.trace_fh is not None:
             self.trace_fh.close()
 
@@ -683,6 +738,38 @@ class RouteFollower(object):
         with self._lock:
             return self._control_loop(_e)
 
+    def _plan_avoidance(self,planner,s,p,v,xy,center,route,points,cars,stamp,speed,gates,distance,offset):
+        initial=float(np.min(np.linalg.norm(points-p,axis=1))) if len(points) else float('inf')
+        # Do not spend a full route search attempting to depart from inside
+        # an existing buffer. First certify a short non-decreasing escape.
+        if initial<self.clearance.margin:
+            info=dict(active=True,feasible=False,cap=0.,source='PREDICTIVE',initial_clearance=initial)
+            distance=min(distance,12.)
+        else:info=planner.evaluate(s,p,v,xy.base_point_at,center,route,points,cars,stamp,speed,gates)
+        if not info.get('feasible',False):
+            reference=[]
+            for ahead in np.linspace(0.,distance,max(3,int(distance/3.)+1)):
+                ex,ey,_=xy.base_point_at(s+ahead)
+                reference.append((ex-p[0],ey-p[1],center(s+ahead)-p[2]))
+            fallback=self.clearance.evaluate_path(points-p,reference,offset)
+            if fallback.get('recovery',False) and fallback.get('feasible',False):
+                info=dict(fallback,source='LIDAR_RECOVERY');planner.plan=None
+        if (info.get('active') and self.debug_cloud_dir and
+                (self.debug_cloud_stamp is None or stamp-self.debug_cloud_stamp>1.)):
+            self.debug_cloud_stamp=stamp
+            reference=np.array([[*xy.base_point_at(s+d)[:2],center(s+d)] for d in np.arange(0.,66.,1.)])
+            name=os.path.join(self.debug_cloud_dir,'%.3f_s%.1f'%(stamp,s))
+            np.savez_compressed(name+'.npz',points=points,position=p,reference=reference)
+            with open(name+'.json','w') as file:
+                json.dump(dict(clearance=info,s=s,pose_stamp=stamp,cars=[dict(world=t['world'].tolist(),
+                          stamp=t['stamp'],uncertainty=t['uncertainty'],half_width=t['half_width'],
+                          half_height=t['half_height']) for t in cars],
+                          plan=(dict(stations=(s+np.arange(66.)).tolist(),
+                                     offsets=planner.plan.offsets(s+np.arange(66.)).tolist(),
+                                     start_slope=planner.plan.slope(s).tolist(),end=planner.plan.end)
+                                if planner.plan is not None else None)),file)
+        return info,planner.plan
+
     def _control_loop(self, _e):
         now = rospy.Time.now().to_sec()
         with self._lock:
@@ -692,6 +779,7 @@ class RouteFollower(object):
             # Keep pose and cloud from one callback snapshot. Reading a newer
             # cloud after releasing the lock creates a negative cloud age.
             lidar_points, lidar_stamp = self.lidar_points, self.lidar_stamp
+            car_tracks=self.car_tracks.snapshot(pose_stamp)
         if self.reached or self.safety.aborted or self.mission.mode == ABORT:
             self.publish(0.0, 0.0, 0.0, 0.0)
             return
@@ -714,9 +802,11 @@ class RouteFollower(object):
         if pose_stamp is not None and self.last_pose_stamp is not None:
             if pose_stamp == self.last_pose_stamp:
                 return
-            dt = max(0.001, min(0.2, pose_stamp - self.last_pose_stamp))
+            motion_dt=max(.001,pose_stamp-self.last_pose_stamp)
+            dt = min(.2,motion_dt)
         else:
             dt = self.dt
+            motion_dt=dt
         if pose_stamp is not None:
             self.last_pose_stamp = pose_stamp
 
@@ -746,7 +836,7 @@ class RouteFollower(object):
 
         chain, profile = self.chain, self.profile
         p_prev = np.asarray(self.prev_pose, dtype=float) if self.prev_pose is not None else pn
-        measured_progress,measured_up=self.motion.update(p_prev,pn,dt,self.route.tangent(s_now))
+        measured_progress,measured_up=self.motion.update(p_prev,pn,motion_dt,self.route.tangent(s_now))
         self.xy_tracker.stamp=pose_stamp
 
         # ---- Gate Task State: 真实 Gate plane crossing + 账本分离 (方案 15, 16) ----
@@ -807,52 +897,125 @@ class RouteFollower(object):
         # A return leg begins facing away from the road. Rotate before moving,
         # so the forward cameras observe the new obstacles before departure.
         if not self.departure_aligned:
-            if self.yaw_control and abs(yaw_err) > math.radians(25.):
+            departure_z=self.departure_hover_z if self.departure_hover_z> -900. else self.start_z0
+            settle=(self.departure_hover_z> -900. and abs(p.z-departure_z)>.25)
+            if (self.yaw_control and abs(yaw_err) > math.radians(25.)) or settle:
                 if not self.departure_turn_announced:
                     self.event('TURN_AROUND', pose_stamp=pose_stamp,
                                yaw_error_deg=math.degrees(yaw_err))
                     self.departure_turn_announced = True
-                self.publish(0., 0., 0., yaw_rate)
+                hold=self.z_ctrl.track(departure_z,p.z,0.,0.,dt)
+                self.publish(0., 0.,hold['vz_cmd'], yaw_rate)
                 return
             self.departure_aligned = True
             if self.departure_turn_announced:
                 self.event('TURN_AROUND_COMPLETE', pose_stamp=pose_stamp)
+            if self.departure_hover_z> -900.:
+                # Rebuild the departure anchor at the settled height. Reusing
+                # the old anchor would pull the aircraft back into the sign.
+                self.seg=None;self.z_prev=None;self.prev_pose=None
+                self.motion.reset();self.z_ctrl.reset()
+                self.publish(0.,0.,0.,yaw_rate)
+                return
 
         # ---- 高度误差 / 预测 tracking ----
         base_center = lambda s: self.blender.center(s, pose_stamp)
-        rx,ry,_=self.xy_tracker.point_at(s_now)
-        fx,fy=self.xy_tracker.tangent(s_now)
+        rx,ry,_=self.xy_tracker.base_point_at(s_now)
+        a,b=self.xy_tracker.base_point_at(s_now-.3),self.xy_tracker.base_point_at(s_now+.3)
+        length=max(1e-6,math.hypot(b[0]-a[0],b[1]-a[1]));fx,fy=(b[0]-a[0])/length,(b[1]-a[1])/length
         current_lateral=-(p.x-rx)*fy+(p.y-ry)*fx
         current_vertical=p.z-base_center(s_now)
         cloud_age=pose_stamp-lidar_stamp if lidar_stamp is not None else None
         cloud_fresh=lidar_points is not None and 0. <= cloud_age < .5
-        measured_vxy=float(np.linalg.norm((pn-p_prev)[:2]))/dt
+        measured_vxy=float(np.linalg.norm((pn-p_prev)[:2]))/motion_dt
         available_cruise=self.speed_sched.set_visibility(
             self.lidar_range if cloud_fresh else 8.,cloud_age if cloud_fresh else .5)
+        if self.adaptive_speed:
+            completed=self.planning.poll()
+            if completed is not None:
+                info,candidate=completed
+                self.planner_info=info
+                if info.get('feasible') and info.get('source')=='PREDICTIVE':
+                    old=self.executing_plan
+                    if candidate is not old:
+                        start=old.offset(s_now) if old is not None else np.array([current_lateral,current_vertical])
+                        if old is not None:
+                            slope=old.slope(s_now)
+                            accel=(old.slope(s_now+.1)-old.slope(s_now-.1))/.2
+                        else:
+                            progress=max(3.,float(self.motion.velocity[:2]@np.array([fx,fy])))
+                            slope=np.array([self.motion.velocity[:2]@np.array([-fy,fx])/progress,
+                                            self.motion.velocity[2]/progress-(base_center(s_now+.5)-base_center(s_now-.5))])
+                            accel=np.zeros(2)
+                        if candidate is not None or np.linalg.norm(start)>.02:
+                            candidate=JoinedDetour(s_now,start,slope,accel,candidate,max(6.,min(12.,measured_vxy*.6)))
+                        verified=self.execution_guard.evaluate(s_now,pn,self.motion.velocity,
+                            self.xy_tracker.base_point_at,base_center,candidate,lidar_points,lidar_stamp,pose_stamp)
+                        if verified.get('guard_reason')=='EXECUTION_CLEAR':
+                            self.executing_plan=candidate
+                            self.plan_sequence+=1
+                            self.planner_info=dict(info,applied_pose_stamp=pose_stamp,applied_monotonic=time.monotonic(),join_accepted=True)
+                        else:self.planner_info=dict(info,join_accepted=False)
         if cloud_fresh:
             if self.clearance_checked is None or pose_stamp-self.clearance_checked >= .2:
+                submitted=True
                 distance=min(self.lidar_range,self.clearance.preview_distance(
                     max(v_s,self.v_cmd_prev,measured_vxy),braking=self.lidar_braking,latency=self.sensor_reaction))
-                reference=[]
-                for ahead in np.linspace(0.,distance,max(3,int(distance/3.)+1)):
-                    ex,ey,_=self.xy_tracker.point_at(s_now+ahead)
-                    reference.append((ex-p.x,ey-p.y,base_center(s_now+ahead)-p.z))
-                self.clearance_info=self.clearance.evaluate_path(
-                    lidar_points-pn,reference,(current_lateral,current_vertical))
-                self.clearance_checked=pose_stamp
+                if self.adaptive_speed:
+                    xy=copy.copy(self.xy_tracker);xy.offset_blender=copy.copy(self.xy_tracker.offset_blender)
+                    blender=copy.copy(self.blender)
+                    center=lambda s,b=blender,t=pose_stamp:b.center(s,t)
+                    planner=copy.copy(self.predictive);planner.plan=self.executing_plan
+                    job=lambda s=s_now,p=pn.copy(),v=self.motion.velocity.copy(),x=xy,b=center,r=self.route,cloud=lidar_points,c=car_tracks,t=pose_stamp,sp=max(v_s,measured_vxy),g=list(future_gates),d=distance,offset=(current_lateral,current_vertical),planner=planner:self._plan_avoidance(planner,s,p,v,x,b,r,cloud,c,t,sp,g,d,offset)
+                    submitted=self.planning.submit(pose_stamp,job)
+                else:
+                    reference=[]
+                    for ahead in np.linspace(0.,distance,max(3,int(distance/3.)+1)):
+                        ex,ey,_=self.xy_tracker.base_point_at(s_now+ahead)
+                        reference.append((ex-p.x,ey-p.y,base_center(s_now+ahead)-p.z))
+                    self.clearance_info=self.clearance.evaluate_path(lidar_points-pn,reference,(current_lateral,current_vertical))
+                if submitted:self.clearance_checked=pose_stamp
         elif self.clearance_info.get('active', False):
             # A delayed cloud cannot authorize acceleration into a surface
             # that the last fresh cloud said was blocking the path.
             self.clearance_info=dict(self.clearance_info,cap=0.,stale=True)
         else:
             self.clearance_info=dict(cap=None,active=False)
+        if self.adaptive_speed:
+            guard=self.execution_guard.evaluate(s_now,pn,self.motion.velocity,
+                self.xy_tracker.base_point_at,base_center,self.executing_plan,
+                lidar_points,lidar_stamp,pose_stamp)
+            planned=self.planner_info.get('planned_stamp')
+            age=None if planned is None else pose_stamp-planned
+            cap=guard['cap']
+            if self.planner_info.get('feasible') and self.planner_info.get('join_accepted',True):
+                planned_cap=self.planner_info.get('cap')
+                if planned_cap is not None:cap=min(cap,planned_cap)
+            # Plan age diagnoses search lag. Latest geometry determines the
+            # braking cap; a slow future never drops an executing reference.
+            self.clearance_info=dict(self.planner_info,**guard)
+            self.clearance_info.update(cap=cap,source='PREDICTIVE',feasible=guard['execution_verified'],
+                active=self.executing_plan is not None or guard['guard_reason']!='EXECUTION_CLEAR',
+                stale=guard['guard_reason']=='LIDAR_STALE',plan_stale=age is None or age>.7,
+                plan_age=age,plan_id=self.plan_sequence,planner_busy=self.planning.future is not None,
+                planner_feasible=self.planner_info.get('feasible'),
+                lateral=float(self.executing_plan.offset(s_now)[0]) if self.executing_plan is not None else 0.,
+                vertical=float(self.executing_plan.offset(s_now)[1]) if self.executing_plan is not None else 0.)
+            if self.executing_plan is not None:
+                plan=self.executing_plan
+                self.clearance_info.update(executing_start=plan.s,executing_end=plan.end,
+                    executing_slope=plan.slope(s_now).tolist(),
+                    terminal_offset=plan.offset(plan.end).tolist(),terminal_slope=plan.slope(plan.end).tolist())
         active=self.clearance_info.get('active',False)
+        predictive_path=(self.adaptive_speed or (self.clearance_info.get('source')=='PREDICTIVE' and
+                         self.clearance_info.get('feasible',False)))
+        self.xy_tracker.detour=self.executing_plan if predictive_path else None
         if active and not self.clearance_info.get('feasible',False):
             if self.blocked_since is None:self.blocked_since=pose_stamp
             if (pose_stamp-self.blocked_since>3. and
                     (self.last_perception_event is None or pose_stamp-self.last_perception_event>15.)):
                 self.event('PERCEPTION_REQUIRED',pose_stamp=pose_stamp,s=s_now,
-                           position=[p.x,p.y,p.z],reason='NO_SAFE_LIDAR_CORRIDOR')
+                           position=[p.x,p.y,p.z],reason=self.clearance_info.get('guard_reason','NO_SAFE_LIDAR_CORRIDOR'))
                 self.last_perception_event=pose_stamp
         else:
             self.blocked_since=None
@@ -864,15 +1027,21 @@ class RouteFollower(object):
             target_y=current_lateral
         self.clearance_z+=blend*(target_z-self.clearance_z)
         self.clearance_y+=blend*(target_y-self.clearance_y)
-        center_fn = lambda s: base_center(s)+self.clearance_z
+        if predictive_path:
+            plan=self.executing_plan
+            self.clearance_y,self.clearance_z=(plan.offset(s_now) if plan is not None else (0.,0.))
+            center_fn=lambda s:base_center(s)+(float(plan.offset(s)[1]) if plan is not None else 0.)
+        else:center_fn = lambda s: base_center(s)+self.clearance_z
         terminal = self.race_goal is not None and s_now > self.route.total_s-25.
-        if terminal:
+        if self.race_goal is not None and s_now > self.route.total_s-45.:
             old_center=center_fn
             def center_fn(s):
-                blend=max(0.,min(1.,(s-self.route.total_s+25.)/20.))
+                blend=max(0.,min(1.,(s-self.route.total_s+45.)/25.))
                 # Published marker locations are at road level, like the
                 # initial pose. Enter the 5m-high trigger above that surface.
-                return (1.-blend)*old_center(s)+blend*(self.race_goal[2]-self.terminal_hover_height)
+                target=min(self.race_goal[2]-self.terminal_hover_height,old_center(s)+1.)
+                return (1.-blend)*old_center(s)+blend*target
+        kz_prev=center_fn(s_ff+.5)-center_fn(s_ff-.5)
         e_z0 = p.z - center_fn(s_now)
         z_dot = 0.0
         if self.z_prev is not None and dt > 0:
@@ -894,8 +1063,8 @@ class RouteFollower(object):
         # 会被当作上限, 形成越慢越上不去的死锁。
         feedback_speed = self.v_cmd_prev if self.v_cmd_prev > 0.5 else available_cruise
         preview_speed = max(feedback_speed, available_cruise)
-        climb = self.climb_feas.evaluate(s_now, p.z, center_fn, self.vz_cap, preview_speed,
-                                         velocity_up=-z_dot)
+        climb = (self.terrain.evaluate(s_now,center_fn,self.vz_cap,available_cruise) if self.adaptive_speed
+                 else self.climb_feas.evaluate(s_now,p.z,center_fn,self.vz_cap,preview_speed,velocity_up=-z_dot))
         curve = self.curve_env.evaluate(s_now, self.xy_tracker.curvature, self.a_lat_max,
                                         preview_speed, cruise=available_cruise)
 
@@ -940,7 +1109,7 @@ class RouteFollower(object):
         self.speed_info['cross_track_error']=cross_track_error
 
         obstacle_cap=self.clearance_info.get('cap')
-        if active:
+        if active and not predictive_path:
             obstacle_cap,aligned=self.clearance.progress_cap(
                 self.clearance_info,current_lateral,current_vertical,
                 self.clearance_info.get('lateral',0.),self.clearance_info.get('vertical',0.))
@@ -949,7 +1118,7 @@ class RouteFollower(object):
             v_target=min(v_target,obstacle_cap)
             self.speed_info['hard_cap']=min(self.speed_info['hard_cap'],obstacle_cap)
             self.speed_info['v_obstacle']=obstacle_cap
-            if v_target==obstacle_cap:self.speed_info['reason']='OBSTACLE'
+            if v_target==obstacle_cap:self.speed_info['reason']=self.clearance_info.get('guard_reason','OBSTACLE')
 
         # ---- Safety Recovery: 严重 Z 掉队才接管 (原 Z_LAG 降级, 方案 6.1) ----
         v_recovery, recovery_active = self.safety.z_recovery(
@@ -978,9 +1147,9 @@ class RouteFollower(object):
             self.route.point_at)
         v_route = self.xy_tracker.velocity(
             (p.x, p.y), (tx, ty), v, arbiter=self.arbiter, dt=dt,
-            lateral_offset=self.clearance_y,
+            lateral_offset=0. if predictive_path else self.clearance_y,
             terminal_position=self.race_goal[:2] if terminal else None,
-            lateral_speed_limit=(1.5 if active and
+            lateral_speed_limit=(1.5 if active and not predictive_path and
                                  self.clearance_info.get('feasible', False) and
                                  not self.clearance_info.get('stale', False) else None))
 
