@@ -2,7 +2,7 @@
 """Independent offline gate-plane evaluator. No controller route or snapped gates.
 
 Pose CSV columns: stamp,x,y,z (ROS header time in seconds, NED metres).
-Gate JSON schema and limitations: docs/17_run_recording_and_scoring.md.
+Gate JSON schema and limitations: docs/archive/iterations/17_run_recording_and_scoring.md.
 """
 import argparse
 import csv
