@@ -19,4 +19,5 @@
   <exec_depend>airsim_ros</exec_depend>
   <exec_depend>std_srvs</exec_depend>
   <exec_depend>tf</exec_depend>
+  <exec_depend>python3-opencv</exec_depend>
 </package>
