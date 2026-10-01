@@ -28,7 +28,7 @@ def measured_car_faces(tracks,route,stamp):
 
 
 class PointIndex:
-    def __init__(self,points,origin=None,faces=(),road_height=None):
+    def __init__(self,points,origin=None,faces=(),road_height=None,continuous_surfaces=False,surface_seeds=None):
         self.faces=faces
         self.road_height=road_height
         self.points=np.ascontiguousarray(points,dtype=np.float32)
@@ -39,6 +39,64 @@ class PointIndex:
                     cv2.flann_Index(self.points,dict(algorithm=4))) if len(points) else None)
         self.roof=None
         if origin is not None:self._roof(np.asarray(origin,dtype=float))
+        self.patches=None
+        if continuous_surfaces and origin is not None and cKDTree is not None:
+            self._patches(np.asarray(origin,dtype=float),surface_seeds)
+
+    def _patches(self,origin,surface_seeds=None):
+        """Fill only small, planar, convex supported surface patches.
+
+        Original returns remain in the index. No global car convex hull or
+        extrapolation beyond a patch's measured support is introduced.
+        """
+        if len(self.points)<16:return
+        near=(self.points[np.linalg.norm(self.points-origin,axis=1)<20.] if surface_seeds is None else
+              np.asarray(surface_seeds))
+        if len(near)<16:return
+        _,ids=np.unique(np.floor(near/.8).astype(np.int32),axis=0,return_index=True)
+        seeds=near[ids]
+        indices,distance=self.neighbors(seeds,16)
+        local=self.points[indices].astype(float)
+        weights=(distance<=1.2**2).astype(float);count=weights.sum(axis=1)
+        mean=np.sum(local*weights[:,:,None],axis=1)/np.maximum(1.,count)[:,None]
+        delta=local-mean[:,None,:]
+        covariance=np.einsum('nki,nkj,nk->nij',delta,delta,weights)/np.maximum(1.,count)[:,None,None]
+        values,vectors=np.linalg.eigh(covariance)
+        valid=(count>=8)&(values[:,1]>.012)&(values[:,0]<.02*values[:,1])
+        centers=[];normals=[];bases=[];boundaries=[];offsets=[]
+        for i in np.flatnonzero(valid):
+            selected=delta[i,weights[i]>0]
+            normal=vectors[i,:,0];basis=vectors[i,:,1:]
+            if np.max(abs(selected@normal))>.10:continue
+            support=selected@basis
+            hull=cv2.convexHull(support.astype(np.float32)).reshape(-1,2)
+            if len(hull)<3 or cv2.contourArea(hull)<.05:continue
+            edges=np.roll(hull,-1,axis=0)-hull
+            inward=np.column_stack([-edges[:,1],edges[:,0]])
+            inward/=np.maximum(1e-9,np.linalg.norm(inward,axis=1))[:,None]
+            if np.mean(np.sum((np.mean(hull,axis=0)-hull)*inward,axis=1))<0:inward=-inward
+            boundary=np.zeros((16,2));boundary[:len(hull)]=inward
+            offset=np.full(16,-np.inf);offset[:len(hull)]=np.sum(hull*inward,axis=1)
+            centers.append(mean[i]);normals.append(normal);bases.append(basis)
+            boundaries.append(boundary);offsets.append(offset)
+        if centers:
+            centers=np.array(centers)
+            self.patches=(centers,np.array(normals),np.array(bases),np.array(boundaries),np.array(offsets),cKDTree(centers))
+
+    def patch_distance(self,queries):
+        queries=np.asarray(queries).reshape(-1,3)
+        if self.patches is None:return np.full(len(queries),np.inf)
+        centers,normals,bases,boundaries,offsets,tree=self.patches
+        count=min(4,len(centers))
+        distance,ids=tree.query(queries,k=count,distance_upper_bound=2.)
+        distance=np.asarray(distance).reshape(-1,count);ids=np.asarray(ids).reshape(-1,count)
+        valid=np.isfinite(distance);ids=np.minimum(ids,len(centers)-1)
+        delta=queries[:,None,:]-centers[ids]
+        local=np.einsum('nki,nkij->nkj',delta,bases[ids])
+        inside=np.all(np.einsum('nki,nkji->nkj',local,boundaries[ids])>=offsets[ids]-1e-7,axis=2)
+        clearance=abs(np.sum(delta*normals[ids],axis=2))
+        clearance[~(valid&inside)]=np.inf
+        return np.min(clearance,axis=1)
 
     def _roof(self,origin):
         if not len(self.points):return
@@ -135,8 +193,8 @@ class PointIndex:
         queries=np.ascontiguousarray(queries,dtype=np.float32).reshape(-1,3)
         if self.tree is None:return np.minimum(self.surface_distance(queries),self.face_distance(queries))
         _,distance=self.neighbors(queries,1,float('inf') if limit is None else limit)
-        return np.minimum(np.minimum(np.sqrt(np.maximum(0.,distance[:,0])),self.surface_distance(queries)),
-                          self.face_distance(queries))
+        return np.minimum(np.minimum(np.minimum(np.sqrt(np.maximum(0.,distance[:,0])),self.surface_distance(queries)),
+                          self.face_distance(queries)),self.patch_distance(queries))
 
     def neighbors(self,queries,count,limit=float('inf')):
         if cKDTree is not None:

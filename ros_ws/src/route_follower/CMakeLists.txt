@@ -12,6 +12,10 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package()
 
+add_library(velocity_response_native SHARED src/velocity_response_native.cpp)
+target_compile_options(velocity_response_native PRIVATE -O3 -std=c++11)
+install(TARGETS velocity_response_native LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
+
 catkin_install_python(PROGRAMS
   scripts/route_follower.py
   scripts/online_gate_cache.py
@@ -35,6 +39,9 @@ catkin_install_python(PROGRAMS
   scripts/async_planner.py
   scripts/execution_guard.py
   scripts/lidar_navigation.py
+  scripts/velocity_response.py
+  scripts/response_native.py
+  scripts/lidar_scene.py
   scripts/path_sampling.py
   scripts/z_capability.py
   scripts/z_capability_probe.py

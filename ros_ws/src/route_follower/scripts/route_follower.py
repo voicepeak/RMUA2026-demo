@@ -57,6 +57,7 @@ from terrain_speed import TerrainSpeedEnvelope
 from predictive_avoidance import PredictiveAvoidance, CarTracks, JoinedDetour, departure_floor_limits
 from execution_guard import ExecutionGuard
 from lidar_navigation import LidarNavigator
+from velocity_response import VelocityResponse
 from point_index import measured_car_faces
 from lattice_detour import LatticeDetour
 from pose_history import PoseHistory
@@ -103,6 +104,8 @@ class RouteFollower(object):
         self.z_rate_max = rospy.get_param("~z_rate_max", 4.0)
         self.terminal_hover_height = float(rospy.get_param('~terminal_hover_height',1.5))
         self.departure_hover_z=float(rospy.get_param('~departure_hover_z',-999.))
+        # Use the calibrated response on every lidar-controlled official leg.
+        self.coupled_navigation=self.lidar_navigation
         self.corridor_half = rospy.get_param("~corridor_half", 1.5)
         self.gate_blend_start = rospy.get_param("~gate_blend_start", 25.0)
         self.gate_blend_full = rospy.get_param("~gate_blend_full", 8.0)
@@ -250,7 +253,9 @@ class RouteFollower(object):
         self.executing_plan=None
         self.execution_guard=ExecutionGuard(margin=1.15,braking=min(self.lidar_braking,float(self.accel),self.a_down,self.curve_brake_a),
                                              reaction=self.sensor_reaction,horizon=self.lidar_range)
-        self.navigator=LidarNavigator(self.execution_guard,async_planning=self.lidar_navigation)
+        self.navigator=LidarNavigator(self.execution_guard,async_planning=self.lidar_navigation,
+                                      process_planning=self.coupled_navigation)
+        if self.coupled_navigation:self.execution_guard.response_model=VelocityResponse()
         self.planner_info={}
         self.plan_sequence=0
         self.shift_target=None
@@ -383,6 +388,7 @@ class RouteFollower(object):
         self.cmd_pub = rospy.Publisher("/airsim_node/drone_1/vel_body_cmd", VelCmd, queue_size=1)
         self.event_pub = rospy.Publisher("/rmua/controller/events", String, queue_size=100, latch=True)
         self.telemetry_pub = rospy.Publisher("/rmua/controller/telemetry", String, queue_size=100)
+        self.command_trace_pub = rospy.Publisher("/rmua/controller/command_trace", String, queue_size=100)
         rospy.on_shutdown(self.shutdown)
         rospy.Subscriber("/airsim_node/drone_1/debug/pose_gt", PoseStamped, self.pose_cb,
                          queue_size=1,buff_size=1024*1024)
@@ -556,7 +562,8 @@ class RouteFollower(object):
         self.raw_cloud=points
         self.cloud_history=[(t,c) for t,c in self.cloud_history if 0.<=stamp-t<.15]
         self.cloud_history.append((stamp,world))
-        self.lidar_points=np.concatenate([c for t,c in self.cloud_history],axis=0)
+        self.lidar_points=(world if self.coupled_navigation else
+                           np.concatenate([c for t,c in self.cloud_history],axis=0))
         self.lidar_stamp=stamp
         self.pending_cloud=None
 
@@ -613,7 +620,9 @@ class RouteFollower(object):
         self.execution_guard=ExecutionGuard(margin=1.15,braking=min(self.lidar_braking,float(self.accel),self.a_down,self.curve_brake_a),
                                              reaction=self.sensor_reaction,horizon=self.lidar_range)
         self.navigator.close()
-        self.navigator=LidarNavigator(self.execution_guard,async_planning=self.lidar_navigation)
+        self.navigator=LidarNavigator(self.execution_guard,async_planning=self.lidar_navigation,
+                                      process_planning=self.coupled_navigation)
+        if self.coupled_navigation:self.execution_guard.response_model=VelocityResponse()
         self.planner_info={}
         self.plan_sequence=0
         self.shift_target=None
@@ -651,7 +660,7 @@ class RouteFollower(object):
         if self.trace_fh is not None:
             self.trace_fh.close()
 
-    def publish(self, vx, vy, vz, yaw_rate=0.0):
+    def publish(self, vx, vy, vz, yaw_rate=0.0, source_pose_stamp=None, started=None):
         if self.stopping:
             vx = vy = vz = yaw_rate = 0.0
         c = VelCmd()
@@ -664,6 +673,10 @@ class RouteFollower(object):
         c.va = self.accel
         c.stop = 0
         self.cmd_pub.publish(c)
+        self.command_trace_pub.publish(String(data=json.dumps(dict(
+            stamp=c.header.stamp.to_sec(),source_pose_stamp=source_pose_stamp,
+            body_velocity=[vx,vy,vz],yaw_rate_deg=c.yawRate,acceleration=c.va,
+            compute_ms=None if started is None else 1000.*(time.monotonic()-started)))))
 
     def _gate_metrics(self, ng, pn):
         """门平面几何: (d_g, lat, vert, e_n); ng=None 时返回 d_g=1e9。"""
@@ -803,11 +816,14 @@ class RouteFollower(object):
         return info,planner.plan
 
     def _control_loop(self, _e):
+        started=time.monotonic()
         now = rospy.Time.now().to_sec()
         with self._lock:
             if self.pose is None or self.stopping:
                 return
             p, pose_stamp = self.pose.position, self.pose_stamp
+            roll,pitch,yaw=self.roll,self.pitch,self.yaw
+            pose_arrival=self.pose_arrival
             # Keep pose and cloud from one callback snapshot. Reading a newer
             # cloud after releasing the lock creates a negative cloud age.
             lidar_points, lidar_stamp = self.lidar_points, self.lidar_stamp
@@ -820,12 +836,12 @@ class RouteFollower(object):
             return
 
         # ---- pose timeout: 立即输出零速度 (方案 22.2) ----
-        if pose_stamp is None or self.safety.pose_stale(now, self.pose_arrival):
+        if pose_stamp is None or self.safety.pose_stale(now, pose_arrival):
             self.publish(0.0, 0.0, 0.0, 0.0)
             if self.last_stale_event is None or now - self.last_stale_event > 1.0:
                 self.last_stale_event = now
-                self.event("POSE_STALE", pose_age=(now - self.pose_arrival)
-                           if self.pose_arrival is not None else None)
+                self.event("POSE_STALE", pose_age=(now - pose_arrival)
+                           if pose_arrival is not None else None)
                 rospy.logwarn_throttle(1.0, "POSE_STALE: no fresh pose for > %.2f s",
                                        self.pose_timeout)
             return
@@ -905,7 +921,7 @@ class RouteFollower(object):
 
         # ---- Yaw Path Following: 提前看向未来赛道 (方案 18) ----
         yaw_calc = 0.0
-        yaw_target = self.yaw
+        yaw_target = yaw
         yaw_err = 0.0
         e_img = 0.0
         yaw_source = "HOLD"
@@ -914,9 +930,9 @@ class RouteFollower(object):
             rx, ry, _ = self.xy_tracker.point_at(s_now + self.yaw_lookahead)
             tgt = self.yaw_ctrl.target_from_route((p.x,p.y), (rx,ry))
             yaw_calc, yaw_target, yaw_err = self.yaw_ctrl.rate(
-                (p.x, p.y), self.yaw, tgt)
+                (p.x, p.y), yaw, tgt)
             if self.k_vision != 0.0 and future_gates:
-                R_wb = tft.euler_matrix(self.roll, self.pitch, self.yaw)[:3, :3]
+                R_wb = tft.euler_matrix(roll, pitch, yaw)[:3, :3]
                 gw = [(g["x"], g["y"], g["z"]) for g in future_gates[:self.fov_n_gates]]
                 e_img = self.yaw_ctrl.vision_fov_error(
                     gw, np.array([p.x, p.y, p.z]), R_wb, self.fov_n_gates)
@@ -1339,6 +1355,9 @@ class RouteFollower(object):
             self.clearance_info=nav_info
             v_route=command[:2];vz=-float(command[2]);v=float(np.linalg.norm(v_route))
             self.v_cmd_prev=v;self.xy_tracker.previous_velocity=tuple(v_route);self.z_ctrl.prev_vz=vz
+            if self.execution_guard.response_model is not None:
+                self.execution_guard.response_model.commit(command,self.motion.velocity,pose_stamp)
+                self.z_ctrl.prev_vz=-float(self.execution_guard.response_model.previous[2])
             self.speed_info.update(reason=nav_info['command_reason'],
                 v_requested_cruise=self.speed_sched.requested_cruise,
                 braking_execution=self.execution_guard.braking,lidar_range=self.lidar_range)
@@ -1387,8 +1406,9 @@ class RouteFollower(object):
             velocity_world=[float(v_route[0]),float(v_route[1])],
             measured_velocity_world=self.motion.velocity.tolist(),
             measured_progress_speed=measured_progress,lidar_age=cloud_age,
-            pose_callback_age=max(0.,now-self.pose_arrival),
-            attitude_rad=[self.roll,self.pitch,self.yaw],
+            pose_callback_age=max(0.,now-pose_arrival),
+            position_world=pn.tolist(),control_compute_ms=1000.*(time.monotonic()-started),
+            attitude_rad=[roll,pitch,yaw],
             path_xy=list(self.xy_tracker.point_at(s_now)[:2]),
             speed_limits=self.speed_info, yaw_target=yaw_target,
             yaw_rate_rad_s=yaw_rate, gate_ledger=ledgers,
@@ -1419,9 +1439,10 @@ class RouteFollower(object):
             self.reached = True
             return
 
-        final_cmd = self.arbiter.finalize(v_route, vz, yaw_rate, self.yaw,
+        final_cmd = self.arbiter.finalize(v_route, vz, yaw_rate, yaw,
                                           safety=self.safety, mode=mode)
-        self.publish(final_cmd.vx, final_cmd.vy, final_cmd.vz, final_cmd.yaw_rate)
+        self.publish(final_cmd.vx, final_cmd.vy, final_cmd.vz, final_cmd.yaw_rate,
+                     source_pose_stamp=pose_stamp,started=started)
 
         si = self.speed_info
         g_id = ng.get("id") if ng is not None else None
@@ -1446,7 +1467,7 @@ class RouteFollower(object):
             si.get("vz_available", 0.0), self.no_future_gate, self.gate_idx,
             str(g_id), g_s, g_src, g_class, str(g_hard), g_sigz, d_g, lat, vert,
             ("%.2f" % miss_ratio) if miss_ratio is not None else "-", mode,
-            yaw_source, math.degrees(self.yaw), math.degrees(yaw_target),
+            yaw_source, math.degrees(yaw), math.degrees(yaw_target),
             math.degrees(yaw_err), math.degrees(yaw_rate), e_img,
             s_now, z_ref, p.z, z_err, kz_prev, vz_ff, vz_fb, vz_target,
             vz_clamped, vz, -z_actual_dot, z_limit)

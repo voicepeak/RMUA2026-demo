@@ -21,20 +21,36 @@ class ExecutionGuard:
         self.cloud_stamp=None
         self.index=None
         self.faces=()
+        self.response_model=None
+        self.envelope_times=None
+        self.pose_stamp=None
+        self.command_constraint=None
+        self.dynamic_scene=None
+        self.surface_seed_points=None
 
     def set_faces(self,faces):
         self.faces=faces
         if self.index is not None:self.index.faces=faces
 
     def _update(self, points, cloud_stamp, pose_stamp, position=None):
+        self.pose_stamp=pose_stamp
         age=None if cloud_stamp is None else pose_stamp-cloud_stamp
         if points is None or age is None or not 0.<=age<.5:
             return None, 'LIDAR_STALE'
         if len(points)==0:return None, 'LIDAR_EMPTY'
         if self.index is None or self.cloud_stamp!=cloud_stamp:
-            self.index=PointIndex(points,origin=position,faces=self.faces,road_height=5.)
+            self.index=PointIndex(points,origin=position,faces=self.faces,road_height=5.,
+                                  continuous_surfaces=self.response_model is not None,
+                                  surface_seeds=self.surface_seed_points)
             self.cloud_stamp=cloud_stamp
         return age, None
+
+    def command_clearance(self,samples,limit=None):
+        distances=self.index.distance(samples,limit=limit)
+        if limit is not None:distances=np.minimum(limit,distances)
+        if self.dynamic_scene is not None and self.envelope_times is not None:
+            distances=np.minimum(distances,self.dynamic_scene.distance(samples,self.envelope_times))
+        return float(np.min(distances))
 
     def _cap(self, distance, latency):
         accelerated=max(0.,math.sqrt((self.braking*latency)**2+2.*self.braking*distance)-self.braking*latency)
@@ -78,6 +94,10 @@ class ExecutionGuard:
 
     def command_envelope(self,position,velocity,command,age):
         """Shared actuator response, reaction, immediate target and full stop."""
+        if self.response_model is not None:
+            queries,extent,times=self.response_model.envelope(position,velocity,command,self.reaction+age)
+            self.envelope_times=times
+            return queries,extent
         position=np.asarray(position);velocity=np.asarray(velocity);command=np.asarray(command)
         latency=self.reaction+age
         speed=float(np.linalg.norm(command))
@@ -109,6 +129,25 @@ class ExecutionGuard:
         age,error=self._update(points,cloud_stamp,pose_stamp,position)
         if error:return np.zeros(3),dict(command_reason=error,command_scale=0.)
         position=np.asarray(position);velocity=np.asarray(velocity);desired=np.asarray(desired)
+        if self.response_model is not None:
+            candidates=[desired,np.array([0.,0.,desired[2]]),np.zeros(3),
+                        -velocity*min(1.,3./max(.01,np.linalg.norm(velocity)))]
+            candidates.extend(np.array([0.,0.,z]) for z in (-4.,-2.,-1.,1.,2.,4.5))
+            commands=[self.response_model.prepare(target,velocity,pose_stamp) for target in candidates]
+            envelopes=self.response_model.envelopes(position,velocity,commands,self.reaction+age)
+            best=commands[0];best_clearance=-np.inf
+            for command,(samples,extent,times) in zip(commands,envelopes):
+                self.envelope_times=times
+                clearance=self.command_clearance(samples)
+                constrained=self.command_constraint is None or self.command_constraint(samples)
+                if constrained and clearance>best_clearance:best=command;best_clearance=clearance
+                if clearance>=self.margin+.1 and extent<=self.horizon and constrained:
+                    return command,dict(command_reason='COMMAND_BRAKING',command_scale=None,
+                                        command_clearance=clearance)
+            # Already outside the empirical safe set: keep the bounded braking
+            # controller and expose the failure; never label this certified.
+            return best,dict(command_reason='COMMAND_BLOCKED',command_scale=None,
+                             command_clearance=None if not np.isfinite(best_clearance) else best_clearance)
         latency=self.reaction+age
         def check(command):
             queries,extent=self.command_envelope(position,velocity,command,age)
