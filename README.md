@@ -4,15 +4,16 @@
 分支 `RMUA2026-01`）上，从 0 到 1 开发无人机自主飞行的完整过程：
 **每次迭代 = 设计方案（docs/）+ 代码（ros_ws/、yolo/）+ 回归测试 + README 更新**。
 
-当前状态（2026-09-30）：seed123 **正式跑通 1→3 并进入 State2**，
-官方终点更新为 5 号，第一段赛时约 178.832 秒。修复及时起跑、3 号窗口高度、
-下降限速与返程调度；陡降段速度中位数约从 4.5 提升到 7.5m/s。
-返程已遇到悬浮汽车并通过首辆车，但第二段首次避障耗时过长而超时，**3→5 尚未完成**。
-汽车 YOLO 已用用户标注的 63 张图、424 个框训练完成，同赛道保留验证集
-mAP50=93.9%、Recall=90.1%，独立权重 `yolo/weights/car_score91_best.pt`。
-新增按雷达可视距离、制动距离、弯道和高度跟踪误差调速，简单路段可超过 15m/s；
-提速和平滑版本已正式完成 1→3；汽车绕行仍有碰撞，Score91 尚未验证。
-166 项测试通过。陡坡段急减速与俯仰振荡的分析见
+当前状态（2026-10-01）：按修复交接继续处理规划过期急停、轨迹交接、格点回中，
+并修正规划体素点与执行原始点云检查不一致。195 项测试在宿主和 ROS 容器通过。
+最新 run19 官方终点从 3 更新为 5，返程观察进度约 160 m，仍有大量真实净空停车；
+离屏没有捕获官方 HUD，Score/最终 State 未核实，**3→5 尚未完成，Score91 未验收**。
+控制与录制节点已停止，数据保留。当前执行保护按 4 m/s² 制动、30 m 前视限速，
+直路约 14 m/s；更高真实速度仍需制动响应与可信视距验证。
+汽车 YOLO 已用用户标注的 63 张图、424 个框训练完成，
+mAP50=93.9%、Recall=90.1%，独立权重 `yolo/weights/car_score91_best.pt`，本轮没有重复训练。
+本轮证据、失败实验及下一步见 [交接续修与执行验证](docs/24_execution_guard_and_handoff_continuation.md)。
+陡坡段急减速与俯仰振荡的此前分析见
 [平滑控制和传感器分工](docs/23_descent_smoothing_sensor_strategy.md)。
 详见 [汽车训练与动态速度验证](docs/22_car_training_adaptive_speed.md)。
 详见 [速度、窗口、计时与返程记录](docs/20_speed_window_timer_return.md)；
@@ -268,7 +269,7 @@ cd /home/tianbot/RUMA-by-helinjun
   `/rmua/controller/telemetry`（20Hz JSON：s/z_ref/vz/限速/yaw）。
 - 数据采集：`docker exec rmua_noetic python3 /workspace/frames/flight_probe.py
   --out /workspace/frames/<名字> --seconds 300`。
-- 回归：`python3 -m unittest discover -s tools/tests`（当前 **166 项全过**）。
+- 回归：`python3 -m unittest discover -s tools/tests`（当前 **195 项全过**）。
 - 停止：`docker exec rmua_noetic pkill -f route_follower.py`；
   关模拟器：`docker exec rmua_noetic bash -lc 'pkill -f RMUA; pkill -f rosmaster'`。
 
