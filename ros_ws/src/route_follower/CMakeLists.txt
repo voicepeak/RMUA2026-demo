@@ -34,6 +34,7 @@ catkin_install_python(PROGRAMS
   scripts/lattice_detour.py
   scripts/async_planner.py
   scripts/execution_guard.py
+  scripts/path_sampling.py
   scripts/z_capability.py
   scripts/z_capability_probe.py
   scripts/climb_feasibility.py

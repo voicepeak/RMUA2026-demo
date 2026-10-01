@@ -8,6 +8,7 @@ from predictive_avoidance import Detour, JoinedDetour, PredictiveAvoidance
 from lattice_detour import LatticeDetour, search
 from point_index import PointIndex
 from reference_planner import RouteGeometry
+from path_sampling import swept_samples
 
 
 class ExecutionGuardTests(unittest.TestCase):
@@ -53,6 +54,14 @@ class ExecutionGuardTests(unittest.TestCase):
         result=self.check([(0.,2.,0.)],velocity=(0.,8.,0.))
         self.assertEqual(result['cap'],0.)
 
+    def test_roundoff_does_not_label_a_blocked_start_as_verified(self):
+        s=51.2
+        result=self.guard.evaluate(s,np.array([s,0.,0.]),np.zeros(3),self.xy,lambda t:0.,None,
+                                   np.array([[s+1.4,0.,0.]]),10.,10.1)
+        self.assertFalse(result['execution_verified'])
+        self.assertEqual(result['guard_reason'],'EXECUTION_BLOCKED')
+        self.assertEqual(result['cap'],0.)
+
     def test_delayed_plan_join_preserves_position_slope_and_acceleration(self):
         old=Detour(0.,(0.,0.),(2.,-1.),20.,30.)
         new=Detour(2.,old.offset(2.),(-2.,0.),20.,40.,start_slope=old.slope(2.))
@@ -90,6 +99,24 @@ class ExecutionGuardTests(unittest.TestCase):
         result=planner.evaluate(6.,np.array([6.,2.,0.]),np.array([8.,0.,0.]),self.xy,lambda s:0.,
                                 route,np.array([[16.,0.,0.]]),[],10.,8.)
         self.assertTrue(result['feasible']);self.assertIs(planner.plan,previous)
+
+    def test_shared_swept_samples_cover_short_and_long_connectors(self):
+        path=np.array([[0.,0.,0.],[0.,2.,0.],[.2,2.,0.],[10.,2.,1.]])
+        samples,segments,fraction=swept_samples(path)
+        self.assertLessEqual(np.max(np.linalg.norm(np.diff(samples,axis=0),axis=1)),.18+1e-12)
+        np.testing.assert_allclose(samples,path[segments]+fraction[:,None]*(path[segments+1]-path[segments]))
+
+    def test_raw_dense_candidate_passes_the_execution_validator(self):
+        # Offset surfaces inside the same voxel are all retained. The runtime
+        # checker must agree with the planner's actual dense executable path.
+        points=np.array([(x,y,z) for x in (10.,10.12,12.)
+                         for y in np.arange(-.8,.9,.14) for z in np.arange(-.8,.9,.14)])
+        planner=PredictiveAvoidance(margin=1.15,braking=4.)
+        route=RouteGeometry([(0.,0.,0.),(100.,0.,0.)])
+        result=planner.evaluate(0.,np.zeros(3),np.zeros(3),self.xy,lambda s:0.,route,points,[],10.,5.)
+        self.assertTrue(result['feasible'])
+        check=self.guard.evaluate(0.,np.zeros(3),np.zeros(3),self.xy,lambda s:0.,planner.plan,points,10.,10.1)
+        self.assertEqual(check['guard_reason'],'EXECUTION_CLEAR')
 
 
 if __name__=='__main__':unittest.main()

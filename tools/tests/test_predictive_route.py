@@ -117,7 +117,9 @@ class PredictiveRouteTests(unittest.TestCase):
         self.assertEqual(result['cars'],2);self.assertIsNone(result['cap'])
 
     def test_lattice_can_pass_two_obstacles_on_opposite_sides(self):
-        p=PredictiveAvoidance()
+        # Geometry feasibility must not depend on host/UE4 CPU contention.
+        # Production deadline behavior is exercised separately below.
+        p=PredictiveAvoidance(budget=5.)
         points=[(x,y,z) for xs,ys in [(np.arange(15.,21.1,.5),np.arange(-3.,.51,.5)),
                                       (np.arange(29.,35.1,.5),np.arange(-.5,3.1,.5))]
                 for x in xs for y in ys for z in np.arange(-2.,2.1,.5)]
@@ -125,6 +127,12 @@ class PredictiveRouteTests(unittest.TestCase):
         self.assertTrue(result['feasible'])
         self.assertGreater(p.plan.offset(18.)[0],1.5)
         self.assertLess(p.plan.offset(32.)[0],-1.5)
+
+    def test_expired_search_budget_reports_timeout_and_stops_search(self):
+        p=PredictiveAvoidance(budget=0.)
+        result=self.evaluate(p,[(10.,0.,0.)])
+        self.assertFalse(result['feasible'])
+        self.assertTrue(result['search_timeout'])
 
     def test_planner_does_not_block_control_or_duplicate_pending_jobs(self):
         planner=AsyncPlanner();release=threading.Event()

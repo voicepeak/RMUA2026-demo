@@ -11,6 +11,7 @@ import numpy as np
 from lidar_clearance import LidarClearance
 from point_index import PointIndex
 from lattice_detour import search as lattice_search
+from path_sampling import swept_samples
 
 
 def smooth(t):
@@ -107,16 +108,7 @@ class PredictiveAvoidance:
         self.margin=float(margin);self.braking=float(braking);self.plan=None
         self.budget=budget
 
-    @staticmethod
-    def swept_samples(path,spacing=.18):
-        path=np.asarray(path,dtype=float)
-        delta=np.diff(path,axis=0)
-        counts=np.maximum(1,np.ceil(np.linalg.norm(delta,axis=1)/spacing).astype(int))
-        segments=np.repeat(np.arange(len(delta)),counts)
-        starts=np.cumsum(counts)-counts
-        fraction=(np.arange(np.sum(counts))-np.repeat(starts,counts))/counts[segments]
-        queries=path[segments]+fraction[:,None]*delta[segments]
-        return np.vstack([queries,path[-1]]),np.r_[segments,len(delta)-1],np.r_[fraction,1.]
+    swept_samples=staticmethod(swept_samples)
 
     @staticmethod
     def positions(stations,xy,center,plan):

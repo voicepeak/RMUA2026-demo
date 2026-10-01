@@ -241,7 +241,7 @@ class RouteFollower(object):
         self.predictive=PredictiveAvoidance(margin=1.15,braking=self.lidar_braking)
         self.planning=AsyncPlanner()
         self.executing_plan=None
-        self.execution_guard=ExecutionGuard(margin=1.15,braking=self.lidar_braking,
+        self.execution_guard=ExecutionGuard(margin=1.15,braking=min(self.lidar_braking,float(self.accel),self.a_down,self.curve_brake_a),
                                              reaction=self.sensor_reaction,horizon=self.lidar_range)
         self.planner_info={}
         self.plan_sequence=0
@@ -596,7 +596,7 @@ class RouteFollower(object):
         self.planning.reset()
         self.predictive=PredictiveAvoidance(margin=1.15,braking=self.lidar_braking)
         self.executing_plan=None
-        self.execution_guard=ExecutionGuard(margin=1.15,braking=self.lidar_braking,
+        self.execution_guard=ExecutionGuard(margin=1.15,braking=min(self.lidar_braking,float(self.accel),self.a_down,self.curve_brake_a),
                                              reaction=self.sensor_reaction,horizon=self.lidar_range)
         self.planner_info={}
         self.plan_sequence=0
@@ -947,12 +947,17 @@ class RouteFollower(object):
                             slope=np.array([self.motion.velocity[:2]@np.array([-fy,fx])/progress,
                                             self.motion.velocity[2]/progress-(base_center(s_now+.5)-base_center(s_now-.5))])
                             accel=np.zeros(2)
-                        if candidate is not None or np.linalg.norm(start)>.02:
-                            candidate=JoinedDetour(s_now,start,slope,accel,candidate,max(6.,min(12.,measured_vxy*.6)))
-                        verified=self.execution_guard.evaluate(s_now,pn,self.motion.velocity,
-                            self.xy_tracker.base_point_at,base_center,candidate,lidar_points,lidar_stamp,pose_stamp)
-                        if verified.get('guard_reason')=='EXECUTION_CLEAR':
-                            self.executing_plan=candidate
+                        needs_join=candidate is not None or np.linalg.norm(start)>.02
+                        lengths=[max(6.,min(12.,measured_vxy*.6)),4.,2.,1.]
+                        accepted=None;join_safe=False
+                        for length in (lengths if needs_join else [0.]):
+                            joined=(JoinedDetour(s_now,start,slope,accel,candidate,length) if needs_join else None)
+                            verified=self.execution_guard.evaluate(s_now,pn,self.motion.velocity,
+                                self.xy_tracker.base_point_at,base_center,joined,lidar_points,lidar_stamp,pose_stamp)
+                            if verified.get('guard_reason')=='EXECUTION_CLEAR':
+                                accepted=joined;join_safe=True;break
+                        if join_safe:
+                            self.executing_plan=accepted
                             self.plan_sequence+=1
                             self.planner_info=dict(info,applied_pose_stamp=pose_stamp,applied_monotonic=time.monotonic(),join_accepted=True)
                         else:self.planner_info=dict(info,join_accepted=False)

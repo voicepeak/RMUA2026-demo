@@ -5,6 +5,7 @@ import time
 import numpy as np
 from point_index import PointIndex
 from predictive_avoidance import PredictiveAvoidance
+from path_sampling import swept_samples
 
 
 class ExecutionGuard:
@@ -34,11 +35,12 @@ class ExecutionGuard:
         # Certify the actual position-to-reference connector as well. Starting
         # at the nominal point would hide an obstacle beside a tracking error.
         path[0]=position
-        queries,segments,fraction=PredictiveAvoidance.swept_samples(path)
+        queries,segments,fraction=swept_samples(path)
         progress=stations[segments]-s+.2*fraction
         distances=self.index.distance(queries)
         blocked=np.flatnonzero(distances<self.margin+.1)
         free=self.horizon if not len(blocked) else max(0.,progress[blocked[0]]-.2)
+        if free<1e-6:free=0.
         # An actuator cannot remove the measured velocity instantaneously.
         # Validate the response segment before following the spatial path.
         inertia=position+np.linspace(0.,self.reaction,8)[:,None]*np.asarray(velocity)
