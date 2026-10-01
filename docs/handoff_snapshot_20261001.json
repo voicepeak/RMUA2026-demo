@@ -1,0 +1,147 @@
+{
+  "recorded_at": "2026-10-01T19:58:11.369585+08:00",
+  "workspace": "/home/tianbot/RUMA-by-helinjun",
+  "git_repository": "/home/tianbot/RUMA-by-helinjun/repo",
+  "git_head": "08449a46af59d1b328fa37910e0e87686764a63f",
+  "git_head_is_not_full_working_version": true,
+  "git_status_porcelain_at_document_cleanup": [
+    " M README.md",
+    " D docs/01_stage1_start_to_goal.md",
+    " D docs/02_stage2_track_path_planning.md",
+    " D docs/03_stage3_z_axis_and_gates.md",
+    " D docs/04_stage4_z_safety_and_gate_collection.md",
+    " D docs/05_stage5_xy_gate_anchors_z_planner.md",
+    " D docs/06_stage6_stereo_opencv_gate_vision.md",
+    " D docs/07_stage7_full_gate_crossing_v2.md",
+    " D docs/08_stage7_v3_multi_gate_chain.md",
+    " D docs/09_stage8_z_preview_feedforward_highspeed.md",
+    " D docs/10_stage9_yolo_gate_detection.md",
+    " D docs/11_stage10_yaw_persistent_map_continuous3d.md",
+    " D docs/12_stage11_gate_keypoints_timesync_reprojection.md",
+    " D docs/13_stage12_speed_yaw_fix.md",
+    " D docs/14_stage13_z_channel_capability.md",
+    " D docs/15_stage14_startup_height_gate6_trace.md",
+    " D docs/16_full_course_audit.md",
+    " D docs/17_run_recording_and_scoring.md",
+    " M docs/18_rmua2026_rules.md",
+    " D docs/19_race_progress_20260930.md",
+    " D docs/20_speed_window_timer_return.md",
+    " D docs/21_speed15_car91_diagnosis.md",
+    " D docs/22_car_training_adaptive_speed.md",
+    " D docs/23_descent_smoothing_sensor_strategy.md",
+    " D docs/24_execution_guard_and_handoff_continuation.md",
+    " M ros_ws/src/route_follower/scripts/execution_guard.py",
+    " M ros_ws/src/route_follower/scripts/lattice_detour.py",
+    " M ros_ws/src/route_follower/scripts/point_index.py",
+    " M ros_ws/src/route_follower/scripts/predictive_avoidance.py",
+    " M ros_ws/src/route_follower/scripts/route_follower.py",
+    " M tools/evaluate_run.py",
+    " M tools/tests/test_execution_guard.py",
+    " M tools/tests/test_route_follower_startup.py",
+    "?? docs/00_current_handoff.md",
+    "?? docs/25_car_command_guard.md",
+    "?? docs/README.md",
+    "?? docs/archive/"
+  ],
+  "container": {
+    "name": "rmua_noetic",
+    "running": false,
+    "status": "exited",
+    "finished_at": "2026-10-01T11:44:49.228134048Z"
+  },
+  "user_requested_pause": true,
+  "race_acceptance": "NOT_PASSED",
+  "latest_race": {
+    "directory": "experiments/race_car_fix_20261001_19",
+    "hud": "Time180.005 / Score17 / OutTime0 / StateFinished",
+    "result": "first_stage_timeout"
+  },
+  "existing_test_logs": "221 tests passed on host and ROS Python; no tests or races rerun during document cleanup",
+  "files": [
+    {
+      "source": "repo/ros_ws/src/route_follower/scripts/execution_guard.py",
+      "runtime_copy": "rmua_ws/src/route_follower/scripts/execution_guard.py",
+      "sha256": "1aa7e8728f3a6d038932a58e88a549a05eb82dc373a02ece4ea7713575b3bace",
+      "runtime_sha256": "1aa7e8728f3a6d038932a58e88a549a05eb82dc373a02ece4ea7713575b3bace",
+      "matches": true
+    },
+    {
+      "source": "repo/ros_ws/src/route_follower/scripts/point_index.py",
+      "runtime_copy": "rmua_ws/src/route_follower/scripts/point_index.py",
+      "sha256": "01cc330016ed0f9fddbdffba5fb80ffba357cf3c5251c717b040d8a6a8e71bdd",
+      "runtime_sha256": "01cc330016ed0f9fddbdffba5fb80ffba357cf3c5251c717b040d8a6a8e71bdd",
+      "matches": true
+    },
+    {
+      "source": "repo/ros_ws/src/route_follower/scripts/predictive_avoidance.py",
+      "runtime_copy": "rmua_ws/src/route_follower/scripts/predictive_avoidance.py",
+      "sha256": "adb32261d25081c2bc179962fb02f0c20dfca856e05e4ab745d2fa66d3e0de8b",
+      "runtime_sha256": "adb32261d25081c2bc179962fb02f0c20dfca856e05e4ab745d2fa66d3e0de8b",
+      "matches": true
+    },
+    {
+      "source": "repo/ros_ws/src/route_follower/scripts/lattice_detour.py",
+      "runtime_copy": "rmua_ws/src/route_follower/scripts/lattice_detour.py",
+      "sha256": "8916b2eb06552426cca08958d4552d8f4c40a613f733fdd1e5c740798651a220",
+      "runtime_sha256": "8916b2eb06552426cca08958d4552d8f4c40a613f733fdd1e5c740798651a220",
+      "matches": true
+    },
+    {
+      "source": "repo/ros_ws/src/route_follower/scripts/route_follower.py",
+      "runtime_copy": "rmua_ws/src/route_follower/scripts/route_follower.py",
+      "sha256": "0d06476fd28988342cf5e84c438a4dd061fb0a6bd4229ffead2def7e546cb00e",
+      "runtime_sha256": "0d06476fd28988342cf5e84c438a4dd061fb0a6bd4229ffead2def7e546cb00e",
+      "matches": true
+    },
+    {
+      "path": "repo/tools/tests/test_execution_guard.py",
+      "sha256": "5a4c917cb4e3829696e266ba4d1343f55920da763152d0fbc804f68477b7f438"
+    },
+    {
+      "path": "repo/tools/tests/test_route_follower_startup.py",
+      "sha256": "46432ff2d7cca1766a57e597430af02ce74cff41913c94ae27b5dda7ab0b24c3"
+    },
+    {
+      "path": "repo/tools/start_seed123_race.py",
+      "sha256": "f9f205635b2f1bbd5b3cc9bf47ff96c4b4a31e4d10b9eaff5bb212bb19c616cd"
+    },
+    {
+      "path": "repo/tools/race_start_watch.py",
+      "sha256": "1d419eb9735c7f98382b1f3966921e36c7f745cf78e57c651e2804f175d8d608"
+    },
+    {
+      "path": "repo/tools/race_runner.py",
+      "sha256": "32e89fc3770af47fdf2ba9ed1c263d549004dfe0e638aa5625a2318dbacbee1b"
+    },
+    {
+      "path": "repo/yolo/weights/best.pt",
+      "sha256": "733c9d1626e0a2126c39f2e2ab8d4f226fbd85519c6d233c53debae0afd50b4b"
+    },
+    {
+      "path": "repo/yolo/weights/car_score91_best.pt",
+      "sha256": "3b17c4b7baae352e72be78bc45d24741f991f9b88cdff041aca114b30aec1c49"
+    },
+    {
+      "path": "simulator/simulator_12.0.0.5/run_simulator.sh",
+      "sha256": "36e72436560e5c330ea0f073203cf387261cf2f4db4e8b6283bb594050eb6797"
+    },
+    {
+      "path": "experiments/car_collision_fix_20261001/host_tests.log",
+      "sha256": "6ce8c6d80786e74ae61acce2651803f9d9febeb5c524bd6e143601e66fbcacb7"
+    },
+    {
+      "path": "experiments/car_collision_fix_20261001/ros_tests_v17_final.log",
+      "sha256": "a21455fde869150a75da55cfb73f3a5afcaaf51b7a55c20e90bd7cec9b13b22b"
+    },
+    {
+      "path": "experiments/race_car_fix_20261001_19/hud/hud_005.png",
+      "sha256": "b35d90447ec36650fb69aa758c6b8af9ac214101ae1849d66b99eefac3a3d32c"
+    }
+  ],
+  "baseline_directories": [
+    "experiments/car_collision_fix_20261001/before/",
+    "experiments/race_car_fix_20261001_13/initial_controller_sources/"
+  ],
+  "baseline_note": "before contains only two files; run13 snapshot contains five key modules. Neither is a complete accepted controller archive.",
+  "archive_manifest": "experiments/car_collision_fix_20261001/document_cleanup_20261001.json"
+}
