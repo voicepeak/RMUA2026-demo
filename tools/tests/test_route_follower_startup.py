@@ -35,6 +35,10 @@ class RouteFollowerStartupTests(unittest.TestCase):
                         self.assertIsNone(controller.executing_plan)
                         self.assertTrue(ros.Timer.called)
                         self.assertGreater(controller.route.total_s,1000.)
+                        pose_calls=[call for call in ros.Subscriber.call_args_list
+                                    if call.args[0]=='/airsim_node/drone_1/debug/pose_gt']
+                        self.assertTrue(pose_calls)
+                        self.assertEqual(pose_calls[-1].kwargs['queue_size'],1)
                     finally:controller.planning.close()
 
 

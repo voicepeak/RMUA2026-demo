@@ -9,7 +9,7 @@ import math
 import time
 import numpy as np
 from lidar_clearance import LidarClearance
-from point_index import PointIndex
+from point_index import PointIndex, measured_car_faces
 from lattice_detour import search as lattice_search
 from path_sampling import swept_samples
 
@@ -104,7 +104,8 @@ class CarTracks:
 
 
 class PredictiveAvoidance:
-    def __init__(self,margin=1.,braking=4.,budget=.5):
+    def __init__(self,margin=1.,braking=4.,budget=.5,vertical_limit=1.5):
+        self.vertical_limit=vertical_limit
         self.margin=float(margin);self.braking=float(braking);self.plan=None
         self.budget=budget
 
@@ -169,7 +170,7 @@ class PredictiveAvoidance:
         # hide the closest surface by its diagonal; no margin was compensating
         # for that loss in the previous implementation.
         points=points[np.linalg.norm(points-position,axis=1)<34.]
-        self.index=PointIndex(points)
+        self.index=PointIndex(points,origin=position,faces=measured_car_faces(tracks,route,stamp),road_height=5.)
         horizon=min(65.,max(30.,route.total_s-s))
         stations=s+np.arange(0.,horizon+.5,1.)
         cars=[]
@@ -189,9 +190,8 @@ class PredictiveAvoidance:
                                  t['half_width']+self.margin+.25+age*.3,
                                  t['half_height']+self.margin+.25+age*.3])))
         observed_cars=len(cars)
-        # In the measured lidar region the full point cloud refines geometry.
-        # Coarse stereo faces must not seal a corridor the radar has measured
-        # as free. Beyond radar range they still initiate predictive detours.
+        # Fresh, accurately localized near faces are checked by PointIndex.
+        # Coarse distant boxes still initiate predictive detours separately.
         cars=[c for c in cars if c['far']]
         baseline=self.positions(stations,xy,center,None);baseline[0]=position
         nominal=self.positions(stations,xy,center,None)
@@ -250,7 +250,8 @@ class PredictiveAvoidance:
                     self.plan=plan
                     return self._result(stations,path,mc,observed_cars)
         lengths=sorted(set([max(4.,min(28.,obstacle-2.)),max(4.,min(16.,obstacle-2.))]),reverse=True)
-        targets=[(y,z) for y in (-3.,-2.5,-2.,-1.5,-1.,0.,1.,1.5,2.,2.5,3.) for z in (-1.5,-1.,0.,1.,1.5)]
+        targets=[(y,z) for y in (-3.,-2.5,-2.,-1.5,-1.,0.,1.,1.5,2.,2.5,3.)
+                 for z in np.arange(-self.vertical_limit,self.vertical_limit+.01,.5)]
         targets.sort(key=lambda yz:(yz[0]**2+1.5*yz[1]**2))
         for length in lengths:
             for target in targets:
@@ -277,7 +278,7 @@ class PredictiveAvoidance:
                 if cost<score:best=(plan,path,mc);score=cost
         if best is None:
             options=lattice_search(stations,nominal,sides,start,self.index,self.margin,cars,self.plan,
-                                   start_slope=slope,deadline=deadline)
+                                   start_slope=slope,deadline=deadline,vertical_limit=self.vertical_limit)
             if options:
                 for plan in options:
                     path,_=path_for(plan)

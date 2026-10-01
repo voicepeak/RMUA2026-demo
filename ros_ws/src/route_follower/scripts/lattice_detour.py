@@ -18,9 +18,10 @@ class LatticeDetour:
     def slope(self,s):return np.array([self.y.dz_ds(s),self.z.dz_ds(s)])
 
 
-def search(stations,nominal,sides,start,index,margin,cars,old_plan=None,start_slope=(0.,0.),deadline=None):
+def search(stations,nominal,sides,start,index,margin,cars,old_plan=None,start_slope=(0.,0.),deadline=None,vertical_limit=1.5):
     if deadline is not None and time.monotonic()>deadline:return None
-    offsets=np.array([(y,z) for y in np.arange(-3.,3.01,.5) for z in np.arange(-1.5,1.51,.5)])
+    offsets=np.array([(y,z) for y in np.arange(-3.,3.01,.5)
+                      for z in np.arange(-vertical_limit,vertical_limit+.01,.5)])
     width=len(offsets);count=len(stations)
     paths=nominal[:,None,:]+offsets[None,:,0,None]*sides[:,None,:]
     paths[:,:,2]+=offsets[None,:,1]
