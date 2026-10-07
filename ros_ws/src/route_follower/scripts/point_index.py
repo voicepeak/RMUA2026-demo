@@ -2,10 +2,19 @@
 """Exact point queries, optionally augmented by measured ceiling patches."""
 import cv2
 import numpy as np
+from response_native import NativeResponse
 try:
     from scipy.spatial import cKDTree
 except ImportError:
     cKDTree=None
+
+_patch_backend=None
+
+def native_patch_backend():
+    # Process-local handle: PointIndex remains pickleable for geometry workers.
+    global _patch_backend
+    if _patch_backend is None:_patch_backend=NativeResponse()
+    return _patch_backend if _patch_backend.library is not None else None
 
 
 def measured_car_faces(tracks,route,stamp):
@@ -63,7 +72,7 @@ class PointIndex:
         covariance=np.einsum('nki,nkj,nk->nij',delta,delta,weights)/np.maximum(1.,count)[:,None,None]
         values,vectors=np.linalg.eigh(covariance)
         valid=(count>=8)&(values[:,1]>.012)&(values[:,0]<.02*values[:,1])
-        centers=[];normals=[];bases=[];boundaries=[];offsets=[]
+        centers=[];normals=[];bases=[];hulls=[]
         for i in np.flatnonzero(valid):
             selected=delta[i,weights[i]>0]
             normal=vectors[i,:,0];basis=vectors[i,:,1:]
@@ -71,17 +80,25 @@ class PointIndex:
             support=selected@basis
             hull=cv2.convexHull(support.astype(np.float32)).reshape(-1,2)
             if len(hull)<3 or cv2.contourArea(hull)<.05:continue
-            edges=np.roll(hull,-1,axis=0)-hull
-            inward=np.column_stack([-edges[:,1],edges[:,0]])
-            inward/=np.maximum(1e-9,np.linalg.norm(inward,axis=1))[:,None]
-            if np.mean(np.sum((np.mean(hull,axis=0)-hull)*inward,axis=1))<0:inward=-inward
-            boundary=np.zeros((16,2));boundary[:len(hull)]=inward
-            offset=np.full(16,-np.inf);offset[:len(hull)]=np.sum(hull*inward,axis=1)
-            centers.append(mean[i]);normals.append(normal);bases.append(basis)
-            boundaries.append(boundary);offsets.append(offset)
+            centers.append(mean[i]);normals.append(normal);bases.append(basis);hulls.append(hull)
         if centers:
+            counts=np.array([len(hull) for hull in hulls])
+            padded=np.zeros((len(hulls),16,2),dtype=np.float32)
+            for i,hull in enumerate(hulls):padded[i,:len(hull)]=hull
+            rows=np.arange(16)[None,:];supported=rows<counts[:,None]
+            following=(rows+1)%counts[:,None]
+            rolled=np.take_along_axis(padded,np.repeat(following[:,:,None],2,axis=2),axis=1)
+            edges=rolled-padded
+            inward=np.stack((-edges[:,:,1],edges[:,:,0]),axis=2)
+            inward/=np.maximum(1e-9,np.linalg.norm(inward,axis=2))[:,:,None]
+            area=np.sum(np.where(supported,padded[:,:,0]*rolled[:,:,1]-padded[:,:,1]*rolled[:,:,0],0.),axis=1)
+            inward[area<0]*=-1
+            boundary=inward.astype(float);boundary[~supported]=0.
+            offset=np.full(supported.shape,-np.inf)
+            values=np.sum(padded*inward,axis=2)
+            offset[supported]=values[supported]
             centers=np.array(centers)
-            self.patches=(centers,np.array(normals),np.array(bases),np.array(boundaries),np.array(offsets),cKDTree(centers))
+            self.patches=(centers,np.array(normals),np.array(bases),boundary,offset,cKDTree(centers))
 
     def patch_distance(self,queries):
         queries=np.asarray(queries).reshape(-1,3)
@@ -90,6 +107,8 @@ class PointIndex:
         count=min(4,len(centers))
         distance,ids=tree.query(queries,k=count,distance_upper_bound=2.)
         distance=np.asarray(distance).reshape(-1,count);ids=np.asarray(ids).reshape(-1,count)
+        native=native_patch_backend()
+        if native is not None:return native.patch_distances(queries,ids,self.patches)
         valid=np.isfinite(distance);ids=np.minimum(ids,len(centers)-1)
         delta=queries[:,None,:]-centers[ids]
         local=np.einsum('nki,nkij->nkj',delta,bases[ids])
@@ -159,6 +178,8 @@ class PointIndex:
         queries=np.asarray(queries,dtype=float).reshape(-1,3)
         result=np.full(len(queries),np.inf)
         if self.roof is None:return result
+        native=native_patch_backend()
+        if native is not None:return native.roof_queries(queries,self.roof,self.road_height)[0]
         origin,coeff,hull,normal=self.roof
         q=queries-origin
         inside=np.all(np.sum((q[:,None,:2]-hull[None,:,:])*normal[None,:,:],axis=2)>=0.,axis=1)
@@ -172,6 +193,8 @@ class PointIndex:
         queries=np.asarray(queries,dtype=float).reshape(-1,3)
         result=np.full(len(queries),np.nan)
         if self.roof is None or self.road_height is None:return result
+        native=native_patch_backend()
+        if native is not None:return native.roof_queries(queries,self.roof,self.road_height,margin)[1]
         origin,coeff,hull,normal=self.roof;q=queries-origin
         inside=np.all(np.sum((q[:,None,:2]-hull[None,:,:])*normal[None,:,:],axis=2)>=0.,axis=1)
         result[inside]=origin[2]+q[inside,:2]@coeff[:2]+coeff[2]+self.road_height-margin*np.sqrt(1.+np.sum(coeff[:2]**2))

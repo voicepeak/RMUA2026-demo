@@ -1,0 +1,9 @@
+{
+  "scope": "Actual ROS installed-node zero-only publication; Finished simulator untouched, no flight or bridge expiry test",
+  "commands": 111,
+  "all_zero": true,
+  "interval_p95_ms": 50.422889999026665,
+  "interval_max_ms": 50.576510999235325,
+  "child_exit": 0,
+  "passed": true
+}

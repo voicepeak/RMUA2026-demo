@@ -53,6 +53,7 @@ from lidar_clearance import LidarClearance
 from persistent_guides import PersistentGuides
 from xy_tracker import XYTracker                                                 # noqa: E402
 from motion_estimator import MotionEstimator
+from ceiling_guidance import ceiling_guidance
 from terrain_speed import TerrainSpeedEnvelope
 from predictive_avoidance import PredictiveAvoidance, CarTracks, JoinedDetour, departure_floor_limits
 from execution_guard import ExecutionGuard
@@ -61,7 +62,7 @@ from velocity_response import VelocityResponse
 from point_index import measured_car_faces
 from lattice_detour import LatticeDetour
 from pose_history import PoseHistory
-from lidar_points import valid_points
+from lidar_points import valid_points,decode_point_cloud,LidarFrame
 from async_planner import AsyncPlanner
 from yaw_controller import YawController                                         # noqa: E402
 from z_capability import load_capability                                         # noqa: E402
@@ -72,6 +73,8 @@ class RouteFollower(object):
 
     def __init__(self):
         cfg = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "config"))
+        if not os.path.isdir(cfg):
+            cfg=os.path.normpath(os.path.join(os.path.dirname(__file__),'..','..','share','route_follower','config'))
         self.route_file = rospy.get_param("~route_file", os.path.join(cfg, "route_1_3.yaml"))
         self.route_name = rospy.get_param("~route_name", "route_1_3")
         self.gates_file = rospy.get_param("~gates_file", os.path.join(cfg, "gates_vision_1_3.yaml"))
@@ -86,12 +89,18 @@ class RouteFollower(object):
         self.normal_speed_floor = rospy.get_param("~normal_speed_floor", 4.0)
         self.adaptive_speed=bool(rospy.get_param('~adaptive_speed',False))
         self.obstacle_backend=rospy.get_param('~obstacle_backend','lidar_nav')
+        self.planner_mode=rospy.get_param('~planner_mode','legacy')
+        if self.planner_mode not in ('legacy','spacetime'):
+            raise ValueError('Unknown planner_mode: '+str(self.planner_mode))
+        if self.planner_mode=='spacetime' and self.obstacle_backend!='lidar_nav':
+            raise ValueError('spacetime requires the LiDAR backend')
         if self.obstacle_backend not in ('lidar_nav','legacy'):
             raise ValueError('Unknown obstacle_backend: '+str(self.obstacle_backend))
         self.lidar_navigation=self.adaptive_speed and self.obstacle_backend=='lidar_nav'
         self.lidar_range=float(rospy.get_param('~lidar_range',30.))
         self.lidar_braking=float(rospy.get_param('~lidar_braking',8. if self.adaptive_speed else 4.))
         self.sensor_reaction=float(rospy.get_param('~sensor_reaction',.35))
+        self.fresh_publication_check=bool(rospy.get_param('~lidar_fresh_publication_check',False))
         self.a_lat_max = rospy.get_param("~a_lat_max", 6.0)
         self.a_up = rospy.get_param("~a_up", 4.0)
         self.a_down = rospy.get_param("~a_down", 5.0)
@@ -105,7 +114,7 @@ class RouteFollower(object):
         self.terminal_hover_height = float(rospy.get_param('~terminal_hover_height',1.5))
         self.departure_hover_z=float(rospy.get_param('~departure_hover_z',-999.))
         # Use the calibrated response on every lidar-controlled official leg.
-        self.coupled_navigation=self.lidar_navigation
+        self.coupled_navigation=self.lidar_navigation and rospy.get_param('~coupled_response',True)
         self.corridor_half = rospy.get_param("~corridor_half", 1.5)
         self.gate_blend_start = rospy.get_param("~gate_blend_start", 25.0)
         self.gate_blend_full = rospy.get_param("~gate_blend_full", 8.0)
@@ -238,8 +247,15 @@ class RouteFollower(object):
 
         self.pose = None
         self.pose_stamp = None
+        self.pose_monotonic=None
+        self.spacetime_runtime=None
+        self.spacetime_reference_epoch=0
+        self.spacetime_reference_s=None
+        self.spacetime_reference_stamp=None
         self.lidar_points = None
         self.lidar_stamp = None
+        self.lidar_frame=None
+        self.lidar_epoch=0
         self.pose_history=PoseHistory()
         self.pending_cloud=None
         self.cloud_history=[]
@@ -254,8 +270,14 @@ class RouteFollower(object):
         self.execution_guard=ExecutionGuard(margin=1.15,braking=min(self.lidar_braking,float(self.accel),self.a_down,self.curve_brake_a),
                                              reaction=self.sensor_reaction,horizon=self.lidar_range)
         self.navigator=LidarNavigator(self.execution_guard,async_planning=self.lidar_navigation,
-                                      process_planning=self.coupled_navigation)
-        if self.coupled_navigation:self.execution_guard.response_model=VelocityResponse()
+                                      process_planning=self.coupled_navigation,
+                                      local_replan=bool(rospy.get_param('~lidar_local_replan',False)),
+                                      anticipation_distance=float(rospy.get_param('~lidar_anticipation_distance',0.)),
+                                      path_options=bool(rospy.get_param('~lidar_path_options',False)))
+        if self.coupled_navigation:self.execution_guard.response_model=VelocityResponse(acceleration=self.a_up,lift_gain=float(rospy.get_param('~lidar_lift_gain',.110)),coupling_gains=(float(rospy.get_param('~lidar_coupling_gain_min',.09)),.110,.13),height_gain=float(rospy.get_param('~lidar_height_gain',2.)),coupling_limited=bool(rospy.get_param('~lidar_coupling_limited',False)),xy_error_max=float(rospy.get_param('~lidar_xy_error_max',float('inf'))),control_periods=((.08,.16,.4) if bool(rospy.get_param('~lidar_discrete_feedback',False)) else None))
+        self.navigator.height_reserve=(.5 if self.coupled_navigation and
+            self.execution_guard.response_model.height_gain>1. else 0.)
+        if self.coupled_navigation:self.execution_guard.response_model.configured_height_gain=self.execution_guard.response_model.height_gain
         self.planner_info={}
         self.plan_sequence=0
         self.shift_target=None
@@ -305,6 +327,7 @@ class RouteFollower(object):
             braking_accel=self.lidar_braking,reaction_time=self.sensor_reaction,
             jerk_limit=20. if self.adaptive_speed else 0.)
         self.motion=MotionEstimator()
+        self.ceiling_blend=0.
         self.xy_tracker = XYTracker(
             lookahead_base=self.lookahead_base, lookahead_kv=self.lookahead_kv,
             k_pursuit=self.k_pursuit, xy_converge=self.xy_converge,
@@ -346,6 +369,11 @@ class RouteFollower(object):
             a_brake=self.curve_brake_a)
 
         self._lock = threading.RLock()
+        # Planner/control serialization must not stall observation ingestion.
+        # When nested, always acquire cloud before pose; pose callbacks release
+        # the pose lock before attempting a pending cloud transform.
+        self._pose_lock = threading.RLock()
+        self._cloud_lock = threading.RLock()
         self.start_z0 = None
         self.no_future_gate = True
         self.yaw_rate_prev = 0.0
@@ -411,6 +439,24 @@ class RouteFollower(object):
                       self.climb_preview_max, self.climb_preview_step,
                       self.climb_response_time, self.curve_preview_time,
                       self.curve_preview_min, self.curve_preview_max, self.curve_brake_a)
+        if self.planner_mode=='spacetime':
+            from spacetime_runtime import SpaceTimeRuntime
+            from st_lattice import LatticeConfig
+            from trajectory_collision import CollisionConfig
+            config_path=rospy.get_param('~spacetime_config',os.path.join(cfg,'spacetime_planner.yaml'))
+            with open(config_path) as stream:st_config=yaml.safe_load(stream)
+            self.spacetime_runtime=SpaceTimeRuntime(self._spacetime_observe,self._spacetime_publish,
+                self._spacetime_diagnostic,period=self.dt,
+                planner_config=LatticeConfig(**st_config.get('planner',{})),
+                collision_config=CollisionConfig(**st_config.get('collision',{})),
+                bridge_hold=rospy.get_param('~spacetime_bridge_hold',None),
+                bridge_verified=bool(rospy.get_param('~spacetime_bridge_verified',False)),
+                pose_timeout=self.pose_timeout)
+            if self.debug_cloud_dir:self.spacetime_runtime.archive_dir=os.path.join(self.debug_cloud_dir,'spacetime_snapshots')
+            self.spacetime_debug_pub=rospy.Publisher('/rmua/controller/planning_debug',String,queue_size=10)
+            from visualization_msgs.msg import MarkerArray
+            self.spacetime_marker_pub=rospy.Publisher('/rmua/controller/planning_markers',MarkerArray,queue_size=1)
+            self.spacetime_runtime.start()
         rospy.Timer(rospy.Duration(self.dt), self.control_loop)
 
     # ---------- load ----------
@@ -429,12 +475,21 @@ class RouteFollower(object):
         return d.get(key, []) if d else []
 
     # ---------- init / rebuild ----------
+    def _update_response_tracking(self,s_now):
+        if not self.coupled_navigation:return
+        model=self.execution_guard.response_model
+        # Update on every control cycle, including returns toward the entry.
+        blend=np.clip(s_now/20.,0.,1.)
+        model.height_gain=1.+(model.configured_height_gain-1.)*blend
+        self.navigator.height_reserve=(.5*blend if model.configured_height_gain>1. else 0.)
+
     def init_once(self, p):
         i, t, d, c = self.route.project((p.x, p.y, p.z))
         self.seg = i
         self.z_offset = p.z - c[2]
         self.start_z0 = p.z
         s_now = self.route.seg_s[i] + t * self.route.seg_len[i]
+        self._update_response_tracking(s_now)
         with self._lock:
             chain, profile = self.planner.build(
                 self.static_gates, self.guides, self.soft_guides, s_now, p.z,
@@ -538,27 +593,25 @@ class RouteFollower(object):
                 self.race_goal_changed=True
 
     def lidar_cb(self,msg):
-        fields={f.name:f for f in msg.fields}
-        if any(k not in fields or fields[k].datatype!=7 for k in ('x','y','z')):return
-        endian='>' if msg.is_bigendian else '<'
-        dtype=np.dtype(dict(names=['x','y','z'],formats=[endian+'f4']*3,
-                            offsets=[fields[k].offset for k in ('x','y','z')],itemsize=msg.point_step))
-        raw=np.frombuffer(msg.data,dtype=dtype)
-        points=np.column_stack([raw[k] for k in ('x','y','z')])
-        points=valid_points(points)
+        try:points=decode_point_cloud(msg)
+        except (ValueError,TypeError,AttributeError):return
         stamp=msg.header.stamp.to_sec()
-        with self._lock:
+        if not np.isfinite(stamp):return
+        with self._cloud_lock:
             self.pending_cloud=(stamp,points)
             self._transform_cloud()
 
     def _transform_cloud(self):
         if self.pending_cloud is None:return
         stamp,points=self.pending_cloud
-        pose=self.pose_history.sample(stamp)
+        with self._pose_lock:pose=self.pose_history.sample(stamp)
         if pose is None:return
         p,q=pose;R=tft.quaternion_matrix(q)[:3,:3]
         points=points.copy();points[:,2]-=.05
         world=points@R.T+p
+        sensor_origin=p+R@np.array([0.,0.,-.05])
+        if self.lidar_stamp is not None and stamp<self.lidar_stamp:self.lidar_epoch+=1
+        self.lidar_frame=LidarFrame(stamp,world,sensor_origin,self.lidar_epoch)
         self.raw_cloud=points
         self.cloud_history=[(t,c) for t,c in self.cloud_history if 0.<=stamp-t<.15]
         self.cloud_history.append((stamp,world))
@@ -576,18 +629,30 @@ class RouteFollower(object):
 
     def pose_cb(self, m):
         arrived=rospy.Time.now().to_sec()
-        with self._lock:
+        p,q=m.pose.position,m.pose.orientation
+        stamp=m.header.stamp.to_sec()
+        coordinates=np.array([p.x,p.y,p.z,q.x,q.y,q.z,q.w,stamp])
+        if (not np.all(np.isfinite(coordinates)) or stamp<=0. or
+                abs(float(np.dot(coordinates[3:7],coordinates[3:7]))-1.)>.01):
+            # One invalid bridge frame must not poison interpolation, lidar
+            # transforms, native predictions, or terminate the timer during
+            # strict JSON telemetry encoding. Keep the last valid arrival so
+            # a persistent invalid stream still triggers the pose timeout.
+            rospy.logwarn_throttle(5.,'Invalid pose rejected before updating control state')
+            return
+        with self._pose_lock:
             # 模拟器 pose 时间戳可能落后 ros::Time (仿真时基), dt 用 header stamp,
             # 但 timeout 必须用回调到达的 wall clock。
-            self.pose_stamp = m.header.stamp.to_sec()
+            self.pose_stamp = stamp
             self.pose_arrival = arrived
+            self.pose_monotonic=time.monotonic()
             self.pose = m.pose
             q = m.pose.orientation
             p=m.pose.position
             self.pose_history.add(self.pose_stamp,(p.x,p.y,p.z),(q.x,q.y,q.z,q.w))
-            self._transform_cloud()
             self.roll, self.pitch, self.yaw = tft.euler_from_quaternion(
                 [q.x, q.y, q.z, q.w])
+        with self._cloud_lock:self._transform_cloud()
 
     def _on_teleport(self, s_now):
         """瞬移/reset 后清空任务账本与在线地图, 否则会把旧门当已通过。"""
@@ -608,11 +673,17 @@ class RouteFollower(object):
         self.safety.reset()
         self.z_ctrl.reset()
         self.motion.reset()
+        self.ceiling_blend=0.
         self.speed_sched.reset()
         self.xy_tracker.reset()
-        self.lidar_points = None
-        self.pending_cloud=None
-        self.cloud_history=[]
+        with self._cloud_lock:
+            self.lidar_points=None
+            self.lidar_stamp=None
+            self.lidar_frame=None
+            self.lidar_epoch+=1
+            self.raw_cloud=None
+            self.pending_cloud=None
+            self.cloud_history=[]
         self.car_tracks=CarTracks()
         self.planning.reset()
         self.predictive=PredictiveAvoidance(margin=1.15,braking=self.lidar_braking,budget=1.5,vertical_limit=1.5)
@@ -621,8 +692,14 @@ class RouteFollower(object):
                                              reaction=self.sensor_reaction,horizon=self.lidar_range)
         self.navigator.close()
         self.navigator=LidarNavigator(self.execution_guard,async_planning=self.lidar_navigation,
-                                      process_planning=self.coupled_navigation)
-        if self.coupled_navigation:self.execution_guard.response_model=VelocityResponse()
+                                      process_planning=self.coupled_navigation,
+                                      local_replan=bool(rospy.get_param('~lidar_local_replan',False)),
+                                      anticipation_distance=float(rospy.get_param('~lidar_anticipation_distance',0.)),
+                                      path_options=bool(rospy.get_param('~lidar_path_options',False)))
+        if self.coupled_navigation:self.execution_guard.response_model=VelocityResponse(acceleration=self.a_up,lift_gain=float(rospy.get_param('~lidar_lift_gain',.110)),coupling_gains=(float(rospy.get_param('~lidar_coupling_gain_min',.09)),.110,.13),height_gain=float(rospy.get_param('~lidar_height_gain',2.)),coupling_limited=bool(rospy.get_param('~lidar_coupling_limited',False)),xy_error_max=float(rospy.get_param('~lidar_xy_error_max',float('inf'))),control_periods=((.08,.16,.4) if bool(rospy.get_param('~lidar_discrete_feedback',False)) else None))
+        self.navigator.height_reserve=(.5 if self.coupled_navigation and
+            self.execution_guard.response_model.height_gain>1. else 0.)
+        if self.coupled_navigation:self.execution_guard.response_model.configured_height_gain=self.execution_guard.response_model.height_gain
         self.planner_info={}
         self.plan_sequence=0
         self.shift_target=None
@@ -653,6 +730,7 @@ class RouteFollower(object):
 
     def shutdown(self):
         self.stopping = True
+        if self.spacetime_runtime is not None:self.spacetime_runtime.close()
         self.publish(0.0, 0.0, 0.0, 0.0)
         self.event("TERMINATION", reason="ROS_SHUTDOWN", controller_reached=self.reached)
         self.planning.close()
@@ -660,7 +738,11 @@ class RouteFollower(object):
         if self.trace_fh is not None:
             self.trace_fh.close()
 
-    def publish(self, vx, vy, vz, yaw_rate=0.0, source_pose_stamp=None, started=None):
+    def publish(self, vx, vy, vz, yaw_rate=0.0, source_pose_stamp=None, started=None,frame_yaw=None,
+                measured_velocity=None,publication_check=None,control_stamp=None):
+        if (self.spacetime_runtime is not None and not self.stopping and
+                threading.get_ident()!=self.spacetime_runtime.publisher_ident):
+            raise RuntimeError('Only the space-time executor may publish commands')
         if self.stopping:
             vx = vy = vz = yaw_rate = 0.0
         c = VelCmd()
@@ -673,10 +755,74 @@ class RouteFollower(object):
         c.va = self.accel
         c.stop = 0
         self.cmd_pub.publish(c)
+        model=self.execution_guard.response_model
+        if model is not None and self.spacetime_runtime is None:
+            # Record every actual publication, including turn-around and
+            # zero commands. Prediction must not retain an unissued proposal.
+            cy,sy=math.cos(self.yaw if frame_yaw is None else frame_yaw),math.sin(self.yaw if frame_yaw is None else frame_yaw)
+            actual=np.array([cy*vx-sy*vy,sy*vx+cy*vy,-vz])
+            model.commit(actual,self.motion.velocity if measured_velocity is None else measured_velocity,
+                         self.pose_stamp if source_pose_stamp is None else source_pose_stamp,
+                         control_stamp=control_stamp)
         self.command_trace_pub.publish(String(data=json.dumps(dict(
-            stamp=c.header.stamp.to_sec(),source_pose_stamp=source_pose_stamp,
+            stamp=c.header.stamp.to_sec(),source_pose_stamp=source_pose_stamp,control_pose_stamp=control_stamp,
             body_velocity=[vx,vy,vz],yaw_rate_deg=c.yawRate,acceleration=c.va,
-            compute_ms=None if started is None else 1000.*(time.monotonic()-started)))))
+            compute_ms=None if started is None else 1000.*(time.monotonic()-started),
+            publication_check=publication_check))))
+
+    def _recertify_publication(self,final,yaw,pose_stamp,started):
+        """Recheck the clamped command if planning has outlasted reaction time.
+
+        The pose/cloud callbacks remain independent of the planning lock.
+        A late computation must not publish a command certified at its old
+        starting position. The final check evaluates the actual command,
+        without passing it through the slew/compensation policy a second time.
+        """
+        guard=self.execution_guard;model=guard.response_model
+        if model is None or (not self.fresh_publication_check and time.monotonic()-started<=guard.reaction):
+            return final,yaw,pose_stamp,None,None
+        validation_started=time.monotonic()
+        with self._cloud_lock,self._pose_lock:
+            p=self.pose.position
+            position=np.array([p.x,p.y,p.z]);stamp=self.pose_stamp;fresh_yaw=self.yaw
+            points,cloud_stamp=self.lidar_points,self.lidar_stamp
+            velocity=self.motion.terminal_velocity(self.pose_history.rows,stamp)
+        velocity=self.motion.velocity.copy() if velocity is None else velocity
+        cy,sy=math.cos(yaw),math.sin(yaw)
+        command=np.array([cy*final.vx-sy*final.vy,sy*final.vx+cy*final.vy,-final.vz])
+        # Fresh seeds must be derived from the new cloud. Default measured
+        # local support retains raw points and never extends a support hull.
+        guard.surface_seed_points=None
+        age,error=guard._update(points,cloud_stamp,stamp,position)
+        if guard.dynamic_scene is not None:guard.dynamic_scene.pose_stamp=stamp
+        accepted=False;clearance=None
+        if error is None:
+            samples,extent=guard.command_envelope(position,velocity,command,age)
+            constrained=guard.command_constraint is None or guard.command_constraint(samples)
+            if constrained:
+                clearance=guard.command_clearance(samples)
+                accepted=clearance>=guard.margin+.1 and extent<=guard.horizon
+        recovery_accepted=False
+        if (not accepted and error is None and
+                self.clearance_info.get('command_reason')=='LIDAR_ESCAPE'):
+            recovery_accepted=guard.recovery_command_ok(position,velocity,command,points,age)
+            accepted=recovery_accepted
+        check=dict(source_pose_stamp=stamp,planning_pose_stamp=pose_stamp,
+            pose_advance_seconds=stamp-pose_stamp,position_world=position.tolist(),
+            measured_velocity_world=velocity.tolist(),accepted_original=bool(accepted),conditional_recovery=bool(recovery_accepted),
+            cloud_stamp=cloud_stamp,lidar_age=age,observation_error=error,command_clearance=clearance)
+        if not accepted:
+            vertical=(0. if model.stop_profile is None else
+                      float(model.stop_profile(position[None,:],velocity[None,:])[0]))
+            command,braking=guard.filter_command(position,velocity,np.array([0.,0.,vertical]),
+                                                 points,cloud_stamp,stamp)
+            check.update(replacement=braking)
+        check['validation_ms']=1000.*(time.monotonic()-validation_started)
+        check['reaction_budget_seconds']=guard.reaction
+        check['validation_budget_exceeded']=check['validation_ms']>1000.*guard.reaction
+        final=self.arbiter.finalize(command[:2],-float(command[2]),final.yaw_rate,
+                                    fresh_yaw,safety=self.safety)
+        return final,fresh_yaw,stamp,velocity,check
 
     def _gate_metrics(self, ng, pn):
         """门平面几何: (d_g, lat, vert, e_n); ng=None 时返回 d_g=1e9。"""
@@ -768,6 +914,76 @@ class RouteFollower(object):
             vz_clamp, vz_cmd, z_limit, a_prev[0], a_next[0])
 
     # ---------- main ----------
+    def _spacetime_observe(self):
+        with self._cloud_lock,self._pose_lock:
+            if self.pose is None or self.pose_stamp is None:return None
+            p=self.pose.position;stamp=self.pose_stamp
+            velocity=self.motion.terminal_velocity(self.pose_history.rows,stamp)
+            if velocity is None:return None
+            return (self.lidar_frame,np.array([p.x,p.y,p.z]),velocity,stamp,
+                    self.pose_monotonic,self.yaw,rospy.Time.now().to_sec())
+
+    def _spacetime_publish(self,command,yaw_rate,yaw,stamp,velocity,decision):
+        cy,sy=math.cos(yaw),math.sin(yaw)
+        self.publish(cy*command[0]+sy*command[1],-sy*command[0]+cy*command[1],-command[2],yaw_rate,
+            source_pose_stamp=stamp,frame_yaw=yaw,measured_velocity=velocity,
+            publication_check=dict(planner_mode='spacetime',mode=decision.mode,reason=decision.reason,
+                                   certified=decision.certified,plan_id=decision.plan_id))
+
+    def _spacetime_diagnostic(self,data):
+        self.spacetime_debug_pub.publish(String(data=json.dumps(data,allow_nan=False)))
+        if self.spacetime_marker_pub.get_num_connections():
+            from planning_visualization import trajectory_marker_specs,build_trajectory_markers
+            runtime=self.spacetime_runtime;decision=runtime.last_decision
+            if decision is not None:
+                specs=trajectory_marker_specs(None if runtime.executor.plan is None else runtime.executor.plan.trace,
+                                              decision.trace,decision.backup)
+                self.spacetime_marker_pub.publish(build_trajectory_markers(specs,rospy.Time.now()))
+
+    def _spacetime_reference_loop(self):
+        observation=self._spacetime_observe()
+        if observation is None or self.stopping:return
+        _,pn,velocity,stamp,arrival,yaw,now=observation
+        if self.reached or self.race_goal_changed or self.safety.aborted or self.mission.mode==ABORT:
+            self.spacetime_runtime.set_reference(None,self.spacetime_reference_epoch);return
+        p=self.pose.position
+        if self.seg is None:self.init_once(p)
+        i,t,_,_=self.route.project(pn);s=self.route.seg_s[i]+t*self.route.seg_len[i]
+        if ((self.last_pose_stamp is not None and stamp<self.last_pose_stamp) or
+                (self.prev_pose is not None and np.linalg.norm(pn-np.asarray(self.prev_pose))>10.)):
+            self.spacetime_reference_epoch+=1
+            self.spacetime_runtime.set_reference(None,self.spacetime_reference_epoch)
+            self.spacetime_reference_s=None;self.spacetime_reference_stamp=None
+            self._on_teleport(s);return
+        self.seg=i;self.last_pose_stamp=stamp
+        previous=pn if self.prev_pose is None else np.asarray(self.prev_pose)
+        self.gate_idx,events=self.task_state.step(self.chain.gates,self.gate_idx,previous,pn,s)
+        for event in events:self.event('GATE',pose_stamp=stamp,s=s,**event)
+        self.prev_pose=tuple(pn);self.prev_s=s
+        if (self.end_gate>=0 and self.gate_idx>self.end_gate) or (
+                self.gate_idx>=len(self.chain.gates) and s>self.route.total_s-5. and
+                (self.race_goal is None or (np.linalg.norm(pn[:2]-self.race_goal[:2])<1. and
+                abs(pn[2]-(self.race_goal[2]-self.terminal_hover_height))<.5))):
+            self.reached=True;self.spacetime_runtime.set_reference(None,self.spacetime_reference_epoch)
+            self.event('REACHED',pose_stamp=stamp,s=s);return
+        if (self.spacetime_reference_s is None or abs(s-self.spacetime_reference_s)>=2. or
+                self.spacetime_reference_stamp is None or stamp-self.spacetime_reference_stamp>=1.):
+            from route_coordinates import RouteCoordinates
+            stations=np.arange(max(-5.,s-5.),min(self.route.total_s+5.,s+31.)+.01,1.)
+            points=[]
+            for station in stations:
+                bounded=float(np.clip(station,0.,self.route.total_s));x,y,_=self.xy_tracker.base_point_at(bounded)
+                tx,ty,_=self.route.tangent(bounded)
+                points.append([x+(station-bounded)*tx,y+(station-bounded)*ty,self.blender.center(bounded,stamp)])
+            route=RouteCoordinates(stations,points,lateral_limit=2.25,vertical_limit=1.25)
+            self.spacetime_runtime.set_reference(route,self.spacetime_reference_epoch)
+            self.spacetime_reference_s=s;self.spacetime_reference_stamp=stamp
+        decision=self.spacetime_runtime.last_decision
+        self.telemetry_pub.publish(String(data=json.dumps(dict(planner_mode='spacetime',pose_stamp=stamp,s=s,
+            gate_index=self.gate_idx,position_world=pn.tolist(),measured_velocity_world=velocity.tolist(),
+            mode='PLANNING' if decision is None else decision.mode,
+            clearance=dict(source='SPACETIME',command_reason=None if decision is None else decision.reason)),allow_nan=False)))
+
     def control_loop(self, _e):
         with self._lock:
             return self._control_loop(_e)
@@ -816,17 +1032,21 @@ class RouteFollower(object):
         return info,planner.plan
 
     def _control_loop(self, _e):
+        if self.spacetime_runtime is not None:return self._spacetime_reference_loop()
         started=time.monotonic()
         now = rospy.Time.now().to_sec()
-        with self._lock:
+        with self._cloud_lock,self._pose_lock:
             if self.pose is None or self.stopping:
                 return
             p, pose_stamp = self.pose.position, self.pose_stamp
             roll,pitch,yaw=self.roll,self.pitch,self.yaw
             pose_arrival=self.pose_arrival
+            measured_endpoint=(self.motion.terminal_velocity(self.pose_history.rows,pose_stamp)
+                               if self.coupled_navigation else None)
             # Keep pose and cloud from one callback snapshot. Reading a newer
             # cloud after releasing the lock creates a negative cloud age.
             lidar_points, lidar_stamp = self.lidar_points, self.lidar_stamp
+            lidar_frame=self.lidar_frame
             car_tracks=[] if self.lidar_navigation else self.car_tracks.snapshot(pose_stamp)
         if self.reached or self.safety.aborted or self.mission.mode == ABORT:
             self.publish(0.0, 0.0, 0.0, 0.0)
@@ -877,6 +1097,7 @@ class RouteFollower(object):
         i, t, d_cross, c = self.route.project((p.x, p.y, p.z))
         self.seg = i
         s_now = self.route.seg_s[i] + t * self.route.seg_len[i]
+        self._update_response_tracking(s_now)
 
         # 瞬移/reset 检测: 清空已完成账本, 支持途中复位后重飞
         if self.prev_s is not None and s_now < self.prev_s - 20.0:
@@ -885,7 +1106,11 @@ class RouteFollower(object):
 
         chain, profile = self.chain, self.profile
         p_prev = np.asarray(self.prev_pose, dtype=float) if self.prev_pose is not None else pn
-        measured_progress,measured_up=self.motion.update(p_prev,pn,motion_dt,self.route.tangent(s_now))
+        if measured_endpoint is None:
+            measured_progress,measured_up=self.motion.update(p_prev,pn,motion_dt,self.route.tangent(s_now))
+        else:
+            self.motion.velocity=measured_endpoint
+            measured_progress,measured_up=self.motion.project(self.route.tangent(s_now))
         self.xy_tracker.stamp=pose_stamp
 
         # ---- Gate Task State: 真实 Gate plane crossing + 账本分离 (方案 15, 16) ----
@@ -960,7 +1185,12 @@ class RouteFollower(object):
                         lidar_points,lidar_stamp,pose_stamp)
                     self.z_ctrl.prev_vz=-float(command[2])
                 self.prev_pose=(p.x,p.y,p.z)
-                self.publish(0., 0.,-float(command[2]), yaw_rate)
+                final=self.arbiter.finalize(command[:2],-float(command[2]),yaw_rate,yaw,safety=self.safety)
+                final,publish_yaw,publish_stamp,publish_velocity,publish_check=self._recertify_publication(
+                    final,yaw,pose_stamp,started)
+                self.publish(final.vx,final.vy,final.vz,final.yaw_rate,source_pose_stamp=publish_stamp,
+                    started=started,frame_yaw=publish_yaw,measured_velocity=publish_velocity,
+                    publication_check=publish_check,control_stamp=pose_stamp if self.fresh_publication_check else None)
                 return
             self.departure_aligned = True
             if self.departure_turn_announced:
@@ -975,6 +1205,22 @@ class RouteFollower(object):
 
         # ---- 高度误差 / 预测 tracking ----
         base_center = lambda s: self.blender.center(s, pose_stamp)
+        base_center.batch=lambda stations:self.blender.center_many(stations,pose_stamp)
+        ceiling_horizon=None
+        evidence_horizon=max(self.planner.evidence_horizon or 0.,
+                             self.planner.trend_horizon or 0.)
+        if self.coupled_navigation and evidence_horizon<=s_now+10.:
+            measured=ceiling_guidance(self.execution_guard.index,self.execution_guard.cloud_stamp,
+                                     pose_stamp,s_now,self.xy_tracker.base_point_at,base_center)
+            if measured is not None:
+                stations,heights=measured
+                ceiling_horizon=float(stations[-1])
+                self.ceiling_blend=min(1.,self.ceiling_blend+dt)
+                original=base_center;blend=self.ceiling_blend
+                base_center=lambda s:(1.-blend)*original(s)+blend*float(np.interp(s,stations,heights))
+                base_center.batch=lambda query:(1.-blend)*original.batch(query)+blend*np.interp(query,stations,heights)
+            else:self.ceiling_blend=0.
+        else:self.ceiling_blend=0.
         rx,ry,_=self.xy_tracker.base_point_at(s_now)
         a,b=self.xy_tracker.base_point_at(s_now-.3),self.xy_tracker.base_point_at(s_now+.3)
         length=max(1e-6,math.hypot(b[0]-a[0],b[1]-a[1]));fx,fy=(b[0]-a[0])/length,(b[1]-a[1])/length
@@ -1113,7 +1359,9 @@ class RouteFollower(object):
             plan=self.executing_plan
             self.clearance_y,self.clearance_z=(plan.offset(s_now) if plan is not None else (0.,0.))
             center_fn=lambda s:base_center(s)+(float(plan.offset(s)[1]) if plan is not None else 0.)
-        else:center_fn = lambda s: base_center(s)+self.clearance_z
+        else:
+            center_fn = lambda s: base_center(s)+self.clearance_z
+            center_fn.batch=lambda stations:base_center.batch(stations)+self.clearance_z
         terminal = self.race_goal is not None and s_now > self.route.total_s-25.
         if self.race_goal is not None and s_now > self.route.total_s-45.:
             old_center=center_fn
@@ -1123,6 +1371,13 @@ class RouteFollower(object):
                 # initial pose. Enter the 5m-high trigger above that surface.
                 target=min(self.race_goal[2]-self.terminal_hover_height,old_center(s)+1.)
                 return (1.-blend)*old_center(s)+blend*target
+            if hasattr(old_center,'batch'):
+                def terminal_centers(stations):
+                    blend=np.clip((stations-self.route.total_s+45.)/25.,0.,1.)
+                    previous=old_center.batch(stations)
+                    target=np.minimum(self.race_goal[2]-self.terminal_hover_height,previous+1.)
+                    return (1.-blend)*previous+blend*target
+                center_fn.batch=terminal_centers
         kz_prev=center_fn(s_ff+.5)-center_fn(s_ff-.5)
         e_z0 = p.z - center_fn(s_now)
         z_dot = 0.0
@@ -1154,6 +1409,8 @@ class RouteFollower(object):
         horizon_s = max((g["s"] for g in chain.gates), default=None)
         if self.planner.trend_horizon is not None:
             horizon_s=max(horizon_s or 0.,self.planner.trend_horizon)
+        if ceiling_horizon is not None:
+            horizon_s=max(horizon_s or 0.,ceiling_horizon)
         if self.race_goal is not None and self.route.total_s-s_now<30.:
             horizon_s=max(horizon_s or 0.,self.route.total_s+10.)
         soft = self.planner.evidence_horizon
@@ -1356,8 +1613,8 @@ class RouteFollower(object):
             v_route=command[:2];vz=-float(command[2]);v=float(np.linalg.norm(v_route))
             self.v_cmd_prev=v;self.xy_tracker.previous_velocity=tuple(v_route);self.z_ctrl.prev_vz=vz
             if self.execution_guard.response_model is not None:
-                self.execution_guard.response_model.commit(command,self.motion.velocity,pose_stamp)
-                self.z_ctrl.prev_vz=-float(self.execution_guard.response_model.previous[2])
+                model=self.execution_guard.response_model
+                self.z_ctrl.prev_vz=-float(command[2]-model.lift_gain*np.sum((command[:2]-self.motion.velocity[:2])**2))
             self.speed_info.update(reason=nav_info['command_reason'],
                 v_requested_cruise=self.speed_sched.requested_cruise,
                 braking_execution=self.execution_guard.braking,lidar_range=self.lidar_range)
@@ -1368,9 +1625,15 @@ class RouteFollower(object):
                 reference=np.array([[*self.xy_tracker.base_point_at(s_now+d)[:2],center_fn(s_now+d)]
                                     for d in np.arange(66.)])
                 name=os.path.join(self.debug_cloud_dir,'%.3f_s%.1f'%(pose_stamp,s_now))
-                np.savez_compressed(name+'.npz',points=lidar_points,position=pn,reference=reference)
+                frame_data=({} if lidar_frame is None else dict(frame_points=lidar_frame.points,
+                            sensor_origin=lidar_frame.sensor_origin,cloud_stamp=lidar_frame.stamp,
+                            lidar_epoch=lidar_frame.epoch))
+                np.savez_compressed(name+'.npz',points=lidar_points,position=pn,reference=reference,**frame_data)
                 with open(name+'.json','w') as file:
                     json.dump(dict(clearance=nav_info,s=s_now,pose_stamp=pose_stamp,
+                        cloud_stamp=None if lidar_frame is None else lidar_frame.stamp,
+                        sensor_origin=None if lidar_frame is None else lidar_frame.sensor_origin.tolist(),
+                        lidar_epoch=None if lidar_frame is None else lidar_frame.epoch,
                         measured_velocity_world=self.motion.velocity.tolist(),desired_velocity_world=desired.tolist(),
                         departure_floor_offset=floor_offset,cars=[],plan=None),file)
 
@@ -1417,6 +1680,8 @@ class RouteFollower(object):
             clearance_y=self.clearance_y,
             height_prior_valid=self.planner.height_prior.valid,
             height_prior_error=self.planner.height_prior.error,
+            measured_ceiling_horizon=ceiling_horizon,
+            measured_ceiling_blend=self.ceiling_blend,
             planning_horizon=self.planner.trend_horizon,
             v_map=v_map), allow_nan=False)))
 
@@ -1441,8 +1706,12 @@ class RouteFollower(object):
 
         final_cmd = self.arbiter.finalize(v_route, vz, yaw_rate, yaw,
                                           safety=self.safety, mode=mode)
+        final_cmd,publish_yaw,publish_stamp,publish_velocity,publish_check=self._recertify_publication(
+            final_cmd,yaw,pose_stamp,started)
         self.publish(final_cmd.vx, final_cmd.vy, final_cmd.vz, final_cmd.yaw_rate,
-                     source_pose_stamp=pose_stamp,started=started)
+                     source_pose_stamp=publish_stamp,started=started,frame_yaw=publish_yaw,
+                     measured_velocity=publish_velocity,publication_check=publish_check,
+                     control_stamp=pose_stamp if self.fresh_publication_check else None)
 
         si = self.speed_info
         g_id = ng.get("id") if ng is not None else None

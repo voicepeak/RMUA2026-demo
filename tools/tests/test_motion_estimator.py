@@ -9,6 +9,25 @@ from speed_scheduler import SpeedScheduler
 
 
 class MotionTests(unittest.TestCase):
+    def test_endpoint_velocity_recovers_acceleration_at_irregular_pose_times(self):
+        times=np.array([0.,.009,.021,.035,.049,.060,.077,.089,.102,.119,.133,.150,.169,.18])
+        velocity=np.array([4.,-3.,.7]);acceleration=np.array([2.,1.,-4.])
+        rows=[(1790896000.+t,np.array([900.,600.,-130.])+velocity*t+.5*acceleration*t*t) for t in times]
+        fitted=MotionEstimator.terminal_velocity(rows,rows[-1][0])
+        np.testing.assert_allclose(fitted,velocity+acceleration*.18,atol=2e-5)
+        # Future observations must have no influence on a frozen cycle.
+        future=rows+[(rows[-1][0]+.01,np.array([1e9]*3))]
+        np.testing.assert_array_equal(MotionEstimator.terminal_velocity(future,rows[-1][0]),fitted)
+
+    def test_endpoint_velocity_rejects_gap_teleport_and_short_history(self):
+        rows=[(t,np.array([t,0.,0.])) for t in np.arange(0.,.181,.01)]
+        self.assertIsNone(MotionEstimator.terminal_velocity(rows[-5:],.18))
+        missing=[r for r in rows if not .04<r[0]<.12]
+        self.assertIsNone(MotionEstimator.terminal_velocity(missing,.18))
+        jump=[(t,p+([10.,0.,0.] if t>.1 else 0.)) for t,p in rows]
+        self.assertIsNone(MotionEstimator.terminal_velocity(jump,.18))
+        self.assertIsNone(MotionEstimator.terminal_velocity(rows,.185))
+
     def test_sideways_avoidance_does_not_create_vertical_feed_forward(self):
         estimator=MotionEstimator(time_constant=0.)
         progress,up=estimator.update((0.,0.,0.),(0.,.5,-.1),.05,(1.,0.,0.))

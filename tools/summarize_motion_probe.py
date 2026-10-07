@@ -18,7 +18,7 @@ def main():
     commands=[r for r in records if r['topic']=='command']
     rows=[]
     for first,following in zip(phases,phases[1:]):
-        if first['phase'] not in ('drive','brake','vertical_up','vertical_down'):continue
+        if first['phase'] not in ('drive','brake','curve_brake','vertical_up','vertical_down'):continue
         selected=[r for r in poses if first['pose_stamp']<=r['sensor_stamp']<=following['pose_stamp']]
         actual=[r for r in commands if first['wall']<=r['received_wall']<following['wall']]
         if len(selected)<2 or not actual:continue

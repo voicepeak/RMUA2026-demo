@@ -133,19 +133,42 @@ class ExecutionGuard:
             candidates=[desired,np.array([0.,0.,desired[2]]),np.zeros(3),
                         -velocity*min(1.,3./max(.01,np.linalg.norm(velocity)))]
             candidates.extend(np.array([0.,0.,z]) for z in (-4.,-2.,-1.,1.,2.,4.5))
-            commands=[self.response_model.prepare(target,velocity,pose_stamp) for target in candidates]
+            commands=[self.response_model.prepare(target,velocity,pose_stamp,position) for target in candidates]
             envelopes=self.response_model.envelopes(position,velocity,commands,self.reaction+age)
-            best=commands[0];best_clearance=-np.inf
-            for command,(samples,extent,times) in zip(commands,envelopes):
+            best=commands[0];best_clearance=-np.inf;first_clearance=None
+            neutral_clearance=None
+            for i,(command,(samples,extent,times)) in enumerate(zip(commands,envelopes)):
                 self.envelope_times=times
-                clearance=self.command_clearance(samples)
                 constrained=self.command_constraint is None or self.command_constraint(samples)
-                if constrained and clearance>best_clearance:best=command;best_clearance=clearance
-                if clearance>=self.margin+.1 and extent<=self.horizon and constrained:
+                # Rejected road/floor bounds cannot win or be certified.
+                # Avoid expensive surface queries for those trajectories.
+                if not constrained:continue
+                clearance=self.command_clearance(samples)
+                if i==0:first_clearance=clearance
+                if i==2:neutral_clearance=clearance
+                if clearance>best_clearance:best=command;best_clearance=clearance
+                if clearance>=self.margin+.1 and extent<=self.horizon:
                     return command,dict(command_reason='COMMAND_BRAKING',command_scale=None,
                                         command_clearance=clearance)
             # Already outside the empirical safe set: keep the bounded braking
             # controller and expose the failure; never label this certified.
+            if (np.linalg.norm(velocity)<.8 and
+                    self.index.distance([position])[0]<self.margin+.1):
+                # Every envelope already starts inside the buffer. Tiny raw
+                # distance differences must not select alternating full Z
+                # bursts and prevent the slow, monotonic escape from settling.
+                # Once stationary, do not keep injecting a rejected height
+                # correction toward nearby returns. Cancel that nominal Z
+                # input before searching conditional recovery next cycle.
+                # This remains BLOCKED, never a full-buffer certificate.
+                # Preserve counter-braking for any appreciable measured or
+                # prepared horizontal motion and rejected road/floor bounds.
+                if (self.response_model.coupling_limited and np.linalg.norm(velocity)<.05 and
+                        np.linalg.norm(commands[2][:2])<.05 and neutral_clearance is not None):
+                    return commands[2],dict(command_reason='COMMAND_BLOCKED',command_scale=None,
+                        command_clearance=neutral_clearance,blocked_settle=True,blocked_neutral_settle=True)
+                return commands[0],dict(command_reason='COMMAND_BLOCKED',command_scale=None,
+                    command_clearance=first_clearance,blocked_settle=True)
             return best,dict(command_reason='COMMAND_BLOCKED',command_scale=None,
                              command_clearance=None if not np.isfinite(best_clearance) else best_clearance)
         latency=self.reaction+age
@@ -242,7 +265,66 @@ class ExecutionGuard:
             t=np.clip(np.sum((relative-start)*step,axis=1)/max(1e-12,float(step@step)),0.,1.)
             squared=np.sum((relative-start-t[:,None]*step)**2,axis=1)
             if np.any(squared<np.minimum(initial2,buffer*buffer)-1e-7):return None
+        if self.response_model is not None:
+            from lidar_navigation import LidarNavigator
+            model=self.response_model;previous_profile=model.stop_profile
+            model.stop_profile=LidarNavigator._stop_profile(np.array([position,target]),gain=model.height_gain)
+            prepared=model.prepare(command,velocity,pose_stamp,position)
+            if not self.recovery_command_ok(position,velocity,prepared,points,age):
+                model.stop_profile=previous_profile
+                return None
+            return prepared
         return command
+
+    def recovery_command_ok(self,position,velocity,command,points,age):
+        if np.linalg.norm(velocity)>.8:return False
+        samples,extent=self.command_envelope(position,velocity,command,age)
+        if extent>self.horizon or (self.command_constraint is not None and not self.command_constraint(samples)):return False
+        buffer=self.margin+.1;position=np.asarray(position);points=np.asarray(points)
+        initial=self.index.distance([position])[0]
+        if self.command_clearance(samples)<min(initial,buffer)-1e-7:return False
+        # Every raw return initially closer than the full buffer must keep
+        # its own distance, so a nearer wall cannot hide a worsening floor.
+        close=points[np.linalg.norm(points-position,axis=1)<extent+buffer]
+        if len(close):
+            threshold=np.minimum(np.sum((close-position)**2,axis=1),buffer**2)
+            for i in range(0,len(samples),64):
+                squared=np.sum((samples[i:i+64,None,:]-close[None,:,:])**2,axis=2)
+                if np.any(squared<threshold[None,:]-1e-7):return False
+        if self.index.roof is not None:
+            origin,coeff,_,_=self.index.roof
+            height=samples[:,2]-origin[2]-(samples[:,:2]-origin[:2])@coeff[:2]-coeff[2]
+            norm=math.sqrt(1.+np.sum(coeff[:2]**2));measured=np.isfinite(self.index.surface_distance(samples))
+            for distances in (height/norm,(5.-height)/norm):
+                minimum=min(distances[0],buffer) if measured[0] else buffer
+                if np.any(distances[measured]<minimum-1e-7):return False
+        if self.index.patches is not None:
+            centers,normals,bases,boundaries,offsets,_=self.index.patches
+            ids=np.flatnonzero(np.linalg.norm(centers-position,axis=1)<extent+buffer+1.5)
+            for begin in range(0,len(ids),32):
+                chosen=ids[begin:begin+32]
+                delta=samples[:,None,:]-centers[chosen][None,:,:]
+                local=np.einsum('nki,kij->nkj',delta,bases[chosen])
+                inside=np.all(np.einsum('nki,kji->nkj',local,boundaries[chosen])>=offsets[chosen][None,:,:]-1e-7,axis=2)
+                distances=abs(np.sum(delta*normals[chosen][None,:,:],axis=2));distances[~inside]=np.inf
+                if np.any(distances<np.minimum(distances[0],buffer)[None,:]-1e-7):return False
+        for face in self.faces:
+            index=PointIndex([],faces=[face]);minimum=min(index.face_distance([position],signed=True)[0],buffer)
+            if np.min(index.face_distance(samples,signed=True))<minimum-1e-7:return False
+        times=self.envelope_times
+        # Coast/driven branches can settle after different durations. Each
+        # scenario restarts its clock, so retain the tail of every branch.
+        starts=np.r_[0,np.flatnonzero(np.diff(times)<0.)+1,len(times)]
+        tail_mask=np.zeros(len(times),dtype=bool)
+        for first,last in zip(starts[:-1],starts[1:]):
+            tail_mask[first:last]=times[first:last]>=times[first:last].max()-.15
+        tail=samples[tail_mask]
+        # A recovery must make measurable progress in every modeled tail.
+        # It is not a normal full-buffer certificate while still inside.
+        self.envelope_times=times[tail_mask]
+        progress=self.command_clearance(tail)>=min(buffer,initial+.01)-1e-7
+        self.envelope_times=times
+        return progress
 
     def find_shift(self, position, velocity, base, side, points, cloud_stamp, pose_stamp, forward_path=None, max_z=None):
         """Find an in-place escape without requiring 12 m of forward travel.
@@ -329,3 +411,55 @@ class ExecutionGuard:
                     motion_speed_cap=motion_cap if math.isfinite(motion_cap) else None,
                     measured_stopping_distance=motion['stop'],
                     validation_ms=1000.*(time.monotonic()-started))
+def certify_spacetime_command(snapshot,parameters,primitive,profile,config,hold,deadline=None):
+    """Pure final-command certificate; uses the planner's collision definition.
+
+    Certifies one actual compensated XYZ publication held until next tick, and
+    its full feedback stop. Known drive AND coast uncertainty during reaction
+    delay are checked separately. Does not mutate a live response model.
+    """
+    from dataclasses import replace
+    import time
+    from response_rollout import _commands,rollout_delay,rollout_stop
+    from trajectory_types import join_traces,readonly
+    from trajectory_collision import TrajectoryCollision
+    from trajectory_executor import ExecutionDecision
+    if not np.isfinite(hold) or hold<=0:raise ValueError('Invalid command hold')
+    checker=TrajectoryCollision(snapshot,config)
+    fresh=checker.freshness()
+    def reject(reason,conflict=None):
+        return ExecutionDecision(np.zeros(3),'FAILSAFE',reason,False,conflict=conflict)
+    if not fresh.safe:return reject(fresh.reason,fresh)
+    state=snapshot.response_state
+    if state.model_key!=parameters.model_key:return reject('MODEL_MISMATCH')
+    _,commands=_commands(parameters,state.previous,state.last_control,primitive.target,
+                         state.velocity,state.position,state.stamp,profile,primitive.name=='WAIT')
+    command=commands[len(commands)//2].copy()
+    if np.linalg.norm(command[:2])>config.max_horizontal_speed+1e-8 or abs(command[2])>config.max_vertical_speed+1e-8:
+        return reject('COMMAND_LIMIT')
+    complete=None;backup_result=None
+    # Account for old-drive uncertainty without duplicating future clock age.
+    assumptions=(True,False) if snapshot.reaction_delay>0. and state.has_applied else (state.has_applied,)
+    for driven in assumptions:
+        if deadline is not None and time.monotonic()>=deadline:return reject('GUARD_TIMEOUT')
+        initial=state;parts=[]
+        if snapshot.reaction_delay>0.:
+            delay=rollout_delay(parameters,replace(state,has_applied=driven),snapshot.reaction_delay)
+            parts.append(delay);initial=delay.end_state
+        applied=np.broadcast_to(command,initial.applied.shape).copy()
+        previous=applied.copy()
+        previous[:,2]-=parameters.lift_gain*np.sum((applied[:,:2]-initial.velocity[:,:2])**2,axis=1)
+        issued=replace(initial,previous=previous,applied=applied,has_applied=True,
+                       effective=applied,next_physics=initial.stamp,
+                       last_control=np.full(len(applied),initial.stamp),
+                       next_control=initial.stamp+np.asarray(parameters.periods))
+        held=rollout_delay(parameters,issued,hold);parts.append(held)
+        # Backup begins at next actual publication. Its controller is due now.
+        stop_state=replace(held.end_state,next_control=np.full(len(applied),held.end_state.stamp))
+        backup,stopped=rollout_stop(parameters,stop_state,profile,deadline=deadline)
+        if not stopped:return reject('STOP_UNVERIFIED')
+        trace=join_traces(parts+[backup]);checked=checker.check(trace)
+        if not checked.safe:return reject(checked.reason,checked)
+        if deadline is not None and time.monotonic()>=deadline:return reject('GUARD_TIMEOUT')
+        complete=trace;backup_result=backup
+    return ExecutionDecision(command,'NORMAL','PASS',True,trace=complete,backup=backup_result)

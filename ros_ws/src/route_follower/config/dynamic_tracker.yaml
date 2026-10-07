@@ -1,0 +1,25 @@
+# Phase 2 perception-only configuration; not flight authorization.
+tracker:
+  measurement_std: 0.15
+  acceleration_std: 1.5
+  initial_velocity_std: 5.0
+  association_distance: 2.0
+  association_mahalanobis: 16.0
+  size_cost: 0.5
+  confirmation_hits: 3
+  max_coast: 0.75
+  tentative_lifetime: 0.4
+  bbox_consistency: 0.35
+  bbox_noise_scale: 4.0
+  base_margin: 0.15
+  uncertainty_sigma: 2.0
+  truncated_margin: 0.3
+  max_velocity_std: 2.0
+  moving_speed: 0.3
+clustering:
+  resolution: 0.45
+  min_points: 20
+  max_extent: 9.0
+  along_limit: 25.0
+  lateral_limit: 3.8
+  vertical_limit: 1.8

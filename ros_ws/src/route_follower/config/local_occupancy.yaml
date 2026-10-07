@@ -1,0 +1,15 @@
+# Phase 3 rolling perception map. Static FREE evidence is not a safety proof.
+occupancy:
+  resolution: 0.5
+  forward: 25.0
+  backward: 2.0
+  lateral: 4.0
+  vertical_min: -3.0
+  vertical_max: 3.0
+  free_ttl: 0.5
+  occupied_ttl: 1.0
+  dynamic_ttl: 0.75
+  max_rays: 8192
+  max_voxels: 1000000
+  min_dynamic_confidence: 0.25
+  min_dynamic_speed: 0.3

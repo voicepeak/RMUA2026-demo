@@ -15,6 +15,22 @@ import threading
 
 
 class PredictiveRouteTests(unittest.TestCase):
+    def test_batch_departure_height_keeps_measured_floor_and_20m_boundary(self):
+        from spatial_curve import SpatialCurve
+        curve=SpatialCurve([(0.,-3.),(8.,-4.),(19.,-3.4),(30.,-6.)])
+        scalar=lambda s:curve.center(s)
+        batched=lambda s:curve.center(s)
+        batched.batch=curve.center_many
+        stations=np.r_[np.linspace(-2.,22.,600),19.999999,20.,20.000001]
+        positions=np.zeros((len(stations),3))
+        class Floor:
+            def floor_limit(self,positions,margin):
+                values=np.full(len(positions),np.nan);values[::7]=-4.5;return values
+        expected=departure_floor_limits(stations,positions,scalar,.25,Floor(),1.25)
+        actual=departure_floor_limits(stations,positions,batched,.25,Floor(),1.25)
+        np.testing.assert_allclose(actual,expected,rtol=0.,atol=1e-12)
+        self.assertTrue(np.isinf(actual[-2:]).all())
+
     def test_departure_floor_shares_measured_bound_and_ends_at_20m(self):
         class Floor:
             def floor_limit(self,positions,margin):return np.array([np.nan,-1.,np.nan])

@@ -2,6 +2,7 @@
 """Independent recording of the actual command topic and sensor timing."""
 import argparse
 import json
+import math
 from pathlib import Path
 import threading
 import time
@@ -33,7 +34,16 @@ def main():
                 file.write(json.dumps(row, allow_nan=False)+'\n')
     def pose(msg):
         p, q = msg.pose.position, msg.pose.orientation
-        write('pose', msg, dict(position=[p.x,p.y,p.z], quaternion=[q.x,q.y,q.z,q.w]))
+        values=[p.x,p.y,p.z,q.x,q.y,q.z,q.w]
+        finite=all(math.isfinite(x) for x in values)
+        norm=sum(x*x for x in values[3:]) if finite else None
+        valid=finite and abs(norm-1.)<=.01
+        # Preserve malformed observations as explicit evidence without
+        # putting NaN/Inf in JSON or mixing them with usable pose samples.
+        write('pose' if valid else 'pose_invalid',msg,dict(
+            position=[x if math.isfinite(x) else None for x in values[:3]],
+            quaternion=[x if math.isfinite(x) else None for x in values[3:]],
+            **({} if valid else dict(invalid_values=[repr(x) for x in values],quaternion_norm_squared=norm))))
     def command(msg):
         write('command', msg, dict(body_velocity=[msg.vx,msg.vy,msg.vz],
               yaw_rate_deg=msg.yawRate, acceleration=msg.va, stop=msg.stop))
@@ -69,6 +79,13 @@ def main():
                     received_monotonic=time.monotonic(),received_ros=rospy.Time.now().to_sec(),
                     data=json.loads(msg.data)))+'\n')
     rospy.Subscriber('/rmua/controller/command_trace',String,diagnostic,queue_size=100)
+    def planning(msg):
+        with lock:
+            if not file.closed:
+                file.write(json.dumps(dict(topic='planning_debug',received_wall=time.time(),
+                    received_monotonic=time.monotonic(),received_ros=rospy.Time.now().to_sec(),
+                    data=json.loads(msg.data)),allow_nan=False)+'\n')
+    rospy.Subscriber('/rmua/controller/planning_debug',String,planning,queue_size=100)
     try:
         rospy.spin()
     finally:

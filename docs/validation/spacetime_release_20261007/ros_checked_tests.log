@@ -1,0 +1,32 @@
+....................................................../workspace/repo/ros_ws/src/route_follower/scripts/lidar_scene.py:55: RuntimeWarning: invalid value encountered in less
+  eligible=(np.all(np.isfinite(points),axis=1)&(abs(along)<along_limit)&
+/workspace/repo/ros_ws/src/route_follower/scripts/lidar_scene.py:56: RuntimeWarning: invalid value encountered in less
+  (abs(cross)<lateral_limit)&(abs(dz)<vertical_limit))
+............................................................................................................/workspace/repo/ros_ws/src/route_follower/scripts/lidar_points.py:11: RuntimeWarning: invalid value encountered in greater
+  return points[np.all(np.isfinite(points),axis=1)&(np.sum(points*points,axis=1)>1e-8)]
+..................................../workspace/repo/ros_ws/src/route_follower/scripts/local_occupancy.py:109: RuntimeWarning: invalid value encountered in less
+  usable=np.all(np.isfinite(points),axis=1)&np.all(abs(points)<1e9,axis=1)
+../workspace/repo/ros_ws/src/route_follower/scripts/local_occupancy.py:295: RuntimeWarning: invalid value encountered in less
+  valid=(np.all(np.isfinite(points),axis=1)&np.all(abs(points)<1e9,axis=1)&
+/workspace/repo/ros_ws/src/route_follower/scripts/local_occupancy.py:296: RuntimeWarning: invalid value encountered in greater
+  (np.sum((points-sensor_origin)**2,axis=1)>1e-8))
+....................................................................................................................................Process SpawnProcess-1:
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/multiprocessing/process.py", line 315, in _bootstrap
+    self.run()
+  File "/usr/lib/python3.8/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/workspace/repo/ros_ws/src/route_follower/scripts/lidar_navigation.py", line 35, in _geometry_worker
+    snapshot=connection.recv()
+  File "/usr/lib/python3.8/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+  File "/usr/lib/python3.8/multiprocessing/connection.py", line 414, in _recv_bytes
+    buf = self._recv(4)
+  File "/usr/lib/python3.8/multiprocessing/connection.py", line 383, in _recv
+    raise EOFError
+EOFError
+.....................................................................................................................
+----------------------------------------------------------------------
+Ran 449 tests in 6.853s
+
+OK

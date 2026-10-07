@@ -15,10 +15,18 @@ def main():
     parser.add_argument('--stations',default='0,3,10,40,70,120,190,250')
     parser.add_argument('--speed',type=float,default=6.)
     parser.add_argument('--response-model',choices=('legacy','coupled'),default='legacy')
+    parser.add_argument('--lift-gain',type=float,default=.086)
+    parser.add_argument('--height-gain',type=float,default=1.)
+    parser.add_argument('--coupling-gains',help='Comma-separated three model gains for this counterfactual replay')
+    parser.add_argument('--controller-snapshot',type=Path,help='Archived package, used only by this offline process')
+    parser.add_argument('--exhaustive',action='store_true',help='Disable score upper-bound pruning in current offline navigator')
+    parser.add_argument('--latency-policy',choices=('coast','coast-and-applied'),default='coast-and-applied')
     parser.add_argument('--cloud-dir',type=Path,help='Override the default archived return-leg cloud directory')
     parser.add_argument('--before-received',type=float,required=True)
     args=parser.parse_args()
-    sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ros_ws/src/route_follower/scripts'))
+    scripts=(args.controller_snapshot/'scripts' if args.controller_snapshot else
+             Path(__file__).resolve().parents[1]/'ros_ws/src/route_follower/scripts')
+    sys.path.insert(0,str(scripts))
     from execution_guard import ExecutionGuard
     from lidar_navigation import LidarNavigator
     from velocity_response import VelocityResponse
@@ -53,12 +61,15 @@ def main():
         desired=np.r_[args.speed*f,np.clip((center(s+1.)-center(s))*args.speed,-4.,4.5)]
         guard=ExecutionGuard()
         if args.response_model=='coupled':
-            guard.response_model=VelocityResponse()
+            gains=None if args.coupling_gains is None else tuple(map(float,args.coupling_gains.split(',')))
+            guard.response_model=VelocityResponse(lift_gain=args.lift_gain,coupling_gains=gains,height_gain=args.height_gain)
             i=min(len(stamps)-1,bisect.bisect_left(stamps,meta['pose_stamp']))
             previous=telemetry[max(0,i-1)]['data']
-            guard.response_model.previous=np.r_[previous['velocity_world'],-previous['vz_command']]
-            guard.response_model.last_stamp=previous['pose_stamp']
+            guard.response_model.commit(np.r_[previous['velocity_world'],-previous['vz_command']],
+                np.asarray(previous['measured_velocity_world']),previous['pose_stamp'])
+            if args.latency_policy=='coast':guard.response_model.applied_command=None
         nav=LidarNavigator(guard)
+        if args.exhaustive:nav.prune_candidates=False
         age=max(0.,min(.49,row.get('lidar_age') or 0.))
         started=time.monotonic()
         command,info=nav.select(position,velocity,desired,s,xy,center,points,
@@ -67,7 +78,7 @@ def main():
             hypothetical_desired=desired.tolist(),command=command.tolist(),
             elapsed_ms=1000.*(time.monotonic()-started),result=info))
     args.out.parent.mkdir(parents=True,exist_ok=True)
-    args.out.write_text(json.dumps(dict(scope='Frozen recorded scenes; measured motion, recorded previous command and hypothetical nominal speed. Not flight evidence.',response_model=args.response_model,results=results),indent=2)+'\n')
+    args.out.write_text(json.dumps(dict(scope='Frozen recorded scenes; measured motion, recorded previous command and hypothetical nominal speed. Not flight evidence.',response_model=args.response_model,latency_policy=args.latency_policy,lift_gain=args.lift_gain,height_gain=args.height_gain,coupling_gains=args.coupling_gains,controller_scripts=str(scripts),results=results),indent=2)+'\n')
     print(json.dumps(dict(samples=len(results),feasible=sum(row['result']['feasible'] for row in results),
         reasons=[row['result']['command_reason'] for row in results],
         elapsed_ms=[round(row['elapsed_ms'],2) for row in results])))

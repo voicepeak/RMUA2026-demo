@@ -2,6 +2,7 @@
 """Shape-preserving C1 Hermite interpolation, with analytic spatial derivative."""
 from bisect import bisect_right
 import math
+import numpy as np
 
 class SpatialCurve:
     def __init__(self, anchors):
@@ -35,4 +36,12 @@ class SpatialCurve:
         return value, slope
 
     def center(self, s): return self.sample(s)[0]
+    def center_many(self, stations):
+        stations=np.asarray(stations,dtype=float)
+        x=np.asarray(self.x);y=np.asarray(self.y);m=np.asarray(self.m)
+        i=np.clip(np.searchsorted(x,stations,side='right')-1,0,len(x)-2)
+        h=x[i+1]-x[i];t=(stations-x[i])/h
+        a,b,u,v=y[i],y[i+1],m[i],m[i+1]
+        value=(2*t**3-3*t*t+1)*a+(t**3-2*t*t+t)*h*u+(-2*t**3+3*t*t)*b+(t**3-t*t)*h*v
+        return np.where(stations<x[0],y[0],np.where(stations>x[-1],y[-1],value))
     def dz_ds(self, s, h=None): return self.sample(s)[1]

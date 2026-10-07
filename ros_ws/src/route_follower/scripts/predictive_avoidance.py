@@ -21,7 +21,9 @@ def departure_floor_limits(stations, positions, center, floor_offset, index, mar
     if floor_offset is None:return limits
     departure=stations<20.
     unique,inverse=np.unique(stations[departure],return_inverse=True)
-    limits[departure]=np.array([center(s)+floor_offset for s in unique])[inverse]
+    values=(center.batch(unique)+floor_offset if hasattr(center,'batch') else
+            np.array([center(s)+floor_offset for s in unique]))
+    limits[departure]=values[inverse]
     if index is not None:
         measured=index.floor_limit(positions,margin)
         supported=departure & np.isfinite(measured)

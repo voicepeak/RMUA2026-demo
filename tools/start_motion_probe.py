@@ -16,6 +16,9 @@ def main():
     parser.add_argument('--slew',type=float,default=0.)
     parser.add_argument('--drive-seconds',type=float,default=2.)
     parser.add_argument('--compensation',type=float,default=0.)
+    parser.add_argument('--height-gain',type=float,default=0.)
+    parser.add_argument('--compensation-error-max',type=float,default=1e6)
+    parser.add_argument('--compensation-attitude',action='store_true')
     parser.add_argument('--brake-feedback',type=float,default=0.)
     parser.add_argument('--start-x',type=float,default=8.)
     parser.add_argument('--brake-slew',type=float,default=0.)
@@ -23,7 +26,13 @@ def main():
     parser.add_argument('--lidar-point-rate',type=int)
     parser.add_argument('--vertical-command-max',type=float,default=2.5)
     parser.add_argument('--vertical-step',type=float,default=0.)
+    parser.add_argument('--curve-brake-radius',type=float,default=0.)
+    parser.add_argument('--endpoint-velocity',action='store_true')
+    parser.add_argument('--coupling-limited',action='store_true')
+    parser.add_argument('--xy-error-max',type=float,default=float('inf'))
+    parser.add_argument('--control-period',type=float,default=.02)
     args=parser.parse_args()
+    if not .01<=args.control_period<=.35:parser.error('--control-period must be between 0.01 and 0.35 seconds')
     if args.lidar_point_rate is not None and args.lidar_point_rate<=0:parser.error('--lidar-point-rate must be positive')
     workspace=Path(__file__).resolve().parents[2]
     out=args.out.resolve();rel=out.relative_to(workspace);out.mkdir(parents=True,exist_ok=False)
@@ -35,6 +44,10 @@ def main():
     (out/'sources').mkdir()
     for name in ('motion_probe.py','control_trace.py','start_motion_probe.py'):
         shutil.copy2(Path(__file__).with_name(name),out/'sources'/name)
+    if args.curve_brake_radius or args.endpoint_velocity or args.height_gain or args.coupling_limited:
+        shutil.copytree(workspace/'repo/ros_ws/src/route_follower',out/'controller_sources',ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
+        native=workspace/'rmua_ws/devel/lib/libvelocity_response_native.so'
+        if native.exists():shutil.copy2(native,out/'sources'/native.name)
     (out/'manifest.json').write_text(json.dumps(dict(arguments=vars(args)|{'out':str(args.out)},
         sha256={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (out/'sources').iterdir()}),indent=2)+'\n')
     def inspect():
@@ -55,12 +68,19 @@ def main():
             'probe',str(Path('/workspace/repo/tools')/script),*arguments],
             stdout=(out/log).open('w'),stderr=subprocess.STDOUT)
     recorder=launch('control_trace.py',['--out',str(container_out/'trace'),'--save-clouds'],'trace.log')
-    probe=launch('motion_probe.py',['--out',str(container_out),'--levels',args.levels,
+    probe_args=['--out',str(container_out),'--levels',args.levels,
                  '--slew',str(args.slew),'--drive-seconds',str(args.drive_seconds),
-                 '--compensation',str(args.compensation),'--brake-feedback',str(args.brake_feedback),
+                 '--compensation',str(args.compensation),'--height-gain',str(args.height_gain),'--brake-feedback',str(args.brake_feedback),
+                 '--compensation-error-max',str(args.compensation_error_max),
                  '--start-x',str(args.start_x),'--brake-slew',str(args.brake_slew),
                  '--vertical-command-max',str(args.vertical_command_max),
-                 '--vertical-step',str(args.vertical_step)],'probe.log')
+                 '--vertical-step',str(args.vertical_step),
+                 '--curve-brake-radius',str(args.curve_brake_radius),
+                 '--control-period',str(args.control_period),'--xy-error-max',str(args.xy_error_max)]
+    if args.compensation_attitude:probe_args.append('--compensation-attitude')
+    if args.endpoint_velocity:probe_args.append('--endpoint-velocity')
+    if args.coupling_limited:probe_args.append('--coupling-limited')
+    probe=launch('motion_probe.py',probe_args,'probe.log')
     try:
         code=probe.wait(timeout=180.)
     finally:

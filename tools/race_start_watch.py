@@ -5,6 +5,7 @@ Run inside the container after its restart. Vision and recording launch in
 parallel with control so loading a neural network cannot consume departure time.
 """
 import argparse
+import math
 import json
 from pathlib import Path
 import subprocess
@@ -19,7 +20,17 @@ parser=argparse.ArgumentParser()
 parser.add_argument('--out',type=Path,required=True)
 parser.add_argument('--control-rate',type=float,default=20.)
 parser.add_argument('--obstacle-backend',choices=('lidar_nav','legacy'),default='lidar_nav')
+parser.add_argument('--planner-mode',choices=('legacy','spacetime'),default='legacy')
+parser.add_argument('--spacetime-bridge-hold',type=float,help='Measured external bridge command expiry in seconds; absent means no certified motion')
+parser.add_argument('--outbound-response',choices=('legacy','coupled'),default='coupled')
 args=parser.parse_args()
+if not math.isfinite(args.control_rate) or args.control_rate<=0:parser.error("control-rate must be positive and finite")
+if args.planner_mode=='spacetime' and args.obstacle_backend!='lidar_nav':parser.error('spacetime requires lidar_nav')
+if args.spacetime_bridge_hold is not None:
+    interval=1./args.control_rate
+    if not math.isfinite(args.spacetime_bridge_hold) or not 0.<args.spacetime_bridge_hold<=interval:
+        parser.error('Measured bridge expiry must be positive and no longer than the control period')
+
 args.out.mkdir(parents=True,exist_ok=True)
 root=Path(__file__).resolve().parents[1]
 workspace=root.parent
@@ -32,14 +43,21 @@ if abs(position.x)>3. or abs(position.y)>3.:
 command=['roslaunch','route_follower','route_follower.launch',
          'control_rate:='+str(args.control_rate),
          'obstacle_backend:='+args.obstacle_backend,
+         'coupled_response:='+('true' if args.outbound_response=='coupled' else 'false'),
          'gates_file:='+str(config/'gates_seed123_recorded.yaml'),
          'guides_file:='+str(config/'guides_seed123_recorded.yaml'),
          'gate_center_pull_max:=0','static_correction_max:=2',
          'cruise_speed:=40','max_speed:=40','adaptive_speed:=true','lidar_braking:=8',
          'curve_preview_max:=100','curve_preview_step:=1','z_response_time:=0.15',
-         'terminal_hover_height:=1.5','debug_cloud_dir:='+str(args.out/'clouds'),
+         'terminal_hover_height:=1.5','lidar_height_gain:=1.0','lidar_coupling_limited:=false','lidar_local_replan:=false','lidar_path_options:=false',
+         'lidar_lift_gain:=0.11','lidar_coupling_gain_min:=0.09',
+         'lidar_discrete_feedback:=false','lidar_fresh_publication_check:=false','sensor_reaction:=0.35',
+         'lidar_anticipation_distance:=0','debug_cloud_dir:='+str(args.out/'clouds'),
          'slope_eta:=0.95','vz_down_limit:=4.5',
          'z_rate_max:=5','vz_capability_file:='+str(config/'vz_capability_seed123_fast.yaml')]
+command+=['planner_mode:='+args.planner_mode]
+if args.spacetime_bridge_hold is not None:
+    command+=['spacetime_bridge_verified:=true','spacetime_bridge_hold:='+str(args.spacetime_bridge_hold)]
 trace=subprocess.Popen(['python3',str(root/'tools/control_trace.py'),
                         '--out',str(args.out/'control_trace'),'--save-clouds'],
                        stdout=(args.out/'control_trace.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
@@ -59,7 +77,8 @@ vision=subprocess.Popen(['/opt/conda/envs/xal/bin/python',
 runner=subprocess.Popen(['python3',str(root/'tools/race_runner.py'),
                          '--out',str(args.out/'mission'),'--cruise','40',
                          '--fast-descent','--adaptive-speed','--control-rate',str(args.control_rate),
-                         '--obstacle-backend',args.obstacle_backend,
+                         '--obstacle-backend',args.obstacle_backend,'--planner-mode',args.planner_mode,
+                         *([] if args.spacetime_bridge_hold is None else ['--spacetime-bridge-hold',str(args.spacetime_bridge_hold)]),
                          '--height-trace',str(args.out/'flight/streams.jsonl')],
                         stdout=(args.out/'runner.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
 last_pose_arrival=time.monotonic()

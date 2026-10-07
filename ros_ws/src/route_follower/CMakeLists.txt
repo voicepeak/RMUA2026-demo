@@ -30,6 +30,7 @@ catkin_install_python(PROGRAMS
   scripts/yaw_controller.py
   scripts/speed_scheduler.py
   scripts/motion_estimator.py
+  scripts/ceiling_guidance.py
   scripts/terrain_speed.py
   scripts/predictive_avoidance.py
   scripts/pose_history.py
@@ -42,6 +43,19 @@ catkin_install_python(PROGRAMS
   scripts/velocity_response.py
   scripts/response_native.py
   scripts/lidar_scene.py
+  scripts/dynamic_tracker.py
+  scripts/local_occupancy.py
+  scripts/trajectory_types.py
+  scripts/route_coordinates.py
+  scripts/response_rollout.py
+  scripts/trajectory_collision.py
+  scripts/st_lattice.py
+  scripts/trajectory_tracker.py
+  scripts/trajectory_executor.py
+  scripts/spacetime_navigation.py
+  scripts/spacetime_runtime.py
+  scripts/planning_snapshot_io.py
+  scripts/planning_visualization.py
   scripts/path_sampling.py
   scripts/z_capability.py
   scripts/z_capability_probe.py
@@ -59,3 +73,5 @@ catkin_install_python(PROGRAMS
   scripts/z_controller.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+install(DIRECTORY config/ DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/config)

@@ -1,0 +1,274 @@
+{
+  "scope": "Oracle receding-horizon response simulation, not flight, real occupancy, bridge or scheduling validation",
+  "cases": {
+    "A_static_vehicle": {
+      "passed": true,
+      "steps": 32,
+      "simulation_seconds": 8.0,
+      "end_position": [
+        8.159148934726888,
+        -1.8991229874356572,
+        -0.089157174197493
+      ],
+      "wait_prefixes": 7,
+      "max_lateral": 1.899267987602227,
+      "plan_reasons": {
+        "SEARCH_TIMEOUT": 32
+      },
+      "failures": [],
+      "planning_ms": {
+        "p50": 351.9804404932074,
+        "p95": 353.0151859384205,
+        "maximum": 353.2737380010076
+      },
+      "planner": {
+        "time_step": 0.25,
+        "horizon": 4.0,
+        "forward_distance": 8.0,
+        "speed_levels": [
+          0.0,
+          2.0,
+          4.0,
+          6.0,
+          8.0
+        ],
+        "lateral_rate": 1.5,
+        "lateral_step": 0.5,
+        "lateral_target_margin": 0.1,
+        "lateral_damping": 2.0,
+        "height_step": 0.0,
+        "height_gain": 1.0,
+        "s_resolution": 1.0,
+        "lateral_resolution": 0.5,
+        "height_resolution": 0.5,
+        "velocity_resolution": 0.25,
+        "command_resolution": 0.25,
+        "heuristic_weight": 1.5,
+        "budget": 0.35,
+        "max_expansions": 1000,
+        "stop_max_duration": 12.0,
+        "minimum_progress": 0.01,
+        "goal_offset": 2.25
+      }
+    },
+    "B_crossing_vehicle": {
+      "passed": true,
+      "steps": 17,
+      "simulation_seconds": 4.25,
+      "end_position": [
+        9.502415973198438,
+        0.0,
+        -0.09034478809403364
+      ],
+      "wait_prefixes": 5,
+      "max_lateral": 0.0,
+      "plan_reasons": {
+        "SEARCH_TIMEOUT": 2,
+        "GOAL_REACHED": 15
+      },
+      "failures": [],
+      "planning_ms": {
+        "p50": 156.73500500270166,
+        "p95": 351.5545351925539,
+        "maximum": 352.14715999609325
+      },
+      "planner": {
+        "time_step": 0.25,
+        "horizon": 4.0,
+        "forward_distance": 8.0,
+        "speed_levels": [
+          0.0,
+          2.0,
+          4.0,
+          6.0,
+          8.0
+        ],
+        "lateral_rate": 0.0,
+        "lateral_step": 0.5,
+        "lateral_target_margin": 0.1,
+        "lateral_damping": 2.0,
+        "height_step": 0.0,
+        "height_gain": 1.0,
+        "s_resolution": 1.0,
+        "lateral_resolution": 0.5,
+        "height_resolution": 0.5,
+        "velocity_resolution": 0.25,
+        "command_resolution": 0.25,
+        "heuristic_weight": 1.5,
+        "budget": 0.35,
+        "max_expansions": 1000,
+        "stop_max_duration": 12.0,
+        "minimum_progress": 0.01,
+        "goal_offset": 2.25
+      }
+    },
+    "C_opposing_vehicles": {
+      "passed": true,
+      "steps": 21,
+      "simulation_seconds": 5.25,
+      "end_position": [
+        8.74526300410911,
+        0.0,
+        -0.049823919388065685
+      ],
+      "wait_prefixes": 7,
+      "max_lateral": 0.0,
+      "plan_reasons": {
+        "SEARCH_TIMEOUT": 12,
+        "GOAL_REACHED": 9
+      },
+      "failures": [],
+      "planning_ms": {
+        "p50": 351.5068400010932,
+        "p95": 353.19805800099857,
+        "maximum": 353.67280400532763
+      },
+      "planner": {
+        "time_step": 0.25,
+        "horizon": 4.0,
+        "forward_distance": 8.0,
+        "speed_levels": [
+          0.0,
+          2.0,
+          4.0,
+          6.0,
+          8.0
+        ],
+        "lateral_rate": 0.0,
+        "lateral_step": 0.5,
+        "lateral_target_margin": 0.1,
+        "lateral_damping": 2.0,
+        "height_step": 0.0,
+        "height_gain": 1.0,
+        "s_resolution": 1.0,
+        "lateral_resolution": 0.5,
+        "height_resolution": 0.5,
+        "velocity_resolution": 0.25,
+        "command_resolution": 0.25,
+        "heuristic_weight": 1.5,
+        "budget": 0.35,
+        "max_expansions": 1000,
+        "stop_max_duration": 12.0,
+        "minimum_progress": 0.01,
+        "goal_offset": 2.25
+      }
+    },
+    "D_temporary_block": {
+      "passed": true,
+      "steps": 34,
+      "simulation_seconds": 8.5,
+      "end_position": [
+        9.08275645109754,
+        0.0,
+        -0.08224962250740293
+      ],
+      "wait_prefixes": 19,
+      "max_lateral": 0.0,
+      "plan_reasons": {
+        "WAIT_FOR_DYNAMIC": 1,
+        "SEARCH_TIMEOUT": 18,
+        "GOAL_REACHED": 15
+      },
+      "failures": [],
+      "planning_ms": {
+        "p50": 351.36285699991276,
+        "p95": 352.9455526469974,
+        "maximum": 353.42517201206647
+      },
+      "planner": {
+        "time_step": 0.25,
+        "horizon": 4.0,
+        "forward_distance": 8.0,
+        "speed_levels": [
+          0.0,
+          2.0,
+          4.0,
+          6.0,
+          8.0
+        ],
+        "lateral_rate": 0.0,
+        "lateral_step": 0.5,
+        "lateral_target_margin": 0.1,
+        "lateral_damping": 2.0,
+        "height_step": 0.0,
+        "height_gain": 1.0,
+        "s_resolution": 1.0,
+        "lateral_resolution": 0.5,
+        "height_resolution": 0.5,
+        "velocity_resolution": 0.25,
+        "command_resolution": 0.25,
+        "heuristic_weight": 1.5,
+        "budget": 0.35,
+        "max_expansions": 1000,
+        "stop_max_duration": 12.0,
+        "minimum_progress": 0.01,
+        "goal_offset": 2.25
+      }
+    },
+    "F_narrow_corridor": {
+      "passed": true,
+      "steps": 9,
+      "simulation_seconds": 2.25,
+      "end_position": [
+        9.385853402916457,
+        0.0,
+        -0.05991916971680512
+      ],
+      "wait_prefixes": 0,
+      "max_lateral": 0.0,
+      "plan_reasons": {
+        "SEARCH_TIMEOUT": 9
+      },
+      "failures": [],
+      "planning_ms": {
+        "p50": 351.5601529943524,
+        "p95": 355.6539211975178,
+        "maximum": 357.7678199944785
+      },
+      "planner": {
+        "time_step": 0.25,
+        "horizon": 4.0,
+        "forward_distance": 8.0,
+        "speed_levels": [
+          0.0,
+          2.0,
+          4.0,
+          6.0,
+          8.0
+        ],
+        "lateral_rate": 1.5,
+        "lateral_step": 0.5,
+        "lateral_target_margin": 0.1,
+        "lateral_damping": 2.0,
+        "height_step": 0.0,
+        "height_gain": 1.0,
+        "s_resolution": 1.0,
+        "lateral_resolution": 0.5,
+        "height_resolution": 0.5,
+        "velocity_resolution": 0.25,
+        "command_resolution": 0.25,
+        "heuristic_weight": 1.5,
+        "budget": 0.35,
+        "max_expansions": 1000,
+        "stop_max_duration": 12.0,
+        "minimum_progress": 0.01,
+        "goal_offset": 2.25
+      }
+    }
+  },
+  "all_passed": true,
+  "wall_time_budget_seconds": 0.35,
+  "source_sha256": {
+    "/home/tianbot/RUMA-by-helinjun/repo/ros_ws/src/route_follower/scripts/trajectory_types.py": "34e22ff92624de02831f307d93fd854e1fc13b89517d562a8065304aedb08cf2",
+    "/home/tianbot/RUMA-by-helinjun/repo/ros_ws/src/route_follower/scripts/route_coordinates.py": "6cb86ad908d1326aee0b56bdbf6dfcb6394684feecac9a039cc4c6adfd5ebac8",
+    "/home/tianbot/RUMA-by-helinjun/repo/ros_ws/src/route_follower/scripts/response_rollout.py": "9e02d12027820eef12613ffe0618c215e0821982a81bfe9251642e84d482f9e8",
+    "/home/tianbot/RUMA-by-helinjun/repo/ros_ws/src/route_follower/scripts/velocity_response.py": "cec1d68e8a12c3096644c0589bcd9cef65759bc0c5c24c0eb5fac575fedcbf69",
+    "/home/tianbot/RUMA-by-helinjun/repo/ros_ws/src/route_follower/scripts/trajectory_collision.py": "1390826c9c1b236a787a8a58e92293a4ae56cd45cb03ec4f2f260539c63f4807",
+    "/home/tianbot/RUMA-by-helinjun/repo/ros_ws/src/route_follower/scripts/st_lattice.py": "b804ffd3463e2d48f319fdb7a97e713e07b81f983b2cb86f45a80f0808c66fee",
+    "/home/tianbot/RUMA-by-helinjun/repo/ros_ws/src/route_follower/scripts/dynamic_tracker.py": "4aa5f38e7f34599ce0f4edcf9b21f4c4e118c44ddd52c865c033e907f4421cbb",
+    "/home/tianbot/RUMA-by-helinjun/repo/ros_ws/src/route_follower/scripts/local_occupancy.py": "60f703aad2947ecc4938f7cef8105147baf00a7f0cb93259b1809e3515a16ff6",
+    "/home/tianbot/RUMA-by-helinjun/repo/tools/validate_spacetime.py": "5d3cca724885f5952c02070062d46b0e69773f235417166678ceb86447379004",
+    "/home/tianbot/RUMA-by-helinjun/repo/tools/spacetime_scenarios.py": "758bbe83e8848803b1d0bf7d5f884f55f5781b5f3a345ce891dcb9536cebd6d4",
+    "/home/tianbot/RUMA-by-helinjun/repo/tools/spacetime_snapshot.py": "ac5cfc738693d4047088618fa35a5427dd09a36cbda01080a6da18a55a88319b"
+  }
+}

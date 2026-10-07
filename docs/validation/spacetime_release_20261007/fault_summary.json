@@ -1,0 +1,122 @@
+{
+  "scope": "Oracle numerical scheduler; assumed bridge expiry, NO ROS publication/flight",
+  "period": 0.05,
+  "scenarios": 9,
+  "cases": [
+    {
+      "fault": "delay_0.2",
+      "decisions": 20,
+      "interval_p95_ms": 51.43315669556614,
+      "interval_max_ms": 51.9976340001449,
+      "compute_p95_ms": 11.655260148836533,
+      "reasons": [
+        "NO_PLAN"
+      ],
+      "planner_reason": "WORKER_TIMEOUT",
+      "passed": true
+    },
+    {
+      "fault": "delay_0.6",
+      "decisions": 20,
+      "interval_p95_ms": 50.76064310705988,
+      "interval_max_ms": 51.41561001073569,
+      "compute_p95_ms": 10.872122793807648,
+      "reasons": [
+        "NO_PLAN"
+      ],
+      "planner_reason": "WORKER_TIMEOUT",
+      "passed": true
+    },
+    {
+      "fault": "delay_1.2",
+      "decisions": 20,
+      "interval_p95_ms": 52.00097870256286,
+      "interval_max_ms": 53.365690997452475,
+      "compute_p95_ms": 11.974312951497268,
+      "reasons": [
+        "NO_PLAN"
+      ],
+      "planner_reason": "WORKER_TIMEOUT",
+      "passed": true
+    },
+    {
+      "fault": "delay_2.2",
+      "decisions": 20,
+      "interval_p95_ms": 51.013701502233744,
+      "interval_max_ms": 52.76574500021525,
+      "compute_p95_ms": 10.470537099172363,
+      "reasons": [
+        "NO_PLAN"
+      ],
+      "planner_reason": "WORKER_TIMEOUT",
+      "passed": true
+    },
+    {
+      "fault": "hang",
+      "decisions": 20,
+      "interval_p95_ms": 50.658649390970815,
+      "interval_max_ms": 51.90007700002752,
+      "compute_p95_ms": 10.56161140149925,
+      "reasons": [
+        "NO_PLAN"
+      ],
+      "planner_reason": "WORKER_TIMEOUT",
+      "passed": true
+    },
+    {
+      "fault": "exit",
+      "decisions": 20,
+      "interval_p95_ms": 51.60666170268084,
+      "interval_max_ms": 61.26896898786072,
+      "compute_p95_ms": 14.517528294527443,
+      "reasons": [
+        "NO_PLAN"
+      ],
+      "planner_reason": "WORKER_EOF",
+      "passed": true
+    },
+    {
+      "fault": "pose_loss",
+      "decisions": 20,
+      "interval_p95_ms": 51.262974107521565,
+      "interval_max_ms": 60.33535300230142,
+      "compute_p95_ms": 11.155354053335039,
+      "reasons": [
+        "NO_PLAN",
+        "PASS",
+        "PLAN_EXPIRED",
+        "POSE_STALE"
+      ],
+      "planner_reason": "SEARCH_TIMEOUT",
+      "passed": true
+    },
+    {
+      "fault": "cloud_loss",
+      "decisions": 20,
+      "interval_p95_ms": 51.4428557056817,
+      "interval_max_ms": 60.11259800288826,
+      "compute_p95_ms": 10.866686849476544,
+      "reasons": [
+        "NO_PLAN",
+        "PASS",
+        "SENSOR_STALE"
+      ],
+      "planner_reason": "SEARCH_TIMEOUT",
+      "passed": true
+    },
+    {
+      "fault": "reset",
+      "decisions": 20,
+      "interval_p95_ms": 51.91845429944804,
+      "interval_max_ms": 60.796093006501906,
+      "compute_p95_ms": 11.094793146912714,
+      "reasons": [
+        "NO_PLAN",
+        "PASS"
+      ],
+      "planner_reason": "SEARCH_TIMEOUT",
+      "passed": true
+    }
+  ],
+  "passed": true
+}

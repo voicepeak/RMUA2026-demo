@@ -69,6 +69,9 @@ class AltitudeProfile(object):
     def center(self, s):
         return self.curve.center(s)
 
+    def center_many(self, stations):
+        return self.curve.center_many(stations)
+
     def corridor(self, s):
         c = self.center(s)
         return c - self.corridor_half, c + self.corridor_half   # (ceiling, floor)
@@ -101,6 +104,7 @@ class FrozenBlend:
         total = sum(w for w,p in self.components)
         self.components = [(w/total,p) for w,p in self.components]
     def center(self,s): return sum(w*p.center(s) for w,p in self.components)
+    def center_many(self,stations): return sum(w*p.center_many(stations) for w,p in self.components)
     def dz_ds(self,s,h=4.): return sum(w*p.dz_ds(s,h) for w,p in self.components)
 
 
@@ -141,6 +145,13 @@ class ProfileBlender(object):
         b = self.beta(stamp)
         if b < 1.0:
             z = (1.0 - b) * self.previous.center(s) + b * z
+        return z
+
+    def center_many(self, stations, stamp=None):
+        z=self.current.center_many(stations)
+        b=self.beta(stamp)
+        if b<1.:
+            z=(1.-b)*self.previous.center_many(stations)+b*z
         return z
 
     def dz_ds(self, s, h=4.0, stamp=None):

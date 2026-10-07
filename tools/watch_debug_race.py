@@ -22,12 +22,14 @@ stream=out/'flight/streams.jsonl'
 offset=0;pending='';counter=0;finished_frames=0
 last_s=None;best_s=None;progress_at=time.monotonic();last_telemetry=None
 def stop(reason,**fields):
+    if (out/'stop.json').exists():return
     payload=dict(reason=reason,wall_time=time.time(),official_result='UNKNOWN')
     payload.update(fields)
     (out/'stop.json').write_text(json.dumps(payload,indent=2)+'\n')
     print(json.dumps(payload),flush=True)
 
 while True:
+    if (out/'stop.json').exists():break
     now=time.monotonic()
     if stream.exists():
         with stream.open() as file:

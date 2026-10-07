@@ -1,6 +1,7 @@
 import sys
 import unittest
 from pathlib import Path
+import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]
                        / "ros_ws" / "src" / "route_follower" / "scripts"))
@@ -13,6 +14,25 @@ def profile(start_z=0.0, goal_z=0.0, gates=(), guides=()):
 
 
 class AltitudeProfileTests(unittest.TestCase):
+    def test_batch_centers_preserve_irregular_anchors_and_clamped_endpoints(self):
+        p=profile(start_z=-3.,goal_z=-11.,guides=[dict(s=1.7,z=-4.),
+                    dict(s=19.99,z=-5.),dict(s=20.,z=-5.01),dict(s=63.2,z=-2.)])
+        stations=np.r_[[-20.,0.,1.7,19.99,20.,63.2,100.,120.],
+                       np.random.default_rng(53).uniform(-5.,105.,2000)]
+        np.testing.assert_allclose(p.center_many(stations),[p.center(s) for s in stations],
+                                   rtol=0.,atol=1e-12)
+        self.assertEqual(p.center_many(np.array([])).shape,(0,))
+
+    def test_batch_centers_preserve_interrupted_profile_blends(self):
+        b=ProfileBlender(1.);b.set_initial(profile(goal_z=0.))
+        b.switch(profile(goal_z=-10.),10.)
+        b.switch(profile(goal_z=-20.),10.2)
+        b.switch(profile(goal_z=-5.),10.35)
+        stations=np.linspace(-5.,105.,200)
+        for stamp in (10.35,10.6,11.35,12.):
+            np.testing.assert_allclose(b.center_many(stations,stamp),
+                                       [b.center(s,stamp) for s in stations],rtol=0.,atol=1e-12)
+
     def test_center_interpolates_gate_anchor(self):
         p = profile(gates=[{"s": 50.0, "z": -10.0, "valid": True}])
         self.assertAlmostEqual(p.center(50.0), -10.0)

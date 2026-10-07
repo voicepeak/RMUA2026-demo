@@ -1,5 +1,11 @@
 <?xml version="1.0"?>
 <launch>
+  <arg name="coupled_response" default="true"/>
+  <arg name="planner_mode" default="legacy"/>
+  <arg name="spacetime_config" default="$(find route_follower)/config/spacetime_planner.yaml"/>
+  <!-- External bridge expiry must be measured before opting into motion. -->
+  <arg name="spacetime_bridge_verified" default="false"/>
+  <arg name="spacetime_bridge_hold" default="0.05"/>
   <!-- RMUA 2026 v6: 预测/动力学限速 + Yaw 真实转向 + 连续三维 -->
 
   <arg name="route"          default="route_1_3"/>
@@ -16,7 +22,17 @@
   <arg name="obstacle_backend" default="lidar_nav"/>
   <arg name="lidar_range" default="30.0"/>
   <arg name="lidar_braking" default="4.0"/>
-  <arg name="sensor_reaction" default="0.35"/>
+  <arg name="lidar_height_gain" default="2.0"/>
+  <arg name="lidar_coupling_limited" default="true"/>
+  <arg name="lidar_xy_error_max" default="4.5"/>
+  <arg name="lidar_discrete_feedback" default="true"/>
+  <arg name="lidar_local_replan" default="true"/>
+  <arg name="lidar_lift_gain" default="0.095"/>
+  <arg name="lidar_coupling_gain_min" default="0.075"/>
+  <arg name="lidar_path_options" default="true"/>
+  <arg name="lidar_anticipation_distance" default="9.0"/>
+  <arg name="sensor_reaction" default="0.25"/>
+  <arg name="lidar_fresh_publication_check" default="true"/>
   <arg name="normal_speed_floor" default="4.0"/>
   <arg name="a_lat_max"      default="6.0"/>
   <arg name="a_up"           default="4.0"/>
@@ -165,9 +181,24 @@
     <param name="max_speed"        value="$(arg max_speed)"/>
     <param name="adaptive_speed" value="$(arg adaptive_speed)"/>
     <param name="obstacle_backend" value="$(arg obstacle_backend)"/>
+    <param name="planner_mode" value="$(arg planner_mode)"/>
+    <param name="spacetime_config" value="$(arg spacetime_config)"/>
+    <param name="spacetime_bridge_verified" value="$(arg spacetime_bridge_verified)"/>
+    <param name="spacetime_bridge_hold" value="$(arg spacetime_bridge_hold)"/>
+    <param name="coupled_response" value="$(arg coupled_response)"/>
     <param name="lidar_range" value="$(arg lidar_range)"/>
     <param name="lidar_braking" value="$(arg lidar_braking)"/>
+    <param name="lidar_height_gain" value="$(arg lidar_height_gain)"/>
+    <param name="lidar_coupling_limited" value="$(arg lidar_coupling_limited)"/>
+    <param name="lidar_xy_error_max" value="$(arg lidar_xy_error_max)"/>
+    <param name="lidar_discrete_feedback" value="$(arg lidar_discrete_feedback)"/>
+    <param name="lidar_local_replan" value="$(arg lidar_local_replan)"/>
+    <param name="lidar_lift_gain" value="$(arg lidar_lift_gain)"/>
+    <param name="lidar_coupling_gain_min" value="$(arg lidar_coupling_gain_min)"/>
+    <param name="lidar_path_options" value="$(arg lidar_path_options)"/>
+    <param name="lidar_anticipation_distance" value="$(arg lidar_anticipation_distance)"/>
     <param name="sensor_reaction" value="$(arg sensor_reaction)"/>
+    <param name="lidar_fresh_publication_check" value="$(arg lidar_fresh_publication_check)"/>
     <param name="normal_speed_floor" value="$(arg normal_speed_floor)"/>
     <param name="a_lat_max"        value="$(arg a_lat_max)"/>
     <param name="a_up"             value="$(arg a_up)"/>

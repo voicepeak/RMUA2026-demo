@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """One command: fresh simulator, immediate control, recording and stage runner."""
 import argparse
+import math
 import json
 from pathlib import Path
 import subprocess
@@ -17,8 +18,17 @@ parser.add_argument('--clock-type',choices=('auto','ScalableClock','SteppableClo
 parser.add_argument('--lidar-point-rate',type=int,help='Optional lidar points/second; default preserves simulator settings')
 parser.add_argument('--stall-seconds',type=float,default=20.)
 parser.add_argument('--obstacle-backend',choices=('lidar_nav','legacy'),default='lidar_nav')
+parser.add_argument('--planner-mode',choices=('legacy','spacetime'),default='legacy')
+parser.add_argument('--spacetime-bridge-hold',type=float,help='Measured external bridge command expiry in seconds; absent means no certified motion')
+parser.add_argument('--outbound-response',choices=('legacy','coupled'),default='coupled',help='First leg response policy; subsequent vehicle legs retain coupled response')
 parser.add_argument('--out',type=Path)
 args=parser.parse_args()
+if args.planner_mode=='spacetime' and args.obstacle_backend!='lidar_nav':parser.error('spacetime requires lidar_nav')
+if args.spacetime_bridge_hold is not None:
+    interval=1./(20.*args.clock_speed) if 0.<args.clock_speed<=2. else 0.
+    if not math.isfinite(args.spacetime_bridge_hold) or not 0.<args.spacetime_bridge_hold<=interval:
+        parser.error('Measured bridge expiry must be positive and no longer than the control period')
+
 if not 0.<args.clock_speed<=2.:parser.error('--clock-speed must be in (0, 2]')
 if args.lidar_point_rate is not None and args.lidar_point_rate<=0:parser.error('--lidar-point-rate must be positive')
 workspace=Path(__file__).resolve().parents[2]
@@ -55,7 +65,8 @@ sim_hashes={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdige
             for path in sorted(sim_snapshot.glob('*'))}
 (out/'controller_versions.json').write_text(json.dumps(dict(wall_time=time.time(),seed=123,
     requested_clock_speed=args.clock_speed,mode=args.mode,backend=args.obstacle_backend,
-    requested_clock_type=args.clock_type,
+    requested_clock_type=args.clock_type,planner_mode=args.planner_mode,spacetime_bridge_hold=args.spacetime_bridge_hold,
+    outbound_response=args.outbound_response,
     lidar_points_per_second=settings['Vehicles']['drone_1']['Sensors']['lidar']['PointsPerSecond'],
     car_model_enabled=args.obstacle_backend=='legacy',snapshot_kind='runtime package captured before launch',
     sha256=hashes,tools_sha256=tool_hashes,sim_launch_sha256=sim_hashes),indent=2)+'\n')
@@ -76,8 +87,8 @@ while True:
     time.sleep(.2)
 command=['docker','exec','rmua_noetic','bash','-c',
          'source /opt/ros/noetic/setup.bash; source /workspace/rmua_ws/devel/setup.bash; '
-         'exec python3 /workspace/repo/tools/race_start_watch.py --out "$1" --control-rate "$2" --obstacle-backend "$3"',
-         'race-start',str(container_out),str(20.*args.clock_speed),args.obstacle_backend]
+         'exec python3 /workspace/repo/tools/race_start_watch.py --out "$1" --control-rate "$2" --obstacle-backend "$3" --outbound-response "$4" --planner-mode "$5" ${6:+--spacetime-bridge-hold "$6"}',
+         'race-start',str(container_out),str(20.*args.clock_speed),args.obstacle_backend,args.outbound_response,args.planner_mode,'' if args.spacetime_bridge_hold is None else str(args.spacetime_bridge_hold)]
 print('Recording:',out,flush=True)
 monitor=None
 health_stamp=None
@@ -97,6 +108,12 @@ try:
                 returncode=monitor.returncode,wall_time=time.time(),official_result='UNKNOWN'),indent=2)+'\n')
         time.sleep(.2)
     code=watcher.returncode
+    if code!=0 and not (out/'stop.json').exists():
+        log=(out/'simulator.log').read_text(errors='replace')
+        (out/'stop.json').write_text(json.dumps(dict(
+            reason=('SIMULATOR_CRASH' if 'SIGSEGV' in log or 'SIGABRT' in log else 'WATCHER_FAILED'),
+            watcher_returncode=code,simulator_returncode=sim.poll(),
+            wall_time=time.time(),official_result='UNKNOWN'),indent=2)+'\n')
 finally:
     if monitor is not None:monitor.terminate();monitor.wait(timeout=5.)
 subprocess.run([sys.executable,str(workspace/'repo/tools/summarize_debug_race.py'),

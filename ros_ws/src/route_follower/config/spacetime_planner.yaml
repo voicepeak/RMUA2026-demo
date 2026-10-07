@@ -1,0 +1,35 @@
+# Opt-in space-time backend; planner_mode defaults to legacy.
+# External bridge expiry is unverified: motion defaults to FAILSAFE zero.
+# 0.1s is a COMPUTE BUDGET, not verified 10Hz throughput.
+planner:
+  time_step: 0.25
+  horizon: 4.0
+  forward_distance: 12.0
+  speed_levels: [0.0, 2.0, 4.0, 6.0, 8.0]
+  lateral_rate: 1.5
+  lateral_step: 0.5
+  lateral_target_margin: 0.1
+  lateral_damping: 2.0
+  height_step: 0.5
+  height_gain: 1.0
+  s_resolution: 1.0
+  lateral_resolution: 0.5
+  height_resolution: 0.5
+  velocity_resolution: 0.25
+  command_resolution: 0.25
+  heuristic_weight: 1.5
+  budget: 0.1
+  max_expansions: 1000
+  stop_max_duration: 12.0
+  minimum_progress: 0.01
+  goal_offset: 2.25
+collision:
+  # Assumed geometry for offline evaluation; not measured aircraft dimensions.
+  # Body + margin = the old 1.25m clearance, applied once to obstacles.
+  body_half_extent: [0.25, 0.25, 0.25]
+  margin: 1.0
+  max_horizontal_speed: 12.0
+  max_vertical_speed: 4.5
+  max_acceleration: [12.0, 12.0, 50.0]
+  max_cloud_age: 0.5
+  max_track_age: 0.75

@@ -24,13 +24,16 @@ def goal_matches_road(splines,road,goal):
     point=splines[road-1][0]
     return math.hypot(point[0]-goal[0],point[1]-goal[1])<35.
 
-def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=False,adaptive_speed=False,control_rate=20.,obstacle_backend='lidar_nav'):
+def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=False,adaptive_speed=False,control_rate=20.,obstacle_backend='lidar_nav',planner_mode='legacy',spacetime_bridge_hold=None):
     command=['roslaunch','route_follower','route_follower.launch',
             'route_file:='+str(route_file),'route:=race_leg',
             'gates_file:='+str(gates_file),'guides_file:='+str(guides_file),
             'gate_center_pull_max:=0','cruise_speed:='+str(cruise),'control_rate:='+str(control_rate),
             'obstacle_backend:='+obstacle_backend,
             'max_speed:='+str(max(12.,cruise))]
+    command+=['planner_mode:='+planner_mode]
+    if spacetime_bridge_hold is not None:
+        command+=['spacetime_bridge_verified:=true','spacetime_bridge_hold:='+str(spacetime_bridge_hold)]
     if adaptive_speed:command+=['adaptive_speed:=true','lidar_braking:=8','curve_preview_max:=100',
                                'terminal_hover_height:=1.5','debug_cloud_dir:='+str(Path(route_file).parent/'clouds'),
                                'curve_preview_step:=1','z_response_time:=0.15']
@@ -95,7 +98,13 @@ def main():
     ap.add_argument('--adaptive-speed',action='store_true')
     ap.add_argument('--control-rate',type=float,default=20.)
     ap.add_argument('--obstacle-backend',choices=('lidar_nav','legacy'),default='lidar_nav')
+    ap.add_argument('--planner-mode',choices=('legacy','spacetime'),default='legacy')
+    ap.add_argument('--spacetime-bridge-hold',type=float,help='Measured external bridge command expiry in seconds; absent means no certified motion')
     a=ap.parse_args();a.out.mkdir(parents=True,exist_ok=True)
+    if not math.isfinite(a.control_rate) or a.control_rate<=0:ap.error("control-rate must be positive and finite")
+    if a.planner_mode=='spacetime' and a.obstacle_backend!='lidar_nav':ap.error('spacetime requires lidar_nav')
+    if a.spacetime_bridge_hold is not None and (not math.isfinite(a.spacetime_bridge_hold) or not 0.<a.spacetime_bridge_hold<=1./a.control_rate):
+        ap.error('Measured bridge expiry must be positive and no longer than the control period')
     if not 0<=a.stage<3:ap.error('--stage must be 0, 1 or 2 for implemented racing legs')
     root=Path(__file__).resolve().parents[1]
     config=root/'ros_ws/src/route_follower/config'
@@ -175,7 +184,7 @@ def main():
                           '_route_file:='+str(route_file),'_route_name:=race_leg',
                           '_imgsz:=960','_conf:=0.35'],
                          stdout=(folder/'vision.log').open('w'),stderr=subprocess.STDOUT)
-        command=controller_command(route_file,gates_file,guides_file,a.cruise,a.fast_descent,a.adaptive_speed,a.control_rate,a.obstacle_backend)
+        command=controller_command(route_file,gates_file,guides_file,a.cruise,a.fast_descent,a.adaptive_speed,a.control_rate,a.obstacle_backend,a.planner_mode,a.spacetime_bridge_hold)
         if cause=='OFFICIAL_ENDPOINT_CHANGED' and previous is not None:
             command+=['departure_hover_z:='+str(previous[2]-1.5)]
         child=subprocess.Popen(command,stdout=(folder/'controller.log').open('w'),stderr=subprocess.STDOUT)
