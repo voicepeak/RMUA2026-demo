@@ -1,0 +1,9 @@
+{
+  "scope": "Synthetic interrupted profile blends, identical departure floor bounds; not flight timing",
+  "samples": 10000,
+  "timing_ms": {
+    "scalar": 1107.592921000105,
+    "batch": 17.013859000144294
+  },
+  "speedup": 65.09945339212648
+}

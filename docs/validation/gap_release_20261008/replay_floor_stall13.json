@@ -1,0 +1,31 @@
+{
+  "scope": "Frozen timing/decision comparison; identical neutral prior history and reconstructed route. Not a collision/flight certificate.",
+  "results": [
+    {
+      "scene": "1791435471.869_s9.6.json",
+      "s": 9.582455533181395,
+      "rows": {
+        "before": {
+          "ms": 35.96015999937663,
+          "command": [
+            0.0,
+            0.0,
+            -0.0007629237621771194
+          ],
+          "reason": "COMMAND_BLOCKED",
+          "initial_buffer_blocked": false
+        },
+        "after": {
+          "ms": 66.70312100141018,
+          "command": [
+            0.385082,
+            -0.108221,
+            -0.278099
+          ],
+          "reason": "LIDAR_TRACK",
+          "initial_buffer_blocked": false
+        }
+      }
+    }
+  ]
+}

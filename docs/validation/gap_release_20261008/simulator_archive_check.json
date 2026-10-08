@@ -1,0 +1,15 @@
+{
+  "official_url": "https://sz-rm-rmua-dispatch-prod.oss-cn-shenzhen.aliyuncs.com/b39a0194e982f0d987153c6016feb325/simulator_12.0.0.5.zip",
+  "headers": {
+    "Content-Length": "2021176468",
+    "ETag": "\"07E7B3C0FE64A52C397A99030199861E-193\"",
+    "Last-Modified": "Fri, 03 Apr 2026 08:15:50 GMT"
+  },
+  "local_bytes": 2021176468,
+  "local_md5": "b39a0194e982f0d987153c6016feb325",
+  "computed_multipart_etag_10MiB": "f552207d4a2b432743ed4331766ba58b-193",
+  "official_object_etag_matches": false,
+  "official_crc64ecma": "10284351704299654617",
+  "local_crc64ecma": "10284351704299654617",
+  "official_crc64_matches": true
+}

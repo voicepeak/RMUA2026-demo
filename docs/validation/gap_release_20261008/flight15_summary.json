@@ -1,0 +1,55 @@
+{
+  "seed": 123,
+  "requested_clock_speed": 1.0,
+  "accepted": false,
+  "requested_clock_type": "auto",
+  "lidar_points_per_second": 75000,
+  "scope": "Diagnostic summary; local progress does not prove official stage completion",
+  "stop": {
+    "reason": "HUD_FINISHED",
+    "wall_time": 1791435957.8693357,
+    "official_result": "FINISHED_OBSERVED",
+    "hud": "hud_0142.png",
+    "ocr": "Time:180.025\n\nScore: 62\n\nState:Finished\ntateTime:0\n\f"
+  },
+  "first_finished_hud": {
+    "file": "hud_0000.png",
+    "wall_time": 1791435756.231758,
+    "ocr": "Time:349.591\n\nScore: 67\n\nState:Finished\ntateTime:0\n\f"
+  },
+  "telemetry_validity_basis": "HUD unavailable; official validity unknown",
+  "pose_clock_ratio": 0.9859091099120646,
+  "valid_telemetry_samples": 2961,
+  "max_local_s_by_stage": {
+    "0": 1432.7239591131959
+  },
+  "performance_by_stage": {
+    "0": {
+      "samples": 2961,
+      "telemetry_wall_rate_hz": 16.051070493007778,
+      "command_speed": {
+        "p50": 10.326854342682722,
+        "p95": 11.580644299710789,
+        "max": 12.586874307142738
+      },
+      "navigation_ms": {
+        "p50": 28.501371998572722,
+        "p95": 58.54668500069238,
+        "max": 451.41250000051514
+      },
+      "grid_ms": {
+        "p50": 25.57668100052979,
+        "p95": 89.16827445018495,
+        "max": 205.31372000004922
+      },
+      "command_reasons": {
+        "COMMAND_BRAKING": 21,
+        "LIDAR_TRACK": 2673,
+        "COMMAND_BLOCKED": 260,
+        "LIDAR_ESCAPE": 4,
+        "LIDAR_BRAKE": 3
+      }
+    }
+  },
+  "telemetry_wall_rate_hz": 16.051070493007778
+}

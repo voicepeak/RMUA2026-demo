@@ -1,0 +1,4941 @@
+{
+  "scope": "Frozen guard comparison with recorded previous publication and reconstructed reference stopping profile; no flight/collision proof",
+  "scenes": 107,
+  "before_blocked_large_z": 71,
+  "after_blocked_large_z": 0,
+  "results": [
+    {
+      "scene": "1791429667.117_s177.2.json",
+      "s": 177.22932769401817,
+      "velocity": [
+        2.7996790223513646,
+        -3.178761126404729,
+        -1.746516706534052
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.06064368983171775,
+            0.391628970938835,
+            0.9237499999999996
+          ],
+          "nominal_z": -1.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.7908079981673172
+          },
+          "ms": 32.73637999973289
+        },
+        "after": {
+          "command": [
+            0.06064368983171775,
+            0.391628970938835,
+            1.9237499999999996
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.7624023545948081,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 31.783399000232748
+        }
+      }
+    },
+    {
+      "scene": "1791429670.834_s180.8.json",
+      "s": 180.7755700544849,
+      "velocity": [
+        0.5366844107190387,
+        0.5324965316200941,
+        1.7057089832303105
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            1.8554428317654397,
+            -2.0109361373569827,
+            0.7797764838965622
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.42032495935756153
+          },
+          "ms": 50.65385799935029
+        },
+        "after": {
+          "command": [
+            1.8554428317654397,
+            -2.0109361373569827,
+            -0.020223516103437866
+          ],
+          "nominal_z": -0.8,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.31262511974666174,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 53.99102299998049
+        }
+      }
+    },
+    {
+      "scene": "1791429676.426_s181.1.json",
+      "s": 181.141567092914,
+      "velocity": [
+        0.22654212027563866,
+        -0.13954059236212807,
+        0.7887408311904259
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.12229840006662884,
+            0.5029467280799167,
+            -0.9597526125374778
+          ],
+          "nominal_z": -1.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.5929398642713141
+          },
+          "ms": 73.30711999929918
+        },
+        "after": {
+          "command": [
+            0.12229840006662884,
+            0.5029467280799167,
+            -0.43299711125173335
+          ],
+          "nominal_z": -0.47324449871425556,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.5750363687475047,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 70.87239300017245
+        }
+      }
+    },
+    {
+      "scene": "1791429678.838_s181.3.json",
+      "s": 181.31310772692146,
+      "velocity": [
+        0.1991966485826127,
+        -0.19149135512445914,
+        -0.6744844756206849
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.3117085117753784,
+            0.5634731507673953,
+            0.12967429130983393
+          ],
+          "nominal_z": 0.07432441048084817,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.44531649685269564,
+            "blocked_settle": true
+          },
+          "ms": 72.55277799959003
+        },
+        "after": {
+          "command": [
+            0.3117085117753784,
+            0.5634731507673953,
+            0.46004056620139666
+          ],
+          "nominal_z": 0.40469068537241093,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.49044133926737044,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 72.30577700011054
+        }
+      }
+    },
+    {
+      "scene": "1791429680.179_s181.9.json",
+      "s": 181.8863845199507,
+      "velocity": [
+        0.2112322819676032,
+        -0.17514634992711892,
+        2.2422616025275235
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.21404421310720625,
+            0.5160840640814279,
+            -2.3518057278800484
+          ],
+          "nominal_z": -2.3971974301397285,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 14.079818000027444
+        },
+        "after": {
+          "command": [
+            0.21404421310720625,
+            0.5160840640814279,
+            -0.7546082977403198
+          ],
+          "nominal_z": -0.8,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 22.3665900002743
+        }
+      }
+    },
+    {
+      "scene": "1791429682.582_s182.0.json",
+      "s": 182.00420196617623,
+      "velocity": [
+        0.37579636758008006,
+        -0.49988380351710177,
+        1.346978493622011
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.7587793201336306,
+            1.0398627536776792,
+            1.166379410939855
+          ],
+          "nominal_z": 0.9272173477175726,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23123898947123822
+          },
+          "ms": 213.035141000546
+        },
+        "after": {
+          "command": [
+            0.7587793201336306,
+            1.0398627536776792,
+            -0.5608379367777175
+          ],
+          "nominal_z": -0.8,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23123898947123822,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 216.38793999954942
+        }
+      }
+    },
+    {
+      "scene": "1791429684.763_s182.6.json",
+      "s": 182.62521763845243,
+      "velocity": [
+        0.6731991903838322,
+        -0.38711945839151907,
+        -0.30316539616898697
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.0993148125710911,
+            0.7619780333670664,
+            -0.8178657216189054
+          ],
+          "nominal_z": -1.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.8740518219363952
+          },
+          "ms": 63.16320199948677
+        },
+        "after": {
+          "command": [
+            -0.0993148125710911,
+            0.7619780333670664,
+            0.1821342783810946
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.8454727598376709,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 61.91725200005749
+        }
+      }
+    },
+    {
+      "scene": "1791429685.966_s184.9.json",
+      "s": 184.93481323501376,
+      "velocity": [
+        1.4794018306830006,
+        -1.54941704332491,
+        0.23588869593166562
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.8493319008799205,
+            0.9662283036673602,
+            -1.9723768744604355
+          ],
+          "nominal_z": -3.088766743374904,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 16.04830500036769
+        },
+        "after": {
+          "command": [
+            -0.8493319008799205,
+            0.9662283036673602,
+            0.9748566513554691
+          ],
+          "nominal_z": -0.1415332175589994,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 15.174626999396423
+        }
+      }
+    },
+    {
+      "scene": "1791429688.171_s185.8.json",
+      "s": 185.83572820812824,
+      "velocity": [
+        1.029922083118014,
+        -1.1112188981298297,
+        0.3595252716416346
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.5669897176047655,
+            1.76498383574634,
+            -1.6017145867308649
+          ],
+          "nominal_z": -2.4079651981635273,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 17.84189400041214
+        },
+        "after": {
+          "command": [
+            0.5669897176047655,
+            1.76498383574634,
+            0.5905354484476817
+          ],
+          "nominal_z": -0.21571516298498072,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 17.81271599975298
+        }
+      }
+    },
+    {
+      "scene": "1791429692.305_s188.6.json",
+      "s": 188.62467111274609,
+      "velocity": [
+        -0.13049118074834426,
+        0.9710024858049884,
+        -1.9880082853277474
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -1.7711226349994105,
+            -0.8311411773963389,
+            2.9207791874189297
+          ],
+          "nominal_z": 2.3565368190269362,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 13.867276000382844
+        },
+        "after": {
+          "command": [
+            -1.7711226349994105,
+            -0.8311411773963389,
+            1.3642423683919933
+          ],
+          "nominal_z": 0.7999999999999999,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 13.1610290000026
+        }
+      }
+    },
+    {
+      "scene": "1791429693.415_s187.6.json",
+      "s": 187.64954169986171,
+      "velocity": [
+        -0.34585888524709335,
+        0.9210594256102742,
+        -2.0176021600649934
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.34585888524709335,
+            0.9210594256102742,
+            4.5
+          ],
+          "nominal_z": 4.5,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 12.573237999276898
+        },
+        "after": {
+          "command": [
+            -1.183455900640404,
+            -1.5760450483926567,
+            1.4590244538567174
+          ],
+          "nominal_z": 0.7999999999999999,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 12.716117000309168
+        }
+      }
+    },
+    {
+      "scene": "1791429695.506_s185.8.json",
+      "s": 185.8494654835972,
+      "velocity": [
+        -0.8968156838117709,
+        0.36846834197263334,
+        -1.0760576609918056
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.8968156838117709,
+            0.36846834197263334,
+            4.5
+          ],
+          "nominal_z": 4.5,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 12.101211000299372
+        },
+        "after": {
+          "command": [
+            -0.5730913615764229,
+            -2.4644454551389345,
+            1.418003408368906
+          ],
+          "nominal_z": 0.6456345965950833,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 12.240428000040993
+        }
+      }
+    },
+    {
+      "scene": "1791429697.598_s184.3.json",
+      "s": 184.32937663642616,
+      "velocity": [
+        -0.38063262875614157,
+        -0.29005457963816983,
+        -1.1134192051061564
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.38063262875614157,
+            -0.29005457963816983,
+            4.5
+          ],
+          "nominal_z": 4.5,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 12.968347000423819
+        },
+        "after": {
+          "command": [
+            0.7808074125219285,
+            -0.8553379670855543,
+            0.8265579094364534
+          ],
+          "nominal_z": 0.6680515230636939,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 12.842636000641505
+        }
+      }
+    },
+    {
+      "scene": "1791429699.746_s185.9.json",
+      "s": 185.87673903732644,
+      "velocity": [
+        1.0678234377885785,
+        -1.8942499612617272,
+        -1.3508590328496797
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            1.0678234377885785,
+            -1.8942499612617272,
+            4.5
+          ],
+          "nominal_z": 4.5,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 12.13369299966871
+        },
+        "after": {
+          "command": [
+            1.9167132202989339,
+            2.4761019521216197,
+            2.682956022418076
+          ],
+          "nominal_z": 0.8,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 12.319380000008096
+        }
+      }
+    },
+    {
+      "scene": "1791429702.983_s196.3.json",
+      "s": 196.2766710306314,
+      "velocity": [
+        1.8288556889898888,
+        -2.890464048364901,
+        0.8432569281416834
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            2.1039125941775505,
+            1.6011218295749368,
+            -0.3017483067225899
+          ],
+          "nominal_z": -2.2254983067225895,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 15.400899999804096
+        },
+        "after": {
+          "command": [
+            2.1039125941775505,
+            1.6011218295749368,
+            1.4177958431149897
+          ],
+          "nominal_z": -0.5059541568850099,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 16.143622000527103
+        }
+      }
+    },
+    {
+      "scene": "1791429704.090_s199.2.json",
+      "s": 199.1690528459062,
+      "velocity": [
+        0.19249482218299724,
+        -0.30207525788919526,
+        0.18390730191586038
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            1.7271465732986166,
+            1.355453624933868,
+            -3.5152569905134836
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 16.27434700003505
+        },
+        "after": {
+          "command": [
+            1.7271465732986166,
+            1.355453624933868,
+            0.3743986283370001
+          ],
+          "nominal_z": -0.11034438114951622,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 17.13781999933417
+        }
+      }
+    },
+    {
+      "scene": "1791429705.092_s199.1.json",
+      "s": 199.1151825922779,
+      "velocity": [
+        0.02992107671759096,
+        -0.05044824631271849,
+        0.8348695417235541
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.2851595466270323,
+            0.21004612208870038,
+            -3.987364620713396
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 16.67275899944798
+        },
+        "after": {
+          "command": [
+            0.2851595466270323,
+            0.21004612208870038,
+            -0.4882863457475286
+          ],
+          "nominal_z": -0.5009217250341325,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 16.60687500043423
+        }
+      }
+    },
+    {
+      "scene": "1791429706.268_s199.1.json",
+      "s": 199.13634705614334,
+      "velocity": [
+        -0.008651770021474773,
+        0.026937826484356525,
+        -0.07423790635599616
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.15886953191123687,
+            0.033195064268128016,
+            -3.997330258735538
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 16.47229799982597
+        },
+        "after": {
+          "command": [
+            0.15886953191123687,
+            0.033195064268128016,
+            0.04721248507805947
+          ],
+          "nominal_z": 0.04454274381359769,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 16.348611000466917
+        }
+      }
+    },
+    {
+      "scene": "1791429707.441_s199.1.json",
+      "s": 199.13731677009469,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 15.994706999663322
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 15.968334999342915
+        }
+      }
+    },
+    {
+      "scene": "1791429708.683_s199.1.json",
+      "s": 199.1346697101539,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 15.461635000065144
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 15.907357999822125
+        }
+      }
+    },
+    {
+      "scene": "1791429709.949_s199.1.json",
+      "s": 199.14118149792276,
+      "velocity": [
+        -0.02779722308060338,
+        0.004875893385764159,
+        -0.4893196449590184
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.1554780902420645,
+            0.18020959308644646,
+            -3.993888484061196
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.22524908208527916,
+            "blocked_settle": true
+          },
+          "ms": 69.11397600015334
+        },
+        "after": {
+          "command": [
+            0.1554780902420645,
+            0.18020959308644646,
+            0.29970330291421493
+          ],
+          "nominal_z": 0.29359178697541105,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.22524908208527916,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 68.61487500009389
+        }
+      }
+    },
+    {
+      "scene": "1791429711.164_s199.1.json",
+      "s": 199.13574831237437,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.22881471415824434,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 72.09670599968376
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.22881471415824434,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 71.91972400050872
+        }
+      }
+    },
+    {
+      "scene": "1791429712.226_s199.1.json",
+      "s": 199.13574831237437,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.22833298094498125,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 76.47604999965552
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.22833298094498125,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 76.93940199987992
+        }
+      }
+    },
+    {
+      "scene": "1791429713.231_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367519000773293,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 71.97433999954228
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367519000773293,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 71.97541999994428
+        }
+      }
+    },
+    {
+      "scene": "1791429714.512_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23676084602208397,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 60.98007899981894
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23676084602208397,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 62.22003800030507
+        }
+      }
+    },
+    {
+      "scene": "1791429715.541_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367725678613079,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 66.7909760004477
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367725678613079,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 68.16790199991374
+        }
+      }
+    },
+    {
+      "scene": "1791429716.714_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23678168335361374,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 76.45651100028772
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23678168335361374,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 76.95168499958527
+        }
+      }
+    },
+    {
+      "scene": "1791429717.743_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367515291060588,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 54.641964999973425
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367515291060588,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 55.20179699942673
+        }
+      }
+    },
+    {
+      "scene": "1791429718.808_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23675196378561675,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 59.65236300016841
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23675196378561675,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 60.08771000051638
+        }
+      }
+    },
+    {
+      "scene": "1791429720.005_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.236762566966034,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 60.21324300036213
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.236762566966034,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 60.411791999285924
+        }
+      }
+    },
+    {
+      "scene": "1791429721.010_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23677040961018636,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 59.315179999430256
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23677040961018636,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 60.85593900024833
+        }
+      }
+    },
+    {
+      "scene": "1791429722.018_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23676871309231592,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 58.79326799913542
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23676871309231592,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 59.54917600047338
+        }
+      }
+    },
+    {
+      "scene": "1791429723.245_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23677240779007852,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 56.852927999898384
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23677240779007852,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 57.94424300074752
+        }
+      }
+    },
+    {
+      "scene": "1791429724.478_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367638485387212,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 61.922074999529286
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367638485387212,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 62.2204060000513
+        }
+      }
+    },
+    {
+      "scene": "1791429725.687_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367633784789598,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 57.88833499991597
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367633784789598,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 57.9935639998439
+        }
+      }
+    },
+    {
+      "scene": "1791429726.893_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23676168704280895,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 59.794544000396854
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23676168704280895,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 60.13623499984533
+        }
+      }
+    },
+    {
+      "scene": "1791429728.192_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367905487428444,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 61.29855299968767
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367905487428444,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 60.382489999938116
+        }
+      }
+    },
+    {
+      "scene": "1791429729.332_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23676188962242675,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 61.128075999477005
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23676188962242675,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 60.87962599940511
+        }
+      }
+    },
+    {
+      "scene": "1791429730.571_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367721894858124,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 55.6139059999623
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367721894858124,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 55.91584900048474
+        }
+      }
+    },
+    {
+      "scene": "1791429731.702_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367739052154785,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 60.95646799985843
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367739052154785,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 60.85130100018432
+        }
+      }
+    },
+    {
+      "scene": "1791429733.010_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23676465098168045,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 55.90166700039845
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23676465098168045,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 53.86302799979603
+        }
+      }
+    },
+    {
+      "scene": "1791429734.228_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23672731363710633,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 59.37648700000864
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23672731363710633,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 59.64310299987119
+        }
+      }
+    },
+    {
+      "scene": "1791429735.305_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23676966302335894,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 57.77349999971193
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23676966302335894,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 55.63632499979576
+        }
+      }
+    },
+    {
+      "scene": "1791429736.634_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23677240779007852,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 57.34828599997854
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23677240779007852,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 57.66787600077805
+        }
+      }
+    },
+    {
+      "scene": "1791429737.795_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23675856108088655,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 57.19924599998194
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23675856108088655,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 59.40287900011754
+        }
+      }
+    },
+    {
+      "scene": "1791429738.911_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23675196378561675,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 61.41513300008228
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23675196378561675,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 61.32827300007193
+        }
+      }
+    },
+    {
+      "scene": "1791429739.997_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23674442386911587,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 58.804231000067375
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23674442386911587,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 58.48404100015614
+        }
+      }
+    },
+    {
+      "scene": "1791429741.149_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23674661305950115,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 58.9977870004077
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23674661305950115,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 58.46360699979414
+        }
+      }
+    },
+    {
+      "scene": "1791429742.391_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23673193742589094,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 60.819121000349696
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23673193742589094,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 61.257312000634556
+        }
+      }
+    },
+    {
+      "scene": "1791429743.637_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367078710613889,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 62.61873699986609
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2367078710613889,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 62.64569599989045
+        }
+      }
+    },
+    {
+      "scene": "1791429744.756_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0037745327647167822,
+        -0.0005912282092096515,
+        0.08201734400117046
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.00021914092004056114,
+            0.016212256901557646,
+            -3.9999719751973113
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 16.88263400046708
+        },
+        "after": {
+          "command": [
+            0.00021914092004056114,
+            0.016212256901557646,
+            -0.04918238159801376
+          ],
+          "nominal_z": -0.049210406400702275,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 16.82158299990988
+        }
+      }
+    },
+    {
+      "scene": "1791429745.773_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2368952472445411,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 60.98604700036958
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.2368952472445411,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 61.97244400027557
+        }
+      }
+    },
+    {
+      "scene": "1791429746.811_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23735526609452148,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 61.278203000256326
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23735526609452148,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 61.48838799981604
+        }
+      }
+    },
+    {
+      "scene": "1791429748.020_s199.1.json",
+      "s": 199.07802706906185,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23750230866881775,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 61.662054999942484
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.23750230866881775,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 61.100975000044855
+        }
+      }
+    },
+    {
+      "scene": "1791429749.508_s199.1.json",
+      "s": 199.07812355992297,
+      "velocity": [
+        -0.001630892764368843,
+        -0.0014516517707117574,
+        0.07598258321296593
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0022822141838655,
+            -0.0005936576341686332,
+            -3.999998475386807
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 17.245202000594873
+        },
+        "after": {
+          "command": [
+            0.0022822141838655,
+            -0.0005936576341686332,
+            -0.04558802531458652
+          ],
+          "nominal_z": -0.045589549927779555,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 17.0337509998717
+        }
+      }
+    },
+    {
+      "scene": "1791429750.585_s199.2.json",
+      "s": 199.17046416761644,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.18939294059585696,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true
+          },
+          "ms": 60.25762800072698
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.18939294059585696,
+            "blocked_settle": true,
+            "blocked_neutral_settle": true,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 59.969975000058184
+        }
+      }
+    },
+    {
+      "scene": "1791429751.713_s199.2.json",
+      "s": 199.17046416761644,
+      "velocity": [
+        -0.0003664486594879879,
+        0.0006883278450190612,
+        -0.05176455640307062
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.004405843842249585,
+            0.0018155122934329117,
+            -3.999997715694552
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.1880808826672931,
+            "blocked_settle": true
+          },
+          "ms": 71.26645199969062
+        },
+        "after": {
+          "command": [
+            0.004405843842249585,
+            0.0018155122934329117,
+            2.2843054477742362e-06
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": 0.18869174033191818,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": true
+          },
+          "ms": 70.8121059997211
+        }
+      }
+    },
+    {
+      "scene": "1791429753.882_s199.6.json",
+      "s": 199.61364380279375,
+      "velocity": [
+        1.8879920047488947,
+        1.1582105877059898,
+        -0.015901559199267654
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -1.0332811360837932,
+            -0.8571436250330289,
+            -2.8034285102152383
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 17.627305000132765
+        },
+        "after": {
+          "command": [
+            -1.0332811360837932,
+            -0.8571436250330289,
+            1.2061124253043225
+          ],
+          "nominal_z": 0.00954093551956059,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 17.72288300071523
+        }
+      }
+    },
+    {
+      "scene": "1791429754.989_s200.0.json",
+      "s": 200.04017888222276,
+      "velocity": [
+        2.3221826458528563,
+        1.071180297562928,
+        -1.9174701498891293
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.5814848904509926,
+            -2.366655480745154,
+            1.0021166173031204
+          ],
+          "nominal_z": -0.9216333826968797,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 17.125868999755767
+        },
+        "after": {
+          "command": [
+            -0.5814848904509926,
+            -2.366655480745154,
+            2.72375
+          ],
+          "nominal_z": 0.7999999999999998,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 17.054532999281946
+        }
+      }
+    },
+    {
+      "scene": "1791429755.997_s200.5.json",
+      "s": 200.47115305064906,
+      "velocity": [
+        2.5590597264994166,
+        1.3325860373543152,
+        -2.0232291847763926
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.06272507350448375,
+            -2.3247688076762443,
+            4.023171500987854
+          ],
+          "nominal_z": 2.0994215009878543,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 14.930946999811567
+        },
+        "after": {
+          "command": [
+            -0.06272507350448375,
+            -2.3247688076762443,
+            2.72375
+          ],
+          "nominal_z": 0.7999999999999998,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 15.001163000306406
+        }
+      }
+    },
+    {
+      "scene": "1791429757.347_s200.8.json",
+      "s": 200.83264715834136,
+      "velocity": [
+        2.4941198284441257,
+        1.5198875943687327,
+        3.6424355985709096
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.21011301979991082,
+            -2.0769338777755193,
+            2.304159142551549
+          ],
+          "nominal_z": 0.38040914255154945,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 16.362678999939817
+        },
+        "after": {
+          "command": [
+            -0.21011301979991082,
+            -2.0769338777755193,
+            1.1237499999999996
+          ],
+          "nominal_z": -0.8,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 16.359702000045218
+        }
+      }
+    },
+    {
+      "scene": "1791429758.415_s201.0.json",
+      "s": 200.97172719598007,
+      "velocity": [
+        1.9517402849354195,
+        1.305368255923791,
+        5.446205323418968
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.6322012373109558,
+            -1.5888797828429013,
+            -2.5699245774720927
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 15.374393999991298
+        },
+        "after": {
+          "command": [
+            -0.6322012373109558,
+            -1.5888797828429013,
+            0.630075422527907
+          ],
+          "nominal_z": -0.8,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 16.113634999783244
+        }
+      }
+    },
+    {
+      "scene": "1791429759.495_s201.3.json",
+      "s": 201.31900587240133,
+      "velocity": [
+        0.712406521565942,
+        -0.038776692665624106,
+        4.036260537121547
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.7488250409405103,
+            -2.9751582025708703,
+            -2.978034265157046
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 13.316714999746182
+        },
+        "after": {
+          "command": [
+            -0.7488250409405103,
+            -2.9751582025708703,
+            0.2219657348429538
+          ],
+          "nominal_z": -0.8,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 12.876481000603235
+        }
+      }
+    },
+    {
+      "scene": "1791429760.677_s201.8.json",
+      "s": 201.76781092493167,
+      "velocity": [
+        0.6875341388207511,
+        0.1131572596208255,
+        5.7160272021600935
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.24836203264993828,
+            -3.340516835489646,
+            -2.7836421920939904
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null
+          },
+          "ms": 15.842785000131698
+        },
+        "after": {
+          "command": [
+            -0.24836203264993828,
+            -3.340516835489646,
+            0.4163578079060095
+          ],
+          "nominal_z": -0.8,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": false,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 15.508006000345631
+        }
+      }
+    },
+    {
+      "scene": "1791429762.768_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.565650999742502
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.296677000260388
+        }
+      }
+    },
+    {
+      "scene": "1791429764.388_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.367020000070625
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.075320999443647
+        }
+      }
+    },
+    {
+      "scene": "1791429765.828_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.4029112411619913,
+            -1.3487584519885751,
+            -3.8117587511437954
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.636626000145043
+        },
+        "after": {
+          "command": [
+            -0.4029112411619913,
+            -1.3487584519885751,
+            0.18824124885620483
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.433662999697844
+        }
+      }
+    },
+    {
+      "scene": "1791429767.067_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            -0.12115785650574376,
+            -1.616725340167568,
+            -3.7502943950853647
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.652837000146974
+        },
+        "after": {
+          "command": [
+            -0.12115785650574376,
+            -1.616725340167568,
+            0.2497056049146355
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.974441999896953
+        }
+      }
+    },
+    {
+      "scene": "1791429768.636_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.651584999541228
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.077913999761222
+        }
+      }
+    },
+    {
+      "scene": "1791429770.187_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.95690299938724
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.537401999921713
+        }
+      }
+    },
+    {
+      "scene": "1791429771.276_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 22.02354099972581
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 22.092518999670574
+        }
+      }
+    },
+    {
+      "scene": "1791429772.716_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.33599399985542
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.502908000002208
+        }
+      }
+    },
+    {
+      "scene": "1791429774.444_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.00716899985855
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.12870800010569
+        }
+      }
+    },
+    {
+      "scene": "1791429776.136_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.770110999568715
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.584805000202323
+        }
+      }
+    },
+    {
+      "scene": "1791429777.783_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.937487000286637
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.392337000179396
+        }
+      }
+    },
+    {
+      "scene": "1791429779.184_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.87198100000387
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.74753400049667
+        }
+      }
+    },
+    {
+      "scene": "1791429780.642_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.49570199981099
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 19.81383300062589
+        }
+      }
+    },
+    {
+      "scene": "1791429782.370_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.538576999773795
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.521609999581415
+        }
+      }
+    },
+    {
+      "scene": "1791429784.149_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.31821199964179
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.24484699925233
+        }
+      }
+    },
+    {
+      "scene": "1791429785.880_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.12775900059205
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.915422999678412
+        }
+      }
+    },
+    {
+      "scene": "1791429787.560_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.36908400007087
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.649699000590772
+        }
+      }
+    },
+    {
+      "scene": "1791429788.847_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.194040999944264
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.21710500048357
+        }
+      }
+    },
+    {
+      "scene": "1791429789.949_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.342689000448445
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.548856999994314
+        }
+      }
+    },
+    {
+      "scene": "1791429791.848_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.83676399979595
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.474836000379582
+        }
+      }
+    },
+    {
+      "scene": "1791429793.567_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 23.45965500080638
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 23.344028999417787
+        }
+      }
+    },
+    {
+      "scene": "1791429795.007_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 23.447827999916626
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.022238000114157
+        }
+      }
+    },
+    {
+      "scene": "1791429796.387_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 22.195812000063597
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.442896999360528
+        }
+      }
+    },
+    {
+      "scene": "1791429798.046_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.86360599969339
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.2634509996642
+        }
+      }
+    },
+    {
+      "scene": "1791429799.426_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.11736499955441
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 22.49628500067047
+        }
+      }
+    },
+    {
+      "scene": "1791429800.716_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.069339999485237
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 22.37273799983086
+        }
+      }
+    },
+    {
+      "scene": "1791429801.796_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 19.855634000123246
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.97018400036177
+        }
+      }
+    },
+    {
+      "scene": "1791429802.966_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.499382000001788
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 33.920082999429724
+        }
+      }
+    },
+    {
+      "scene": "1791429804.607_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.659030999922834
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.408843000244815
+        }
+      }
+    },
+    {
+      "scene": "1791429806.218_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.90728900020622
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.456446000229334
+        }
+      }
+    },
+    {
+      "scene": "1791429807.817_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.31351099958556
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.4956230001917
+        }
+      }
+    },
+    {
+      "scene": "1791429809.386_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.122803000253043
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.131479000156105
+        }
+      }
+    },
+    {
+      "scene": "1791429811.096_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.767842999703134
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 19.896249000339594
+        }
+      }
+    },
+    {
+      "scene": "1791429812.896_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.64311499998439
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 19.800527000370494
+        }
+      }
+    },
+    {
+      "scene": "1791429814.471_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.629129000553803
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.100380999792833
+        }
+      }
+    },
+    {
+      "scene": "1791429816.202_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.281910999983666
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 19.768727999689872
+        }
+      }
+    },
+    {
+      "scene": "1791429818.062_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.18894300019747
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.050933000675286
+        }
+      }
+    },
+    {
+      "scene": "1791429819.430_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 18.705846000557358
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 18.50662699962413
+        }
+      }
+    },
+    {
+      "scene": "1791429820.810_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.08864599995286
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.520862999546807
+        }
+      }
+    },
+    {
+      "scene": "1791429821.929_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.881606999864744
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 21.066242000415514
+        }
+      }
+    },
+    {
+      "scene": "1791429823.381_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 20.972561000235146
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.9836969997923
+        }
+      }
+    },
+    {
+      "scene": "1791429824.872_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 21.552000000156113
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 25.543890000335523
+        }
+      }
+    },
+    {
+      "scene": "1791429826.300_s202.0.json",
+      "s": 202.00275820701495,
+      "velocity": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rows": {
+        "before": {
+          "command": [
+            0.0,
+            0.0,
+            -4.0
+          ],
+          "nominal_z": -4.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true
+          },
+          "ms": 22.39542999996047
+        },
+        "after": {
+          "command": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "nominal_z": 0.0,
+          "reason": "COMMAND_BLOCKED",
+          "info": {
+            "command_reason": "COMMAND_BLOCKED",
+            "command_scale": null,
+            "command_clearance": null,
+            "blocked_settle": true,
+            "blocked_neutral_settle": false,
+            "blocked_brake": true,
+            "blocked_bounds_accepted": false
+          },
+          "ms": 20.59755799928098
+        }
+      }
+    }
+  ]
+}

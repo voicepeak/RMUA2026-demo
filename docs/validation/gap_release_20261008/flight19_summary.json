@@ -1,0 +1,87 @@
+{
+  "seed": 123,
+  "requested_clock_speed": 1.0,
+  "accepted": false,
+  "requested_clock_type": "auto",
+  "lidar_points_per_second": 75000,
+  "scope": "Diagnostic summary; local progress does not prove official stage completion",
+  "stop": {
+    "reason": "HUD_FINISHED",
+    "wall_time": 1791438917.4162495,
+    "official_result": "FINISHED_OBSERVED",
+    "hud": "hud_0183.png",
+    "ocr": "Time:344.917\n\nScore: 94\n\nState: Finished\ntateTime:0\n\f"
+  },
+  "last_valid_hud": {
+    "file": "hud_0181.png",
+    "wall_time": 1791438914.6702046,
+    "ocr": "Time:344.549\n\nScore: 94\n\nState:State2\ntateTime:179.664\n\f"
+  },
+  "first_finished_hud": {
+    "file": "hud_0182.png",
+    "wall_time": 1791438916.0474098,
+    "ocr": "Time:344.917\n\nScore: 94\n\nState: Finished\ntateTime:0\n\f"
+  },
+  "telemetry_validity_basis": "last non-Finished HUD wall timestamp",
+  "pose_clock_ratio": 0.9907750440933712,
+  "valid_telemetry_samples": 3983,
+  "max_local_s_by_stage": {
+    "0": 1449.3224926921425,
+    "1": 695.0939569757306
+  },
+  "performance_by_stage": {
+    "0": {
+      "samples": 2327,
+      "telemetry_wall_rate_hz": 13.831758828114323,
+      "command_speed": {
+        "p50": 10.516138196413978,
+        "p95": 11.590340000464403,
+        "max": 12.605190141329443
+      },
+      "navigation_ms": {
+        "p50": 33.10750300079235,
+        "p95": 62.36406890038778,
+        "max": 3722.156554000321
+      },
+      "grid_ms": {
+        "p50": 25.55239600042114,
+        "p95": 43.21451159921707,
+        "max": 161.2923070006218
+      },
+      "command_reasons": {
+        "COMMAND_BRAKING": 7,
+        "LIDAR_TRACK": 2303,
+        "COMMAND_BLOCKED": 10,
+        "LIDAR_ESCAPE": 7
+      }
+    },
+    "1": {
+      "samples": 1656,
+      "telemetry_wall_rate_hz": 8.870246089848061,
+      "command_speed": {
+        "p50": 4.932399880494335,
+        "p95": 11.41411779048692,
+        "max": 12.000000582823528
+      },
+      "navigation_ms": {
+        "p50": 47.77664100038237,
+        "p95": 238.85067279898067,
+        "max": 871.8768670005375
+      },
+      "grid_ms": {
+        "p50": 58.47326399998565,
+        "p95": 120.90377050026291,
+        "max": 222.80132199921354
+      },
+      "command_reasons": {
+        "LIDAR_STALE": 1,
+        "COMMAND_BRAKING": 48,
+        "LIDAR_BRAKE": 13,
+        "LIDAR_TRACK": 1527,
+        "COMMAND_BLOCKED": 64,
+        "LIDAR_ESCAPE": 3
+      }
+    }
+  },
+  "telemetry_wall_rate_hz": 11.093209244708627
+}
