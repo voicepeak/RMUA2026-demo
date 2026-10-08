@@ -643,6 +643,34 @@ class LidarNavigator:
             return command,clearance,len(commands)+count
         return best,best_clear,len(commands)
 
+    def _thread_command(self,position,velocity,desired,age,points,cloud_stamp,pose_stamp):
+        """Certified forward creep when the measured pose already violates the
+        full buffer.
+
+        The aircraft may keep moving only while no return gets closer than
+        min(its current distance, buffer) and every scenario tail improves.
+        Same monotone rule as the in-place recovery, applied to forward
+        threading instead of forcing a stop-and-escape.
+        """
+        guard=self.guard;model=guard.response_model
+        if model is None or age is None or points is None:
+            return None
+        targets=[np.asarray(desired,dtype=float)*factor for factor in (1.,.75,.5,.25)]
+        for target in targets:
+            command=model.prepare(target,velocity,pose_stamp,position)
+            vertical=(0. if model.stop_profile is None else
+                      float(model.stop_profile(np.array([position]),
+                                               np.array([velocity]))[0]))
+            command[2]=vertical
+            command=model.compensate(command,velocity)
+            if float(np.linalg.norm(command[:2]))<.05:
+                continue
+            if guard.recovery_command_ok(position,velocity,command,points,age):
+                return command,dict(feasible=True,command_reason='LIDAR_THREAD',
+                                    command_scale=None,
+                                    thread_speed=float(np.linalg.norm(command[:2])))
+        return None
+
     def _stationary_escape(self,position,velocity,s,xy,center,points,cloud_stamp,pose_stamp,
                            floor_offset,info,started,departure=False):
         if np.linalg.norm(np.asarray(velocity)[:2])<.8 and self.guard.index.distance([position])[0]<self.guard.margin+.1:
@@ -788,6 +816,14 @@ class LidarNavigator:
             # command candidate can be certified. Keep the same measured
             # scene, road bounds, conditional recovery and braking checks.
             info.update(initial_buffer_blocked=True,candidate_count=0,path_option_count=0)
+            # Keep moving through a passable gate/gap first: a forward creep
+            # is legal while it never decreases any close return's distance.
+            threaded=self._thread_command(position,velocity,np.asarray(desired),age,
+                points,cloud_stamp,pose_stamp)
+            if threaded is not None:
+                command,detail=threaded
+                return command,dict(info,**detail,path_clearance=None,
+                                    navigation_ms=1000.*(time.monotonic()-started))
             recovered=self._stationary_escape(position,velocity,s,xy,center,points,cloud_stamp,
                 pose_stamp,floor_offset,info,started)
             if recovered is not None:return recovered

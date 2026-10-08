@@ -415,6 +415,28 @@ class LidarNavigationTests(unittest.TestCase):
                 0.,self.xy,self.center,self.car,1.,1.05)
         self.assertNotEqual(info['command_reason'],'LIDAR_TRACK')
 
+    def test_inside_buffer_certified_forward_thread(self):
+        from velocity_response import VelocityResponse
+        guard=ExecutionGuard();guard.response_model=VelocityResponse(coupling_limited=True)
+        guard.response_model.commit(np.zeros(3),np.zeros(3),.9)
+        nav=LidarNavigator(guard)
+        points=np.array([[-1.05,0.,0.]])
+        command,info=nav.select(np.zeros(3),np.zeros(3),np.array([3.,0.,0.]),
+            0.,self.xy,self.center,points,1.,1.05)
+        self.assertEqual(info['command_reason'],'LIDAR_THREAD')
+        self.assertGreater(command[0],.05)
+        self.assertTrue(guard.recovery_command_ok(np.zeros(3),np.zeros(3),command,points,.05))
+
+    def test_forward_block_does_not_thread(self):
+        from velocity_response import VelocityResponse
+        guard=ExecutionGuard();guard.response_model=VelocityResponse(coupling_limited=True)
+        guard.response_model.commit(np.zeros(3),np.zeros(3),.9)
+        nav=LidarNavigator(guard)
+        points=np.array([[.5,0.,0.]])
+        command,info=nav.select(np.zeros(3),np.zeros(3),np.array([3.,0.,0.]),
+            0.,self.xy,self.center,points,1.,1.05)
+        self.assertNotEqual(info['command_reason'],'LIDAR_THREAD')
+
     def test_envelope_margin_admits_model_lag_against_raw_returns_only(self):
         self.guard.response_model=None
         path=np.array([[0.,0.,0.],[1.,0.,0.],[2.,0.,0.]])
