@@ -53,7 +53,7 @@ command=['roslaunch','route_follower','route_follower.launch',
          'lidar_lift_gain:=0.11','lidar_coupling_gain_min:=0.09','lidar_envelope_margin:=1.15',
          'sensor_reaction:=0.35',
          'lidar_anticipation_distance:=0','debug_cloud_dir:='+str(args.out/'clouds'),
-         'slope_eta:=0.95','vz_down_limit:=4.5',
+         'slope_eta:=0.95','vz_down_limit:=4.5','a_up:=8','a_down:=8',
          'z_rate_max:=5','vz_capability_file:='+str(config/'vz_capability_seed123_fast.yaml')]
 command+=outbound_response_arguments(args.outbound_response)
 command+=['planner_mode:='+args.planner_mode]

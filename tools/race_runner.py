@@ -44,7 +44,7 @@ def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=Fal
     if adaptive_speed:command+=['adaptive_speed:=true','lidar_braking:=8','curve_preview_max:=100',
                                'terminal_hover_height:=1.5','debug_cloud_dir:='+str(Path(route_file).parent/'clouds'),
                                'curve_preview_step:=1','z_response_time:=0.15','lidar_envelope_margin:=1.15',
-                               'lidar_budget:=0.15','lidar_side_buffer:=0.9']
+                               'lidar_budget:=0.15','lidar_side_buffer:=0.9','a_up:=8','a_down:=8']
     if fast_descent:
         config=Path(__file__).resolve().parents[1]/'ros_ws/src/route_follower/config'
         command+=['slope_eta:=0.95','vz_down_limit:=4.5','z_rate_max:=5',
