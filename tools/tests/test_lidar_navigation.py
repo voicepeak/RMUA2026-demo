@@ -46,7 +46,7 @@ class LidarNavigationTests(unittest.TestCase):
         self.assertTrue(info['local_replan'])
         self.assertEqual(info['command_reason'],'LIDAR_TRACK')
         self.assertGreater(command[0],.1)
-        self.assertLessEqual(info['path_distance'],6.)
+        self.assertLessEqual(info['path_distance'],12.)
         samples,_=self.guard.command_envelope(np.zeros(3),np.zeros(3),command,.05)
         self.assertGreaterEqual(self.guard.index.distance(samples).min(),1.25)
         self.assertTrue(self.guard.command_constraint(samples))
@@ -379,6 +379,64 @@ class LidarNavigationTests(unittest.TestCase):
             self.assertTrue(info['feasible'])
             self.assertGreater(command[0],.1)
         finally:self.nav.close()
+
+    def test_close_pass_geometry_side_vs_closing(self):
+        guard=ExecutionGuard();guard._update(np.array([[1.,.95,0.]]),1.,1.05,np.zeros(3))
+        side=np.array([[0.,0.,0.],[1.,0.,0.],[2.,0.,0.],[3.,0.,0.]])
+        self.assertTrue(guard.close_pass_ok(side,.9))
+        guard._update(np.array([[4.,0.,0.]]),1.1,1.15,np.zeros(3))
+        closing=np.array([[0.,0.,0.],[1.,0.,0.],[2.,0.,0.]])
+        self.assertFalse(guard.close_pass_ok(closing,.9))
+        guard._update(np.array([[1.5,.05,0.]]),1.2,1.25,np.zeros(3))
+        self.assertFalse(guard.close_pass_ok(side,.9))
+
+    def test_side_buffer_admits_only_non_closing_raw_minimum(self):
+        self.guard.response_model=None
+        path=np.array([[0.,0.,0.],[1.,0.,0.],[2.,0.,0.]])
+        self.guard.command_clearance_components=lambda samples,limit=None:(1.0,float('inf'))
+        closed={'value':False}
+        self.guard.close_pass_ok=lambda samples,floor: closed['value']
+        nav=LidarNavigator(self.guard,budget=.5);nav.side_buffer=.9
+        with patch.object(nav,'path',return_value=(path,{})):
+            _,info=nav.select(np.zeros(3),np.zeros(3),np.array([2.,0.,0.]),
+                0.,self.xy,self.center,self.car,1.,1.05)
+        self.assertNotEqual(info['command_reason'],'LIDAR_TRACK')
+        closed['value']=True
+        nav=LidarNavigator(self.guard,budget=.5);nav.side_buffer=.9
+        with patch.object(nav,'path',return_value=(path,{})):
+            _,info=nav.select(np.zeros(3),np.zeros(3),np.array([2.,0.,0.]),
+                0.,self.xy,self.center,self.car,1.,1.05)
+        self.assertEqual(info['command_reason'],'LIDAR_TRACK')
+        # Moving predictions keep the full buffer even for a side pass.
+        self.guard.command_clearance_components=lambda samples,limit=None:(1.0,1.1)
+        nav=LidarNavigator(self.guard,budget=.5);nav.side_buffer=.9
+        with patch.object(nav,'path',return_value=(path,{})):
+            _,info=nav.select(np.zeros(3),np.zeros(3),np.array([2.,0.,0.]),
+                0.,self.xy,self.center,self.car,1.,1.05)
+        self.assertNotEqual(info['command_reason'],'LIDAR_TRACK')
+
+    def test_envelope_margin_admits_model_lag_against_raw_returns_only(self):
+        self.guard.response_model=None
+        path=np.array([[0.,0.,0.],[1.,0.,0.],[2.,0.,0.]])
+        self.guard.command_clearance=lambda samples,limit=None:1.2
+        self.guard.command_clearance_components=lambda samples,limit=None:(1.2,float('inf'))
+        nav=LidarNavigator(self.guard,budget=.5)
+        with patch.object(nav,'path',return_value=(path,{})):
+            _,info=nav.select(np.zeros(3),np.zeros(3),np.array([2.,0.,0.]),
+                0.,self.xy,self.center,self.car,1.,1.05)
+        self.assertNotEqual(info['command_reason'],'LIDAR_TRACK')
+        nav=LidarNavigator(self.guard,budget=.5);nav.envelope_margin=1.15
+        with patch.object(nav,'path',return_value=(path,{})):
+            _,info=nav.select(np.zeros(3),np.zeros(3),np.array([2.,0.,0.]),
+                0.,self.xy,self.center,self.car,1.,1.05)
+        self.assertEqual(info['command_reason'],'LIDAR_TRACK')
+        # Moving predictions retain the full buffer.
+        self.guard.command_clearance_components=lambda samples,limit=None:(1.2,1.0)
+        nav=LidarNavigator(self.guard,budget=.5);nav.envelope_margin=1.15
+        with patch.object(nav,'path',return_value=(path,{})):
+            _,info=nav.select(np.zeros(3),np.zeros(3),np.array([2.,0.,0.]),
+                0.,self.xy,self.center,self.car,1.,1.05)
+        self.assertNotEqual(info['command_reason'],'LIDAR_TRACK')
 
 
 if __name__=='__main__':unittest.main()

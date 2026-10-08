@@ -26,6 +26,7 @@ catkin_install_python(PROGRAMS
   scripts/altitude_profile.py
   scripts/gate_chain.py
   scripts/command_arbiter.py
+  scripts/command_deadline.py
   scripts/avoidance_interface.py
   scripts/yaw_controller.py
   scripts/speed_scheduler.py
@@ -70,6 +71,7 @@ catkin_install_python(PROGRAMS
   scripts/persistent_guides.py
   scripts/spatial_curve.py
   scripts/xy_tracker.py
+  scripts/terminal_handoff.py
   scripts/z_controller.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
