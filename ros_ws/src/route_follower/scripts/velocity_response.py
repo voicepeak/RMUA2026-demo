@@ -124,6 +124,17 @@ class VelocityResponse:
                 target+=correction.reshape(shape)
         return target
 
+    def fallback_vertical(self,position,velocity):
+        """Keep road grade while XY inertia remains; damp near-rest motion.
+
+        A horizontal brake on a rising road still needs climbing authority.
+        This fallback is explicitly uncertified when the guard rejects it.
+        Near rest, avoid repeatedly driving into a rejected height target.
+        """
+        if self.stop_profile is not None and np.linalg.norm(velocity[:2])>=.8:
+            return float(self.stop_profile(np.asarray(position)[None,:],np.asarray(velocity)[None,:])[0])
+        return float(np.clip(-self.brake_feedback*velocity[2],-.8,.8))
+
     def commit(self,command,velocity,stamp,control_stamp=None):
         # Keep the actual compensated command separately from the nominal
         # slew state. It is still driving the aircraft during response delay.

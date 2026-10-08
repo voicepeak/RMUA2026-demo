@@ -12,6 +12,37 @@ from response_native import NativeResponse
 
 
 class ResponseTests(unittest.TestCase):
+    def test_stationary_rejected_height_input_clears_for_both_response_policies(self):
+        points=np.array([[x,.8,z] for x in np.arange(-2.,2.01,.2)
+                         for z in np.arange(-2.,2.01,.1)])
+        for limited in (False,True):
+            with self.subTest(coupling_limited=limited):
+                guard=ExecutionGuard()
+                model=VelocityResponse(coupling_limited=limited)
+                guard.response_model=model
+                model.commit(np.array([0.,0.,-.001]),np.zeros(3),.95)
+                model.stop_profile=LidarNavigator._stop_profile(np.array([[0.,0.,-.02],[10.,0.,-.02]]))
+                command,info=guard.filter_command(np.zeros(3),np.zeros(3),
+                    np.array([0.,0.,-.02]),points,1.,1.05)
+                np.testing.assert_array_equal(command,np.zeros(3))
+                self.assertEqual(info['command_reason'],'COMMAND_BLOCKED')
+                self.assertTrue(info['blocked_neutral_settle'])
+                self.assertLess(info['command_clearance'],1.25)
+                # Conditional frozen replay: unchanged measured rest next
+                # cycle, with the command actually issued in memory.
+                model.commit(command,np.zeros(3),1.05)
+                escape=guard.escape(np.zeros(3),np.zeros(3),np.array([0.,-1.,0.]),points,1.1,1.15)
+                self.assertIsNotNone(escape)
+                self.assertLess(escape[1],0.)
+
+    def test_neutral_settle_still_requires_road_and_floor_constraint(self):
+        guard=ExecutionGuard();guard.response_model=VelocityResponse(coupling_limited=False)
+        guard.command_constraint=lambda samples:False
+        _,info=guard.filter_command(np.zeros(3),np.zeros(3),np.array([0.,0.,-.02]),
+                                  np.array([[0.,.8,0.]]),1.,1.05)
+        self.assertEqual(info['command_reason'],'COMMAND_BLOCKED')
+        self.assertFalse(info.get('blocked_neutral_settle',False))
+
     def test_lower_coupling_scenario_native_matches_python_and_extends_downward(self):
         parameters=dict(lift_gain=.095,coupling_gains=(.075,.11,.13),height_gain=2.,
                         coupling_limited=True,xy_error_max=4.5,control_periods=(.08,.16,.4))
@@ -269,8 +300,68 @@ class ResponseTests(unittest.TestCase):
         command,info=guard.filter_command(np.zeros(3),np.array([0.,0.,.2]),np.zeros(3),points,1.,1.05)
         self.assertEqual(info['command_reason'],'COMMAND_BLOCKED')
         self.assertTrue(info.get('blocked_settle'))
-        self.assertAlmostEqual(command[2],0.)
+        self.assertAlmostEqual(command[2],-.12)
+        self.assertTrue(info['blocked_brake'])
         self.assertLess(info['command_clearance'],1.25)
+
+    def test_blocked_ceiling_floor_never_rank_rejected_height_bursts(self):
+        for limited in (False,True):
+            for vz in (-2.,-.2,0.,.2,2.):
+                with self.subTest(limited=limited,vz=vz):
+                    guard=ExecutionGuard();guard.response_model=VelocityResponse(coupling_limited=limited)
+                    points=np.array([[0.,0.,-.8],[0.,0.,.9]])
+                    commands=[]
+                    for desired_z in (-4.,4.5,-4.,4.5):
+                        command,info=guard.filter_command(np.zeros(3),np.array([0.,0.,vz]),
+                            np.array([0.,0.,desired_z]),points,1.,1.05)
+                        self.assertEqual(info['command_reason'],'COMMAND_BLOCKED')
+                        self.assertTrue(info['blocked_brake'])
+                        import json
+                        json.dumps(info,allow_nan=False)
+                        self.assertLessEqual(abs(command[2]),.8)
+                        self.assertLessEqual(command[2]*vz,0.)
+                        commands.append(command)
+                    for command in commands[1:]:np.testing.assert_array_equal(command,commands[0])
+
+    def test_safe_height_motion_is_still_certified_with_response_model(self):
+        guard=ExecutionGuard();guard.response_model=VelocityResponse()
+        command,info=guard.filter_command(np.zeros(3),np.zeros(3),np.array([0.,0.,-.5]),
+            np.array([[0.,20.,0.]]),1.,1.05)
+        self.assertEqual(info['command_reason'],'COMMAND_BRAKING')
+        self.assertAlmostEqual(command[2],-.5)
+
+    def test_blocked_high_speed_brake_retains_vertical_authority(self):
+        guard=ExecutionGuard();model=VelocityResponse(lift_gain=.11,coupling_limited=True,xy_error_max=4.5)
+        guard.response_model=model;velocity=np.array([12.,0.,-1.])
+        model.commit(np.zeros(3),velocity,1.)
+        command,info=guard.filter_command(np.zeros(3),velocity,np.array([0.,0.,4.]),
+            np.array([[0.,.8,0.]]),1.,1.3)
+        self.assertEqual(info['command_reason'],'COMMAND_BLOCKED')
+        error=np.linalg.norm(command[:2]-velocity[:2])
+        self.assertAlmostEqual(error,4.5)
+        nominal=command[2]-model.lift_gain*error*error
+        self.assertAlmostEqual(nominal,.6)
+        self.assertLess(command[2],4.5)
+
+    def test_rejected_brake_retains_grade_until_horizontal_inertia_stops(self):
+        for slope in (-.5,.5):
+            for native in (False,True):
+                with self.subTest(slope=slope,native=native):
+                    guard=ExecutionGuard()
+                    model=VelocityResponse(lift_gain=.095,coupling_limited=True,xy_error_max=4.5,native=native)
+                    guard.response_model=model
+                    model.stop_profile=LidarNavigator._stop_profile(np.array([[0.,0.,0.],[20.,0.,20.*slope]]))
+                    velocity=np.array([6.,0.,6.*slope]);model.commit(np.array([6.,0.,6.*slope]),velocity,1.)
+                    command,info=guard.filter_command(np.zeros(3),velocity,np.zeros(3),
+                        np.array([[0.,.8,0.]]),1.25,1.3)
+                    self.assertEqual(info['command_reason'],'COMMAND_BLOCKED')
+                    self.assertTrue(info['blocked_grade_follow'])
+                    nominal=command[2]-model.lift_gain*np.sum((command[:2]-velocity[:2])**2)
+                    self.assertAlmostEqual(nominal,6.*slope)
+                    self.assertLess(command[0],6.)
+                    # A rejected height target must not keep pumping Z once
+                    # horizontal motion has settled beneath a vehicle.
+                    self.assertAlmostEqual(model.fallback_vertical(np.zeros(3),np.array([0.,0.,.2])),-.12)
 
     def test_native_timed_sampling_preserves_duplicate_points_and_endpoints(self):
         native=NativeResponse()

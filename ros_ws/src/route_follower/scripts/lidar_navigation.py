@@ -103,6 +103,20 @@ class LidarNavigator:
         self.road_lateral_limit=2.25
         self.prune_candidates=True
         self.height_reserve=.5
+        # Response-prefix overshoot allowance for a reference bound the
+        # envelope starts inside (measured vertical inertia during reaction
+        # latency). Every scenario tail must still return inside the bound.
+        self.band_transient_base=.15
+        self.band_transient_max=.6
+        self.inside_transient=0.
+        # Optional base margin (e.g. 1.15) for simulated stop-envelope lag
+        # against raw returns. None keeps the full path buffer everywhere.
+        # Moving predictions always retain the full buffer.
+        self.envelope_margin=None
+        # Optional side-pass floor (e.g. 0.9). A tight raw minimum beside or
+        # behind the motion may go down to this floor; returns ahead of the
+        # trajectory keep the full buffer. None disables the allowance.
+        self.side_buffer=None
         self.local_replan=local_replan
         self.anticipation_distance=anticipation_distance
         self.path_options=path_options
@@ -119,29 +133,58 @@ class LidarNavigator:
         self.last_path_options=[]
         self.scene.reset()
 
-    def _bound_ok(self,error,timed=False):
-        """An existing violation may shrink, never grow or certify hovering."""
+    def inside_transient_allowance(self,velocity,age):
+        """Bounded response-prefix overshoot from measured vertical inertia."""
+        latency=self.guard.reaction+max(0.,float(age))
+        return min(self.band_transient_max,
+                   self.band_transient_base+abs(float(np.asarray(velocity)[2]))*latency)
+
+    def _bound_ok(self,error,timed=False,inside_transient=0.):
+        """Recover a reference-bound violation; do not certify hover.
+
+        Timed recovery permits a small transient while the measured residual
+        velocity decays. A bound the envelope starts inside may be crossed by
+        the measured response prefix (e.g. climbing inertia during reaction
+        latency), but only within a bounded allowance and only when every
+        scenario tail returns inside the bound. Raw obstacles retain their
+        full clearance checks. Geometry and initially satisfied bounds are
+        never allowed to create a new, unrecovered violation.
+        """
         if np.max(error)<=1e-8:return True
         initial=error[0]
-        if initial<=0. or np.max(error)>initial+1e-8:return False
-        tails=np.array([error[-1]])
+        transient=.001 if timed else 0.
+        allowance=max(transient, inside_transient if timed else 0.)
+        tails=None
         if timed and self.guard.envelope_times is not None:
             times=self.guard.envelope_times
-            tails=error[times>=times.max()-.15]
+            starts=np.r_[0,np.flatnonzero(np.diff(times)<0.)+1,len(times)]
+            tails=np.concatenate([error[first:last][times[first:last]>=times[first:last].max()-.15]
+                                  for first,last in zip(starts[:-1],starts[1:])])
+        if initial<=0.:
+            if not (timed and inside_transient>0.) or np.max(error)>inside_transient+1e-8:
+                return False
+            if tails is None:tails=np.array([error[-1]])
+            return np.max(tails)<=1e-8
+        if np.max(error)>initial+allowance+1e-8:return False
+        if tails is None:tails=np.array([error[-1]])
         return np.max(tails)<=max(0.,initial-.01)+1e-8
 
     def _floor_ok(self, path, stations, center, floor_offset,timed=False):
         if self.guard.response_model is not None:
             heights=np.interp(stations,self.reference_stations,self.reference_heights)
-            if not self._bound_ok(path[:,2]-heights-1.25,timed):return False
-            if not self._bound_ok(heights-path[:,2]-1.25,timed):return False
+            if not self._bound_ok(path[:,2]-heights-1.25,timed,
+                                  inside_transient=self.inside_transient):return False
+            if not self._bound_ok(heights-path[:,2]-1.25,timed,
+                                  inside_transient=self.inside_transient):return False
             if self.reference_coordinates is not None:
                 road=np.column_stack([np.interp(stations,self.reference_stations,self.reference_coordinates[:,axis]) for axis in (0,1)])
                 if np.any(np.linalg.norm(path[:,:2]-road,axis=1)>self.road_lateral_limit+1e-8):return False
         if floor_offset is None:return True
         limits=departure_floor_limits(stations,path,center,floor_offset,
                                       self.guard.index,self.guard.margin+.1)
-        return self._bound_ok(path[:,2]-limits,timed) if self.guard.response_model is not None else np.all(path[:,2]<=limits+1e-8)
+        if self.guard.response_model is None:return np.all(path[:,2]<=limits+1e-8)
+        return self._bound_ok(path[:,2]-limits,timed,
+                              inside_transient=min(.1,self.inside_transient))
 
     @staticmethod
     def _command_profile(path):
@@ -573,8 +616,19 @@ class LidarNavigator:
             if floor_offset is not None or self.guard.response_model is not None:
                 sample_s=self._route_stations(samples,s,xy,projection)
                 if not self._floor_ok(samples,sample_s,center,floor_offset,timed=self.guard.response_model is not None):continue
-            clearance=self.guard.command_clearance(samples,limit=2.)
-            if clearance<buffer:continue
+            raw,dynamic=self.guard.command_clearance_components(samples,limit=2.)
+            clearance=min(raw,dynamic)
+            if clearance<buffer:
+                # The commanded path keeps the full buffer. The simulated
+                # stop envelope may dip to the configured base margin when
+                # the lag is only against raw returns, or to the side-pass
+                # floor when the tight return is beside/behind the motion.
+                # Moving predictions always keep the full buffer.
+                admitted=bool(dynamic>=buffer and (
+                    (self.envelope_margin is not None and raw>=self.envelope_margin) or
+                    (self.side_buffer is not None and raw>=self.side_buffer and
+                     self.guard.close_pass_ok(samples,self.side_buffer))))
+                if not admitted:continue
             score=gain+.12*min(2.,clearance)-penalty
             if score>best_score or (score==best_score and i<best_index):
                 best_score=score;best=command;best_clear=clearance;best_index=i
@@ -589,8 +643,82 @@ class LidarNavigator:
             return command,clearance,len(commands)+count
         return best,best_clear,len(commands)
 
+    def _stationary_escape(self,position,velocity,s,xy,center,points,cloud_stamp,pose_stamp,
+                           floor_offset,info,started,departure=False):
+        if np.linalg.norm(np.asarray(velocity)[:2])<.8 and self.guard.index.distance([position])[0]<self.guard.margin+.1:
+            a,b=np.asarray(xy(s-.3)[:2]),np.asarray(xy(s+.3)[:2])
+            forward=(b-a)/max(1e-6,np.linalg.norm(b-a));side=np.r_[-forward[1],forward[0],0.]
+            candidates=[position+np.array([0.,0.,z]) for z in (-.25,.25,-.5,.5,-1.,1.,-1.5,1.5,-2.,2.)]
+            candidates+=[position+y*side+np.array([0.,0.,z]) for y in (-.5,.5,-1.,1.,-2.,2.) for z in (0.,-.5,.5)]
+            # A face across the road cannot be escaped by shifting parallel
+            # to it. Check short longitudinal moves against every return too;
+            # no persistent retreat target or unchecked backing is introduced.
+            along=np.r_[forward,0.]
+            candidates+=[position+distance*along+np.array([0.,0.,z])
+                         for distance in (-.5,-1.,-1.5,-2.,.5,1.,1.5,2.) for z in (0.,-.5,.5)]
+            # Refine nearby endpoints only after the existing coarse moves
+            # fail. A narrow road/floor interval can fall between their
+            # 0.5 m offsets. Endpoint clearance only prunes the search; every
+            # selected move still needs the complete conditional stop check.
+            def recovery_targets():
+                for target in candidates:yield target,False
+                if self.guard.response_model is None or not self.guard.response_model.coupling_limited:return
+                fine=np.array([position+a*along+y*side+np.array([0.,0.,z])
+                               for a in (-.25,0.,.25)
+                               for y in np.arange(-.5,.501,.125)
+                               for z in np.arange(-.25,.251,.125)])
+                clear=self.guard.index.distance(fine,limit=self.guard.margin+.3)
+                eligible=np.flatnonzero(clear>=self.guard.margin+.3)
+                costs=np.sum((fine[eligible]-position)**2,axis=1)
+                for i in eligible[np.argsort(costs,kind='stable')]:
+                    yield fine[i],True
+                # A gate crossbar can require simultaneous retreat and
+                # descent; axis-only moves approach another part of the
+                # same frame. Prune endpoints and the close-return cone
+                # together before the unchanged complete response checks.
+                combined=np.array([position+a*along+y*side+np.array([0.,0.,z])
+                    for a in (-2.,-1.,-.5,0.,.5,1.,2.)
+                    for y in (-2.,-1.,-.5,0.,.5,1.,2.)
+                    for z in (-2.,-1.5,-1.,-.5,0.,.5,1.,1.5,2.)])
+                clear=self.guard.index.distance(combined,limit=self.guard.margin+.3)
+                eligible=np.flatnonzero(clear>=self.guard.margin+.3)
+                relative=np.asarray(points)-position
+                close=relative[np.linalg.norm(relative,axis=1)<self.guard.margin+.1]
+                if len(close) and len(eligible):
+                    eligible=eligible[np.all((combined[eligible]-position)@close.T<=1e-7,axis=1)]
+                costs=np.sum((combined[eligible]-position)**2,axis=1)
+                for i in eligible[np.argsort(costs,kind='stable')]:yield combined[i],True
+            for target,refined in recovery_targets():
+                stations=np.array([s,s])
+                if not self._floor_ok(np.array([position,target]),stations,center,floor_offset):continue
+                escape=self.guard.escape(position,velocity,target,points,cloud_stamp,pose_stamp)
+                if escape is not None:
+                    if self.guard.response_model is not None:
+                        self.braking_path=self.guard.response_model.stop_profile.path.copy()
+                    return escape,dict(info,feasible=True,command_reason='LIDAR_ESCAPE',command_scale=None,
+                        recovery_target=target.tolist(),conditional_recovery=self.guard.response_model is not None,
+                        recovery_search_refined=refined,
+                        navigation_ms=1000.*(time.monotonic()-started))
+        return None
+
+    def _brake(self,position,velocity,s,xy,center,points,cloud_stamp,pose_stamp,
+               floor_offset,projection,info,started):
+        if self.guard.response_model is not None:
+            stopping_path=(self.braking_path.copy() if self.braking_path is not None else
+                np.array([[*xy(t)[:2],center(t)] for t in self.reference_stations]))
+            stopping_stations=self._route_stations(stopping_path,s,xy,projection)
+            heights=np.interp(stopping_stations,self.reference_stations,self.reference_heights)
+            stopping_path[:,2]=np.clip(stopping_path[:,2],heights-1.25,heights+1.25)
+            floors=departure_floor_limits(stopping_stations,stopping_path,center,floor_offset,self.guard.index,self.guard.margin+.1)
+            stopping_path[:,2]=np.minimum(stopping_path[:,2],floors-.02)
+            self.guard.response_model.stop_profile=self._tracking_profile(stopping_path)
+            vertical=float(self.guard.response_model.stop_profile(np.array([position]),np.array([velocity]))[0])
+        else:vertical=0.
+        command,checked=self.guard.filter_command(position,velocity,np.array([0.,0.,vertical]),points,cloud_stamp,pose_stamp)
+        return command,dict(info,**checked,feasible=False,navigation_ms=1000.*(time.monotonic()-started))
+
     def select(self, position, velocity, desired, s, xy, center, points, cloud_stamp,
-               pose_stamp, floor_offset=None):
+               pose_stamp, floor_offset=None, recovery_only=False):
         started=time.monotonic()
         self.guard.set_faces(())
         if self.guard.response_model is not None and points is not None:
@@ -606,6 +734,8 @@ class LidarNavigator:
             delta_z=points[:,2]-np.interp(s+along,sampled,heights)
             self.guard.surface_seed_points=np.asarray(points)[(abs(along)<20.)&(abs(across)<3.8)&(abs(delta_z)<1.8)]
         age,error=self.guard._update(points,cloud_stamp,pose_stamp,position)
+        self.inside_transient=(0. if age is None else
+            self.inside_transient_allowance(velocity,age))
         info=dict(source='LIDAR_NAV',active=True,cap=None,plan_id=0,cars=0)
         if error:
             return np.zeros(3),dict(info,feasible=False,command_reason=error,command_scale=0.)
@@ -642,6 +772,27 @@ class LidarNavigator:
             info['bound_recovery']=bool(abs(current[0,2]-height[0])>1.25 or current[0,2]>floor[0]+1e-8)
         self.guard.command_constraint=(None if floor_offset is None and self.guard.response_model is None else lambda samples:self._floor_ok(samples,
             self._route_stations(samples,s,xy,projection),center,floor_offset,timed=self.guard.response_model is not None))
+        if recovery_only:
+            # Departure may start inside a measured buffer. Use the same
+            # per-surface, full-stop recovery checks without forward tracking.
+            recovered=self._stationary_escape(position,velocity,s,xy,center,points,cloud_stamp,
+                pose_stamp,floor_offset,info,started,departure=True)
+            if recovered is not None:return recovered
+            command,checked=self.guard.filter_command(position,velocity,np.asarray(desired),
+                points,cloud_stamp,pose_stamp)
+            return command,dict(info,**checked,feasible=False,
+                                navigation_ms=1000.*(time.monotonic()-started))
+        if self.guard.index.distance([position],limit=self.guard.margin+.1)[0]<self.guard.margin+.1:
+            # Every ordinary response includes the measured starting pose.
+            # Its full buffer is already violated, so no normal path or
+            # command candidate can be certified. Keep the same measured
+            # scene, road bounds, conditional recovery and braking checks.
+            info.update(initial_buffer_blocked=True,candidate_count=0,path_option_count=0)
+            recovered=self._stationary_escape(position,velocity,s,xy,center,points,cloud_stamp,
+                pose_stamp,floor_offset,info,started)
+            if recovered is not None:return recovered
+            return self._brake(position,velocity,s,xy,center,points,cloud_stamp,pose_stamp,
+                floor_offset,projection,info,started)
         if self.executor is not None:
             if self.future is not None and self.future.done():
                 completed=self.future;self.future=None
@@ -685,7 +836,7 @@ class LidarNavigator:
             # A pending/rejected full snapshot must not freeze a currently
             # clear departure. Rebuild only a short prefix in the live index.
             # Keep this navigator's full reference and complete stop checks.
-            local=LidarNavigator(self.guard,horizon=6.,budget=.015,anticipation_distance=self.anticipation_distance)
+            local=LidarNavigator(self.guard,horizon=12.,budget=.03,anticipation_distance=self.anticipation_distance)
             path,local_info=local.path(np.asarray(position),s,xy,center,floor_offset)
             details.update(local_replan=True,local_grid_ms=local_info['grid_ms'],
                            local_path_distance=local_info['path_distance'])
@@ -759,54 +910,8 @@ class LidarNavigator:
                         feasible=True,path=recovery.tolist(),height_recovery_target=float(recovery[-1,2]),
                         navigation_ms=1000.*(time.monotonic()-started))
                 model.stop_profile=previous_profile
-        if np.linalg.norm(velocity)<.8 and self.guard.index.distance([position])[0]<self.guard.margin+.1:
-            a,b=np.asarray(xy(s-.3)[:2]),np.asarray(xy(s+.3)[:2])
-            forward=(b-a)/max(1e-6,np.linalg.norm(b-a));side=np.r_[-forward[1],forward[0],0.]
-            candidates=[position+np.array([0.,0.,z]) for z in (-.25,.25,-.5,.5,-1.,1.)]
-            candidates+=[position+y*side+np.array([0.,0.,z]) for y in (-.5,.5,-1.,1.,-2.,2.) for z in (0.,-.5,.5)]
-            # A face across the road cannot be escaped by shifting parallel
-            # to it. Check short longitudinal moves against every return too;
-            # no persistent retreat target or unchecked backing is introduced.
-            along=np.r_[forward,0.]
-            candidates+=[position+distance*along+np.array([0.,0.,z])
-                         for distance in (-.5,-1.,-1.5,-2.,.5,1.,1.5,2.) for z in (0.,-.5,.5)]
-            # Refine nearby endpoints only after the existing coarse moves
-            # fail. A narrow road/floor interval can fall between their
-            # 0.5 m offsets. Endpoint clearance only prunes the search; every
-            # selected move still needs the complete conditional stop check.
-            def recovery_targets():
-                for target in candidates:yield target,False
-                if self.guard.response_model is None or not self.guard.response_model.coupling_limited:return
-                fine=np.array([position+a*along+y*side+np.array([0.,0.,z])
-                               for a in (-.25,0.,.25)
-                               for y in np.arange(-.5,.501,.125)
-                               for z in np.arange(-.25,.251,.125)])
-                clear=self.guard.index.distance(fine,limit=self.guard.margin+.3)
-                eligible=np.flatnonzero(clear>=self.guard.margin+.3)
-                costs=np.sum((fine[eligible]-position)**2,axis=1)
-                for i in eligible[np.argsort(costs,kind='stable')]:
-                    yield fine[i],True
-            for target,refined in recovery_targets():
-                stations=np.array([s,s])
-                if not self._floor_ok(np.array([position,target]),stations,center,floor_offset):continue
-                escape=self.guard.escape(position,velocity,target,points,cloud_stamp,pose_stamp)
-                if escape is not None:
-                    if self.guard.response_model is not None:
-                        self.braking_path=self.guard.response_model.stop_profile.path.copy()
-                    return escape,dict(info,feasible=True,command_reason='LIDAR_ESCAPE',command_scale=None,
-                        recovery_target=target.tolist(),conditional_recovery=self.guard.response_model is not None,
-                        recovery_search_refined=refined,
-                        navigation_ms=1000.*(time.monotonic()-started))
-        if self.guard.response_model is not None:
-            stopping_path=(self.braking_path.copy() if self.braking_path is not None else
-                np.array([[*xy(t)[:2],center(t)] for t in self.reference_stations]))
-            stopping_stations=self._route_stations(stopping_path,s,xy,projection)
-            heights=np.interp(stopping_stations,self.reference_stations,self.reference_heights)
-            stopping_path[:,2]=np.clip(stopping_path[:,2],heights-1.25,heights+1.25)
-            floors=departure_floor_limits(stopping_stations,stopping_path,center,floor_offset,self.guard.index,self.guard.margin+.1)
-            stopping_path[:,2]=np.minimum(stopping_path[:,2],floors-.02)
-            self.guard.response_model.stop_profile=self._tracking_profile(stopping_path)
-            vertical=float(self.guard.response_model.stop_profile(np.array([position]),np.array([velocity]))[0])
-        else:vertical=0.
-        command,checked=self.guard.filter_command(position,velocity,np.array([0.,0.,vertical]),points,cloud_stamp,pose_stamp)
-        return command,dict(info,**checked,feasible=False,navigation_ms=1000.*(time.monotonic()-started))
+        recovered=self._stationary_escape(position,velocity,s,xy,center,points,cloud_stamp,
+            pose_stamp,floor_offset,info,started)
+        if recovered is not None:return recovered
+        return self._brake(position,velocity,s,xy,center,points,cloud_stamp,pose_stamp,
+            floor_offset,projection,info,started)

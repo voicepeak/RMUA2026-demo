@@ -39,6 +39,7 @@ class RouteFollowerStartupTests(unittest.TestCase):
                     ros.get_param=lambda key,default=None:params.get(key,default)
                     if adaptive:params.update({'~lidar_lift_gain':.095,'~lidar_coupling_gain_min':.075})
                     controller=module.RouteFollower()
+                    controller._watchdog_stop.set()  # Publication deadlines have their own clock tests.
                     try:
                         self.assertEqual(controller.execution_guard.braking,4.)
                         self.assertIsNone(controller.executing_plan)
@@ -173,8 +174,11 @@ class RouteFollowerStartupTests(unittest.TestCase):
                             # history too, instead of keeping the old drive.
                             controller.stopping=True
                             controller.publish(2.,-3.,1.,source_pose_stamp=1.8)
-                            np.testing.assert_array_equal(model.applied_command,np.zeros(3))
-                    finally:controller.planning.close()
+                            self.assertIsNone(model.applied_command)
+                            self.assertEqual(controller.cmd_pub.publish.call_args_list[-2].args[0].stop,1)
+                    finally:
+                        controller._watchdog_stop.set()
+                        controller.planning.close();controller.navigator.close()
 
 
 if __name__=='__main__':unittest.main()

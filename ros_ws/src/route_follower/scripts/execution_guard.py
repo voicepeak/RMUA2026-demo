@@ -52,6 +52,41 @@ class ExecutionGuard:
             distances=np.minimum(distances,self.dynamic_scene.distance(samples,self.envelope_times))
         return float(np.min(distances))
 
+    def command_clearance_components(self,samples,limit=None):
+        """Raw-return and moving-prediction minima separately.
+
+        Callers may admit model lag against raw returns down to the base
+        margin while moving predictions keep the full planning buffer.
+        """
+        distances=self.index.distance(samples,limit=limit)
+        raw=float(np.min(distances))
+        dynamic=float('inf')
+        if self.dynamic_scene is not None and self.envelope_times is not None:
+            dynamic=float(np.min(self.dynamic_scene.distance(samples,self.envelope_times)))
+        return raw,dynamic
+
+    def close_pass_ok(self,samples,floor):
+        """Admit a tight raw minimum only when it is a side pass.
+
+        The closest return must lie beside or behind the trajectory at its
+        closest-approach sample and must not keep closing afterwards. A
+        return ahead of the motion keeps the full buffer.
+        """
+        samples=np.asarray(samples,dtype=float)
+        if len(samples)<3:return False
+        distances=self.index.distance(samples,limit=2.)
+        k=int(np.argmin(distances))
+        if distances[k]<floor:return False
+        _,ids=self.index.neighbors(samples[k:k+1],1)
+        index=int(ids[0,0])
+        if index>=len(self.index.points):return False
+        nearest=np.asarray(self.index.points[index],dtype=float)
+        direction=samples[min(k+1,len(samples)-1)]-samples[max(k-1,0)]
+        if float(np.dot(nearest-samples[k],direction))>0.:return False
+        later=np.linalg.norm(samples[k+1:]-nearest,axis=1)
+        if len(later) and float(np.min(later))<distances[k]-1e-6:return False
+        return True
+
     def _cap(self, distance, latency):
         accelerated=max(0.,math.sqrt((self.braking*latency)**2+2.*self.braking*distance)-self.braking*latency)
         settling=distance/max(1e-6,latency+self.settling)
@@ -130,47 +165,58 @@ class ExecutionGuard:
         if error:return np.zeros(3),dict(command_reason=error,command_scale=0.)
         position=np.asarray(position);velocity=np.asarray(velocity);desired=np.asarray(desired)
         if self.response_model is not None:
+            brake_z=self.response_model.fallback_vertical(position,velocity)
             candidates=[desired,np.array([0.,0.,desired[2]]),np.zeros(3),
-                        -velocity*min(1.,3./max(.01,np.linalg.norm(velocity)))]
+                        np.array([0.,0.,brake_z])]
             candidates.extend(np.array([0.,0.,z]) for z in (-4.,-2.,-1.,1.,2.,4.5))
             commands=[self.response_model.prepare(target,velocity,pose_stamp,position) for target in candidates]
             envelopes=self.response_model.envelopes(position,velocity,commands,self.reaction+age)
-            best=commands[0];best_clearance=-np.inf;first_clearance=None
-            neutral_clearance=None
+            clearances={};constraints=[]
             for i,(command,(samples,extent,times)) in enumerate(zip(commands,envelopes)):
                 self.envelope_times=times
-                constrained=self.command_constraint is None or self.command_constraint(samples)
+                constrained=bool(self.command_constraint is None or self.command_constraint(samples))
+                constraints.append(constrained)
                 # Rejected road/floor bounds cannot win or be certified.
                 # Avoid expensive surface queries for those trajectories.
                 if not constrained:continue
                 clearance=self.command_clearance(samples)
-                if i==0:first_clearance=clearance
-                if i==2:neutral_clearance=clearance
-                if clearance>best_clearance:best=command;best_clearance=clearance
+                clearances[i]=clearance
                 if clearance>=self.margin+.1 and extent<=self.horizon:
                     return command,dict(command_reason='COMMAND_BRAKING',command_scale=None,
                                         command_clearance=clearance)
-            # Already outside the empirical safe set: keep the bounded braking
-            # controller and expose the failure; never label this certified.
-            if (np.linalg.norm(velocity)<.8 and
-                    self.index.distance([position])[0]<self.margin+.1):
-                # Every envelope already starts inside the buffer. Tiny raw
-                # distance differences must not select alternating full Z
-                # bursts and prevent the slow, monotonic escape from settling.
-                # Once stationary, do not keep injecting a rejected height
-                # correction toward nearby returns. Cancel that nominal Z
-                # input before searching conditional recovery next cycle.
-                # This remains BLOCKED, never a full-buffer certificate.
-                # Preserve counter-braking for any appreciable measured or
-                # prepared horizontal motion and rejected road/floor bounds.
-                if (self.response_model.coupling_limited and np.linalg.norm(velocity)<.05 and
-                        np.linalg.norm(commands[2][:2])<.05 and neutral_clearance is not None):
-                    return commands[2],dict(command_reason='COMMAND_BLOCKED',command_scale=None,
-                        command_clearance=neutral_clearance,blocked_settle=True,blocked_neutral_settle=True)
-                return commands[0],dict(command_reason='COMMAND_BLOCKED',command_scale=None,
-                    command_clearance=first_clearance,blocked_settle=True)
-            return best,dict(command_reason='COMMAND_BLOCKED',command_scale=None,
-                             command_clearance=None if not np.isfinite(best_clearance) else best_clearance)
+            # No full-stop candidate passed. Clearance ranking is not a
+            # certificate and must never select a rejected +/-4m/s height
+            # probe by ranking clearance. Retain road-grade tracking while
+            # braking XY, damp near-rest motion, and expose the failure.
+            settling=bool(np.linalg.norm(velocity)<.8 and
+                          self.index.distance([position])[0]<self.margin+.1)
+            neutral=bool(np.linalg.norm(velocity)<.05 and
+                         np.linalg.norm(commands[2][:2])<.05 and constraints[2])
+            choice=2 if neutral or (not constraints[3] and constraints[2]) else 3
+            # Already tighter than the base margin: per-return monotone
+            # checks cannot certify any direction, but staying is not a
+            # certificate either. Retreat along the local outward normal of
+            # the nearest surface cluster at bounded speed. Uncertified and
+            # explicitly reported; every ordinary candidate above still wins.
+            near=float(self.index.distance([position])[0])
+            if near<.6:
+                relative=np.asarray(points,dtype=float)-position
+                distance=np.linalg.norm(relative,axis=1)
+                close=relative[distance<.5]
+                if len(close)>=16:
+                    unit=close/np.maximum(np.linalg.norm(close,axis=1),1e-6)[:,None]
+                    outward=-np.sum(unit,axis=0)
+                    norm=float(np.linalg.norm(outward))
+                    if norm>1e-6:
+                        retreat=self.response_model.prepare(.6*outward/norm,velocity,pose_stamp,position)
+                        return retreat,dict(command_reason='EMERGENCY_RETREAT',command_scale=None,
+                            command_clearance=near,emergency_clearance=near,
+                            emergency_retreat_direction=(outward/norm).tolist())
+            return commands[choice],dict(command_reason='COMMAND_BLOCKED',command_scale=None,
+                command_clearance=clearances.get(choice),blocked_settle=settling,
+                blocked_neutral_settle=neutral,blocked_brake=True,
+                blocked_bounds_accepted=constraints[choice],
+                blocked_grade_follow=bool(self.response_model.stop_profile is not None and np.linalg.norm(velocity[:2])>=.8))
         latency=self.reaction+age
         def check(command):
             queries,extent=self.command_envelope(position,velocity,command,age)
@@ -215,7 +261,7 @@ class ExecutionGuard:
         target must restore the full buffer; this never authorizes entering it.
         """
         age,error=self._update(points,cloud_stamp,pose_stamp,position)
-        if error or np.linalg.norm(velocity)>.8:return None
+        if error or np.linalg.norm(np.asarray(velocity)[:2])>.8:return None
         delta=np.asarray(target)-position
         distance=float(np.linalg.norm(delta))
         if not .05<distance<5.:return None
@@ -227,7 +273,6 @@ class ExecutionGuard:
         initial2=np.sum(relative*relative,axis=1)
         buffer=self.margin+.1
         close=initial2<buffer*buffer
-        if np.any(relative[close]@delta>1e-7):return None
         fraction=np.clip(relative@delta/(distance*distance),0.,1.)
         separation=relative-fraction[:,None]*delta
         if np.any(np.sum(separation*separation,axis=1)<np.minimum(initial2,buffer*buffer)-1e-7):return None
@@ -236,8 +281,9 @@ class ExecutionGuard:
         if target_clearance<buffer+.2:return None
         # Certify the actual response prefix too: waiting for momentum to die
         # out cannot be replaced with a nominal zero-velocity assumption.
+        # The per-return separation check above already keeps every return at
+        # or above min(its initial distance, buffer); no first-order veto.
         prefix=np.asarray(velocity)*latency
-        if np.any(relative[close]@prefix>1e-7):return None
         speed=min(.6,distance)
         speed=min(speed,max(0.,distance-np.linalg.norm(prefix))/(latency+max(self.settling,.6/(2.*self.braking))))
         if speed<.01:return None
@@ -277,7 +323,7 @@ class ExecutionGuard:
         return command
 
     def recovery_command_ok(self,position,velocity,command,points,age):
-        if np.linalg.norm(velocity)>.8:return False
+        if np.linalg.norm(np.asarray(velocity)[:2])>.8:return False
         samples,extent=self.command_envelope(position,velocity,command,age)
         if extent>self.horizon or (self.command_constraint is not None and not self.command_constraint(samples)):return False
         buffer=self.margin+.1;position=np.asarray(position);points=np.asarray(points)
