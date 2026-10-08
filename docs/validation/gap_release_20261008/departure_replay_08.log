@@ -1,0 +1,74 @@
+nearest [[ 2.3643837  -1.15569293 -1.6354377 ]
+ [ 2.39483998 -1.0917281  -1.63559029]
+ [ 2.42517425 -1.02758011 -1.6367347 ]
+ [ 2.33441587 -1.21996324 -1.63679573]
+ [ 2.45526431 -0.9631879  -1.63888237]]
+[
+  {
+    "cycle": 0,
+    "command": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "info": {
+      "command_reason": "COMMAND_BLOCKED",
+      "command_scale": null,
+      "command_clearance": 0.5682909650631384,
+      "blocked_settle": true,
+      "blocked_neutral_settle": true,
+      "blocked_brake": true,
+      "blocked_bounds_accepted": true
+    },
+    "ms": 34.37680899969564
+  },
+  {
+    "cycle": 1,
+    "command": [
+      0.0,
+      0.0,
+      -0.6
+    ],
+    "info": {
+      "source": "LIDAR_NAV",
+      "active": true,
+      "cap": null,
+      "plan_id": 0,
+      "cars": 0,
+      "interior_clusters": 2,
+      "moving_obstacles": 0,
+      "obstacle_velocities": [],
+      "response_model": "SLEW_COUPLED",
+      "response_backend": "native",
+      "lift_gain": 0.095,
+      "height_gain": 2.0,
+      "coupling_limited": true,
+      "xy_error_max": 4.5,
+      "control_periods": [
+        0.08,
+        0.16,
+        0.4
+      ],
+      "response_scenarios": 9,
+      "vertical_command_max": 4.5,
+      "acceleration": 4.0,
+      "latency_motion": "coast-and-applied",
+      "brake_feedback": 0.6,
+      "deceleration": 8.0,
+      "road_recovery": false,
+      "bound_recovery": true,
+      "feasible": true,
+      "command_reason": "LIDAR_ESCAPE",
+      "command_scale": null,
+      "recovery_target": [
+        547.8659807388779,
+        518.0679504379012,
+        -31.853763580322266
+      ],
+      "conditional_recovery": true,
+      "recovery_search_refined": false,
+      "navigation_ms": 18.32392100004654
+    },
+    "ms": 18.34630899975309
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "scope": "Official simulator stage reset and partial spawn-failure log; actor BP_Hover_1_C identification and total spawned vehicle count not verified.",
+  "spawn_failure_count": 112,
+  "first_lines": [
+    "[2026.10.08-04.11.23:606][226]LogTemp: ChangeState:2",
+    "[2026.10.08-04.11.23:606][226]LogTemp: Warning: Reset Route 3 5",
+    "[2026.10.08-04.11.23:607][226]LogSpawn: Warning: SpawnActor failed because of collision at the spawn location [X=55441.926 Y=51486.219 Z=3471.022] for [BP_Hover_1_C]",
+    "[2026.10.08-04.11.23:607][226]LogSpawn: Warning: SpawnActor failed because of collision at the spawn location [X=55441.926 Y=51486.219 Z=3471.022] for [BP_Hover_1_C]",
+    "[2026.10.08-04.11.23:607][226]LogSpawn: Warning: SpawnActor failed because of collision at the spawn location [X=55441.926 Y=51486.219 Z=3471.022] for [BP_Hover_1_C]",
+    "[2026.10.08-04.11.23:607][226]LogSpawn: Warning: SpawnActor failed because of collision at the spawn location [X=55860.984 Y=51597.973 Z=3580.114] for [BP_Hover_1_C]",
+    "[2026.10.08-04.11.23:607][226]LogSpawn: Warning: SpawnActor failed because of collision at the spawn location [X=55324.074 Y=52029.387 Z=3257.433] for [BP_Hover_1_C]",
+    "[2026.10.08-04.11.23:607][226]LogSpawn: Warning: SpawnActor failed because of collision at the spawn location [X=55441.926 Y=51486.219 Z=3471.022] for [BP_Hover_1_C]"
+  ]
+}

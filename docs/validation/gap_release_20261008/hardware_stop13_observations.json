@@ -1,0 +1,128 @@
+{
+  "scope": "Recorded stop=1 publications and nearby debug-pose differences by receipt clock; observational, without an injected control stall or external bridge-expiry measurement.",
+  "moving_stop_samples": 43,
+  "rows": [
+    {
+      "stamp": 1791435280.2027175,
+      "before_median": 7.688192931227934,
+      "after_median": 7.059720598898271,
+      "next_command_seconds": 0.04104256629943848
+    },
+    {
+      "stamp": 1791435280.24376,
+      "before_median": 7.436316098953414,
+      "after_median": 6.789669834722537,
+      "next_command_seconds": 0.055693864822387695
+    },
+    {
+      "stamp": 1791435280.299454,
+      "before_median": 7.134880151299785,
+      "after_median": 6.415963168858911,
+      "next_command_seconds": 0.029845476150512695
+    },
+    {
+      "stamp": 1791435280.3292994,
+      "before_median": 6.922103696586046,
+      "after_median": 6.243707609252441,
+      "next_command_seconds": 0.037934064865112305
+    },
+    {
+      "stamp": 1791435280.3672335,
+      "before_median": 6.691757369201854,
+      "after_median": 6.024577503891085,
+      "next_command_seconds": 0.03785061836242676
+    },
+    {
+      "stamp": 1791435280.4050841,
+      "before_median": 6.469933150109631,
+      "after_median": 5.861361272504833,
+      "next_command_seconds": 0.03634381294250488
+    },
+    {
+      "stamp": 1791435280.441428,
+      "before_median": 6.243707609252441,
+      "after_median": 5.638587246220443,
+      "next_command_seconds": 0.05853271484375
+    },
+    {
+      "stamp": 1791435280.4999607,
+      "before_median": 5.916910392314213,
+      "after_median": 5.30875943264909,
+      "next_command_seconds": 0.042582035064697266
+    },
+    {
+      "stamp": 1791435280.5425427,
+      "before_median": 5.698718425062958,
+      "after_median": 5.094203933945553,
+      "next_command_seconds": 0.06261515617370605
+    },
+    {
+      "stamp": 1791435280.6051579,
+      "before_median": 5.371195258161973,
+      "after_median": 4.766021365602121,
+      "next_command_seconds": 0.05125761032104492
+    },
+    {
+      "stamp": 1791435280.6564155,
+      "before_median": 5.094203933945553,
+      "after_median": 4.503885280120218,
+      "next_command_seconds": 0.10100579261779785
+    },
+    {
+      "stamp": 1791435280.7574213,
+      "before_median": 4.503885280120218,
+      "after_median": 3.9329582905298683,
+      "next_command_seconds": 0.08375430107116699
+    },
+    {
+      "stamp": 1791435280.8411756,
+      "before_median": 4.0843850027239625,
+      "after_median": 3.529989971810948,
+      "next_command_seconds": 0.04356718063354492
+    },
+    {
+      "stamp": 1791435280.8847427,
+      "before_median": 3.881994587105045,
+      "after_median": 3.3336111478695067,
+      "next_command_seconds": 0.036689043045043945
+    },
+    {
+      "stamp": 1791435280.9214318,
+      "before_median": 3.676844858010242,
+      "after_median": 3.160369990466339,
+      "next_command_seconds": 0.03320050239562988
+    },
+    {
+      "stamp": 1791435280.9546323,
+      "before_median": 3.529989971810948,
+      "after_median": 3.027795690914916,
+      "next_command_seconds": 0.07637572288513184
+    },
+    {
+      "stamp": 1791435281.031008,
+      "before_median": 3.160369990466339,
+      "after_median": 2.6971252752128065,
+      "next_command_seconds": 0.07926654815673828
+    },
+    {
+      "stamp": 1791435281.1102746,
+      "before_median": 2.81316660795597,
+      "after_median": 2.402417971005734,
+      "next_command_seconds": 0.03617405891418457
+    },
+    {
+      "stamp": 1791435281.1464486,
+      "before_median": 2.6971252752128065,
+      "after_median": 2.2958695829987334,
+      "next_command_seconds": 0.03382468223571777
+    },
+    {
+      "stamp": 1791435281.1802733,
+      "before_median": 2.546786719468573,
+      "after_median": 2.162590570247668,
+      "next_command_seconds": 0.048365116119384766
+    }
+  ],
+  "hardware_stops": 712,
+  "deadlines": 7
+}

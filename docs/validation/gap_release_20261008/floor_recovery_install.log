@@ -1,0 +1,140 @@
+-- Using CATKIN_DEVEL_PREFIX: /workspace/rmua_ws/devel
+-- Using CMAKE_PREFIX_PATH: /opt/ros/noetic
+-- This workspace overlays: /opt/ros/noetic
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.8.10", minimum required is "3")
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Using Debian Python package layout
+-- Using empy: /usr/lib/python3/dist-packages/em.py
+-- Using CATKIN_ENABLE_TESTING: ON
+-- Call enable_testing()
+-- Using CATKIN_TEST_RESULTS_DIR: /workspace/rmua_ws/build/test_results
+-- Forcing gtest/gmock from source, though one was otherwise available.
+-- Found gtest sources under '/usr/src/googletest': gtests will be built
+-- Found gmock sources under '/usr/src/googletest': gmock will be built
+-- Found PythonInterp: /usr/bin/python3 (found version "3.8.10")
+-- Using Python nosetests: /usr/bin/nosetests3
+-- catkin 0.8.12
+-- BUILD_SHARED_LIBS is on
+-- BUILD_SHARED_LIBS is on
+-- Using CATKIN_WHITELIST_PACKAGES: airsim_ros;rmua_gate_vision;route_follower
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- ~~  traversing 3 packages in topological order:
+-- ~~  - airsim_ros
+-- ~~  - rmua_gate_vision
+-- ~~  - route_follower
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-- +++ processing catkin package: 'airsim_ros'
+-- ==> add_subdirectory(airsim_ros)
+-- Using these message generators: gencpp;geneus;genlisp;gennodejs;genpy
+-- airsim_ros: 1 messages, 3 services
+-- +++ processing catkin package: 'rmua_gate_vision'
+-- ==> add_subdirectory(rmua_gate_vision)
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/gate_vision_node.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/gate_detect_viz.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/latest_frame.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/car_geometry.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/gate_yolo_node.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/gate_detector_opencv.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/gate_stereo.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/gate_tracker.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/gate_map.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/gate_dataset_capture.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/timestamp_sync.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/gate_geometry.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/stereo_keypoint_matcher.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- Installing devel-space wrapper /workspace/rmua_ws/src/rmua_gate_vision/scripts/gate_reprojection.py to /workspace/rmua_ws/devel/lib/rmua_gate_vision
+-- +++ processing catkin package: 'route_follower'
+-- ==> add_subdirectory(route_follower)
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/route_follower.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/online_gate_cache.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/route_recorder.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/splines_to_yaml.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/make_gates.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/z_probe.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/altitude_profile.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/gate_chain.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/command_arbiter.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/command_deadline.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/avoidance_interface.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/yaw_controller.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/speed_scheduler.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/motion_estimator.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/ceiling_guidance.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/terrain_speed.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/predictive_avoidance.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/pose_history.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/lidar_points.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/point_index.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/lattice_detour.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/async_planner.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/execution_guard.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/lidar_navigation.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/velocity_response.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/response_native.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/lidar_scene.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/dynamic_tracker.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/local_occupancy.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/trajectory_types.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/route_coordinates.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/response_rollout.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/trajectory_collision.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/st_lattice.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/trajectory_tracker.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/trajectory_executor.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/spacetime_navigation.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/spacetime_runtime.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/planning_snapshot_io.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/planning_visualization.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/path_sampling.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/z_capability.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/z_capability_probe.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/climb_feasibility.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/curve_preview.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/gate_task_state.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/mission_state.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/reference_planner.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/safety_supervisor.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/lidar_clearance.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/route_height_prior.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/persistent_guides.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/spatial_curve.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/xy_tracker.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/terminal_handoff.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Installing devel-space wrapper /workspace/rmua_ws/src/route_follower/scripts/z_controller.py to /workspace/rmua_ws/devel/lib/route_follower
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /workspace/rmua_ws/build
+[  0%] Built target geometry_msgs_generate_messages_lisp
+[  0%] Built target std_msgs_generate_messages_lisp
+[  0%] Built target _airsim_ros_generate_messages_check_deps_VelCmd
+[  0%] Built target _airsim_ros_generate_messages_check_deps_Reset
+[  0%] Built target _airsim_ros_generate_messages_check_deps_Takeoff
+[  0%] Built target geometry_msgs_generate_messages_nodejs
+[  0%] Built target std_msgs_generate_messages_cpp
+[  0%] Built target std_msgs_generate_messages_nodejs
+[  0%] Built target _airsim_ros_generate_messages_check_deps_Land
+[  0%] Built target std_msgs_generate_messages_eus
+[  0%] Built target geometry_msgs_generate_messages_cpp
+[  0%] Built target geometry_msgs_generate_messages_eus
+[  0%] Built target geometry_msgs_generate_messages_py
+[  0%] Built target std_msgs_generate_messages_py
+[ 16%] Built target airsim_ros_generate_messages_lisp
+[ 24%] Built target velocity_response_native
+[ 60%] Built target airsim_ros_generate_messages_cpp
+[ 60%] Built target airsim_ros_generate_messages_eus
+[ 76%] Built target airsim_ros_generate_messages_nodejs
+[100%] Built target airsim_ros_generate_messages_py
+[100%] Built target airsim_ros_generate_messages
+Packages "install" not found in the workspace - ignoring them
+Base path: /workspace/rmua_ws
+Source space: /workspace/rmua_ws/src
+Build space: /workspace/rmua_ws/build
+Devel space: /workspace/rmua_ws/devel
+Install space: /workspace/rmua_ws/install
+Whitelisted packages: airsim_ros, rmua_gate_vision, route_follower
+####
+#### Running command: "make cmake_check_build_system" in "/workspace/rmua_ws/build"
+####
+####
+#### Running command: "make -j4" in "/workspace/rmua_ws/build"
+####

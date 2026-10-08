@@ -1,0 +1,10 @@
+{
+  "scope": "Offline recorded outgoing measured poses, not a flight result",
+  "guide_count": 71,
+  "guide_end": 617.5714722827869,
+  "valid": true,
+  "error": 0.5986033762241121,
+  "source": "recorded_poses",
+  "horizon": 1217.571472282787,
+  "z_at_stall": -133.6300559219364
+}

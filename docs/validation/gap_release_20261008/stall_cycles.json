@@ -1,0 +1,34 @@
+{
+  "scope": "Counterfactual two-cycle frozen scene with unchanged measured rest and fresh cloud after zero publication. Requires flight validation.",
+  "scene": "1791427443.616_s1300.4.json",
+  "results": [
+    {
+      "cycle": 0,
+      "command": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "reason": "COMMAND_BLOCKED",
+      "neutral_settle": true,
+      "recovery_target": null,
+      "elapsed_ms": 52.343487000143796
+    },
+    {
+      "cycle": 1,
+      "command": [
+        0.13437458811149072,
+        0.14813302729627276,
+        0.004399991607670018
+      ],
+      "reason": "LIDAR_ESCAPE",
+      "neutral_settle": false,
+      "recovery_target": [
+        672.8629842002739,
+        432.76374589964234,
+        -38.368736267089844
+      ],
+      "elapsed_ms": 13.6065450001297
+    }
+  ]
+}

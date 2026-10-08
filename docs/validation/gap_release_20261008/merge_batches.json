@@ -1,0 +1,44 @@
+{
+  "base_commit": "ee33a14f6b05a3dc05f4fa0df1d7482e607f81ec",
+  "target": "origin/main",
+  "merge_strategy": "no-ff; each batch pushed after verification",
+  "batches": [
+    {
+      "batch": 1,
+      "branch": "iteration/20261008-01-reference-gates",
+      "feature_commit": "b27f8fcde26f5794b711bba06b13a5447244a848",
+      "title": "gate continuity and measured height references",
+      "isolated_host_tests": 463,
+      "test_log": "batch1_tests.log"
+    },
+    {
+      "batch": 2,
+      "branch": "iteration/20261008-02-control-recovery",
+      "feature_commit": "94168a41dafed009fcbdd4509ee09ff27e9f0aeb",
+      "title": "deadline braking and bounded gap recovery",
+      "isolated_host_tests": 493,
+      "test_log": "batch2_tests.log"
+    },
+    {
+      "batch": 3,
+      "branch": "iteration/20261008-03-vision-runner",
+      "feature_commit": "2be1f883e71c15ed5c631f06b07a3a63e7ee5449",
+      "title": "CUDA verification and race runtime",
+      "isolated_host_tests": 495,
+      "test_log": "batch3_tests.log"
+    },
+    {
+      "batch": 4,
+      "branch": "iteration/20261008-04-evidence",
+      "title": "final validation, failures and handoff evidence",
+      "validation": "documentation/JSON/manifest checks; code unchanged from batch3"
+    }
+  ],
+  "final_ros_tests": 495,
+  "vehicle_leg_accepted": false,
+  "excluded_in_progress_files": [
+    "ros_ws/src/route_follower/scripts/longitudinal_planner.py",
+    "tools/tests/test_longitudinal_planner.py",
+    "ros_ws/src/route_follower/scripts/route_follower.py: subsequent longitudinal integration diff"
+  ]
+}

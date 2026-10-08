@@ -1,0 +1,18 @@
+[
+  {
+    "path": "Build/LinuxNoEditor/RMUA/Binaries/Linux/RMUA-Linux-Shipping",
+    "archive_bytes": 116748832,
+    "local_bytes": 116748832,
+    "archive_crc32": 1268477109,
+    "local_crc32": 1268477109,
+    "match": true
+  },
+  {
+    "path": "Build/LinuxNoEditor/RMUA/Content/Paks/RMUA-LinuxNoEditor.pak",
+    "archive_bytes": 1927609305,
+    "local_bytes": 1927609305,
+    "archive_crc32": 3493532401,
+    "local_crc32": 3493532401,
+    "match": true
+  }
+]

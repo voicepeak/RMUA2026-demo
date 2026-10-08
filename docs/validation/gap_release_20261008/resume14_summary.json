@@ -1,0 +1,19 @@
+{
+  "scope": "30s bounded resume of the stopped 13th instance; no fresh competition acceptance.",
+  "samples": 274,
+  "first_s": 9.582455533181395,
+  "max_s": 58.43049728435479,
+  "last_s": 58.43049728435479,
+  "first_pose": [
+    553.8477309498178,
+    513.4149349446423,
+    -31.546091079711914
+  ],
+  "last_pose": [
+    597.4056519947682,
+    491.29701242651254,
+    -34.9260139465332
+  ],
+  "last_guard": "LIDAR_TRACK",
+  "official_result": "UNKNOWN"
+}

@@ -1,0 +1,108 @@
+{
+  "scope": "Actual second-leg command trace; no readable official HUD. Stationary position and blocked height control, not proof of vehicle-spawn conditions or simulator outcome.",
+  "counts": {
+    "LIDAR_STALE": 2,
+    "COMMAND_BLOCKED": 4746,
+    "ACCEPTED": 3
+  },
+  "nonzero_velocity_commands": 18,
+  "first": {
+    "topic": "command_trace",
+    "received_wall": 1791431808.0219228,
+    "received_monotonic": 6820.557836811,
+    "received_ros": 1791431808.0219269,
+    "data": {
+      "stamp": 1791431808.0215816,
+      "source_pose_stamp": 1791431802.9448779,
+      "control_pose_stamp": 1791431802.9358776,
+      "body_velocity": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "yaw_rate_deg": -5.729577951308233,
+      "acceleration": 8,
+      "compute_ms": 11.750612000469118,
+      "publication_check": {
+        "source_pose_stamp": 1791431802.9448779,
+        "planning_pose_stamp": 1791431802.9358776,
+        "pose_advance_seconds": 0.009000301361083984,
+        "position_world": [
+          547.8659807388779,
+          518.0679504379012,
+          -30.868919372558594
+        ],
+        "measured_velocity_world": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "accepted_original": false,
+        "conditional_recovery": false,
+        "cloud_stamp": null,
+        "lidar_age": null,
+        "observation_error": "LIDAR_STALE",
+        "command_clearance": null,
+        "replacement": {
+          "command_reason": "LIDAR_STALE",
+          "command_scale": 0.0
+        },
+        "validation_ms": 0.03577799998311093,
+        "reaction_budget_seconds": 0.25,
+        "validation_budget_exceeded": false
+      }
+    }
+  },
+  "last": {
+    "topic": "command_trace",
+    "received_wall": 1791432226.5647843,
+    "received_monotonic": 7239.100698046,
+    "received_ros": 1791432226.5647874,
+    "data": {
+      "stamp": 1791432226.5635123,
+      "source_pose_stamp": 1791432212.2016084,
+      "control_pose_stamp": 1791432212.1416073,
+      "body_velocity": [
+        0.0,
+        0.0,
+        -0.0
+      ],
+      "yaw_rate_deg": -0.019664760157912308,
+      "acceleration": 8,
+      "compute_ms": 84.69263200004207,
+      "publication_check": {
+        "source_pose_stamp": 1791432212.2016084,
+        "planning_pose_stamp": 1791432212.1416073,
+        "pose_advance_seconds": 0.06000113487243652,
+        "position_world": [
+          547.8659807388779,
+          518.0679504379012,
+          -30.393638610839844
+        ],
+        "measured_velocity_world": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "accepted_original": false,
+        "conditional_recovery": false,
+        "cloud_stamp": 1791432212.1116066,
+        "lidar_age": 0.09000182151794434,
+        "observation_error": null,
+        "command_clearance": 0.11817932128906605,
+        "replacement": {
+          "command_reason": "COMMAND_BLOCKED",
+          "command_scale": null,
+          "command_clearance": 0.11817932128906605,
+          "blocked_settle": true,
+          "blocked_neutral_settle": true,
+          "blocked_brake": true,
+          "blocked_bounds_accepted": true
+        },
+        "validation_ms": 23.705149999841524,
+        "reaction_budget_seconds": 0.25,
+        "validation_budget_exceeded": false
+      }
+    }
+  }
+}

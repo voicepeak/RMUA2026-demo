@@ -1,0 +1,84 @@
+[
+  {
+    "run": "legacy_visible_20261008_02",
+    "scope": "First 180 wall seconds after vehicle controller start; HUD validity unavailable, not official completion",
+    "phase": "VEHICLE",
+    "elapsed_observed": 179.99588203430176,
+    "max_s": 495.51812167398685,
+    "official_vehicle_endpoint_advanced": false,
+    "first_100m": {
+      "samples": 282,
+      "navigation_ms_p95_max": [
+        1214.4762567500604,
+        2100.221290000036
+      ],
+      "strong_yaw_samples": 41,
+      "strong_yaw_sign_changes": 7,
+      "reasons": {
+        "LIDAR_BRAKE": 11,
+        "LIDAR_TRACK": 223,
+        "COMMAND_BRAKING": 9,
+        "COMMAND_BLOCKED": 39
+      }
+    },
+    "vehicle_window": {
+      "samples": 960,
+      "navigation_ms_p95_max": [
+        454.85745660005244,
+        2100.221290000036
+      ],
+      "strong_yaw_samples": 41,
+      "strong_yaw_sign_changes": 7,
+      "reasons": {
+        "LIDAR_BRAKE": 11,
+        "LIDAR_TRACK": 860,
+        "COMMAND_BRAKING": 14,
+        "COMMAND_BLOCKED": 75
+      }
+    }
+  },
+  {
+    "run": "legacy_visible_20261008_03",
+    "phase": "OUTBOUND"
+  },
+  {
+    "run": "legacy_visible_20261008_04",
+    "scope": "First 180 wall seconds after vehicle controller start; HUD validity unavailable, not official completion",
+    "phase": "VEHICLE",
+    "elapsed_observed": 179.96782445907593,
+    "max_s": 634.7235901301965,
+    "official_vehicle_endpoint_advanced": false,
+    "first_100m": {
+      "samples": 322,
+      "navigation_ms_p95_max": [
+        235.3132502497146,
+        995.2674260002823
+      ],
+      "strong_yaw_samples": 4,
+      "strong_yaw_sign_changes": 0,
+      "reasons": {
+        "LIDAR_BRAKE": 2,
+        "LIDAR_TRACK": 291,
+        "COMMAND_BLOCKED": 20,
+        "COMMAND_BRAKING": 9
+      }
+    },
+    "vehicle_window": {
+      "samples": 1367,
+      "navigation_ms_p95_max": [
+        238.7755050001489,
+        1059.6273940000174
+      ],
+      "strong_yaw_samples": 4,
+      "strong_yaw_sign_changes": 0,
+      "reasons": {
+        "LIDAR_BRAKE": 2,
+        "LIDAR_TRACK": 1226,
+        "COMMAND_BLOCKED": 99,
+        "COMMAND_BRAKING": 37,
+        "LIDAR_HEIGHT_RECOVERY": 1,
+        "LIDAR_ESCAPE": 2
+      }
+    }
+  }
+]

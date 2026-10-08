@@ -1,0 +1,10 @@
+{
+  "scope": "Telemetry before final publication recheck; empirical compensation needed for recorded XY error",
+  "max_sample": {
+    "s": 370.45760808190386,
+    "error": 7.665020753264887,
+    "correction": 6.462779746277956,
+    "compensated_z": 4.5,
+    "reason": "COMMAND_BLOCKED"
+  }
+}

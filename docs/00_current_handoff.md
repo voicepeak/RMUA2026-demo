@@ -1,19 +1,21 @@
-# RMUA 当前交接（2026-10-08，执行层收尾）
+# RMUA 当前交接（2026-10-08，缝隙与门间停滞续修）
 
 这是唯一维护当前代码、运行状态、验证结果与下一步顺序的文档。[工作区交接入口](../../交接入口.md)和README指向这里。逐轮记录已完整保存在[第58轮后整理前历史快照](archive/00_handoff_history_through_run58_20261004.md)，其中旧的“当前”“准备启动”“暂停”不再代表现状。
 
 ## 1. 接手先确认
 
-- 当前目标：按用户提供的[动态避障重构方案](specs/RMUA2026_dynamic_avoidance_refactor_plan.md)，将空间路线加指令否决改为动态预测加时空轨迹。[设计](26_dynamic_avoidance_design_review.md)已获用户确认，不再重复请求确认；[DynamicTracker、预测](27_dynamic_tracker_implementation.md)、[Rolling Occupancy/同帧原点](28_local_occupancy_implementation.md)及[离线时空Planner/纯响应序列](29_spacetime_mvp_implementation.md)已实现。[新旧入口、独立执行器与共享Guard](30_spacetime_execution_implementation.md)已实现并完成故障验证；实跑条件尚未验收，未启动新比赛。
-- **完整3→5车辆段尚未通过。** 最好单次第54轮761.35m，约占1353.34m路线的56%；它的可见复跑停在5.17m，不能视为稳定方案。
-- **源码与运行包现已同步69文件，默认`planner_mode=legacy`，保留候选57旧模式行为。** 新模式含跟踪、三态地图、时空搜索、纯响应、独立执行及Guard；native ABI12未变。宿主及ROS容器各449项测试通过、隔离Catkin安装和运行工作区构建通过。同步前53文件已逐项校验并完整备份，源码/运行清单和验证摘要见[发布证据](validation/spacetime_release_20261007/README.md)。新模式默认桥接契约未验证，输出FAILSAFE零，不得据此宣称实飞可用。
-- 最新第58轮与第57轮使用相同控制包：出程149.707s通过，车辆有效最高19.271373m、Score65、最后有效StateTime54.426后提前Finished，原因UNKNOWN，未通过。第57轮在切段时模拟器SIGABRT，未取得车辆验证数据。
-- 当前比赛、控制、监视和标定进程已结束；Docker `rmua_noetic`内模拟器仍显示第58轮Finished画面，桌面DISPLAY=:0。启动新实例前重新核对进程，避免多个实例叠加。
-- **下一步：核实桥接命令失效契约，做真实连续感知/运动交接/负载时序验证及完整车辆段A/B和重复验收。** 新执行层入口已接好，20Hz零指令ROS发布与隔离故障验证通过，但不能据此证明运动闭环20Hz达标。Phase 7 native序列优化、平滑/commitment及默认切换尚未验收。
+- 当前目标：按用户提供的[动态避障重构方案](specs/RMUA2026_dynamic_avoidance_refactor_plan.md)实现动态预测与时空轨迹。[设计](26_dynamic_avoidance_design_review.md)已确认；[跟踪](27_dynamic_tracker_implementation.md)、[地图](28_local_occupancy_implementation.md)、[Planner](29_spacetime_mvp_implementation.md)及[执行器](30_spacetime_execution_implementation.md)已实现。用户随后要求可见实跑，并反馈车辆缝隙慢、上下回拉、门间停止；正在续修实际飞行的legacy入口，见[现场与修订](31_gap_latency_and_stationary_stall.md)。
+- **完整3→5车辆段尚未通过。** 旧第54轮761.35m；本次run23约804m、run27约776m，均未完成官方切段。run29再次在9.44m停住，不能视为稳定方案。
+- **已合入的源码与运行包同步71文件，默认`planner_mode=legacy`。** 宿主/ROS各495项通过，native ABI12未变。当前增补了终点高度衔接、独立指令超时反馈制动、CUDA预检、起飞参考边界残余漂移恢复；[新证据](validation/gap_release_20261008/README.md)保留逐轮失败和验证范围。spacetime桥接契约未验证仍输出FAILSAFE零，首轮观测/发布时钟竞态尚未修复，不得宣称新模式运动可用。
+- 可见02/04轮均官方切入3→5；统一取车辆控制器启动后180墙钟秒，最高进度495.52→634.72m，前100m导航P95 1214.48→235.31ms，强偏航指令符号切换7→0。HUD时间未取得，不能当官方成绩。04轮最终684m因高度依据用完进入HOLD；05轮新高度模型生效，但202m高度回拉失败；06轮在出程374m耦合补偿饱和失败。这些不是通关证据。
+- 最新已结束实例为`experiments/legacy_visible_20261008_29`；控制器已退出，模拟器窗口保留。run17有效车辆进度740.45m、180s超时；run23约804m、run27约776m；run29约9.44m由20s无进度监视停止，官方结果UNKNOWN。后续修订见[记录](32_reference_band_transient_release.md)，车辆段完整通过仍未验收。
+- **下一步：先验证当前legacy的耦合饱和、车辆缝隙与684m停止修订，再核实新模式桥接失效契约、时钟竞态和真实运动闭环。** 新执行层20Hz零发布与隔离故障通过，不证明运动闭环20Hz。完整车辆段、重复验证、native序列优化、平滑/commitment及默认切换仍未验收。
+- 2026-10-08 避障停机续修：带内爬升瞬态、停车包络基础裕度（`lidar_envelope_margin`）、出发地面瞬态、局部规划 6→12m/预算与贴面应急撤退均已实现；宿主/ROS各495项通过。run23 车辆段有效 804m（此前 746），run27 776m 且未再卡死；均 HUD Finished，非 3→5 验收。s550–575 走廊高度带与完整车辆段仍未通过，见[记录](32_reference_band_transient_release.md)与证据 `experiments/band_transient_20261008/README.md`。
 - 2026-10-07验证边界：带噪声/遮挡的61帧合成场景三个稳定ID、2s误差P95约0.089m；第58轮48帧过于稀疏，0个confirmed帧，不能证明实际车辆ID稳定。Finished实例只读采集8秒0帧。[证据与修改前53文件备份](../../experiments/dynamic_avoidance_refactor_20261007/)已保存；没有新比赛通过证据。
 - Phase 3地图验证：51帧最近命中射线场景全部有效，地图更新及快照P95约20.52ms；75000回波有界测试P95约36.22ms，全部endpoint保留。只有29帧具有可信动态归属，其余保守保留静态；不能推断整体控制周期或实飞效果。[地图证据、源码清单与修改前备份](../../experiments/dynamic_occupancy_refactor_20261007/)已保存。第58轮旧档案没有曝光origin，被明确拒绝做FREE重建。
 - Phase 4离线MVP：所有响应情景的时空动作、动态段内相交、UNKNOWN拒绝、实际等待及完整制动已实现。五个理想观测闭环场景（静态绕行/横穿/双车/暂堵/窄通道）到达测试目标，Case E速度突变拒绝由单独checker测试覆盖；使用理想FREE地图与受控CV对象，不代表实飞。350ms预算的每例P95约354–357ms，尚未达到5–10Hz目标；默认100ms冻结输入审计只能证明短前缀可用。[最终证据及此前高度交接失败](../../experiments/spacetime_mvp_refactor_20261007/)完整保留。新轨迹通常只认证首0.25s及完整制动，不能整条持续执行。
 - Phase 6收尾：449项测试/两种环境、九类隔离故障、安装节点111条实际ROS零发布通过；P95发布50.42ms。五例最终离线回归全部通过；自查发现并修复了静态绕行停车余量退化，失败证据保留。详见[执行层记录](30_spacetime_execution_implementation.md)。
+- 本次四批按门洞/高度参考、控制/脱困、视觉/运行工具、文档/证据合入main并推送，分批清单见[发布记录](validation/gap_release_20261008/merge_batches.json)。合并期间新出现且正在接线的`longitudinal_planner.py`、对应测试及后续控制器改动留在工作区，不在此次已验证版本内。
 - 继续保留节能模式。不要用CPU条件不同的单次成绩归因算法；出现运行退化先查时钟、资源和进程，必要时重启。本次按用户指令提交并推送；版本以Git和发布清单为准。
 
 ## 2. 代码、快照与证据位置
@@ -33,6 +35,7 @@
 | Rolling Occupancy、原点、隔离构建、测试与连续射线重放 | `experiments/dynamic_occupancy_refactor_20261007/`；说明见[地图实现记录](28_local_occupancy_implementation.md) |
 | 离线时空搜索、响应状态、共享checker、冻结重放与理想闭环验证 | `experiments/spacetime_mvp_refactor_20261007/`；说明见[时空MVP实现记录](29_spacetime_mvp_implementation.md) |
 | 执行层、真实ROS零发布、故障验证与运行同步备份 | `experiments/spacetime_execution_refactor_20261007/`；说明见[执行层记录](30_spacetime_execution_implementation.md) |
+| 当前缝隙/高度续修、冻结重放与运行备份 | `experiments/gap_diagnosis_20261008/`、`experiments/legacy_visible_20261008_01`至`15`及`gap_resume_20261008_14`；见[续修记录](31_gap_latency_and_stationary_stall.md) |
 | 前期逐轮实验与标定 | `experiments/car_avoidance_implementation_20261002/README.md` |
 | 调研结论及一手来源 | [无人机避障调研](无人机避障调研_20261004.md) |
 
@@ -44,16 +47,16 @@
 2. 独立进程向前搜索24m三维几何路径。共享当前观测网格，分别生成居中、左右约±1.25m偏好；优先原路径，无法产生通过检查的指令时尝试其他路径。缓存接头用最新位姿、点云复核；必要时尝试当前点云6m局部路径。
 3. 对实际准备发布的XYZ指令预测延迟段、指令保持和完整制动尾段。三组响应情形结合80/160/400ms制动反馈周期，共9种情形；逐点检查原始观测、支撑面、动态预测、道路和地面约束。
 4. 高度参考沿选择的路径和道路坡度变化；保留最后通过检查的停止高度路径。发布前使用最新独立位姿、速度和点云再次检查；失败转入制动回退，条件恢复单独标记。
-5. 候选57中性回退：车辆已在缓冲内、实测速度和准备指令的水平速度都低于0.05m/s时，若中性候选通过原道路/地面约束，取消未通过检查的名义高度修正。仍报COMMAND_BLOCKED，不当作安全认证；有运动时保留制动。
+5. BLOCKED回退：所有完整停止候选被拒绝后，取消按相对净空选择高度试探，改为实测Z反向阻尼（名义≤0.8m/s）和原XY制动/耦合补偿。静止且中性候选符合道路/地面约束时取消高度输入；两种响应策略均覆盖。明确报告未认证及道路约束结果；有运动保留制动。
 6. 原粗恢复全部失败后，增加0.125m间隔局部三维目标，先批量筛目标净空、再按位移尝试。每个实际动作仍须满足全部逐点不接近、支撑面、道路、地面与9种完整停止检查。
 
 | 参数 | 当前车辆模式 | 出程差异 |
 | --- | --- | --- |
 | 几何/正常停止净空 | 1.25m，路径代价偏好1.85m | 保留原出程策略 |
-| 恢复目标净空 | 至少1.45m；条件恢复须每个预测尾段取得进展 | 新中性/细化恢复仅车辆模式 |
+| 恢复目标净空 | 至少1.45m；条件恢复须每个预测尾段取得进展 | 中性回退两种策略；细化恢复在coupling_limited策略 |
 | 道路先验 | XY中心带2.25m、参考Z±1.25m；已有偏离仅按原回界规则处理 | 不是力场或真实地面真值 |
 | 水平增速 / 减速 | 4 / 8m/s²；反向制动反馈0.6 | 统一经验响应框架 |
-| 水平指令与实测速度差上限 | 4.5m/s，并保留垂直余量限制 | 出程coupling_limited=false |
+| 水平指令与实测速度差上限 | 4.5m/s，并保留垂直余量限制 | 一键启动coupled出程也启用；显式legacy用于历史对照 |
 | 实际高度耦合补偿 | 0.095 | 明确旧0.110 |
 | 预测物理耦合 | 0.075 / 0.110 / 0.130 | 明确旧低值0.090 |
 | 高度增益与余量 | 前20m由1→2、余量0→0.5m | 增益1、余量0 |
@@ -62,7 +65,7 @@
 
 坐标为世界NED，Z向下为正；`VelCmd.vz`向上为正、yawRate为度/秒。位姿`/airsim_node/drone_1/debug/pose_gt`，终点`/airsim_node/end_goal`，控制`/airsim_node/drone_1/vel_body_cmd`。模型和边界为经验约束，不是形式化安全证明。
 
-## 4. 最新实跑与验证结论
+## 4. 第54–58轮历史实跑与验证结论
 
 | 实验 | 有效车辆结果 | 结论 |
 | --- | --- | --- |
@@ -116,7 +119,7 @@
 
 ## 8. 核对与复现命令
 
-从工作区根目录执行。以下比赛命令用于后续实跑条件满足之后；本次已实现代码、完成自查并同步运行包，未启动比赛。
+从工作区根目录执行。以下命令用于复现；先核对正在运行的实例，避免重复启动。
 
 ```bash
 python3 -m unittest discover -s repo/tools/tests
@@ -142,4 +145,4 @@ python3 repo/tools/audit_control_trace.py --run experiments/实验编号 --out e
 - [第57轮崩溃说明](../../experiments/race_car_response_20261004_57/crash_diagnosis.json)；模拟器日志为完整堆栈依据。第57轮result/stop曾被不同终止路径记录，原因解释以日志及崩溃说明为准。
 - [完整逐轮交接归档](archive/00_handoff_history_through_run58_20261004.md)、[早期归档](archive/00_handoff_history_through_run16_20261002.md)、[实施证据](../../experiments/car_avoidance_implementation_20261002/README.md)
 
-`handoff_snapshot_20261001.json`和旧candidate_manifest为历史资料；57清单和58启动快照只代表旧实跑基线；当前源码以[发布清单](validation/spacetime_release_20261007/release_manifest.json)与Git为准。
+`handoff_snapshot_20261001.json`和旧candidate_manifest为历史资料；57清单和58启动快照只代表旧实跑基线；当前已合入源码以[最新运行清单](validation/gap_release_20261008/runtime_manifest.json)、[分批记录](validation/gap_release_20261008/merge_batches.json)与Git为准；旧spacetime发布清单只代表当时版本。
