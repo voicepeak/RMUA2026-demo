@@ -41,6 +41,7 @@ catkin_install_python(PROGRAMS
   scripts/async_planner.py
   scripts/execution_guard.py
   scripts/lidar_navigation.py
+  scripts/longitudinal_planner.py
   scripts/velocity_response.py
   scripts/response_native.py
   scripts/lidar_scene.py
