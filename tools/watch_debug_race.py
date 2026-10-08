@@ -20,7 +20,7 @@ out=args.out.resolve();hud=out/'hud';hud.mkdir(exist_ok=True)
 env=dict(os.environ,DISPLAY=args.display)
 stream=out/'flight/streams.jsonl'
 offset=0;pending='';counter=0;finished_frames=0
-last_s=None;best_s=None;progress_at=time.monotonic();last_telemetry=None
+last_s=None;best_s=None;progress_at=time.monotonic();last_telemetry=None;race_started=False
 def stop(reason,**fields):
     if (out/'stop.json').exists():return
     payload=dict(reason=reason,wall_time=time.time(),official_result='UNKNOWN')
@@ -70,9 +70,16 @@ while True:
             with (hud/'captures.jsonl').open('a') as file:
                 file.write(json.dumps(dict(file=filename,wall_time=time.time(),ocr=ocr))+'\n')
             counter+=1
-            finished_frames=finished_frames+1 if re.search(r'\bFinished\b',ocr,re.I) else 0
-            if finished_frames>=2:
-                stop('HUD_FINISHED',hud=filename,ocr=ocr,official_result='FINISHED_OBSERVED');break
+            # A restarted simulator can briefly display the previous
+            # session's Finished HUD (or a zeroed placeholder). Only accept
+            # Finished after this run has shown a non-Finished HUD.
+            if re.search(r'\bFinished\b',ocr,re.I):
+                if race_started:
+                    finished_frames+=1
+                    if finished_frames>=2:
+                        stop('HUD_FINISHED',hud=filename,ocr=ocr,official_result='FINISHED_OBSERVED');break
+            else:
+                race_started=True;finished_frames=0
     except (subprocess.SubprocessError,OSError,ValueError) as error:
         print(str(error),flush=True)
     if last_s is not None and now-progress_at>args.stall_seconds:

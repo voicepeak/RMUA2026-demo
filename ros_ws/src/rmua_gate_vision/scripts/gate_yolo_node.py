@@ -94,6 +94,14 @@ class GateYolo(object):
         self.sync_max_age = rospy.get_param("~sync_max_age", 3.0)
         self.fallback_center = bool(rospy.get_param("~fallback_dense_center", True))
 
+        import torch
+        requested_device=str(rospy.get_param('~device','auto'))
+        self.device=('0' if torch.cuda.is_available() else 'cpu') if requested_device=='auto' else requested_device
+        if self.device=='cpu':
+            torch.set_num_threads(2)
+            rospy.logwarn('VISION_DEVICE=cpu; gate inference has no CUDA acceleration')
+        else:
+            rospy.loginfo('VISION_DEVICE=%s',self.device)
         from ultralytics import YOLO
         self.model = YOLO(self.model_path)
         car_path=rospy.get_param('~car_model','')
@@ -195,7 +203,7 @@ class GateYolo(object):
         return np.asarray(pos, dtype=float), quat
 
     def detect(self, bgr):
-        res = self.model.predict(bgr, imgsz=self.imgsz, conf=self.conf, iou=.5, verbose=False)[0]
+        res = self.model.predict(bgr, imgsz=self.imgsz, conf=self.conf, iou=.5, verbose=False,device=self.device)[0]
         return self.candidates(res,bgr)
 
     def candidates(self,res,bgr):
@@ -307,13 +315,13 @@ class GateYolo(object):
 
         # Snapshot the image-time pose BEFORE inference. Otherwise a slow GPU
         # evicts that pose from the rolling buffer and every image is discarded.
-        results=self.model.predict([left,right],imgsz=self.imgsz,conf=self.conf,iou=.5,verbose=False)
+        results=self.model.predict([left,right],imgsz=self.imgsz,conf=self.conf,iou=.5,verbose=False,device=self.device)
         cl,kp_l=self.candidates(results[0],left)
         cr,_=self.candidates(results[1],right)
         cars_l,cars_r=[],[]
         if self.car_model is not None:
             car_results=self.car_model.predict([left,right],imgsz=self.imgsz,
-                conf=self.car_conf,iou=.5,verbose=False)
+                conf=self.car_conf,iou=.5,verbose=False,device=self.device)
             cars_l,cars_r=[car_boxes(r,self.car_conf) for r in car_results]
             cl=[g for g in cl if not overlaps_car(g,cars_l)]
             cr=[g for g in cr if not overlaps_car(g,cars_r)]

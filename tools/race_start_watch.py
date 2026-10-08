@@ -35,6 +35,7 @@ args.out.mkdir(parents=True,exist_ok=True)
 root=Path(__file__).resolve().parents[1]
 workspace=root.parent
 config=workspace/'rmua_ws/src/route_follower/config'
+from race_runner import outbound_response_arguments
 rospy.init_node('race_start_watch')
 pose=rospy.wait_for_message('/airsim_node/drone_1/debug/pose_gt',PoseStamped,timeout=20.)
 position=pose.pose.position
@@ -43,18 +44,18 @@ if abs(position.x)>3. or abs(position.y)>3.:
 command=['roslaunch','route_follower','route_follower.launch',
          'control_rate:='+str(args.control_rate),
          'obstacle_backend:='+args.obstacle_backend,
-         'coupled_response:='+('true' if args.outbound_response=='coupled' else 'false'),
          'gates_file:='+str(config/'gates_seed123_recorded.yaml'),
          'guides_file:='+str(config/'guides_seed123_recorded.yaml'),
          'gate_center_pull_max:=0','static_correction_max:=2',
          'cruise_speed:=40','max_speed:=40','adaptive_speed:=true','lidar_braking:=8',
          'curve_preview_max:=100','curve_preview_step:=1','z_response_time:=0.15',
-         'terminal_hover_height:=1.5','lidar_height_gain:=1.0','lidar_coupling_limited:=false','lidar_local_replan:=false','lidar_path_options:=false',
-         'lidar_lift_gain:=0.11','lidar_coupling_gain_min:=0.09',
-         'lidar_discrete_feedback:=false','lidar_fresh_publication_check:=false','sensor_reaction:=0.35',
+         'terminal_hover_height:=1.5','lidar_height_gain:=1.0','lidar_local_replan:=false','lidar_path_options:=false',
+         'lidar_lift_gain:=0.11','lidar_coupling_gain_min:=0.09','lidar_envelope_margin:=1.15',
+         'sensor_reaction:=0.35',
          'lidar_anticipation_distance:=0','debug_cloud_dir:='+str(args.out/'clouds'),
          'slope_eta:=0.95','vz_down_limit:=4.5',
          'z_rate_max:=5','vz_capability_file:='+str(config/'vz_capability_seed123_fast.yaml')]
+command+=outbound_response_arguments(args.outbound_response)
 command+=['planner_mode:='+args.planner_mode]
 if args.spacetime_bridge_hold is not None:
     command+=['spacetime_bridge_verified:=true','spacetime_bridge_hold:='+str(args.spacetime_bridge_hold)]

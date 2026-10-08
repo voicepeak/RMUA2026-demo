@@ -10,6 +10,7 @@ import time
 import hashlib
 import shutil
 from system_health import snapshot as system_health_snapshot
+from vision_runtime import probe_cuda
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--mode',choices=('render','offscreen','background'),default='render')
@@ -22,6 +23,8 @@ parser.add_argument('--planner-mode',choices=('legacy','spacetime'),default='leg
 parser.add_argument('--spacetime-bridge-hold',type=float,help='Measured external bridge command expiry in seconds; absent means no certified motion')
 parser.add_argument('--outbound-response',choices=('legacy','coupled'),default='coupled',help='First leg response policy; subsequent vehicle legs retain coupled response')
 parser.add_argument('--out',type=Path)
+parser.add_argument('--allow-cpu-vision',action='store_true',
+                    help='Explicitly allow slower CPU gate inference if CUDA is unavailable')
 args=parser.parse_args()
 if args.planner_mode=='spacetime' and args.obstacle_backend!='lidar_nav':parser.error('spacetime requires lidar_nav')
 if args.spacetime_bridge_hold is not None:
@@ -53,7 +56,7 @@ hashes={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdigest()
         for path in sorted(snapshot.rglob('*')) if path.is_file()}
 tool_snapshot=out/'tool_sources';tool_snapshot.mkdir(exist_ok=False)
 for name in ('start_seed123_race.py','race_start_watch.py','race_runner.py','watch_debug_race.py',
-             'race_monitor_policy.py','summarize_debug_race.py','control_trace.py','system_health.py'):
+             'race_monitor_policy.py','summarize_debug_race.py','control_trace.py','system_health.py','vision_runtime.py'):
     shutil.copy2(Path(__file__).with_name(name),tool_snapshot/name)
 tool_hashes={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdigest()
              for path in sorted(tool_snapshot.glob('*.py'))}
@@ -74,6 +77,15 @@ def inspect():
     result=subprocess.run(['docker','inspect','rmua_noetic'],capture_output=True,text=True,check=True)
     return json.loads(result.stdout)[0]['State']
 old=inspect()
+if not old['Running']:
+    subprocess.run(['docker','start','rmua_noetic'],check=True,capture_output=True)
+    old=inspect()
+vision_health=probe_cuda()
+(out/'vision_runtime.json').write_text(json.dumps(vision_health,indent=2)+'\n')
+if not vision_health['available'] and not args.allow_cpu_vision:
+    raise RuntimeError('CUDA vision unavailable before simulator start; see '+str(out/'vision_runtime.json')+
+                       '. Repair the GPU compute device, or explicitly use --allow-cpu-vision.')
+print('Vision device:',vision_health.get('device') or 'CPU (explicit override)',flush=True)
 check=subprocess.run(['docker','exec','rmua_noetic','pgrep','-f','RMUA-Linux|rosmaster'],capture_output=True)
 had_sim=check.returncode==0
 sim=subprocess.Popen([str(workspace/'run_sim.sh'),'123',args.mode,str(container_out/'settings.json')],cwd=workspace,
