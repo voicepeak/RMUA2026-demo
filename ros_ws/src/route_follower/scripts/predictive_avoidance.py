@@ -14,6 +14,17 @@ from lattice_detour import search as lattice_search
 from path_sampling import swept_samples
 
 
+def shifted_center(center, plan=None, vertical=0.):
+    """Preserve batch height evaluation through the optional detour wrapper."""
+    def result(station):
+        return center(station)+(float(plan.offset(station)[1]) if plan is not None else vertical)
+    if hasattr(center,'batch'):
+        def batch(stations):
+            return center.batch(stations)+(plan.offsets(stations)[...,1] if plan is not None else vertical)
+        result.batch=batch
+    return result
+
+
 def departure_floor_limits(stations, positions, center, floor_offset, index, margin):
     """Shared NED floor bound during departure; measured floor takes priority."""
     stations=np.asarray(stations)

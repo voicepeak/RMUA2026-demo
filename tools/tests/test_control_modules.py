@@ -29,6 +29,31 @@ class ObstacleAlignmentTests(unittest.TestCase):
 
 
 class XYTrackerTests(unittest.TestCase):
+    def test_near_gate_map_update_keeps_opening_until_exit(self):
+        from reference_planner import RouteGeometry
+        route=RouteGeometry([(0.,0.,0.),(100.,0.,0.)])
+        gates=[dict(s=20.,x=20.,y=3.),dict(s=40.,x=40.,y=-3.)]
+        tracker=XYTracker();tracker.configure(route,gates,stamp=0.)
+        crossing=tracker.point_at(20.)[1]
+        for now in (17.5,19.5,20.5,23.5):
+            tracker.configure(route,gates,s_now=now,stamp=now)
+            tracker.stamp=now+.4
+            self.assertAlmostEqual(tracker.point_at(20.)[1],crossing)
+            self.assertLessEqual(abs(tracker.point_at(20.)[1]-3.),tracker.clearance+1e-6)
+
+    def test_near_gate_jitter_preserves_valid_crossing_but_new_blocking_edge_adjusts(self):
+        from reference_planner import RouteGeometry
+        route=RouteGeometry([(0.,0.,0.),(100.,0.,0.)])
+        tracker=XYTracker();tracker.configure(route,[dict(s=20.,x=20.,y=3.)],stamp=0.)
+        crossing=tracker.point_at(20.)[1]
+        tracker.configure(route,[dict(s=20.,x=20.,y=2.9)],s_now=18.,stamp=1.)
+        tracker.stamp=1.4
+        self.assertAlmostEqual(tracker.point_at(20.)[1],crossing)
+        tracker.configure(route,[dict(s=20.,x=20.,y=4.)],s_now=18.,stamp=2.)
+        tracker.stamp=2.4
+        self.assertGreater(tracker.point_at(20.)[1],crossing)
+        self.assertLessEqual(abs(tracker.point_at(20.)[1]-4.),tracker.clearance+1e-6)
+
     def test_online_gate_update_keeps_position_and_direction_continuous(self):
         from reference_planner import RouteGeometry
         route=RouteGeometry([(0.,0.,0.),(100.,0.,0.)])

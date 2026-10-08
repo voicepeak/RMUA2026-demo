@@ -188,9 +188,11 @@ class ReferencePlanner(object):
         anchor_gates = [{"s": s, "z": z, "valid": True} for s, z in anchors]
         goal_z = anchors[-1][1] if anchors else start_z
         off = z_offset if self.gate_z_uses_offset else 0.0
-        guides_adj = [{"s": gd["s"], "z": float(gd["z"]) + off}
+        recorded_adj = [dict(gd,s=float(gd["s"]),z=float(gd["z"])+off)
                       for gd in (guides or []) if gd.get("s") is not None]
-        # Recorded guides are measured evidence. Do not interleave a fitted
+        self.height_prior.fit_recorded_poses(recorded_adj,chain.gates)
+        guides_adj=[g for g in recorded_adj if not g.get('calibration_only',False)]
+        # Do not interleave a fitted
         # extrapolation with their covered section of the road.
         guide_end = max((float(g["s"]) for g in guides_adj), default=0.0)
         if guides_adj and guide_end >= self.route.total_s - 1.0:
@@ -214,8 +216,10 @@ class ReferencePlanner(object):
                 guides_adj.append({"s": last_s, "z": last_z})
                 trend.append((last_s, last_z))
         self.evidence_horizon = max(trend[-1][0] if trend else 0.0, guide_end) or None
-        if self.height_prior.valid and trend:
-            last_s,last_z=trend[-1]
+        if self.height_prior.valid and (trend or guides_adj):
+            last_s,last_z=trend[-1] if trend else (0.,start_z)
+            if guide_end>last_s:
+                last_s,last_z=guide_end,max(guides_adj,key=lambda g:g['s'])['z']
             self.trend_horizon=max(guide_end,self.height_prior.horizon(last_s))
             correction=max(-1.,min(1.,last_z-self.height_prior.center(last_s)))
             s=last_s+10.

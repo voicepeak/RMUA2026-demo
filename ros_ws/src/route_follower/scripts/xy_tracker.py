@@ -13,6 +13,7 @@ class XYTracker:
         self.k_pursuit = float(k_pursuit)
         self.clearance = max(.1, half_width-margin)
         self.acceleration = acceleration
+        self.exit_blend_distance=max(0.,float(exit_blend_distance))
         self.reset()
 
     def reset(self):
@@ -37,7 +38,10 @@ class XYTracker:
         self.route = route
         rows = []
         for g in gates:
-            if not g.get('valid',True) or g['s'] <= s_now+3.: continue
+            # Keep the opening through the crossing and the exit. Removing
+            # it before the plane lets a map update steer toward the next
+            # opening while the aircraft is still inside this one.
+            if not g.get('valid',True) or g['s'] < s_now-self.exit_blend_distance: continue
             s = g['s']
             x,y,_ = route.point_at(s)
             dx,dy = self.basis(s)
@@ -55,6 +59,12 @@ class XYTracker:
                         numerator += weight*rows[j][3]
                         denominator += weight
                 row[3] = max(row[1],min(row[2],numerator/denominator))
+        if old is not None:
+            for row in rows:
+                if row[0]<=s_now+8.:
+                    # Preserve an already valid crossing offset under map
+                    # jitter, adjusting only if the opening excludes it.
+                    row[3]=max(row[1],min(row[2],previous_center(row[0])))
         anchors = [(0.,0.)] if old is None else [(max(0.,s_now-2.),previous_center(max(0.,s_now-2.))),
                                                  (s_now,previous_center(s_now))]
         anchors += [(r[0],r[3]) for r in rows]
