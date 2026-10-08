@@ -20,6 +20,13 @@ from reference_planner import RouteGeometry
 
 SEQUENCE=(1,3,5,8,12,10,7)
 
+def outbound_response_arguments(mode):
+    if mode not in ('legacy','coupled'):raise ValueError('Unknown outbound response policy')
+    enabled='true' if mode=='coupled' else 'false'
+    return ['coupled_response:='+enabled,'lidar_coupling_limited:='+enabled,
+            'lidar_discrete_feedback:='+enabled,'lidar_fresh_publication_check:='+enabled,
+            'lidar_xy_error_max:=4.5']
+
 def goal_matches_road(splines,road,goal):
     point=splines[road-1][0]
     return math.hypot(point[0]-goal[0],point[1]-goal[1])<35.
@@ -36,7 +43,8 @@ def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=Fal
         command+=['spacetime_bridge_verified:=true','spacetime_bridge_hold:='+str(spacetime_bridge_hold)]
     if adaptive_speed:command+=['adaptive_speed:=true','lidar_braking:=8','curve_preview_max:=100',
                                'terminal_hover_height:=1.5','debug_cloud_dir:='+str(Path(route_file).parent/'clouds'),
-                               'curve_preview_step:=1','z_response_time:=0.15']
+                               'curve_preview_step:=1','z_response_time:=0.15','lidar_envelope_margin:=1.15',
+                               'lidar_budget:=0.15','lidar_side_buffer:=0.9']
     if fast_descent:
         config=Path(__file__).resolve().parents[1]/'ros_ws/src/route_follower/config'
         command+=['slope_eta:=0.95','vz_down_limit:=4.5','z_rate_max:=5',
@@ -62,7 +70,7 @@ def build_leg(splines,start,finish,goal,measured):
     for i,g in enumerate(gates):g['id']=i
     return route.points,gates
 
-def recorded_return_guides(route,incoming,height_trace):
+def recorded_return_guides(route,incoming,height_trace,source='recorded_reference',calibration_only=False):
     guides=[]
     for p in height_trace:
         _,_,distance,_=incoming.project(p)
@@ -72,12 +80,26 @@ def recorded_return_guides(route,incoming,height_trace):
         # Replaying that maneuver in reverse hits the departure window sill.
         # Let the current pose and the first gate anchor define departure.
         if s<40.:continue
-        guides.append(dict(s=s,z=p[2]))
+        guides.append(dict(s=s,z=p[2],source=source,calibration_only=calibration_only))
     guides.sort(key=lambda g:g['s'])
     sampled=[]
     for g in guides:
         if not sampled or g['s']-sampled[-1]['s']>=8.:sampled.append(g)
     return sampled
+
+def measured_height_pose(data):
+    """Accept actual near-reference flight poses, excluding avoidance/landing.
+
+    path_xy and z_ref describe desired motion and cannot calibrate a height model.
+    """
+    p=data.get('position_world');xy=data.get('path_xy');z=data.get('z_ref_raw')
+    if p is None or xy is None or z is None:return None
+    try:
+        p=tuple(float(v) for v in p)
+        if len(p)!=3 or not all(math.isfinite(v) for v in (*p,*xy,z)):return None
+        if abs(p[2]-z)>.6 or math.hypot(p[0]-xy[0],p[1]-xy[1])>1.:return None
+    except (TypeError,ValueError,IndexError):return None
+    return p
 
 def main():
     import rospy
@@ -86,6 +108,8 @@ def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--out',type=Path,required=True)
     ap.add_argument('--cruise',type=float,default=10.)
+    ap.add_argument('--vehicle-cruise',type=float,default=12.,
+                    help='Cruise ceiling for the moving-vehicle leg; outbound cruise is independent')
     ap.add_argument('--stage',type=int,default=0)
     ap.add_argument('--start-current-leg',action='store_true',
                     help='Resume the selected leg at its starting marker')
@@ -101,6 +125,7 @@ def main():
     ap.add_argument('--planner-mode',choices=('legacy','spacetime'),default='legacy')
     ap.add_argument('--spacetime-bridge-hold',type=float,help='Measured external bridge command expiry in seconds; absent means no certified motion')
     a=ap.parse_args();a.out.mkdir(parents=True,exist_ok=True)
+    if not math.isfinite(a.vehicle_cruise) or a.vehicle_cruise<=0:ap.error('vehicle-cruise must be positive and finite')
     if not math.isfinite(a.control_rate) or a.control_rate<=0:ap.error("control-rate must be positive and finite")
     if a.planner_mode=='spacetime' and a.obstacle_backend!='lidar_nav':ap.error('spacetime requires lidar_nav')
     if a.spacetime_bridge_hold is not None and (not math.isfinite(a.spacetime_bridge_hold) or not 0.<a.spacetime_bridge_hold<=1./a.control_rate):
@@ -159,6 +184,7 @@ def main():
         guides=[]
         incoming=RouteGeometry(splines[SEQUENCE[stage]-1])
         height_trace=[]
+        measured_trace=[]
         if a.height_trace:
             for line in a.height_trace.open():
                 try:row=json.loads(line)
@@ -166,7 +192,11 @@ def main():
                 if row.get('topic')=='telemetry':
                     data=row['data']
                     height_trace.append((*data['path_xy'],data.get('z_ref_raw',data['z_ref'])))
+                    p=measured_height_pose(data)
+                    if p is not None:measured_trace.append(p)
         sampled=recorded_return_guides(route,incoming,height_trace)
+        sampled+=recorded_return_guides(route,incoming,measured_trace,
+                                       source='measured_flight_pose',calibration_only=True)
         folder=a.out/('leg_%d_%d'%(SEQUENCE[stage],SEQUENCE[stage+1]));folder.mkdir(exist_ok=True)
         route_file=folder/'route.yaml';gates_file=folder/'gates.yaml';guides_file=folder/'guides.yaml'
         route_file.write_text(yaml.safe_dump({'routes':{'race_leg':points}}))
@@ -184,7 +214,8 @@ def main():
                           '_route_file:='+str(route_file),'_route_name:=race_leg',
                           '_imgsz:=960','_conf:=0.35'],
                          stdout=(folder/'vision.log').open('w'),stderr=subprocess.STDOUT)
-        command=controller_command(route_file,gates_file,guides_file,a.cruise,a.fast_descent,a.adaptive_speed,a.control_rate,a.obstacle_backend,a.planner_mode,a.spacetime_bridge_hold)
+        cruise=min(a.cruise,a.vehicle_cruise) if stage==1 else a.cruise
+        command=controller_command(route_file,gates_file,guides_file,cruise,a.fast_descent,a.adaptive_speed,a.control_rate,a.obstacle_backend,a.planner_mode,a.spacetime_bridge_hold)
         if cause=='OFFICIAL_ENDPOINT_CHANGED' and previous is not None:
             command+=['departure_hover_z:='+str(previous[2]-1.5)]
         child=subprocess.Popen(command,stdout=(folder/'controller.log').open('w'),stderr=subprocess.STDOUT)
