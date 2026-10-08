@@ -15,7 +15,7 @@
 - Phase 3地图验证：51帧最近命中射线场景全部有效，地图更新及快照P95约20.52ms；75000回波有界测试P95约36.22ms，全部endpoint保留。只有29帧具有可信动态归属，其余保守保留静态；不能推断整体控制周期或实飞效果。[地图证据、源码清单与修改前备份](../../experiments/dynamic_occupancy_refactor_20261007/)已保存。第58轮旧档案没有曝光origin，被明确拒绝做FREE重建。
 - Phase 4离线MVP：所有响应情景的时空动作、动态段内相交、UNKNOWN拒绝、实际等待及完整制动已实现。五个理想观测闭环场景（静态绕行/横穿/双车/暂堵/窄通道）到达测试目标，Case E速度突变拒绝由单独checker测试覆盖；使用理想FREE地图与受控CV对象，不代表实飞。350ms预算的每例P95约354–357ms，尚未达到5–10Hz目标；默认100ms冻结输入审计只能证明短前缀可用。[最终证据及此前高度交接失败](../../experiments/spacetime_mvp_refactor_20261007/)完整保留。新轨迹通常只认证首0.25s及完整制动，不能整条持续执行。
 - Phase 6收尾：449项测试/两种环境、九类隔离故障、安装节点111条实际ROS零发布通过；P95发布50.42ms。五例最终离线回归全部通过；自查发现并修复了静态绕行停车余量退化，失败证据保留。详见[执行层记录](30_spacetime_execution_implementation.md)。
-- 本次四批按门洞/高度参考、控制/脱困、视觉/运行工具、文档/证据合入main并推送，分批清单见[发布记录](validation/gap_release_20261008/merge_batches.json)。合并期间新出现且正在接线的`longitudinal_planner.py`、对应测试及后续控制器改动留在工作区，不在此次已验证版本内。
+- 本次四批按门洞/高度参考、控制/脱困、视觉/运行工具、文档/证据合入main并推送，分批清单见[发布记录](validation/gap_release_20261008/merge_batches.json)。批次5已将`longitudinal_planner.py`、对应测试与`planner_mode=longitudinal`入口提交（默认legacy、不参与比赛验收）。run30–36显示纵向模式与legacy软规划试验实跑未通过（起点死锁、提前结束或卡死），主线保持legacy；结论见[记录](32_reference_band_transient_release.md)与`experiments/band_transient_20261008/README.md`。
 - 继续保留节能模式。不要用CPU条件不同的单次成绩归因算法；出现运行退化先查时钟、资源和进程，必要时重启。本次按用户指令提交并推送；版本以Git和发布清单为准。
 
 ## 2. 代码、快照与证据位置
