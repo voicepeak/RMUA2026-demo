@@ -19,14 +19,14 @@ parser.add_argument('--clock-type',choices=('auto','ScalableClock','SteppableClo
 parser.add_argument('--lidar-point-rate',type=int,help='Optional lidar points/second; default preserves simulator settings')
 parser.add_argument('--stall-seconds',type=float,default=20.)
 parser.add_argument('--obstacle-backend',choices=('lidar_nav','legacy'),default='lidar_nav')
-parser.add_argument('--planner-mode',choices=('legacy','spacetime'),default='legacy')
+parser.add_argument('--planner-mode',choices=('legacy','spacetime','longitudinal'),default='legacy')
 parser.add_argument('--spacetime-bridge-hold',type=float,help='Measured external bridge command expiry in seconds; absent means no certified motion')
 parser.add_argument('--outbound-response',choices=('legacy','coupled'),default='coupled',help='First leg response policy; subsequent vehicle legs retain coupled response')
 parser.add_argument('--out',type=Path)
 parser.add_argument('--allow-cpu-vision',action='store_true',
                     help='Explicitly allow slower CPU gate inference if CUDA is unavailable')
 args=parser.parse_args()
-if args.planner_mode=='spacetime' and args.obstacle_backend!='lidar_nav':parser.error('spacetime requires lidar_nav')
+if args.planner_mode in ('spacetime','longitudinal') and args.obstacle_backend!='lidar_nav':parser.error(args.planner_mode+' requires lidar_nav')
 if args.spacetime_bridge_hold is not None:
     interval=1./(20.*args.clock_speed) if 0.<args.clock_speed<=2. else 0.
     if not math.isfinite(args.spacetime_bridge_hold) or not 0.<args.spacetime_bridge_hold<=interval:

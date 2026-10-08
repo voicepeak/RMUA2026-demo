@@ -20,12 +20,12 @@ parser=argparse.ArgumentParser()
 parser.add_argument('--out',type=Path,required=True)
 parser.add_argument('--control-rate',type=float,default=20.)
 parser.add_argument('--obstacle-backend',choices=('lidar_nav','legacy'),default='lidar_nav')
-parser.add_argument('--planner-mode',choices=('legacy','spacetime'),default='legacy')
+parser.add_argument('--planner-mode',choices=('legacy','spacetime','longitudinal'),default='legacy')
 parser.add_argument('--spacetime-bridge-hold',type=float,help='Measured external bridge command expiry in seconds; absent means no certified motion')
 parser.add_argument('--outbound-response',choices=('legacy','coupled'),default='coupled')
 args=parser.parse_args()
 if not math.isfinite(args.control_rate) or args.control_rate<=0:parser.error("control-rate must be positive and finite")
-if args.planner_mode=='spacetime' and args.obstacle_backend!='lidar_nav':parser.error('spacetime requires lidar_nav')
+if args.planner_mode in ('spacetime','longitudinal') and args.obstacle_backend!='lidar_nav':parser.error(args.planner_mode+' requires lidar_nav')
 if args.spacetime_bridge_hold is not None:
     interval=1./args.control_rate
     if not math.isfinite(args.spacetime_bridge_hold) or not 0.<args.spacetime_bridge_hold<=interval:

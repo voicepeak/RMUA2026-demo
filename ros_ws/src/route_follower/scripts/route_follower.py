@@ -101,10 +101,10 @@ class RouteFollower(object):
         self.adaptive_speed=bool(rospy.get_param('~adaptive_speed',False))
         self.obstacle_backend=rospy.get_param('~obstacle_backend','lidar_nav')
         self.planner_mode=rospy.get_param('~planner_mode','legacy')
-        if self.planner_mode not in ('legacy','spacetime'):
+        if self.planner_mode not in ('legacy','spacetime','longitudinal'):
             raise ValueError('Unknown planner_mode: '+str(self.planner_mode))
-        if self.planner_mode=='spacetime' and self.obstacle_backend!='lidar_nav':
-            raise ValueError('spacetime requires the LiDAR backend')
+        if self.planner_mode in ('spacetime','longitudinal') and self.obstacle_backend!='lidar_nav':
+            raise ValueError(self.planner_mode+' requires the LiDAR backend')
         if self.obstacle_backend not in ('lidar_nav','legacy'):
             raise ValueError('Unknown obstacle_backend: '+str(self.obstacle_backend))
         self.lidar_navigation=self.adaptive_speed and self.obstacle_backend=='lidar_nav'
@@ -304,6 +304,21 @@ class RouteFollower(object):
         self.clearance = LidarClearance(margin=1.15 if self.adaptive_speed else 1.,braking=self.lidar_braking)
         self.clearance_z = 0.
         self.clearance_y = 0.
+        from longitudinal_planner import LongitudinalConfig,CarVelocityStore
+        self.long_cfg=LongitudinalConfig(
+            plan_margin=float(rospy.get_param('~long_plan_margin',.6)),
+            absolute_margin=float(rospy.get_param('~long_absolute_margin',.45)),
+            follow_gap=float(rospy.get_param('~long_follow_gap',1.5)),
+            commitment=float(rospy.get_param('~long_commitment',.6)),
+            lateral_min_free=float(rospy.get_param('~long_lateral_min_free',6.)),
+            lateral_gain=float(rospy.get_param('~long_lateral_gain',3.)))
+        self.car_state=CarVelocityStore()
+        self.long_commit=None
+        self.long_commit_until=None
+        self.long_last_lateral=None
+        from lidar_scene import LidarScene
+        self.long_scene=LidarScene()
+        self.long_stats=dict(plans=0,waits=0,lateral=0,vertical=0,emergency=0,switches=0)
         self.clearance_checked = None
         self.clearance_info = dict(cap=0. if self.adaptive_speed else None,active=False,source='PENDING')
         self.pose_arrival = None
@@ -737,6 +752,10 @@ class RouteFollower(object):
         self.retreat_pending=False
         self.shift_checked=None
         self.clearance_z = self.clearance_y = 0.
+        self.long_commit=None
+        self.long_commit_until=None
+        self.long_last_lateral=None
+        if getattr(self,'long_scene',None) is not None:self.long_scene.reset()
         self.clearance_checked = None
         self.chain = None
         self.profile = None
@@ -929,6 +948,144 @@ class RouteFollower(object):
         final=self.arbiter.finalize(command[:2],-float(command[2]),final.yaw_rate,
                                     fresh_yaw,safety=self.safety)
         return final,fresh_yaw,stamp,velocity,check
+
+    def _station_of(self,x,y):
+        i,t,d,c=self.route.project((x,y,0.))
+        return self.route.seg_s[i]+t*self.route.seg_len[i]
+
+    def _route_center(self,s):
+        x,y,_=self.xy_tracker.base_point_at(s)
+        return np.array([x,y,self.blender.center(s,self.pose_stamp)])
+
+    def _route_side(self,s):
+        tx,ty,_=self.route.tangent(s)
+        return np.array([-ty,tx])
+
+    def _corridor_free(self,s_now,lateral,height,index,cfg,base_z=None):
+        stations=s_now+np.arange(0.,cfg.lookahead+1e-9,cfg.sample_step)
+        center0=self.blender.center(s_now,self.pose_stamp)
+        points=[];sides=[]
+        for station in stations:
+            x,y,_=self.xy_tracker.base_point_at(station)
+            # Follow the measured altitude offset instead of the reference.
+            z=(center0 if base_z is None else base_z)+(self.blender.center(station,self.pose_stamp)-center0)
+            points.append([x,y,z+height])
+            sides.append(self._route_side(station))
+        points=np.asarray(points);sides=np.asarray(sides)
+        points[:,:2]+=lateral*sides
+        d=index.distance(points,limit=2.)
+        soft=np.flatnonzero(d<cfg.plan_margin)
+        hard=np.flatnonzero(d<cfg.absolute_margin)
+        free_soft=float(stations[soft[0]]-s_now) if len(soft) else cfg.lookahead
+        free_hard=float(stations[hard[0]]-s_now) if len(hard) else cfg.lookahead
+        return free_soft,free_hard,float(np.min(d))
+
+    def _longitudinal_select(self,pn,velocity,s_now,points,cloud_stamp,pose_stamp,floor_offset,dt,vz_up):
+        from longitudinal_planner import (project_cars,plan_longitudinal,choose_one_shot,
+                                          emergency_stop_distance,car_box_conflict)
+        guard=self.execution_guard;cfg=self.long_cfg
+        age,error=guard._update(points,cloud_stamp,pose_stamp,pn)
+        info=dict(source='LONGITUDINAL',active=True,cap=None,cars=0,feasible=False,
+                  command_reason='LONGITUDINAL_PLAN')
+        if error:
+            return np.zeros(3),dict(info,command_reason=error,command_scale=0.)
+        tracks=self.car_tracks.snapshot(pose_stamp) if self.car_tracks is not None else []
+        tangent=lambda s:np.r_[self.route.tangent(s)[:2],self.route.tangent(s)[2]]
+        cars=project_cars(tracks,self._station_of,self._route_center,tangent,pose_stamp,cfg,
+                          state_store=self.car_state)
+        # Lidar clusters are available before vision warms up and carry a
+        # measured extent and velocity; identical projection.
+        try:
+            forward=np.asarray(self.route.tangent(s_now)[:2],dtype=float)
+            forward/=max(1e-6,float(np.linalg.norm(forward)))
+            self.long_scene.update(points,pn,cloud_stamp,pose_stamp,forward,
+                lambda t:self.blender.center(t,pose_stamp),s_now)
+            cluster_tracks=[]
+            for track in self.long_scene.tracks:
+                if track['support']<2:continue
+                half=track['half']
+                cluster_tracks.append(dict(world=track['center'],stamp=track['stamp'],
+                    velocity=track['velocity'],half_length=max(.6,float(half[0])),
+                    half_width=max(.6,float(half[1])),half_height=max(.6,float(half[2])),
+                    uncertainty=.4,id='lidar'))
+            cars+=project_cars(cluster_tracks,self._station_of,self._route_center,tangent,
+                               pose_stamp,cfg,state_store=self.car_state)
+        except (ValueError,TypeError):
+            pass
+        info['cars']=len(cars)
+        now=pose_stamp
+        committed=(self.long_commit is not None and self.long_commit_until is not None
+                   and now<self.long_commit_until)
+        y_off=self.long_commit['y'] if committed else 0.
+        free_soft,free_hard,min_clear=self._corridor_free(s_now,y_off,0.,guard.index,cfg,base_z=pn[2])
+        plan=plan_longitudinal(s_now,max(0.,float(np.linalg.norm(velocity[:2]))),cars,cfg,
+                               cruise=self.speed_sched.cruise,free_soft=free_soft,drone_y=y_off)
+        self.long_stats['plans']+=1
+        if plan['wait']:
+            self.long_stats['waits']+=1
+        if plan['wait'] and not committed and s_now>=8.:
+            offsets={}
+            for y in cfg.lateral_offsets:
+                if car_box_conflict(cars,s_now,y,pn[2],4.,cfg) is not None:
+                    continue
+                soft,hard,clear=self._corridor_free(s_now,y,0.,guard.index,cfg,base_z=pn[2])
+                offsets[y]=(soft,hard,clear)
+            pick=choose_one_shot(free_soft,offsets,cfg)
+            if pick['kind']=='lateral':
+                sign=1. if pick['y']>0. else -1.
+                reversing=(self.long_last_lateral is not None and
+                           sign!=self.long_last_lateral[0] and
+                           now-self.long_last_lateral[1]<2.)
+                if reversing:
+                    pick=dict(kind=None,y=0.,z=0.,reason='reverse_blocked')
+                else:
+                    self.long_last_lateral=(sign,now)
+            if pick['kind']=='lateral':
+                self.long_commit=dict(kind='lateral',y=pick['y'],z=0.,
+                                      cost=-offsets[pick['y']][0])
+                self.long_commit_until=now+cfg.commitment
+                self.long_stats['lateral']+=1
+                y_off=pick['y']
+                info['lateral_decision']=pick
+        if self.long_commit is not None and now>=self.long_commit_until:
+            self.long_commit=None;self.long_commit_until=None
+        v_target=float(plan['target_speed'])
+        # Conservative leg start: traffic waits at the trigger before vision
+        # warms up; ramp to cruise over the first ~60m.
+        v_target=min(v_target,max(1.2,min(self.speed_sched.cruise,s_now*.15+1.2)))
+        v_cmd=self.speed_sched.step(self.v_cmd_prev,v_target,dt)
+        look=max(2.,min(8.,max(v_cmd,.5)*.8))
+        x,y,_=self.xy_tracker.base_point_at(s_now+look)
+        target=np.array([x,y])+y_off*self._route_side(s_now+look)
+        delta=target-pn[:2];norm=float(np.linalg.norm(delta))
+        direction=delta/norm if norm>1e-6 else np.asarray(self.route.tangent(s_now)[:2],dtype=float)
+        vertical=vz_up
+        if committed and self.long_commit is not None and self.long_commit['kind']=='vertical':
+            vertical+=1.
+        command=np.array([direction[0]*v_cmd,direction[1]*v_cmd,-vertical])
+        need=emergency_stop_distance(max(v_cmd,float(np.linalg.norm(velocity[:2]))),cfg)
+        # The single hard predicate measures free distance along the flown
+        # corridor, not a straight ray that would count side gate frames.
+        _,free_hard,final_clear=self._corridor_free(s_now,y_off,0.,guard.index,cfg,base_z=pn[2])
+        free=free_hard
+        commitment=None if self.long_commit is None else self.long_commit['kind']
+        # Tracked car boxes are checked independently of raw lidar returns so
+        # an unseen roof/deck still stops the aircraft before contact.
+        car_hit=car_box_conflict(cars,s_now,y_off,pn[2],need,cfg)
+        if free<need or car_hit is not None:
+            self.long_stats['emergency']+=1
+            brake_z=0. if guard.response_model is None else float(guard.response_model.fallback_vertical(pn,velocity))
+            command=np.array([0.,0.,brake_z])
+            return command,dict(info,feasible=False,command_reason='EMERGENCY_BRAKE',
+                                command_clearance=min_clear,emergency_free=free,
+                                emergency_need=need,emergency_car=None if car_hit is None else car_hit.get('id'),
+                                commitment=commitment)
+        reason='LONGITUDINAL_WAIT' if plan['wait'] else 'LONGITUDINAL_TRACK'
+        return command,dict(info,feasible=True,command_reason=reason,path_clearance=min_clear,
+                            command_clearance=min_clear,free_soft=free_soft,free_hard=free_hard,
+                            plan_profile=plan['profile'][:8],plan_blocked=plan['blocked'],
+                            commitment=commitment,lateral_offset=y_off,
+                            longitudinal_stats=dict(self.long_stats))
 
     def _gate_metrics(self, ng, pn):
         """门平面几何: (d_g, lat, vert, e_n); ng=None 时返回 d_g=1e9。"""
@@ -1737,7 +1894,27 @@ class RouteFollower(object):
             if checked['command_reason']!='COMMAND_CLEAR':
                 self.speed_info['reason']=checked['command_reason']
 
-        if self.lidar_navigation:
+        if self.planner_mode=='longitudinal':
+            command,nav_info=self._longitudinal_select(pn,self.motion.velocity,s_now,
+                lidar_points,lidar_stamp,pose_stamp,None,dt,vz)
+            self.clearance_info=nav_info
+            v_route=command[:2];vz=-float(command[2]);v=float(np.linalg.norm(v_route))
+            self.v_cmd_prev=v
+            self.xy_tracker.previous_velocity=tuple(v_route)
+            self.z_ctrl.prev_vz=vz
+            self.speed_info.update(reason=nav_info['command_reason'],
+                v_requested_cruise=self.speed_sched.requested_cruise,
+                braking_execution=self.execution_guard.braking,lidar_range=self.lidar_range)
+            if (self.debug_cloud_dir and
+                    (self.debug_cloud_stamp is None or pose_stamp-self.debug_cloud_stamp>1.) and
+                    nav_info['command_reason']!='LONGITUDINAL_TRACK'):
+                self.debug_cloud_stamp=pose_stamp
+                name=os.path.join(self.debug_cloud_dir,'%.3f_s%.1f'%(pose_stamp,s_now))
+                np.savez_compressed(name+'.npz',points=lidar_points,position=pn)
+                with open(name+'.json','w') as file:
+                    json.dump(dict(clearance=nav_info,s=s_now,pose_stamp=pose_stamp,
+                        measured_velocity_world=self.motion.velocity.tolist()),file)
+        if self.lidar_navigation and self.planner_mode!='longitudinal':
             desired=np.array([v_route[0],v_route[1],-vz])
             floor_offset=(self.departure_hover_z+.25-base_center(0.)
                           if self.departure_hover_z> -900. else None)
@@ -1823,7 +2000,8 @@ class RouteFollower(object):
             measured_ceiling_horizon=ceiling_horizon,
             measured_ceiling_blend=self.ceiling_blend,
             planning_horizon=self.planner.trend_horizon,
-            v_map=v_map)), allow_nan=False)))
+            v_map=v_map,longitudinal=self.long_stats,
+            long_commit=self.long_commit)), allow_nan=False)))
 
         # ---- 到达 ----
         if self.end_gate >= 0 and self.gate_idx > self.end_gate:
@@ -1846,8 +2024,14 @@ class RouteFollower(object):
 
         final_cmd = self.arbiter.finalize(v_route, vz, yaw_rate, yaw,
                                           safety=self.safety, mode=mode)
-        final_cmd,publish_yaw,publish_stamp,publish_velocity,publish_check=self._recertify_publication(
-            final_cmd,yaw,pose_stamp,started)
+        if self.planner_mode=='longitudinal':
+            # The longitudinal branch already applied the single hard
+            # predicate (emergency stop distance) on the actual command.
+            publish_yaw=yaw;publish_stamp=pose_stamp
+            publish_velocity=self.motion.velocity;publish_check=None
+        else:
+            final_cmd,publish_yaw,publish_stamp,publish_velocity,publish_check=self._recertify_publication(
+                final_cmd,yaw,pose_stamp,started)
         self.publish(final_cmd.vx, final_cmd.vy, final_cmd.vz, final_cmd.yaw_rate,
                      source_pose_stamp=publish_stamp,started=started,frame_yaw=publish_yaw,
                      measured_velocity=publish_velocity,publication_check=publish_check,
