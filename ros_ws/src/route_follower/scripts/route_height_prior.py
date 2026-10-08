@@ -2,7 +2,7 @@
 """Locally validated NED height prior from the supplied course spline.
 
 Never use raw spline Z as a flight command. Estimate its vertical datum/tilt
-from independent gate measurements and reject the model if residuals are large.
+from gate measurements or explicitly recorded flight poses; reject large residuals.
 """
 import numpy as np
 from spatial_curve import SpatialCurve
@@ -14,6 +14,7 @@ class RouteHeightPrior:
         self.valid=False
         self.error=None
         self.coefficients=None
+        self.source=None
 
     def fit(self,gates):
         points=[]
@@ -24,6 +25,9 @@ class RouteHeightPrior:
             points.append((s,x,y,self.height.center(s),float(g['z'])))
         a=np.asarray(points)
         self.valid=False
+        self.error=None
+        self.source=None
+        self.coefficients=None
         if len(points)<8 or np.ptp(a[:,0])<150 or np.ptp(a[:,3])<8: return False
         self.origin=np.mean(a[:,1:3],axis=0)
         xy=a[:,1:3]-self.origin
@@ -45,6 +49,29 @@ class RouteHeightPrior:
         inliers=errors[abs(errors)<1.]
         self.residual_sigma=max(.2,float(np.std(inliers,ddof=1)))
         self.valid=True
+        self.source='gates'
+        return True
+
+    def fit_recorded_poses(self,guides,gates):
+        """Fallback for sparse gates, never turn reference samples into evidence.
+
+        The same geometry, robust residual and bounded uncertainty checks apply.
+        An inconsistent gate fit must not be hidden by the fallback, and every
+        available trusted gate must agree with the pose-derived model.
+        """
+        if self.valid or self.error is not None:
+            return self.valid
+        measurements=sorted((g for g in guides
+                             if g.get('source')=='measured_flight_pose'),
+                            key=lambda g:float(g['s']))
+        if not self.fit(measurements):
+            return False
+        if any(g.get('trusted',True) and not self.consistent(g['s'],g['z'],1.25)
+               for g in gates):
+            self.valid=False
+            self.source=None
+            return False
+        self.source='recorded_poses'
         return True
 
     def center(self,s):

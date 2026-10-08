@@ -15,6 +15,26 @@ import threading
 
 
 class PredictiveRouteTests(unittest.TestCase):
+    def test_detour_wrapper_keeps_batch_height_and_measured_departure_bounds(self):
+        from predictive_avoidance import shifted_center
+        from spatial_curve import SpatialCurve
+        from unittest.mock import Mock
+        curve=SpatialCurve([(0.,-3.),(8.,-4.),(19.,-3.4),(30.,-6.)])
+        base=lambda s:curve.center(s)
+        base.batch=Mock(side_effect=curve.center_many)
+        stations=np.array([-1.,0.,3.,8.,19.999,20.,25.,40.])
+        class Floor:
+            def floor_limit(self,positions,margin):return np.full(len(positions),-3.2)
+        for plan in (None,Detour(0.,[0.,0.],[.5,-.3],5.,12.)):
+            wrapped=shifted_center(base,plan)
+            expected=np.array([wrapped(s) for s in stations])
+            np.testing.assert_allclose(wrapped.batch(stations),expected,atol=1e-12)
+            base.batch.reset_mock()
+            actual=departure_floor_limits(stations,np.zeros((len(stations),3)),wrapped,.25,Floor(),1.25)
+            scalar=departure_floor_limits(stations,np.zeros((len(stations),3)),lambda s:wrapped(s),.25,Floor(),1.25)
+            np.testing.assert_allclose(actual,scalar,atol=1e-12)
+            base.batch.assert_called_once()
+
     def test_batch_departure_height_keeps_measured_floor_and_20m_boundary(self):
         from spatial_curve import SpatialCurve
         curve=SpatialCurve([(0.,-3.),(8.,-4.),(19.,-3.4),(30.,-6.)])

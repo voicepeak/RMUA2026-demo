@@ -94,7 +94,10 @@ class YawController(object):
         errs = []
         for pw in gates_world[:max(1, n)]:
             e = image_u_error(pw, pos, R_wb)
-            if e is not None:
+            # Positive depth alone does not put a gate in the camera image.
+            # Off-screen projections grow without bound near the side plane
+            # and can reverse an otherwise correct road-heading controller.
+            if e is not None and abs(e) <= CAM_CX / CAM_FX:
                 errs.append(e)
         if not errs:
             return 0.0
