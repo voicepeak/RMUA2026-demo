@@ -1,0 +1,35 @@
+{
+  "10": {
+    "log": "/home/tianbot/RUMA-by-helinjun/experiments/latest_visible_20261010_10/mission/leg_3_5/controller.log",
+    "log_sha256": "490c20630dabcc25d63e6a387ac6d20db9a3bf6bd865c11a8223294144b72982",
+    "parameters": {
+      "lidar_envelope_margin": "not declared/passed; controller default applies",
+      "lidar_xy_error_max": "not declared/passed; controller default applies",
+      "lidar_geometry_margin": "not declared/passed; controller default applies",
+      "lidar_gate_opening": "not declared/passed; controller default applies",
+      "lidar_departure_floor_distance": "not declared/passed; controller default applies"
+    }
+  },
+  "11": {
+    "log": "/home/tianbot/RUMA-by-helinjun/experiments/latest_visible_20261010_11/mission/leg_3_5/controller.log",
+    "log_sha256": "d3167718868b2a9ef5cb912fd1c475cc72c0c8d15c65685ec20eb9cd0ac141d6",
+    "parameters": {
+      "lidar_envelope_margin": "0.55",
+      "lidar_xy_error_max": "2.0",
+      "lidar_geometry_margin": "not declared/passed; controller default applies",
+      "lidar_gate_opening": "not declared/passed; controller default applies",
+      "lidar_departure_floor_distance": "not declared/passed; controller default applies"
+    }
+  },
+  "13": {
+    "log": "/home/tianbot/RUMA-by-helinjun/experiments/latest_visible_20261010_13/mission/leg_3_5/controller.log",
+    "log_sha256": "3ba9f6ac70f14260d7c1440bfbaf1786ce7e02efa4fe6222a03ce0eeb5bbc3b6",
+    "parameters": {
+      "lidar_envelope_margin": "0.75",
+      "lidar_xy_error_max": "2.0",
+      "lidar_geometry_margin": "not declared/passed; controller default applies",
+      "lidar_gate_opening": "not declared/passed; controller default applies",
+      "lidar_departure_floor_distance": "not declared/passed; controller default applies"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "scope": "Frozen replay, not closed-loop validation",
+  "command": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "reason": "COMMAND_BLOCKED",
+  "milliseconds": 221.5959900058806
+}
