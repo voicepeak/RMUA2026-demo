@@ -11,6 +11,116 @@ from path_sampling import swept_samples
 
 
 class LidarNavigationTests(unittest.TestCase):
+    def test_departure_floor_expires_without_releasing_road_height_bound(self):
+        from velocity_response import VelocityResponse
+        self.guard.response_model=VelocityResponse()
+        self.guard._update(np.array([[30.,0.,0.]]),1.,1.05,np.zeros(3))
+        self.nav.departure_floor_distance=8.
+        self.nav.reference_stations=np.arange(0.,26.,.5)
+        self.nav.reference_heights=np.zeros(len(self.nav.reference_stations))
+        self.nav.reference_coordinates=np.column_stack((self.nav.reference_stations,
+            np.zeros(len(self.nav.reference_stations))))
+        before=np.array([[6.,0.,.2],[7.,0.,.2]])
+        after=np.array([[9.,0.,.2],[10.,0.,.2]])
+        self.assertFalse(self.nav._floor_ok(before,before[:,0],self.center,0.))
+        self.assertTrue(self.nav._floor_ok(after,after[:,0],self.center,0.))
+        with patch.object(self.guard.index,'floor_limit',side_effect=AssertionError('departure already cleared')):
+            self.assertTrue(self.nav._floor_ok(after,after[:,0],self.center,0.))
+        outside=after.copy();outside[:,2]=1.4
+        self.assertFalse(self.nav._floor_ok(outside,outside[:,0],self.center,0.))
+
+    def test_geometry_worker_receives_departure_floor_distance(self):
+        from lidar_navigation import _plan_snapshot,departure_floor_limits
+        stations=np.arange(-1.,35.1,.5)
+        coordinates=np.column_stack((stations,np.zeros(len(stations))))
+        self.guard._update(np.array([[30.,0.,0.]]),1.,1.05,np.zeros(3))
+        with patch('lidar_navigation.departure_floor_limits',wraps=departure_floor_limits) as floors:
+            path,_=_plan_snapshot((np.zeros(3),0.,stations,coordinates,np.zeros(len(stations)),
+                0.,self.guard.index,self.guard.margin,24.,.5,True,0.,False,(),.65,8.))
+        self.assertIsNotNone(path)
+        self.assertTrue(floors.called)
+        self.assertTrue(all(call.kwargs.get('end_s')==8. for call in floors.call_args_list))
+
+    def test_static_gap_geometry_and_stop_margin_keep_dynamic_full_buffer(self):
+        from velocity_response import VelocityResponse
+        from lidar_navigation import _plan_snapshot
+        self.guard.response_model=VelocityResponse(coupling_limited=True,xy_error_max=2.)
+        cloud=np.array([(x,y,z) for x in np.arange(5.,16.1,.5)
+            for y in np.r_[np.arange(-3.,-.89,.3),np.arange(.9,3.1,.3)]
+            for z in np.arange(-2.,2.01,.4)])
+        self.guard._update(cloud,1.,1.05,np.zeros(3))
+        self.nav.geometry_margin=.45;self.nav.envelope_margin=.55
+        path,info=self.nav.path(np.zeros(3),0.,self.xy,self.center,None)
+        self.assertIsNotNone(path)
+        self.assertGreater(info['path_distance'],18.)
+        samples,_,_=swept_samples(path)
+        self.assertGreaterEqual(self.guard.index.distance(samples).min(),.55-1e-6)
+        stations=np.arange(-1.,35.1,.5)
+        coordinates=np.column_stack((stations,np.zeros(len(stations))))
+        worker,_=_plan_snapshot((np.zeros(3),0.,stations,coordinates,np.zeros(len(stations)),
+            None,self.guard.index,self.guard.margin,24.,.5,True,0.,False,(),.45))
+        self.assertIsNotNone(worker)
+        self.assertGreater(worker[-1,0],18.)
+        # Static raw returns may use the explicit absolute line; moving
+        # predictions keep the full original 1.25m buffer independently.
+        for raw,dynamic,expected in ((.6,1.3,True),(.54,1.3,False),(.6,1.2,False)):
+            with patch.object(self.guard,'command_clearance_components',return_value=(raw,dynamic)):
+                self.assertEqual(self.nav.envelope_admission(samples)[0],expected)
+
+    def test_bbox_only_gate_does_not_certify_a_measured_opening(self):
+        gate=dict(x=6.,y=0.,z=0.,nx=1.,ny=0.,nz=0.,geometry_valid=False,
+                  sigma_x=.7,sigma_y=.9)
+        self.nav.set_gates([gate])
+        self.assertFalse(self.nav.gate_apertures)
+    def test_dense_parallel_side_pass_ignores_sampling_phase_but_rejects_front_and_roof(self):
+        cloud=np.array([(x,y,z) for x in np.arange(-1.,6.,.1)
+            for y in (-1.,1.) for z in np.arange(-1.,1.01,.1)])
+        self.guard.side_buffer=.9;self.guard.route_forward=np.array([1.,0.])
+        self.guard._update(cloud,1.,1.02,np.zeros(3))
+        samples=np.column_stack((np.arange(.037,4.,.1),np.zeros((40,2))))
+        self.assertTrue(self.guard.close_pass_ok(samples,.9))
+        for obstacle in (
+                np.array([(2.,y,z) for y in np.arange(-1.,1.01,.1) for z in np.arange(-1.,1.01,.1)]),
+                np.array([(x,y,-1.1) for x in np.arange(-1.,6.,.1) for y in np.arange(-1.,1.01,.1)])):
+            fresh=np.vstack((cloud,obstacle))
+            self.guard._update(fresh,1.03,1.05,np.zeros(3))
+            self.assertFalse(self.guard.close_pass_ok(samples,.9))
+
+    def test_gate_aperture_applies_to_detour_and_stopping_constraint(self):
+        gate=dict(x=6.,y=0.,z=0.,nx=1.,ny=0.,nz=0.,geometry_valid=True)
+        self.nav.set_gates([gate])
+        inside=np.array([[0.,0.,0.],[4.,.6,.6],[6.,.6,.6],[9.,1.5,1.5]])
+        stations=inside[:,0]
+        self.assertTrue(self.nav._floor_ok(inside,stations,self.center,None))
+        for axis in (1,2):
+            edge=inside.copy();edge[2,axis]=.9
+            self.assertFalse(self.nav._floor_ok(edge,stations,self.center,None))
+        # Points after the slab may steer to a car without reopening the
+        # crossing that was already completed inside the opening.
+        self.assertLess(self.nav._gate_errors(inside)[-1],0.)
+
+    def test_geometry_worker_receives_same_gate_opening(self):
+        from lidar_navigation import _plan_snapshot
+        stations=np.arange(-1.,26.,.5)
+        coordinates=np.column_stack((stations,np.zeros(len(stations))))
+        self.guard._update(np.array([[30.,0.,0.]]),1.,1.02,np.zeros(3))
+        self.nav.set_gates([dict(x=6.,y=0.,z=0.,nx=1.,ny=0.,nz=0.,geometry_valid=True)])
+        path,_=_plan_snapshot((np.zeros(3),0.,stations,coordinates,
+            np.zeros(len(stations)),None,self.guard.index,self.guard.margin,24.,.5,False,
+            0.,False,self.nav.gate_apertures))
+        self.assertIsNotNone(path)
+        samples,_,_=swept_samples(path)
+        self.assertTrue(self.nav._floor_ok(samples,samples[:,0],self.center,None))
+
+    def test_gate_boundary_recovery_must_center_before_crossing(self):
+        self.nav.set_gates([dict(x=6.,y=0.,z=0.,nx=1.,ny=0.,nz=0.,geometry_valid=True)])
+        # Leaving the slab improves its bound error numerically, but crossing
+        # through the side of the frame is still inadmissible.
+        bad=np.array([[4.,1.,0.],[5.,1.,0.],[7.,1.,0.],[9.,1.,0.]])
+        self.assertFalse(self.nav._floor_ok(bad,bad[:,0],self.center,None))
+        good=bad.copy();good[1:3,1]=.5
+        self.assertTrue(self.nav._floor_ok(good,good[:,0],self.center,None))
+
     def test_future_occupancy_cost_starts_bypass_earlier_without_changing_buffer(self):
         from velocity_response import VelocityResponse
         self.guard.response_model=VelocityResponse()
@@ -388,6 +498,14 @@ class LidarNavigationTests(unittest.TestCase):
         closing=np.array([[0.,0.,0.],[1.,0.,0.],[2.,0.,0.]])
         self.assertFalse(guard.close_pass_ok(closing,.9))
         guard._update(np.array([[1.5,.05,0.]]),1.2,1.25,np.zeros(3))
+        self.assertFalse(guard.close_pass_ok(side,.9))
+
+    def test_close_pass_uses_nearest_point_id_instead_of_distance_as_id(self):
+        side=np.array([[0.,0.,0.],[1.,0.,0.],[2.,0.,0.],[3.,0.,0.]])
+        guard=ExecutionGuard()
+        guard._update(np.array([[50.,0.,0.],[1.,.95,0.]]),1.,1.05,np.zeros(3))
+        self.assertTrue(guard.close_pass_ok(side,.9))
+        guard._update(np.array([[-10.,0.,0.],[1.5,.9,0.]]),1.2,1.25,np.zeros(3))
         self.assertFalse(guard.close_pass_ok(side,.9))
 
     def test_side_buffer_admits_only_non_closing_raw_minimum(self):

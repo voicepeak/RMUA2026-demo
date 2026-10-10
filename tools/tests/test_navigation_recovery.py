@@ -12,6 +12,135 @@ from velocity_response import VelocityResponse
 
 
 class NavigationRecoveryTests(unittest.TestCase):
+    def test_world_coordinate_rounding_cannot_reject_starting_pose(self):
+        position=np.array([697.3573465999713,45.25459085002929,-134.93402099609375])
+        cloud=position+np.array([(x,y,z) for x in np.arange(-1.,2.01,.1)
+            for y in (-.71215437,1.1) for z in np.arange(-1.,1.01,.1)])
+        guard=ExecutionGuard();guard.side_buffer=.9;guard.route_forward=np.array([1.,0.])
+        guard._update(cloud,.98,1.,position)
+        initial=np.sum((cloud-position)**2,axis=1)
+        thresholds=guard.recovery_thresholds(cloud,position)
+        self.assertTrue(np.all(initial>=thresholds))
+
+    def test_front_surface_tangential_recovery_keeps_actual_surface_distance(self):
+        for native in (False,True):
+            with self.subTest(native=native):
+                points=np.array([(x,y,z) for x in (-.6,.6)
+                    for y in np.arange(-2.,.01,.1) for z in np.arange(-1.,1.01,.1)])
+                guard=ExecutionGuard(reaction=.25);guard.side_buffer=.9;guard.route_forward=np.array([1.,0.])
+                guard.response_model=VelocityResponse(native=native,acceleration=8.,lift_gain=.095,
+                    coupling_gains=(.075,.11,.13),height_gain=2.,coupling_limited=True,
+                    xy_error_max=2.,control_periods=(.08,.16,.4))
+                guard._update(points,.98,1.,np.zeros(3))
+                guard.response_model.commit(np.zeros(3),np.zeros(3),.8)
+                command=guard.escape(np.zeros(3),np.zeros(3),np.array([0.,1.,0.]),points,.98,1.)
+                self.assertIsNotNone(command)
+                samples,_=guard.command_envelope(np.zeros(3),np.zeros(3),command,.02)
+                self.assertGreaterEqual(guard.index.distance(samples).min(),.6-1e-6)
+                # The exact spatial query and exhaustive float64 fallback
+                # certify the same complete response, including rejection.
+                self.assertTrue(guard.recovery_command_ok(np.zeros(3),np.zeros(3),command,points,.02))
+                with patch('execution_guard.cKDTree',None):
+                    self.assertTrue(guard.recovery_command_ok(np.zeros(3),np.zeros(3),command,points,.02))
+                    self.assertFalse(guard.recovery_command_ok(np.zeros(3),np.zeros(3),
+                        np.array([.6,0.,0.]),points,.02))
+                # Moving into the front surface remains inadmissible.
+                self.assertFalse(guard.recovery_command_ok(np.zeros(3),np.zeros(3),
+                    np.array([.6,0.,0.]),points,.02))
+                scene=type('Scene',(),{'distance':lambda self,samples,times:np.full(len(samples),.8)})()
+                guard.dynamic_scene=scene;guard.dynamic_recovery_full_buffer=True
+                self.assertFalse(guard.recovery_command_ok(np.zeros(3),np.zeros(3),command,points,.02))
+    def test_budgeted_recovery_resumes_with_new_pose_and_full_certification(self):
+        guard=ExecutionGuard();nav=LidarNavigator(guard);nav.recovery_budget=.15
+        points=np.array([[0.,.6,0.]])
+        guard._update(points,.98,1.,np.zeros(3))
+        clock=[0.]
+        tried=[]
+        def reject(position,velocity,target,cloud,cloud_stamp,pose_stamp):
+            tried.append(target.copy());clock[0]+=.1
+            return None
+        args=(np.zeros(3),np.zeros(3),0.,lambda s:(s,0.),lambda s:0.,points,.98,1.,None,{},0.)
+        with patch('lidar_navigation.time.monotonic',side_effect=lambda:clock[0]),patch.object(guard,'escape',side_effect=reject):
+            self.assertIsNone(nav._stationary_escape(*args))
+        self.assertEqual(len(tried),2)
+        self.assertEqual(nav.recovery_cursor,2)
+        fresh_position=np.array([.05,0.,0.]);fresh=points+.01
+        guard._update(fresh,1.08,1.1,fresh_position)
+        with patch('lidar_navigation.time.monotonic',side_effect=lambda:clock[0]),patch.object(guard,'escape',return_value=np.array([0.,0.,-.1])) as certify:
+            result=nav._stationary_escape(fresh_position,np.zeros(3),0.,lambda s:(s,0.),lambda s:0.,
+                fresh,1.08,1.1,None,{},clock[0])
+        self.assertIsNotNone(result)
+        self.assertEqual(nav.recovery_cursor,0)
+        call=certify.call_args.args
+        np.testing.assert_allclose(call[0],fresh_position)
+        np.testing.assert_allclose(call[2],fresh_position+[0.,0.,-.5])
+        np.testing.assert_array_equal(call[3],fresh)
+        self.assertEqual(call[4:],(1.08,1.1))
+
+    def test_recovery_bounds_cache_rebuilds_for_pose_cloud_and_heading(self):
+        cloud=np.array([(x,-1.,z) for x in np.arange(-1.,2.01,.1)
+            for z in np.arange(-1.,1.01,.1)])
+        guard=ExecutionGuard();guard.side_buffer=.9;guard.route_forward=np.array([1.,0.])
+        guard._update(cloud,.98,1.,np.zeros(3))
+        with patch.object(guard,'side_returns',wraps=guard.side_returns) as classify:
+            bounds=guard.recovery_thresholds(cloud,np.zeros(3))
+            np.testing.assert_allclose(guard.recovery_thresholds(cloud[::3],np.zeros(3)),bounds[::3])
+            self.assertEqual(classify.call_count,1)
+            moved=guard.recovery_thresholds(cloud,np.array([0.,-.3,0.]))
+            self.assertEqual(classify.call_count,2)
+            self.assertFalse(np.array_equal(bounds,moved))
+            guard._update(cloud+.01,1.01,1.03,np.zeros(3))
+            fresh=guard.recovery_thresholds(cloud+.01,np.zeros(3))
+            self.assertEqual(classify.call_count,3)
+            guard.route_forward=np.array([0.,1.])
+            front=guard.recovery_thresholds(cloud+.01,np.zeros(3))
+            self.assertEqual(classify.call_count,4)
+            self.assertFalse(np.array_equal(fresh,front))
+
+    def test_dense_side_returns_allow_partial_centering_but_keep_new_front_wall(self):
+        from lidar_navigation import LidarNavigator
+        from velocity_response import VelocityResponse
+        from execution_guard import ExecutionGuard
+        for native in (False,True):
+            with self.subTest(native=native):
+                points=np.array([(x,y,z) for x in np.arange(-1.,4.01,.1)
+                    for y in (-.6,1.2) for z in np.arange(-1.,1.01,.1)])
+                guard=ExecutionGuard(reaction=.25)
+                guard.response_model=VelocityResponse(native=native,acceleration=8.,
+                    lift_gain=.095,coupling_gains=(.075,.11,.13),height_gain=2.,
+                    coupling_limited=True,xy_error_max=4.5,control_periods=(.08,.16,.4))
+                nav=LidarNavigator(guard);nav.side_buffer=.9
+                model=guard.response_model;model.commit(np.zeros(3),np.zeros(3),.8)
+                model.stop_profile=nav._stop_profile(np.array([[0.,0.,0.],[5.,0.,0.]]),gain=2.)
+                command,info=nav.select(np.zeros(3),np.zeros(3),np.array([2.,0.,0.]),0.,
+                    lambda s:(s,0.),lambda s:0.,points,.98,1.)
+                self.assertEqual(info['command_reason'],'LIDAR_ESCAPE')
+                self.assertGreater(command[1],0.)
+                self.assertTrue(guard.recovery_command_ok(np.zeros(3),np.zeros(3),command,points,.02))
+                wall=np.array([(.05,y,z) for y in np.arange(-2.,2.01,.1) for z in np.arange(-2.,2.01,.1)])
+                fresh=np.vstack((points,wall))
+                guard._update(fresh,1.01,1.03,np.zeros(3))
+                self.assertFalse(guard.recovery_command_ok(np.zeros(3),np.zeros(3),command,fresh,.02))
+
+    def test_surface_groups_keep_floor_and_front_bounds_independent_of_side(self):
+        from execution_guard import ExecutionGuard
+        points=np.array([(x,-.6,z) for x in np.arange(-1.,2.01,.1) for z in np.arange(-1.,1.01,.1)])
+        floor=np.array([(x,y,.75) for x in np.arange(-1.,2.01,.1) for y in np.arange(.2,2.01,.1)])
+        front=np.array([(1.,y,z) for y in np.arange(-2.,-.79,.1) for z in np.arange(-1.,1.01,.1)])
+        guard=ExecutionGuard();guard.side_buffer=.9;guard.route_forward=np.array([1.,0.])
+        cloud=np.vstack((points,floor,front));guard._update(cloud,.98,1.,np.zeros(3))
+        thresholds=guard.recovery_thresholds(cloud,np.zeros(3))
+        # A side sample ahead can come closer while its connected side stays
+        # .6m away. Independent horizontal/forward surfaces keep their buffers.
+        k=np.argmin(np.linalg.norm(points-[.4,-.6,0.],axis=1))
+        self.assertAlmostEqual(thresholds[k],.6**2,places=5)
+        start=len(points)
+        # A floor may share its own initial closest distance for tangential
+        # recovery. It cannot borrow the closer side's .6m distance or buffer.
+        floor_initial=np.min(np.sum(floor**2,axis=1))
+        self.assertGreaterEqual(np.min(thresholds[start:start+len(floor)]),floor_initial-1e-6)
+        np.testing.assert_allclose(thresholds[start+len(floor):],1.25**2,atol=1e-6)
+
     def test_residual_hover_drift_does_not_deadlock_reference_floor_recovery(self):
         for native in (False,True):
             with self.subTest(native=native):

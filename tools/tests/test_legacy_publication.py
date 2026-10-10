@@ -1,6 +1,7 @@
 """Exercise the real ROS publication gateway without a live simulator."""
 import importlib.util
 import json
+import math
 import sys
 import threading
 import types
@@ -39,6 +40,61 @@ class LegacyPublicationTests(unittest.TestCase):
         c.pose_history=types.SimpleNamespace(rows=[])
         self.controller=c
 
+    def publication_scene(self,points,reason='LIDAR_TRACK'):
+        from execution_guard import ExecutionGuard
+        from lidar_navigation import LidarNavigator
+        from velocity_response import VelocityResponse
+        from command_arbiter import CommandArbiter
+        from safety_supervisor import SafetySupervisor
+        c=self.controller
+        c.execution_guard=ExecutionGuard(reaction=.25)
+        c.execution_guard.response_model=VelocityResponse(native=False)
+        c.navigator=LidarNavigator(c.execution_guard)
+        c.fresh_publication_check=True;c._cloud_lock=threading.RLock()
+        c.lidar_points=np.asarray(points,dtype=float);c.lidar_stamp=.95
+        c.motion.velocity=np.zeros(3)
+        c.clearance_info={'command_reason':reason}
+        c.arbiter=CommandArbiter();c.safety=SafetySupervisor()
+        c.execution_guard.response_model.stop_profile=LidarNavigator._stop_profile(
+            np.array([[0.,0.,0.],[3.,0.,0.]]))
+        return c
+
+    def recheck(self,c,speed=.8):
+        correction=c.execution_guard.response_model.lift_gain*speed**2
+        proposed=c.arbiter.finalize(np.array([speed,0.]),-correction,0.,0.,safety=c.safety)
+        return c._recertify_publication(proposed,0.,.9,1.)
+
+    def test_forward_thread_survives_fresh_publication_and_new_obstacle_rejects_it(self):
+        c=self.publication_scene([[0.,1.,0.]],'LIDAR_THREAD')
+        result=self.recheck(c)
+        self.assertTrue(result[-1]['accepted_original'])
+        self.assertTrue(result[-1]['conditional_recovery'])
+        self.assertAlmostEqual(result[0].vx,.8)
+        c.lidar_stamp=.96;c.lidar_points=np.array([[0.,1.,0.],[.5,0.,0.]])
+        result=self.recheck(c)
+        self.assertFalse(result[-1]['accepted_original'])
+        self.assertFalse(result[-1]['conditional_recovery'])
+        self.assertLess(abs(result[0].vx),.05)
+
+    def test_fresh_publication_keeps_configured_envelope_and_side_margins(self):
+        for separation,envelope,side in ((1.2,1.15,None),(1.,None,.9)):
+            with self.subTest(separation=separation):
+                c=self.publication_scene([[0.,separation,0.]])
+                c.navigator.envelope_margin=envelope;c.navigator.side_buffer=side
+                result=self.recheck(c)
+                self.assertTrue(result[-1]['accepted_original'])
+                self.assertAlmostEqual(result[0].vx,.8)
+                # A tight forward return cannot use the side-pass exception.
+                c.lidar_stamp=.96;c.lidar_points=np.array([[.6,0.,0.]])
+                self.assertFalse(self.recheck(c)[-1]['accepted_original'])
+
+    def test_moving_predictions_keep_full_buffer_at_publication(self):
+        c=self.publication_scene([[0.,1.2,0.]])
+        c.navigator.envelope_margin=1.15
+        c.execution_guard.dynamic_scene=types.SimpleNamespace(
+            pose_stamp=1.,distance=lambda samples,times:np.full(len(samples),1.2))
+        self.assertFalse(self.recheck(c)[-1]['accepted_original'])
+
     def test_failed_certificate_preserves_compensated_brake_and_inertial_history(self):
         c=self.controller;model=c.execution_guard.response_model
         model.commit(np.array([8.,0.,3.]),c.motion.velocity,.9)
@@ -46,6 +102,7 @@ class LegacyPublicationTests(unittest.TestCase):
         issued=c.cmd_pub.publish.call_args.args[0]
         self.assertEqual(issued.stop,0)
         self.assertEqual((issued.vx,issued.vy,issued.vz),(4.,0.,-2.))
+        self.assertEqual(c.published_horizontal_speed,4.)
         np.testing.assert_allclose(model.applied_command,[4.,0.,2.])
         self.assertEqual(json.loads(c.command_trace_pub.publish.call_args.args[0].data)['stop'],0)
 
@@ -69,6 +126,7 @@ class LegacyPublicationTests(unittest.TestCase):
         count=c.cmd_pub.publish.call_count
         c.publish(20.,0.,0.,started=1.1,publication_check={'accepted_original':True})
         self.assertEqual(c.cmd_pub.publish.call_count,count,'Late planner reply must be dropped')
+        self.assertAlmostEqual(c.published_horizontal_speed,math.hypot(issued.vx,issued.vy))
         c._reconcile_deadline_model()
         np.testing.assert_allclose(model.applied_command,[-issued.vy,0.,-issued.vz],atol=1e-10)
         self.assertIsNone(c._deadline_commit)

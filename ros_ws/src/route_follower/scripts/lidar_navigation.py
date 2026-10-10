@@ -11,6 +11,7 @@ import numpy as np
 from path_sampling import swept_samples
 from predictive_avoidance import departure_floor_limits
 from lidar_scene import LidarScene
+from gate_task_state import gate_normal, local_axes
 
 
 def _plan_snapshot(snapshot):
@@ -23,6 +24,9 @@ def _plan_snapshot(snapshot):
     guard=ExecutionGuard(margin=margin);guard.index=index
     if coupled:guard.response_model=VelocityResponse()
     navigator=LidarNavigator(guard,horizon=horizon,budget=budget,anticipation_distance=anticipation_distance,path_options=path_options)
+    navigator.gate_apertures=snapshot[13] if len(snapshot)>13 else ()
+    navigator.geometry_margin=snapshot[14] if len(snapshot)>14 else None
+    navigator.departure_floor_distance=snapshot[15] if len(snapshot)>15 else 20.
     xy=lambda t:tuple(np.interp(t,stations,coordinates[:,axis]) for axis in (0,1))
     center=lambda t:float(np.interp(t,stations,heights))
     center.batch=lambda query:np.interp(query,stations,heights)
@@ -121,6 +125,61 @@ class LidarNavigator:
         self.anticipation_distance=anticipation_distance
         self.path_options=path_options
         self.last_path_options=[]
+        self.recovery_hint=None
+        self.gate_apertures=()
+        self.recovery_budget=None
+        self.recovery_cursor=0
+        self.geometry_margin=None
+        self.departure_floor_distance=20.
+
+    @property
+    def path_buffer(self):
+        return (self.guard.margin if self.geometry_margin is None else self.geometry_margin)+.1
+
+    def _departure_floors(self,stations,positions,center,floor_offset,index,margin):
+        return departure_floor_limits(stations,positions,center,floor_offset,index,margin,
+                                      end_s=self.departure_floor_distance)
+
+    def set_gates(self,gates,half_width=.7,half_height=.7):
+        """Reserve the central opening for geometry and final stop checks."""
+        apertures=[]
+        for gate in gates:
+            # Bbox centers do not measure the opening. Their lateral error
+            # can put a hard central corridor on a real post. Keep these in
+            # the route reference; only measured plane geometry is a hard
+            # aperture constraint on obstacle detours.
+            if not gate.get('geometry_valid',False):continue
+            n=gate_normal(gate);u,v=local_axes(n)
+            c=np.asarray(gate.get('measurement_center',(gate['x'],gate['y'],gate['z'])),dtype=float)
+            width=min(half_width,float(gate['width'])/2.-.5) if gate.get('width') else half_width
+            height=min(half_height,float(gate['height'])/2.-.5) if gate.get('height') else half_height
+            apertures.append((c,n,u,v,max(.1,width),max(.1,height)))
+        self.gate_apertures=tuple(apertures)
+
+    def _gate_errors(self,path):
+        path=np.asarray(path).reshape(-1,3)
+        errors=np.full(len(path),-np.inf)
+        for c,n,u,v,width,height in self.gate_apertures:
+            delta=path-c
+            active=abs(delta@n)<=2.
+            error=np.maximum(abs(delta@u)-width,abs(delta@v)-height)
+            errors=np.maximum(errors,np.where(active,error,-np.inf))
+        return errors
+
+    def _gate_crossings_ok(self,path):
+        # Boundary recovery may start outside the reserved central corridor,
+        # but must enter the opening before crossing the actual gate plane.
+        path=np.asarray(path).reshape(-1,3)
+        for c,n,u,v,width,height in self.gate_apertures:
+            delta=path-c;distance=delta@n
+            crossing=np.flatnonzero(distance[:-1]*distance[1:]<=0.)
+            for i in crossing:
+                span=distance[i]-distance[i+1]
+                if abs(span)<1e-9:continue
+                fraction=distance[i]/span
+                point=delta[i]+fraction*(delta[i+1]-delta[i])
+                if abs(point@u)>width+1e-8 or abs(point@v)>height+1e-8:return False
+        return True
 
     def close(self):
         if self.executor is not None:self.executor.shutdown(wait=self.process_planning)
@@ -131,6 +190,9 @@ class LidarNavigator:
         self.last_plan_stamp=None
         self.last_cloud_stamp=None
         self.last_path_options=[]
+        self.recovery_hint=None
+        self.gate_apertures=()
+        self.recovery_cursor=0
         self.scene.reset()
 
     def inside_transient_allowance(self,velocity,age):
@@ -138,6 +200,21 @@ class LidarNavigator:
         latency=self.guard.reaction+max(0.,float(age))
         return min(self.band_transient_max,
                    self.band_transient_base+abs(float(np.asarray(velocity)[2]))*latency)
+
+    def envelope_admission(self,samples):
+        """Use the same raw/dynamic margins for selection and publication.
+
+        This only checks clearance. Callers must also check the complete
+        response extent and road constraints against their current scene.
+        """
+        buffer=self.guard.margin+.1
+        raw,dynamic=self.guard.command_clearance_components(samples,limit=2.)
+        if dynamic<buffer:return False,raw,dynamic
+        admitted=(raw>=buffer or
+            (self.envelope_margin is not None and raw>=self.envelope_margin) or
+            (self.side_buffer is not None and raw>=self.side_buffer and
+             self.guard.close_pass_ok(samples,self.side_buffer)))
+        return bool(admitted),raw,dynamic
 
     def _bound_ok(self,error,timed=False,inside_transient=0.):
         """Recover a reference-bound violation; do not certify hover.
@@ -170,6 +247,10 @@ class LidarNavigator:
         return np.max(tails)<=max(0.,initial-.01)+1e-8
 
     def _floor_ok(self, path, stations, center, floor_offset,timed=False):
+        if self.gate_apertures:
+            if not self._gate_crossings_ok(path):return False
+            error=self._gate_errors(path)
+            if not self._bound_ok(error,timed):return False
         if self.guard.response_model is not None:
             heights=np.interp(stations,self.reference_stations,self.reference_heights)
             if not self._bound_ok(path[:,2]-heights-1.25,timed,
@@ -180,7 +261,7 @@ class LidarNavigator:
                 road=np.column_stack([np.interp(stations,self.reference_stations,self.reference_coordinates[:,axis]) for axis in (0,1)])
                 if np.any(np.linalg.norm(path[:,:2]-road,axis=1)>self.road_lateral_limit+1e-8):return False
         if floor_offset is None:return True
-        limits=departure_floor_limits(stations,path,center,floor_offset,
+        limits=self._departure_floors(stations,path,center,floor_offset,
                                       self.guard.index,self.guard.margin+.1)
         if self.guard.response_model is None:return np.all(path[:,2]<=limits+1e-8)
         return self._bound_ok(path[:,2]-limits,timed,
@@ -224,7 +305,7 @@ class LidarNavigator:
             profile[:,2]=np.clip(profile[:,2],heights-band,heights+band)
         station=self._route_stations(profile[:1],s,xy,projection)
         height=float(np.interp(station,self.reference_stations,self.reference_heights)[0])
-        floor=float(departure_floor_limits(station,profile[:1],center,floor_offset,
+        floor=float(self._departure_floors(station,profile[:1],center,floor_offset,
                     self.guard.index,self.guard.margin+.1)[0])
         low=height-1.25+.02;high=min(height+1.25,floor)-.02
         if low<=high:profile[0,2]=np.clip(profile[0,2],low,high)
@@ -232,7 +313,7 @@ class LidarNavigator:
         samples,_,_=swept_samples(vertical)
         stations=self._route_stations(samples,s,xy,projection)
         if (not self._floor_ok(samples,stations,center,floor_offset) or
-                self.guard.index.distance(samples,limit=self.guard.margin+.1).min()<self.guard.margin+.1):
+                self.guard.index.distance(samples,limit=self.path_buffer).min()<self.path_buffer):
             # Preserve the geometrically checked measured anchor if no local
             # vertical connector is certified. Final response checks still
             # decide whether any command can be issued.
@@ -322,7 +403,7 @@ class LidarNavigator:
 
     def path(self, position, s, xy, center, floor_offset,index=None):
         """Minimum-cost forward grid with measured start and swept edges."""
-        started=time.monotonic();index=self.guard.index if index is None else index;buffer=self.guard.margin+.1
+        started=time.monotonic();index=self.guard.index if index is None else index;buffer=self.path_buffer
         projection=self._projection(s,xy)
         stations=s+np.arange(0.,self.horizon+1.,1.)
         nominal=np.array([[*xy(t)[:2],center(t)] for t in stations])
@@ -361,9 +442,11 @@ class LidarNavigator:
             # A small measured tracking overshoot may re-enter the center
             # band; no later node may create a new out-of-band detour.
             valid[0,iy,iz]=(distances[0,iy,iz]>=buffer and abs(current_z)<=1.25)
-        floors=departure_floor_limits(node_stations,world.reshape(-1,3),
+        floors=self._departure_floors(node_stations,world.reshape(-1,3),
                                       center,floor_offset,index,buffer).reshape(valid.shape)
         valid&=world[:,:,:,2]<=floors-(.02 if self.guard.response_model is not None else 0.)
+        if self.gate_apertures:
+            valid&=self._gate_errors(world.reshape(-1,3)).reshape(valid.shape)<=0.
         if self.guard.response_model is not None:
             # Recover from measured/updated-bound disagreement. Every later
             # node still satisfies the full bounds and geometry buffer.
@@ -461,7 +544,7 @@ class LidarNavigator:
                 failures=np.flatnonzero(clearance<buffer)
                 if floor_offset is not None or self.guard.response_model is not None:
                     along=self._route_stations(queries,s,xy,projection)
-                    floor=departure_floor_limits(along,queries,center,floor_offset,index,buffer)
+                    floor=self._departure_floors(along,queries,center,floor_offset,index,buffer)
                     floor_error=queries[:,2]-floor
                     failures=np.flatnonzero((clearance<buffer)|(floor_error>max(0.,floor_error[0])+1e-8))
                     if not self._bound_ok(floor_error):failures=np.r_[failures,len(queries)-1]
@@ -510,7 +593,10 @@ class LidarNavigator:
         """
         samples,segments,_=swept_samples(path)
         stations=self._route_stations(samples,s,xy,projection)
-        bad=self.guard.index.distance(samples,limit=1.75)<self.guard.margin+.1
+        bad=self.guard.index.distance(samples,limit=1.75)<self.path_buffer
+        if self.gate_apertures:
+            error=self._gate_errors(samples)
+            bad|=error>max(0.,error[0])+1e-8
         if self.guard.response_model is not None:
             height=np.interp(stations,self.reference_stations,self.reference_heights)
             for error in (samples[:,2]-height-1.25,height-samples[:,2]-1.25):
@@ -518,7 +604,7 @@ class LidarNavigator:
             road=np.column_stack([np.interp(stations,self.reference_stations,self.reference_coordinates[:,axis]) for axis in (0,1)])
             bad|=np.linalg.norm(samples[:,:2]-road,axis=1)>self.road_lateral_limit+1e-8
         if floor_offset is not None:
-            floor=departure_floor_limits(stations,samples,center,floor_offset,self.guard.index,self.guard.margin+.1)
+            floor=self._departure_floors(stations,samples,center,floor_offset,self.guard.index,self.guard.margin+.1)
             error=samples[:,2]-floor
             bad|=error>max(0.,error[0])+1e-8 if self.guard.response_model is not None else error>1e-8
         truncated=False
@@ -530,7 +616,7 @@ class LidarNavigator:
             samples,_,_=swept_samples(path)
             stations=self._route_stations(samples,s,xy,projection)
             truncated=True
-            if np.min(self.guard.index.distance(samples,limit=1.75))<self.guard.margin+.1:return None,{}
+            if np.min(self.guard.index.distance(samples,limit=1.75))<self.path_buffer:return None,{}
         if not self._floor_ok(samples,stations,center,floor_offset):return None,{}
         return path,dict(truncated=truncated)
 
@@ -616,19 +702,9 @@ class LidarNavigator:
             if floor_offset is not None or self.guard.response_model is not None:
                 sample_s=self._route_stations(samples,s,xy,projection)
                 if not self._floor_ok(samples,sample_s,center,floor_offset,timed=self.guard.response_model is not None):continue
-            raw,dynamic=self.guard.command_clearance_components(samples,limit=2.)
+            admitted,raw,dynamic=self.envelope_admission(samples)
             clearance=min(raw,dynamic)
-            if clearance<buffer:
-                # The commanded path keeps the full buffer. The simulated
-                # stop envelope may dip to the configured base margin when
-                # the lag is only against raw returns, or to the side-pass
-                # floor when the tight return is beside/behind the motion.
-                # Moving predictions always keep the full buffer.
-                admitted=bool(dynamic>=buffer and (
-                    (self.envelope_margin is not None and raw>=self.envelope_margin) or
-                    (self.side_buffer is not None and raw>=self.side_buffer and
-                     self.guard.close_pass_ok(samples,self.side_buffer))))
-                if not admitted:continue
+            if not admitted:continue
             score=gain+.12*min(2.,clearance)-penalty
             if score>best_score or (score==best_score and i<best_index):
                 best_score=score;best=command;best_clear=clearance;best_index=i
@@ -665,6 +741,14 @@ class LidarNavigator:
             command=model.compensate(command,velocity)
             if float(np.linalg.norm(command[:2]))<.05:
                 continue
+            samples,extent=guard.command_envelope(position,velocity,command,age)
+            ordinary=(extent<=guard.horizon and
+                (guard.command_constraint is None or guard.command_constraint(samples)) and
+                self.envelope_admission(samples)[0])
+            if ordinary:
+                return command,dict(feasible=True,command_reason='LIDAR_THREAD',
+                    command_scale=None,thread_speed=float(np.linalg.norm(command[:2])),
+                    thread_full_envelope=True)
             if guard.recovery_command_ok(position,velocity,command,points,age):
                 return command,dict(feasible=True,command_reason='LIDAR_THREAD',
                                     command_scale=None,
@@ -689,17 +773,31 @@ class LidarNavigator:
             # 0.5 m offsets. Endpoint clearance only prunes the search; every
             # selected move still needs the complete conditional stop check.
             def recovery_targets():
-                for target in candidates:yield target,False
+                if self.recovery_hint is not None:
+                    offset,stamp,heading=self.recovery_hint
+                    if 0.<=pose_stamp-stamp<=5. and float(forward@heading)>.9:
+                        # A relative search hint, never a frozen waypoint:
+                        # the current cloud and full response must certify it.
+                        yield position+offset,True,True
+                required=self.guard.recovery_target_clearance(position)
+                partial=required<self.guard.margin+.3-1e-8
+                if not partial:
+                    for target in candidates:yield target,False,False
                 if self.guard.response_model is None or not self.guard.response_model.coupling_limited:return
                 fine=np.array([position+a*along+y*side+np.array([0.,0.,z])
                                for a in (-.25,0.,.25)
                                for y in np.arange(-.5,.501,.125)
                                for z in np.arange(-.25,.251,.125)])
                 clear=self.guard.index.distance(fine,limit=self.guard.margin+.3)
-                eligible=np.flatnonzero(clear>=self.guard.margin+.3)
+                eligible=np.flatnonzero(clear>=required)
                 costs=np.sum((fine[eligible]-position)**2,axis=1)
                 for i in eligible[np.argsort(costs,kind='stable')]:
-                    yield fine[i],True
+                    yield fine[i],True,False
+                if partial:
+                    clear=self.guard.index.distance(candidates,limit=self.guard.margin+.3)
+                    eligible=np.flatnonzero(clear>=required)
+                    costs=np.sum((np.asarray(candidates)[eligible]-position)**2,axis=1)
+                    for i in eligible[np.argsort(costs,kind='stable')]:yield candidates[i],False,False
                 # A gate crossbar can require simultaneous retreat and
                 # descent; axis-only moves approach another part of the
                 # same frame. Prune endpoints and the close-return cone
@@ -709,24 +807,52 @@ class LidarNavigator:
                     for y in (-2.,-1.,-.5,0.,.5,1.,2.)
                     for z in (-2.,-1.5,-1.,-.5,0.,.5,1.,1.5,2.)])
                 clear=self.guard.index.distance(combined,limit=self.guard.margin+.3)
-                eligible=np.flatnonzero(clear>=self.guard.margin+.3)
+                eligible=np.flatnonzero(clear>=required)
                 relative=np.asarray(points)-position
-                close=relative[np.linalg.norm(relative,axis=1)<self.guard.margin+.1]
+                threshold=self.guard.recovery_thresholds(points,position)
+                close=relative[np.sum(relative*relative,axis=1)<threshold+1e-7]
                 if len(close) and len(eligible):
                     eligible=eligible[np.all((combined[eligible]-position)@close.T<=1e-7,axis=1)]
                 costs=np.sum((combined[eligible]-position)**2,axis=1)
-                for i in eligible[np.argsort(costs,kind='stable')]:yield combined[i],True
-            for target,refined in recovery_targets():
+                for i in eligible[np.argsort(costs,kind='stable')]:yield combined[i],True,False
+                if self.side_buffer is None:return
+                # A banked vehicle side can require a small lateral shift
+                # and climb together. The old axis/coarse 0.5m grid misses
+                # this cone even though neither surface needs to get closer.
+                refined=np.array([position+a*along+y*side+np.array([0.,0.,z])
+                    for a in np.arange(-.5,.501,.125)
+                    for y in np.arange(-1.,1.001,.125)
+                    for z in np.arange(-1.,1.001,.125)])
+                clear=self.guard.index.distance(refined,limit=self.guard.margin+.3)
+                eligible=np.flatnonzero(clear>=required)
+                if len(close) and len(eligible):
+                    eligible=eligible[np.all((refined[eligible]-position)@close.T<=1e-7,axis=1)]
+                costs=np.sum((refined[eligible]-position)**2,axis=1)
+                for i in eligible[np.argsort(costs,kind='stable')]:yield refined[i],True,False
+            candidate_index=0
+            for target,refined,hint in recovery_targets():
+                if not hint:
+                    candidate_index+=1
+                    if candidate_index<=self.recovery_cursor:continue
+                if self.recovery_budget is not None and time.monotonic()-started>=self.recovery_budget:
+                    # Resume the candidate ordering next tick. Only an index
+                    # is retained; all targets are rebuilt from the new pose
+                    # and cloud and still need a complete response check.
+                    if not hint:self.recovery_cursor=candidate_index-1
+                    return None
                 stations=np.array([s,s])
                 if not self._floor_ok(np.array([position,target]),stations,center,floor_offset):continue
                 escape=self.guard.escape(position,velocity,target,points,cloud_stamp,pose_stamp)
                 if escape is not None:
+                    self.recovery_cursor=0
+                    self.recovery_hint=(np.asarray(target)-position,pose_stamp,forward.copy())
                     if self.guard.response_model is not None:
                         self.braking_path=self.guard.response_model.stop_profile.path.copy()
                     return escape,dict(info,feasible=True,command_reason='LIDAR_ESCAPE',command_scale=None,
                         recovery_target=target.tolist(),conditional_recovery=self.guard.response_model is not None,
                         recovery_search_refined=refined,
                         navigation_ms=1000.*(time.monotonic()-started))
+            self.recovery_cursor=0
         return None
 
     def _brake(self,position,velocity,s,xy,center,points,cloud_stamp,pose_stamp,
@@ -737,7 +863,7 @@ class LidarNavigator:
             stopping_stations=self._route_stations(stopping_path,s,xy,projection)
             heights=np.interp(stopping_stations,self.reference_stations,self.reference_heights)
             stopping_path[:,2]=np.clip(stopping_path[:,2],heights-1.25,heights+1.25)
-            floors=departure_floor_limits(stopping_stations,stopping_path,center,floor_offset,self.guard.index,self.guard.margin+.1)
+            floors=self._departure_floors(stopping_stations,stopping_path,center,floor_offset,self.guard.index,self.guard.margin+.1)
             stopping_path[:,2]=np.minimum(stopping_path[:,2],floors-.02)
             self.guard.response_model.stop_profile=self._tracking_profile(stopping_path)
             vertical=float(self.guard.response_model.stop_profile(np.array([position]),np.array([velocity]))[0])
@@ -749,6 +875,10 @@ class LidarNavigator:
                pose_stamp, floor_offset=None, recovery_only=False):
         started=time.monotonic()
         self.guard.set_faces(())
+        forward=np.asarray(xy(s+.3)[:2])-np.asarray(xy(s-.3)[:2])
+        forward/=max(1e-6,np.linalg.norm(forward))
+        self.guard.side_buffer=self.side_buffer
+        self.guard.route_forward=forward
         if self.guard.response_model is not None and points is not None:
             forward=np.asarray(xy(s+.3)[:2])-np.asarray(xy(s-.3)[:2])
             forward/=max(1e-6,np.linalg.norm(forward))
@@ -796,7 +926,7 @@ class LidarNavigator:
             current=np.asarray([position])
             current_stations=self._route_stations(current,s,xy,projection)
             height=np.interp(current_stations,self.reference_stations,self.reference_heights)
-            floor=departure_floor_limits(current_stations,current,center,floor_offset,self.guard.index,self.guard.margin+.1)
+            floor=self._departure_floors(current_stations,current,center,floor_offset,self.guard.index,self.guard.margin+.1)
             info['bound_recovery']=bool(abs(current[0,2]-height[0])>1.25 or current[0,2]>floor[0]+1e-8)
         self.guard.command_constraint=(None if floor_offset is None and self.guard.response_model is None else lambda samples:self._floor_ok(samples,
             self._route_stations(samples,s,xy,projection),center,floor_offset,timed=self.guard.response_model is not None))
@@ -810,7 +940,7 @@ class LidarNavigator:
                 points,cloud_stamp,pose_stamp)
             return command,dict(info,**checked,feasible=False,
                                 navigation_ms=1000.*(time.monotonic()-started))
-        if self.guard.index.distance([position],limit=self.guard.margin+.1)[0]<self.guard.margin+.1:
+        if self.guard.index.distance([position],limit=self.path_buffer)[0]<self.path_buffer:
             # Every ordinary response includes the measured starting pose.
             # Its full buffer is already violated, so no normal path or
             # command candidate can be certified. Keep the same measured
@@ -852,7 +982,7 @@ class LidarNavigator:
                 if self.process_planning:
                     snapshot=(np.asarray(position).copy(),s,ss,coordinates,heights,floor_offset,
                         self.guard.index,self.guard.margin,self.horizon,self.budget,self.guard.response_model is not None,
-                        self.anticipation_distance,self.path_options)
+                        self.anticipation_distance,self.path_options,self.gate_apertures,self.geometry_margin,self.departure_floor_distance)
                     self.future=self.executor.submit(_plan_snapshot,snapshot)
                 else:
                     self.future=self.executor.submit(self.path,np.asarray(position).copy(),s,frozen_xy,
