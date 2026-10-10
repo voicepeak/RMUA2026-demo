@@ -1,0 +1,229 @@
+[  0%] Built target std_msgs_generate_messages_py
+[  0%] Built target geometry_msgs_generate_messages_nodejs
+[  8%] Built target velocity_response_native
+[  8%] Built target std_msgs_generate_messages_cpp
+[  8%] Built target geometry_msgs_generate_messages_py
+[  8%] Built target std_msgs_generate_messages_lisp
+[  8%] Built target std_msgs_generate_messages_nodejs
+[  8%] Built target geometry_msgs_generate_messages_cpp
+[  8%] Built target std_msgs_generate_messages_eus
+[  8%] Built target geometry_msgs_generate_messages_eus
+[  8%] Built target geometry_msgs_generate_messages_lisp
+[  8%] Built target _airsim_ros_generate_messages_check_deps_Reset
+[  8%] Built target _airsim_ros_generate_messages_check_deps_Takeoff
+[  8%] Built target _airsim_ros_generate_messages_check_deps_Land
+[  8%] Built target _airsim_ros_generate_messages_check_deps_VelCmd
+[ 24%] Built target airsim_ros_generate_messages_nodejs
+[ 48%] Built target airsim_ros_generate_messages_py
+[ 68%] Built target airsim_ros_generate_messages_eus
+[ 84%] Built target airsim_ros_generate_messages_lisp
+[100%] Built target airsim_ros_generate_messages_cpp
+[100%] Built target airsim_ros_generate_messages
+Install the project...
+-- Install configuration: ""
+-- Up-to-date: /workspace/rmua_ws/install/_setup_util.py
+-- Up-to-date: /workspace/rmua_ws/install/env.sh
+-- Up-to-date: /workspace/rmua_ws/install/setup.bash
+-- Up-to-date: /workspace/rmua_ws/install/local_setup.bash
+-- Up-to-date: /workspace/rmua_ws/install/setup.sh
+-- Up-to-date: /workspace/rmua_ws/install/local_setup.sh
+-- Up-to-date: /workspace/rmua_ws/install/setup.zsh
+-- Up-to-date: /workspace/rmua_ws/install/local_setup.zsh
+-- Up-to-date: /workspace/rmua_ws/install/setup.fish
+-- Up-to-date: /workspace/rmua_ws/install/local_setup.fish
+-- Up-to-date: /workspace/rmua_ws/install/.rosinstall
+-- Up-to-date: /workspace/rmua_ws/install/share/airsim_ros/msg/VelCmd.msg
+-- Up-to-date: /workspace/rmua_ws/install/share/airsim_ros/srv/Takeoff.srv
+-- Up-to-date: /workspace/rmua_ws/install/share/airsim_ros/srv/Land.srv
+-- Up-to-date: /workspace/rmua_ws/install/share/airsim_ros/srv/Reset.srv
+-- Up-to-date: /workspace/rmua_ws/install/share/airsim_ros/cmake/airsim_ros-msg-paths.cmake
+-- Up-to-date: /workspace/rmua_ws/install/include/airsim_ros
+-- Up-to-date: /workspace/rmua_ws/install/include/airsim_ros/TakeoffRequest.h
+-- Up-to-date: /workspace/rmua_ws/install/include/airsim_ros/VelCmd.h
+-- Up-to-date: /workspace/rmua_ws/install/include/airsim_ros/Land.h
+-- Up-to-date: /workspace/rmua_ws/install/include/airsim_ros/ResetResponse.h
+-- Up-to-date: /workspace/rmua_ws/install/include/airsim_ros/TakeoffResponse.h
+-- Up-to-date: /workspace/rmua_ws/install/include/airsim_ros/Reset.h
+-- Up-to-date: /workspace/rmua_ws/install/include/airsim_ros/LandResponse.h
+-- Up-to-date: /workspace/rmua_ws/install/include/airsim_ros/Takeoff.h
+-- Up-to-date: /workspace/rmua_ws/install/include/airsim_ros/LandRequest.h
+-- Up-to-date: /workspace/rmua_ws/install/include/airsim_ros/ResetRequest.h
+-- Up-to-date: /workspace/rmua_ws/install/share/roseus/ros/airsim_ros
+-- Up-to-date: /workspace/rmua_ws/install/share/roseus/ros/airsim_ros/msg
+-- Up-to-date: /workspace/rmua_ws/install/share/roseus/ros/airsim_ros/msg/VelCmd.l
+-- Up-to-date: /workspace/rmua_ws/install/share/roseus/ros/airsim_ros/srv
+-- Up-to-date: /workspace/rmua_ws/install/share/roseus/ros/airsim_ros/srv/Land.l
+-- Up-to-date: /workspace/rmua_ws/install/share/roseus/ros/airsim_ros/srv/Takeoff.l
+-- Up-to-date: /workspace/rmua_ws/install/share/roseus/ros/airsim_ros/srv/Reset.l
+-- Up-to-date: /workspace/rmua_ws/install/share/roseus/ros/airsim_ros/manifest.l
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/msg
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/msg/airsim_ros-msg.asd
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/msg/VelCmd.lisp
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/msg/_package_VelCmd.lisp
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/msg/_package.lisp
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/srv
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/srv/Takeoff.lisp
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/srv/_package_Land.lisp
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/srv/_package_Takeoff.lisp
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/srv/Land.lisp
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/srv/_package_Reset.lisp
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/srv/airsim_ros-srv.asd
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/srv/Reset.lisp
+-- Up-to-date: /workspace/rmua_ws/install/share/common-lisp/ros/airsim_ros/srv/_package.lisp
+-- Up-to-date: /workspace/rmua_ws/install/share/gennodejs/ros/airsim_ros
+-- Up-to-date: /workspace/rmua_ws/install/share/gennodejs/ros/airsim_ros/msg
+-- Up-to-date: /workspace/rmua_ws/install/share/gennodejs/ros/airsim_ros/msg/VelCmd.js
+-- Up-to-date: /workspace/rmua_ws/install/share/gennodejs/ros/airsim_ros/msg/_index.js
+-- Up-to-date: /workspace/rmua_ws/install/share/gennodejs/ros/airsim_ros/srv
+-- Up-to-date: /workspace/rmua_ws/install/share/gennodejs/ros/airsim_ros/srv/Takeoff.js
+-- Up-to-date: /workspace/rmua_ws/install/share/gennodejs/ros/airsim_ros/srv/Reset.js
+-- Up-to-date: /workspace/rmua_ws/install/share/gennodejs/ros/airsim_ros/srv/Land.js
+-- Up-to-date: /workspace/rmua_ws/install/share/gennodejs/ros/airsim_ros/srv/_index.js
+-- Up-to-date: /workspace/rmua_ws/install/share/gennodejs/ros/airsim_ros/_index.js
+Listing '/workspace/rmua_ws/devel/lib/python3/dist-packages/airsim_ros'...
+Listing '/workspace/rmua_ws/devel/lib/python3/dist-packages/airsim_ros/msg'...
+Listing '/workspace/rmua_ws/devel/lib/python3/dist-packages/airsim_ros/srv'...
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/msg
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/msg/_VelCmd.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/msg/__pycache__
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/msg/__pycache__/__init__.cpython-38.pyc
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/msg/__pycache__/_VelCmd.cpython-38.pyc
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/msg/__init__.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/srv
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/srv/_Reset.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/srv/_Land.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/srv/__pycache__
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/srv/__pycache__/_Takeoff.cpython-38.pyc
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/srv/__pycache__/_Reset.cpython-38.pyc
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/srv/__pycache__/__init__.cpython-38.pyc
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/srv/__pycache__/_Land.cpython-38.pyc
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/srv/_Takeoff.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/srv/__init__.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/__pycache__
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/__pycache__/__init__.cpython-38.pyc
+-- Up-to-date: /workspace/rmua_ws/install/lib/python3/dist-packages/airsim_ros/__init__.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/pkgconfig/airsim_ros.pc
+-- Up-to-date: /workspace/rmua_ws/install/share/airsim_ros/cmake/airsim_ros-msg-extras.cmake
+-- Up-to-date: /workspace/rmua_ws/install/share/airsim_ros/cmake/airsim_rosConfig.cmake
+-- Up-to-date: /workspace/rmua_ws/install/share/airsim_ros/cmake/airsim_rosConfig-version.cmake
+-- Up-to-date: /workspace/rmua_ws/install/share/airsim_ros/package.xml
+-- Up-to-date: /workspace/rmua_ws/install/lib/pkgconfig/rmua_gate_vision.pc
+-- Up-to-date: /workspace/rmua_ws/install/share/rmua_gate_vision/cmake/rmua_gate_visionConfig.cmake
+-- Up-to-date: /workspace/rmua_ws/install/share/rmua_gate_vision/cmake/rmua_gate_visionConfig-version.cmake
+-- Up-to-date: /workspace/rmua_ws/install/share/rmua_gate_vision/package.xml
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/gate_vision_node.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/gate_detect_viz.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/latest_frame.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/car_geometry.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/gate_yolo_node.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/gate_detector_opencv.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/gate_stereo.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/gate_tracker.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/gate_map.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/gate_dataset_capture.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/timestamp_sync.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/gate_geometry.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/stereo_keypoint_matcher.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/rmua_gate_vision/gate_reprojection.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/pkgconfig/route_follower.pc
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/cmake/route_followerConfig.cmake
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/cmake/route_followerConfig-version.cmake
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/package.xml
+-- Up-to-date: /workspace/rmua_ws/install/lib/libvelocity_response_native.so
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/route_follower.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/online_gate_cache.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/route_recorder.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/splines_to_yaml.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/make_gates.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/z_probe.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/altitude_profile.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/gate_chain.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/command_arbiter.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/command_deadline.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/avoidance_interface.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/yaw_controller.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/speed_scheduler.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/motion_estimator.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/ceiling_guidance.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/terrain_speed.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/predictive_avoidance.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/pose_history.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/lidar_points.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/point_index.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/lattice_detour.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/async_planner.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/execution_guard.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/lidar_navigation.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/longitudinal_planner.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/velocity_response.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/response_native.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/lidar_scene.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/dynamic_tracker.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/local_occupancy.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/trajectory_types.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/route_coordinates.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/response_rollout.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/trajectory_collision.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/st_lattice.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/trajectory_tracker.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/trajectory_executor.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/spacetime_navigation.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/spacetime_runtime.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/planning_snapshot_io.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/planning_visualization.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/path_sampling.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/z_capability.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/z_capability_probe.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/climb_feasibility.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/curve_preview.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/gate_task_state.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/mission_state.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/reference_planner.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/safety_supervisor.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/lidar_clearance.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/route_height_prior.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/persistent_guides.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/spatial_curve.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/xy_tracker.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/terminal_handoff.py
+-- Up-to-date: /workspace/rmua_ws/install/lib/route_follower/z_controller.py
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/config
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/config/splines.txt
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/config/vz_capability.yaml
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/config/gates_seed123_recorded.yaml
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/config/route_1_3.yaml
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/config/dynamic_tracker.yaml
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/config/gates_vision_1_3.yaml
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/config/spacetime_planner.yaml
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/config/local_occupancy.yaml
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/config/guides_seed123_recorded.yaml
+-- Up-to-date: /workspace/rmua_ws/install/share/route_follower/config/vz_capability_seed123_fast.yaml
+Base path: /workspace/rmua_ws
+Source space: /workspace/rmua_ws/src
+Build space: /workspace/rmua_ws/build
+Devel space: /workspace/rmua_ws/devel
+Install space: /workspace/rmua_ws/install
+####
+#### Running command: "make cmake_check_build_system" in "/workspace/rmua_ws/build"
+####
+####
+#### Running command: "make install -j20 -l20" in "/workspace/rmua_ws/build"
+####
+/workspace/repo/ros_ws/src/route_follower/scripts/lidar_scene.py:55: RuntimeWarning: invalid value encountered in less
+  eligible=(np.all(np.isfinite(points),axis=1)&(abs(along)<along_limit)&
+/workspace/repo/ros_ws/src/route_follower/scripts/lidar_scene.py:56: RuntimeWarning: invalid value encountered in less
+  (abs(cross)<lateral_limit)&(abs(dz)<vertical_limit))
+/workspace/repo/ros_ws/src/route_follower/scripts/lidar_points.py:11: RuntimeWarning: invalid value encountered in greater
+  return points[np.all(np.isfinite(points),axis=1)&(np.sum(points*points,axis=1)>1e-8)]
+/workspace/repo/ros_ws/src/route_follower/scripts/local_occupancy.py:109: RuntimeWarning: invalid value encountered in less
+  usable=np.all(np.isfinite(points),axis=1)&np.all(abs(points)<1e9,axis=1)
+/workspace/repo/ros_ws/src/route_follower/scripts/local_occupancy.py:295: RuntimeWarning: invalid value encountered in less
+  valid=(np.all(np.isfinite(points),axis=1)&np.all(abs(points)<1e9,axis=1)&
+/workspace/repo/ros_ws/src/route_follower/scripts/local_occupancy.py:296: RuntimeWarning: invalid value encountered in greater
+  (np.sum((points-sensor_origin)**2,axis=1)>1e-8))
+----------------------------------------------------------------------
+Ran 528 tests in 9.065s
+
+OK

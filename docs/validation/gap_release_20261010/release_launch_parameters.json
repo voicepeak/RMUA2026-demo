@@ -1,0 +1,11 @@
+{
+  "scope": "ROS launch configuration parsing only; no nodes started",
+  "resolved": {
+    "lidar_geometry_margin": 0.65,
+    "lidar_gate_opening": true,
+    "lidar_departure_floor_distance": 8,
+    "lidar_envelope_margin": 0.75,
+    "lidar_xy_error_max": 2.0
+  },
+  "passed": true
+}

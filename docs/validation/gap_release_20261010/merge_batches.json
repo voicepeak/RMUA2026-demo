@@ -1,0 +1,26 @@
+{
+  "base_commit": "7b5118b6e25b639085e23bbc793f15f19b3fb681",
+  "target": "origin/main",
+  "merge_strategy": "no-ff; independently committed core and runner/evidence",
+  "batches": [
+    {
+      "batch": 7,
+      "branch": "iteration/20261010-07-gap-core",
+      "feature_commit": "927e0342ada07b1b1205a8d7fe5028d98e0ee41f",
+      "isolated_host_tests": 527,
+      "native_library": "/home/tianbot/RUMA-by-helinjun/rmua_ws/devel/lib/libvelocity_response_native.so",
+      "merge_commit": "14be409211651e1970898875f48a71bbdfc5fd09"
+    },
+    {
+      "batch": 8,
+      "branch": "iteration/20261010-08-race-evidence",
+      "scope": "adaptive entry, parameter wiring regression, corrected flight records and final evidence"
+    }
+  ],
+  "final_host_tests": 528,
+  "final_ros_tests": 528,
+  "vehicle_leg_accepted": false,
+  "after_launch_wiring_flight_verified": false,
+  "local_candidates_pushed": false,
+  "excluded_user_draft": "docs/specs/RMUA2026_local_occupancy_avoidance_plan.md"
+}

@@ -51,10 +51,25 @@ class RaceLegTests(unittest.TestCase):
         import xml.etree.ElementTree as ET
         launch=Path(__file__).resolve().parents[2]/'ros_ws/src/route_follower/launch/route_follower.launch'
         allowed={n.attrib['name'] for n in ET.parse(launch).findall('arg')}
-        command=controller_command('route.yaml','gates.yaml','guides.yaml',12.)
-        args={s.split(':=')[0] for s in command if ':=' in s}
-        self.assertLessEqual(args,allowed)
-        self.assertIn('route:=race_leg',command)
+        for adaptive in (False,True):
+            command=controller_command('route.yaml','gates.yaml','guides.yaml',12.,adaptive_speed=adaptive)
+            args={s.split(':=')[0] for s in command if ':=' in s}
+            self.assertLessEqual(args,allowed)
+            self.assertIn('route:=race_leg',command)
+
+    def test_adaptive_policy_arguments_reach_private_node_parameters(self):
+        import xml.etree.ElementTree as ET
+        launch=Path(__file__).resolve().parents[2]/'ros_ws/src/route_follower/launch/route_follower.launch'
+        tree=ET.parse(launch)
+        params={n.attrib['name']:n.attrib.get('value') for n in tree.findall('node/param')}
+        command=controller_command('route.yaml','gates.yaml','guides.yaml',12.,adaptive_speed=True)
+        arguments=dict(s.split(':=',1) for s in command if ':=' in s)
+        expected={'lidar_geometry_margin':'0.65','lidar_gate_opening':'true',
+                  'lidar_departure_floor_distance':'8','lidar_envelope_margin':'0.75',
+                  'lidar_xy_error_max':'2.0'}
+        for name,value in expected.items():
+            self.assertEqual(arguments[name],value)
+            self.assertEqual(params[name],'$(arg '+name+')')
 
     def test_published_goal_must_match_road_before_starting(self):
         roads=[[(i,0.,0.) for i in range(30)],
