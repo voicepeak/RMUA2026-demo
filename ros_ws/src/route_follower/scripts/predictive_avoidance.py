@@ -25,12 +25,13 @@ def shifted_center(center, plan=None, vertical=0.):
     return result
 
 
-def departure_floor_limits(stations, positions, center, floor_offset, index, margin):
+def departure_floor_limits(stations, positions, center, floor_offset, index, margin, end_s=20.):
     """Shared NED floor bound during departure; measured floor takes priority."""
     stations=np.asarray(stations)
     limits=np.full(len(stations),np.inf)
     if floor_offset is None:return limits
-    departure=stations<20.
+    departure=stations<end_s
+    if not np.any(departure):return limits
     unique,inverse=np.unique(stations[departure],return_inverse=True)
     values=(center.batch(unique)+floor_offset if hasattr(center,'batch') else
             np.array([center(s)+floor_offset for s in unique]))

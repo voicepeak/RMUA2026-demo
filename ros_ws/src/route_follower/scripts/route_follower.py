@@ -108,6 +108,7 @@ class RouteFollower(object):
         if self.obstacle_backend not in ('lidar_nav','legacy'):
             raise ValueError('Unknown obstacle_backend: '+str(self.obstacle_backend))
         self.lidar_navigation=self.adaptive_speed and self.obstacle_backend=='lidar_nav'
+        self.lidar_gate_opening=bool(rospy.get_param('~lidar_gate_opening',False))
         self.lidar_range=float(rospy.get_param('~lidar_range',30.))
         self.lidar_braking=float(rospy.get_param('~lidar_braking',8. if self.adaptive_speed else 4.))
         self.sensor_reaction=float(rospy.get_param('~sensor_reaction',.35))
@@ -290,9 +291,15 @@ class RouteFollower(object):
         self.navigator.height_reserve=(.5 if self.coupled_navigation and
             self.execution_guard.response_model.height_gain>1. else 0.)
         envelope_margin=float(rospy.get_param('~lidar_envelope_margin',0.))
-        if envelope_margin>1.0:self.navigator.envelope_margin=envelope_margin
+        if envelope_margin>=.55:self.navigator.envelope_margin=envelope_margin
+        geometry_margin=float(rospy.get_param('~lidar_geometry_margin',0.))
+        if geometry_margin>=.45:
+            self.navigator.geometry_margin=geometry_margin
+            self.execution_guard.dynamic_recovery_full_buffer=True
+        self.navigator.departure_floor_distance=float(rospy.get_param('~lidar_departure_floor_distance',20.))
         side_buffer=float(rospy.get_param('~lidar_side_buffer',0.))
         if side_buffer>0.:self.navigator.side_buffer=side_buffer
+        if self.lidar_gate_opening:self.navigator.recovery_budget=.15
         if self.coupled_navigation:self.execution_guard.response_model.configured_height_gain=self.execution_guard.response_model.height_gain
         self.planner_info={}
         self.plan_sequence=0
@@ -452,6 +459,7 @@ class RouteFollower(object):
         self._deadline_model=None
         self._deadline_certified=False
         self._deadline_commit=None
+        self.published_horizontal_speed=0.
         self.event_pub = rospy.Publisher("/rmua/controller/events", String, queue_size=100, latch=True)
         self.telemetry_pub = rospy.Publisher("/rmua/controller/telemetry", String, queue_size=100)
         self.command_trace_pub = rospy.Publisher("/rmua/controller/command_trace", String, queue_size=100)
@@ -741,9 +749,15 @@ class RouteFollower(object):
         self.navigator.height_reserve=(.5 if self.coupled_navigation and
             self.execution_guard.response_model.height_gain>1. else 0.)
         envelope_margin=float(rospy.get_param('~lidar_envelope_margin',0.))
-        if envelope_margin>1.0:self.navigator.envelope_margin=envelope_margin
+        if envelope_margin>=.55:self.navigator.envelope_margin=envelope_margin
+        geometry_margin=float(rospy.get_param('~lidar_geometry_margin',0.))
+        if geometry_margin>=.45:
+            self.navigator.geometry_margin=geometry_margin
+            self.execution_guard.dynamic_recovery_full_buffer=True
+        self.navigator.departure_floor_distance=float(rospy.get_param('~lidar_departure_floor_distance',20.))
         side_buffer=float(rospy.get_param('~lidar_side_buffer',0.))
         if side_buffer>0.:self.navigator.side_buffer=side_buffer
+        if self.lidar_gate_opening:self.navigator.recovery_budget=.15
         if self.coupled_navigation:self.execution_guard.response_model.configured_height_gain=self.execution_guard.response_model.height_gain
         self.planner_info={}
         self.plan_sequence=0
@@ -825,6 +839,7 @@ class RouteFollower(object):
         c.vx=cy*command[0]+sy*command[1];c.vy=-sy*command[0]+cy*command[1]
         c.vz=-float(command[2]);c.yawRate=0.;c.va=self.accel;c.stop=0
         self.cmd_pub.publish(c)
+        self.published_horizontal_speed=math.hypot(c.vx,c.vy)
         model.commit(command,velocity,stamp)
         self._deadline_commit=(command.copy(),velocity,stamp)
         self.command_deadline.record(time.monotonic(),False)
@@ -867,6 +882,7 @@ class RouteFollower(object):
         c.va = self.accel
         c.stop = int(hardware_stop)
         self.cmd_pub.publish(c)
+        self.published_horizontal_speed=math.hypot(c.vx,c.vy)
         self.command_deadline.record(time.monotonic(),hardware_stop)
         model=self.execution_guard.response_model
         if model is not None and self.spacetime_runtime is None:
@@ -887,7 +903,7 @@ class RouteFollower(object):
                 self._deadline_certified=(bool(publication_check.get('accepted_original') or
                                               publication_check.get('replacement_certified'))
                     if publication_check is not None else self.clearance_info.get('command_reason') in
-                    ('LIDAR_TRACK','LIDAR_ESCAPE','LIDAR_BRAKE','COMMAND_BRAKING','COMMAND_CLEAR'))
+                    ('LIDAR_TRACK','LIDAR_THREAD','LIDAR_ESCAPE','LIDAR_BRAKE','COMMAND_BRAKING','COMMAND_CLEAR'))
         self.command_trace_pub.publish(String(data=json.dumps(json_payload(dict(
             stamp=c.header.stamp.to_sec(),source_pose_stamp=source_pose_stamp,control_pose_stamp=control_stamp,
             body_velocity=[vx,vy,vz],yaw_rate_deg=c.yawRate,acceleration=c.va,stop=c.stop,
@@ -924,11 +940,12 @@ class RouteFollower(object):
             samples,extent=guard.command_envelope(position,velocity,command,age)
             constrained=guard.command_constraint is None or guard.command_constraint(samples)
             if constrained:
-                clearance=guard.command_clearance(samples)
-                accepted=clearance>=guard.margin+.1 and extent<=guard.horizon
+                admitted,raw,dynamic=self.navigator.envelope_admission(samples)
+                clearance=min(raw,dynamic)
+                accepted=admitted and extent<=guard.horizon
         recovery_accepted=False
         if (not accepted and error is None and
-                self.clearance_info.get('command_reason')=='LIDAR_ESCAPE'):
+                self.clearance_info.get('command_reason') in ('LIDAR_ESCAPE','LIDAR_THREAD')):
             recovery_accepted=guard.recovery_command_ok(position,velocity,command,points,age)
             accepted=recovery_accepted
         check=dict(source_pose_stamp=stamp,planning_pose_stamp=pose_stamp,
@@ -1923,6 +1940,9 @@ class RouteFollower(object):
                 target=np.asarray(terminal_xy);start=pn[:2].copy()
                 distance=max(.1,float(np.linalg.norm(target-start)))
                 navigation_xy=lambda station:tuple(start+np.clip((station-s_now)/distance,0.,1.)*(target-start))
+            self.navigator.set_gates([g for g in chain.gates
+                if self.lidar_gate_opening and s_now-5.<=g['s']<=s_now+40.],
+                half_width=self.xy_tracker.clearance,half_height=.7)
             command,nav_info=self.navigator.select(pn,self.motion.velocity,desired,s_now,
                 navigation_xy,center_fn,lidar_points,lidar_stamp,pose_stamp,floor_offset)
             self.clearance_info=nav_info
@@ -1953,12 +1973,15 @@ class RouteFollower(object):
                         measured_velocity_world=self.motion.velocity.tolist(),desired_velocity_world=desired.tolist(),
                         departure_floor_offset=floor_offset,cars=[],plan=None),file)
 
-        # Detect a stall using the final published horizontal command. The
-        # pre-guard scheduler can request motion while the guard safely stops.
+        # Compare measured movement with the command actually published over
+        # the preceding interval. Fresh recertification or the deadline brake
+        # may replace the planner's proposal before it reaches the aircraft.
+        with self._publication_lock:
+            issued_speed=self.published_horizontal_speed
         if self.prev_pose is not None and self.safety.stuck_step(
-                dt, v, self.prev_pose, (p.x, p.y, p.z)):
-            rospy.logerr("STUCK: cmd=%.2f -> abort", v)
-            self.event("TERMINATION", reason="STUCK", s=s_now, v_cmd=v)
+                motion_dt, issued_speed, self.prev_pose, (p.x, p.y, p.z)):
+            rospy.logerr("STUCK: cmd=%.2f -> abort", issued_speed)
+            self.event("TERMINATION", reason="STUCK", s=s_now, v_cmd=issued_speed)
             self.mission.abort()
             self.publish(0.0, 0.0, 0.0, 0.0)
             return

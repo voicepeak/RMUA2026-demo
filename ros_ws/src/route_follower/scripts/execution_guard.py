@@ -3,7 +3,7 @@
 import math
 import time
 import numpy as np
-from point_index import PointIndex
+from point_index import PointIndex, cKDTree
 from predictive_avoidance import PredictiveAvoidance
 from path_sampling import swept_samples
 
@@ -26,7 +26,96 @@ class ExecutionGuard:
         self.pose_stamp=None
         self.command_constraint=None
         self.dynamic_scene=None
+        self.dynamic_recovery_full_buffer=False
         self.surface_seed_points=None
+        self.side_buffer=None
+        self.route_forward=None
+        self._side_index=None
+        self._side_mask=None
+        self._side_heading=None
+        self._recovery_key=None
+        self._recovery_thresholds=None
+
+    def side_returns(self,points):
+        """Measured vertical side planes; unknown normals keep full clearance.
+
+        A nearby floor, ceiling or forward-facing car surface must not inherit
+        a side corridor's smaller configured buffer.
+        """
+        if self.side_buffer is None or self.route_forward is None or self.index is None:
+            return np.zeros(len(points),dtype=bool)
+        heading=tuple(self.route_forward)
+        if self._side_index is not self.index or self._side_heading!=heading:
+            cloud=self.index.points
+            ids,distance=self.index.neighbors(cloud,min(16,len(cloud)))
+            local=cloud[ids].astype(float)
+            weights=(distance<=.5**2).astype(float)
+            count=weights.sum(axis=1)
+            mean=np.sum(local*weights[:,:,None],axis=1)/np.maximum(count,1.)[:,None]
+            delta=local-mean[:,None,:]
+            covariance=np.einsum('nki,nkj,nk->nij',delta,delta,weights)/np.maximum(count,1.)[:,None,None]
+            values,vectors=np.linalg.eigh(covariance)
+            normal=vectors[:,:,0]
+            self._surface_mask=((count>=6)&(values[:,1]>1e-4)&
+                (values[:,0]<=.1*values[:,1]))
+            self._side_mask=(self._surface_mask&(abs(normal[:,2])<.6)&
+                (abs(normal[:,:2]@np.asarray(self.route_forward))<.25))
+            self._surface_groups=np.arange(len(cloud))
+            try:
+                from scipy.sparse import coo_matrix
+                from scipy.sparse.csgraph import connected_components
+                source=np.repeat(np.arange(len(cloud)),ids.shape[1])
+                target=ids.reshape(-1)
+                coherent=abs(np.sum(normal[source]*normal[target],axis=1))>.98
+                linked=(distance.reshape(-1)<=.18**2)&self._surface_mask[source]&self._surface_mask[target]&coherent
+                graph=coo_matrix((np.ones(np.sum(linked)),(source[linked],target[linked])),shape=(len(cloud),len(cloud)))
+                _,self._surface_groups=connected_components(graph,directed=False)
+            except ImportError:
+                pass  # Separate returns keep the stricter original rule.
+            self._side_index=self.index
+            self._side_heading=heading
+        ids,distance=self.index.neighbors(points,1)
+        return (distance[:,0]<1e-6)&self._side_mask[ids[:,0]]
+
+    def recovery_thresholds(self,points,position):
+        # All candidate endpoints in one search use the same current pose
+        # and cloud. Compute the per-return bounds once; fresh publication
+        # changes this key and therefore rebuilds them before certification.
+        key=(self.index,tuple(np.asarray(position,dtype=float)),self.side_buffer,
+             None if self.route_forward is None else tuple(self.route_forward),self.margin)
+        if key!=self._recovery_key:
+            cloud=self.index.points
+            buffers=np.full(len(cloud),self.margin+.1)
+            initial=np.sum((cloud-position)**2,axis=1)
+            side=self.side_returns(cloud)
+            # Dense samples of one normal-coherent surface are one obstacle.
+            # Moving parallel to it can approach a different sample without
+            # approaching that surface. Separate faces keep separate initial
+            # distances; only side faces have the configured smaller buffer.
+            surface=(self._surface_mask if self.side_buffer is not None and
+                     self.route_forward is not None else np.zeros(len(cloud),dtype=bool))
+            if np.any(surface):
+                group_min=np.full(len(cloud),np.inf)
+                np.minimum.at(group_min,self._surface_groups,initial)
+                initial[surface]=group_min[self._surface_groups[surface]]
+            if np.any(side):
+                buffers[side]=self.side_buffer
+            self._recovery_key=key
+            self._recovery_thresholds=np.minimum(initial,buffers**2)
+        ids,_=self.index.neighbors(points,1)
+        # The spatial index stores float32 world coordinates. Raw returns
+        # may retain float64; roundoff must not make the measured starting
+        # pose itself violate a cached non-approach bound.
+        exact_initial=np.sum((np.asarray(points)-position)**2,axis=1)
+        return np.minimum(self._recovery_thresholds[ids[:,0]],exact_initial)
+
+    def recovery_target_clearance(self,position):
+        initial=float(self.index.distance([position])[0])
+        ids,_=self.index.neighbors([position],1)
+        self.side_returns(self.index.points[ids[:,0]])
+        measured=(self.side_buffer is not None and self.route_forward is not None and
+                  bool(self._surface_mask[ids[0,0]]))
+        return min(self.margin+.3,initial+.05) if measured and initial<self.margin+.1 else self.margin+.3
 
     def set_faces(self,faces):
         self.faces=faces
@@ -68,16 +157,50 @@ class ExecutionGuard:
     def close_pass_ok(self,samples,floor):
         """Admit a tight raw minimum only when it is a side pass.
 
-        The closest return must lie beside or behind the trajectory at its
-        closest-approach sample and must not keep closing afterwards. A
-        return ahead of the motion keeps the full buffer.
+        With measured normals, every tight surface must be a confirmed side.
+        Otherwise use the original closest-return non-closing criterion.
         """
         samples=np.asarray(samples,dtype=float)
         if len(samples)<3:return False
         distances=self.index.distance(samples,limit=2.)
+        if self.side_buffer is not None and self.route_forward is not None:
+            tight=samples[distances<self.margin+.1]
+            if len(tight):
+                ids,_=self.index.neighbors(tight,1)
+                if not np.all(self.side_returns(self.index.points[ids[:,0]])):return False
+                if np.min(distances)<floor:return False
+                # A second surface can also lie inside the full buffer while
+                # the closest return belongs to a side. Classify every raw
+                # return near the envelope, not only its nearest neighbors.
+                buffer=self.margin+.1
+                points=self.index.points
+                nearby=np.all((points>=samples.min(axis=0)-buffer)&
+                              (points<=samples.max(axis=0)+buffer),axis=1)
+                close=points[nearby]
+                sample_index=PointIndex(samples)
+                _,squared=sample_index.neighbors(close,1)
+                close=close[squared[:,0]<buffer**2]
+                if not np.all(self.side_returns(close)):return False
+                # A sampled side plane is one surface. Its nearest return
+                # changes while flying parallel to it; the sign of that
+                # individual point's tangent offset cannot classify a front
+                # obstacle. Check supported patches independently so a roof
+                # or floor cannot borrow the nearest side point's allowance.
+                if self.index.patches is not None:
+                    centers,normals,bases,boundaries,offsets,_=self.index.patches
+                    side=(abs(normals[:,2])<.6)&(abs(normals[:,:2]@self.route_forward)<.25)
+                    ids=np.flatnonzero(~side)
+                    for begin in range(0,len(ids),32):
+                        chosen=ids[begin:begin+32]
+                        delta=tight[:,None,:]-centers[chosen][None,:,:]
+                        local=np.einsum('nki,kij->nkj',delta,bases[chosen])
+                        inside=np.all(np.einsum('nki,kji->nkj',local,boundaries[chosen])>=offsets[chosen][None,:,:]-1e-7,axis=2)
+                        plane=abs(np.sum(delta*normals[chosen][None,:,:],axis=2))
+                        if np.any(inside&(plane<self.margin+.1)):return False
+                return True
         k=int(np.argmin(distances))
         if distances[k]<floor:return False
-        _,ids=self.index.neighbors(samples[k:k+1],1)
+        ids,_=self.index.neighbors(samples[k:k+1],1)
         index=int(ids[0,0])
         if index>=len(self.index.points):return False
         nearest=np.asarray(self.index.points[index],dtype=float)
@@ -258,7 +381,8 @@ class ExecutionGuard:
         """Slow in-place shift after stopping, certified against EVERY return.
 
         If already inside a buffer, no affected surface may get closer. The
-        target must restore the full buffer; this never authorizes entering it.
+        target must improve clearance. Partial recovery requires a measured
+        surface; no surface may become closer than its own initial distance.
         """
         age,error=self._update(points,cloud_stamp,pose_stamp,position)
         if error or np.linalg.norm(np.asarray(velocity)[:2])>.8:return None
@@ -269,16 +393,19 @@ class ExecutionGuard:
         points=np.asarray(points);relative=points-position
         # Returns outside this ball cannot touch the shift or stopping prefix.
         radius=max(distance,np.linalg.norm(velocity)*latency+.6*(latency+max(self.settling,.6/(2.*self.braking))))+self.margin+.1
-        relative=relative[np.sum(relative*relative,axis=1)<=radius*radius]
+        selected=np.sum(relative*relative,axis=1)<=radius*radius
+        relative=relative[selected]
+        thresholds=self.recovery_thresholds(points[selected],position)
         initial2=np.sum(relative*relative,axis=1)
         buffer=self.margin+.1
         close=initial2<buffer*buffer
         fraction=np.clip(relative@delta/(distance*distance),0.,1.)
         separation=relative-fraction[:,None]*delta
-        if np.any(np.sum(separation*separation,axis=1)<np.minimum(initial2,buffer*buffer)-1e-7):return None
+        if np.any(np.sum(separation*separation,axis=1)<thresholds-1e-7):return None
         target_clearance=float(self.index.distance([target])[0])
         # Reserve tracking tolerance before committing the resulting offset.
-        if target_clearance<buffer+.2:return None
+        required=self.recovery_target_clearance(position)
+        if target_clearance<required:return None
         # Certify the actual response prefix too: waiting for momentum to die
         # out cannot be replaced with a nominal zero-velocity assumption.
         # The per-return separation check above already keeps every return at
@@ -310,16 +437,24 @@ class ExecutionGuard:
             step=finish-start
             t=np.clip(np.sum((relative-start)*step,axis=1)/max(1e-12,float(step@step)),0.,1.)
             squared=np.sum((relative-start-t[:,None]*step)**2,axis=1)
-            if np.any(squared<np.minimum(initial2,buffer*buffer)-1e-7):return None
+            if np.any(squared<thresholds-1e-7):return None
         if self.response_model is not None:
             from lidar_navigation import LidarNavigator
             model=self.response_model;previous_profile=model.stop_profile
             model.stop_profile=LidarNavigator._stop_profile(np.array([position,target]),gain=model.height_gain)
             prepared=model.prepare(command,velocity,pose_stamp,position)
-            if not self.recovery_command_ok(position,velocity,prepared,points,age):
-                model.stop_profile=previous_profile
-                return None
-            return prepared
+            if self.recovery_command_ok(position,velocity,prepared,points,age):return prepared
+            if required<buffer+.2:
+                # Z responds before XY. Delay part of the initial height input
+                # while the same stopping policy takes over after the hold.
+                # Certify every variant's complete physical response unchanged.
+                for factor in (.5,.25,0.):
+                    variant=prepared.copy()
+                    nominal=prepared[2]-model.lift_gain*np.sum((prepared[:2]-velocity[:2])**2)
+                    variant[2]=factor*nominal+model.lift_gain*np.sum((prepared[:2]-velocity[:2])**2)
+                    if self.recovery_command_ok(position,velocity,variant,points,age):return variant
+            model.stop_profile=previous_profile
+            return None
         return command
 
     def recovery_command_ok(self,position,velocity,command,points,age):
@@ -327,16 +462,25 @@ class ExecutionGuard:
         samples,extent=self.command_envelope(position,velocity,command,age)
         if extent>self.horizon or (self.command_constraint is not None and not self.command_constraint(samples)):return False
         buffer=self.margin+.1;position=np.asarray(position);points=np.asarray(points)
+        if (self.dynamic_recovery_full_buffer and self.dynamic_scene is not None and
+                np.min(self.dynamic_scene.distance(samples,self.envelope_times))<buffer):return False
         initial=self.index.distance([position])[0]
         if self.command_clearance(samples)<min(initial,buffer)-1e-7:return False
-        # Every raw return initially closer than the full buffer must keep
-        # its own distance, so a nearer wall cannot hide a worsening floor.
+        # Each measured face keeps its initial minimum, and unknown returns
+        # keep individual distances. A wall cannot hide a worsening floor.
         close=points[np.linalg.norm(points-position,axis=1)<extent+buffer]
         if len(close):
-            threshold=np.minimum(np.sum((close-position)**2,axis=1),buffer**2)
-            for i in range(0,len(samples),64):
-                squared=np.sum((samples[i:i+64,None,:]-close[None,:,:])**2,axis=2)
-                if np.any(squared<threshold[None,:]-1e-7):return False
+            threshold=self.recovery_thresholds(close,position)
+            if cKDTree is not None:
+                # Exact float64 nearest-sample queries implement the same
+                # per-return minimum as the dense sample x return matrix,
+                # without its quadratic allocation and repeated reductions.
+                nearest=cKDTree(samples).query(close,eps=0.)[0]
+                if np.any(nearest**2<threshold-1e-7):return False
+            else:
+                for i in range(0,len(samples),64):
+                    squared=np.sum((samples[i:i+64,None,:]-close[None,:,:])**2,axis=2)
+                    if np.any(squared<threshold[None,:]-1e-7):return False
         if self.index.roof is not None:
             origin,coeff,_,_=self.index.roof
             height=samples[:,2]-origin[2]-(samples[:,:2]-origin[:2])@coeff[:2]-coeff[2]
@@ -353,7 +497,11 @@ class ExecutionGuard:
                 local=np.einsum('nki,kij->nkj',delta,bases[chosen])
                 inside=np.all(np.einsum('nki,kji->nkj',local,boundaries[chosen])>=offsets[chosen][None,:,:]-1e-7,axis=2)
                 distances=abs(np.sum(delta*normals[chosen][None,:,:],axis=2));distances[~inside]=np.inf
-                if np.any(distances<np.minimum(distances[0],buffer)[None,:]-1e-7):return False
+                buffers=np.full(len(chosen),buffer)
+                if self.side_buffer is not None and self.route_forward is not None:
+                    side=(abs(normals[chosen,2])<.6)&(abs(normals[chosen,:2]@self.route_forward)<.25)
+                    buffers[side]=self.side_buffer
+                if np.any(distances<np.minimum(distances[0],buffers)[None,:]-1e-7):return False
         for face in self.faces:
             index=PointIndex([],faces=[face]);minimum=min(index.face_distance([position],signed=True)[0],buffer)
             if np.min(index.face_distance(samples,signed=True))<minimum-1e-7:return False
