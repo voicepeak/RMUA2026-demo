@@ -9,10 +9,22 @@ from stereo_obstacles import downward_hits
 from obstacle_cloud_fusion import ObstacleCloudFusion
 from gate_stereo import FX,BASELINE,camera_to_body
 from gate_map import GateMap
-from gate_candidates import frame_candidates,gate_frame_support
+from gate_candidates import frame_candidates,gate_frame_support,gate_opening_support,passable_gate_geometry
 
 
 class StereoObstacleTests(unittest.TestCase):
+    def test_gate_requires_both_white_posts_and_a_passable_physical_opening(self):
+        image=np.zeros((200,200,3),dtype=np.uint8)
+        image[20:180,20:35]=255;image[20:180,35:40]=[30,85,230]
+        self.assertFalse(gate_opening_support(image,(20,20,160,160)))
+        image[20:180,165:180]=255;image[20:180,160:165]=[30,85,230]
+        self.assertTrue(gate_opening_support(image,(20,20,160,160)))
+        panel=np.zeros_like(image);panel[20:180,20:180]=[30,85,230]
+        self.assertTrue(gate_frame_support(panel,(20,20,160,160)))
+        self.assertFalse(gate_opening_support(panel,(20,20,160,160)))
+        self.assertFalse(passable_gate_geometry(dict(width=.8,height=.55,position_sigma=.27)))
+        self.assertTrue(passable_gate_geometry(dict(width=3.,height=3.,position_sigma=.3)))
+
     def test_below_lidar_plane_is_measured_in_world_coordinates(self):
         disparity=np.zeros((720,960),dtype=np.float32)
         disparity[599:602,479:482]=FX*BASELINE/5.

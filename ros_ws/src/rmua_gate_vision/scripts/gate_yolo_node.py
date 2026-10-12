@@ -42,7 +42,7 @@ from gate_geometry import GateGeometry  # noqa: E402
 from latest_frame import LatestFrame
 from car_geometry import car_boxes,locate_car,overlaps_car
 from stereo_obstacles import downward_hits
-from gate_candidates import frame_candidates
+from gate_candidates import frame_candidates,passable_gate_geometry
 from timestamp_sync import PoseBuffer  # noqa: E402
 import stereo_keypoint_matcher as skm  # noqa: E402
 from gate_reprojection import reproject_gate  # noqa: E402
@@ -271,6 +271,7 @@ class GateYolo(object):
         # Keep the route normal unless real image keypoints measured it.
         if gl.get('keypoints',False):geom['normal_world']=gs.quat_to_R(quat)@gs.R_BC@geom['normal']
         geom['position_sigma']=.15+.25*geom['depth_mean']**2/(gs.FX*gs.BASELINE)+geom['plane_rmse']
+        if self.stereo_obstacles and not passable_gate_geometry(geom):return False
         uv = np.asarray(gl["center"], dtype=float)
         t = self.gate_map.observe(world, t_img, depth=geom["depth_mean"],
                                   geom=geom, uv=uv, conf=gl["conf"])

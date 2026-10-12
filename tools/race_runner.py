@@ -216,6 +216,7 @@ def main():
                           '_car_model:='+(str(root/'yolo/weights/car_score91_best.pt') if a.obstacle_backend=='legacy' else ''),
                           '_route_file:='+str(route_file),'_route_name:=race_leg',
                           '_stereo_obstacles:='+('true' if stage==1 and a.obstacle_backend=='lidar_nav' else 'false'),
+                          '_max_d_cross:='+('3.0' if stage==1 and a.obstacle_backend=='lidar_nav' else '5.0'),
                           '_imgsz:=960','_conf:=0.35'],
                          stdout=(folder/'vision.log').open('w'),stderr=subprocess.STDOUT)
         cruise=min(a.cruise,a.vehicle_cruise) if stage==1 else a.cruise
