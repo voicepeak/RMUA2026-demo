@@ -1805,8 +1805,9 @@ class RouteFollower(object):
         if terminal:
             # Brake before reaching the trigger. Entering it close to road
             # level starts the next leg inside the floor buffer.
-            v_target=min(v_target,4.)
-            self.speed_info['hard_cap']=min(self.speed_info['hard_cap'],4.)
+            terminal_speed=2. if self.route.total_s-s_now<=15. else 4.
+            v_target=min(v_target,terminal_speed)
+            self.speed_info['hard_cap']=min(self.speed_info['hard_cap'],terminal_speed)
             self.speed_info.update(terminal_height_ready=terminal_height_ready,
                 terminal_staging=not terminal_height_ready,terminal_target_xy=list(terminal_xy))
 

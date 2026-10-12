@@ -224,7 +224,7 @@ def main():
         command=controller_command(route_file,gates_file,guides_file,cruise,a.fast_descent,a.adaptive_speed,a.control_rate,a.obstacle_backend,a.planner_mode,a.spacetime_bridge_hold,
                                    stereo_obstacles=stage==1 and a.obstacle_backend=='lidar_nav')
         if cause=='OFFICIAL_ENDPOINT_CHANGED' and previous is not None:
-            command+=['departure_hover_z:='+str(previous[2]-1.5)]
+            command+=['departure_hover_z:='+str(previous[2]-2.)]
         child=subprocess.Popen(command,stdout=(folder/'controller.log').open('w'),stderr=subprocess.STDOUT)
         event('CONTROLLER_STARTED',leg=[SEQUENCE[stage],SEQUENCE[stage+1]],
               cause=cause,official_completion='UNKNOWN',command=command)
