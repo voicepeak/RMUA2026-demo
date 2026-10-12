@@ -1338,6 +1338,14 @@ class RouteFollower(object):
                                 if planner.plan is not None else None)),file)
         return info,planner.plan
 
+    def _speed_tracking_reference(self,position,road_error,previous_navigation):
+        if (self.lidar_navigation and self.lidar_stereo_obstacles and
+                previous_navigation.get('feasible',False) and
+                previous_navigation.get('command_reason')=='LIDAR_TRACK'):
+            error=self.navigator.tracking_error(position)
+            if error is not None:return error,'LIDAR_PATH'
+        return road_error,'ROAD'
+
     def _control_loop(self, _e):
         if self.spacetime_runtime is not None:return self._spacetime_reference_loop()
         started=time.monotonic()
@@ -1561,6 +1569,7 @@ class RouteFollower(object):
         available_cruise=self.speed_sched.set_visibility(
             self.lidar_range if cloud_fresh else 8.,cloud_age if cloud_fresh else .5)
         if self.lidar_navigation:
+            previous_navigation=dict(self.clearance_info)
             self.clearance_info=dict(active=False,feasible=True,cap=None,source="LIDAR_NAV")
         else:
             if self.adaptive_speed:
@@ -1779,12 +1788,9 @@ class RouteFollower(object):
         if self.adaptive_speed:
             tracking_error=max(abs(cross_track_error),abs(e_z0))
             tracking_reference='ROAD'
-            if (self.lidar_navigation and self.lidar_stereo_obstacles and
-                    self.clearance_info.get('feasible',False) and
-                    self.clearance_info.get('command_reason')=='LIDAR_TRACK'):
-                path_error=self.navigator.tracking_error(pn)
-                if path_error is not None:
-                    tracking_error=path_error;tracking_reference='LIDAR_PATH'
+            if self.lidar_navigation:
+                tracking_error,tracking_reference=self._speed_tracking_reference(
+                    pn,tracking_error,previous_navigation)
             cross_cap=self.speed_sched.cruise*max(.35,min(1.,.6/max(.6,tracking_error)))
         # ---- SpeedScheduler: 唯一水平速度 authority (方案 5) ----
         v_target, self.speed_info = self.speed_sched.target(

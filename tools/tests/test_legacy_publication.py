@@ -12,6 +12,20 @@ import numpy as np
 
 
 class LegacyPublicationTests(unittest.TestCase):
+    def test_speed_reference_uses_previous_accepted_path_after_current_info_reset(self):
+        from lidar_navigation import LidarNavigator
+        c=self.controller;c.lidar_navigation=True;c.lidar_stereo_obstacles=True
+        c.navigator=LidarNavigator(c.execution_guard)
+        c.navigator.braking_path=np.array([[0.,2.,-1.],[10.,2.,-1.]])
+        previous=dict(feasible=True,command_reason='LIDAR_TRACK')
+        c.clearance_info=dict(active=False,feasible=True,source='LIDAR_NAV')
+        position=np.array([5.,2.,-1.])
+        self.assertEqual(c._speed_tracking_reference(position,2.,previous),(0.,'LIDAR_PATH'))
+        previous['command_reason']='COMMAND_BLOCKED'
+        self.assertEqual(c._speed_tracking_reference(position,2.,previous),(2.,'ROAD'))
+        previous['command_reason']='LIDAR_TRACK';c.lidar_stereo_obstacles=False
+        self.assertEqual(c._speed_tracking_reference(position,2.,previous),(2.,'ROAD'))
+
     def setUp(self):
         script=Path(__file__).resolve().parents[2]/'ros_ws/src/route_follower/scripts/route_follower.py'
         sys.path.insert(0,str(script.parent))

@@ -68,7 +68,7 @@ class RaceLegTests(unittest.TestCase):
         arguments=dict(s.split(':=',1) for s in command if ':=' in s)
         expected={'lidar_geometry_margin':'0.65','lidar_gate_opening':'true',
                   'lidar_stereo_obstacles':'true',
-                  'gate_search_speed':'12.0',
+                  'gate_search_speed':'10.0',
                   'lidar_departure_floor_distance':'8','lidar_envelope_margin':'0.75',
                   'lidar_xy_error_max':'2.0'}
         for name,value in expected.items():
