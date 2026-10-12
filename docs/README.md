@@ -1,25 +1,22 @@
 # 文档索引
 
-整理日期：2026-10-12。当前状态只在 [00 当前交接](00_current_handoff.md) 维护。
+整理日期：2026-10-12。当前运行状态由[00 当前交接](00_current_handoff.md)维护；新会话完整说明见工作区[迎面车辆与交叉轨道交接](35_session_handoff_20261012.md)。
 
 ## 接手阅读顺序
 
-1. [00 当前交接](00_current_handoff.md)：当前同步版本、实跑失败结果与下一步实施/验证顺序。
-2. [26 动态避障重构设计审查](26_dynamic_avoidance_design_review.md)、[27 DynamicTracker首批实现](27_dynamic_tracker_implementation.md)、[28 Rolling Occupancy实现](28_local_occupancy_implementation.md)、[29 离线时空Planner实现](29_spacetime_mvp_implementation.md)与[30 执行层与发布收尾](30_spacetime_execution_implementation.md)：跟踪/预测、三态地图、时空搜索/纯响应和执行层已实现，实跑门槛尚未验收。
-   最新可见legacy续修见[31 缝隙延迟、门间停止与高度回拉](31_gap_latency_and_stationary_stall.md)。
-3. [无人机避障调研](无人机避障调研_20261004.md)：Fast-Planner、EGO-Planner、RAPTOR、FASTER及应用边界。
-4. [候选57清单](../../experiments/drone_avoidance_research_20261004/candidate_manifest57.json)和[第58轮结果](../../experiments/race_car_response_20261004_58/result.json)：历史源码与实跑证据；最新实跑见当前交接和31续修记录。
-5. [25 车辆碰撞续修记录](25_car_command_guard.md)：前期技术证据与失败分析；不是当前版本说明。
-6. [18 规则转写](18_rmua2026_rules.md)：既有赛事资料；按需要查阅，不承担当前开发状态说明。
+1. [00 当前交接](00_current_handoff.md)：当前实现5d8ce95、run13迎面车碰撞、保留版本、GPU环境和下一步。
+2. [34 双目盲区与门位置记忆](34_stereo_blind_sector_and_gate_memory.md)：本轮实现与01–13实跑记录；车辆阶段尚未正式通过。
+3. [26 动态避障设计审查](26_dynamic_avoidance_design_review.md)、[27 跟踪实现](27_dynamic_tracker_implementation.md)、[28 三态地图](28_local_occupancy_implementation.md)、[29 时空Planner](29_spacetime_mvp_implementation.md)、[30 执行层](30_spacetime_execution_implementation.md)：模块设计、实现和未验收边界。
+4. [31 缝隙延迟与门间停滞](31_gap_latency_and_stationary_stall.md)、[32 参考带瞬态](32_reference_band_transient_release.md)、[33 缝隙发布一致性](33_gap_publication_consistency.md)：此前legacy续修、参数依据和逐轮失败证据。
+5. [无人机避障调研](无人机避障调研_20261004.md)、[25 车辆碰撞记录](25_car_command_guard.md)：调研依据、前期诊断与修复记录。
+6. [18 规则转写](18_rmua2026_rules.md)：既有赛事资料，不承担当前开发状态说明。
 
-## 历史资料
+## 方案、验证与历史记录
 
-[archive/README.md](archive/README.md) 是归档索引。01–17、19–24、旧根目录交接和旧 README 已归档，不删除历史证据；其中“当前”“下一步”和参数属于当时版本。
+- [已确认的重构方案](specs/RMUA2026_dynamic_avoidance_refactor_plan.md)；占据避障草稿仍在specs目录，未跟踪且不作当前实现承诺。
+- [时空模块验证](validation/spacetime_release_20261007/README.md)、[10月8日缝隙验证](validation/gap_release_20261008/README.md)、[10月10日验证](validation/gap_release_20261010/README.md)：对应当时版本的测试与证据。
+- [历史归档索引](archive/README.md)：早期Stage设计、训练和实验记录；其中参数与开发进度属于当时版本。
 
-[截至第58轮的旧交接全文](archive/00_handoff_history_through_run58_20261004.md)保留逐轮记录。[2026-10-01源码清单](handoff_snapshot_20261001.json)是历史快照，不能代表当前运行包。
+按用户要求删除了过期交接快照、旧README、非官方本地规则附录和旧源码清单，清单见归档索引。保留当前交接、有效方案和原始证据；旧文档的已提交版本可从Git历史查阅。
 
-模型、标注、实验日志和运行快照仍在原目录，本次不整理或删除这些资产。以后更新当前交接与证据附录，不在多份文档重复维护状态。
-
-- [参考带瞬态与后续车辆迭代](32_reference_band_transient_release.md)：run18–29、参数放宽范围及仍未通过的车辆段。
-
-- [双目下方盲区与门位置记忆](34_stereo_blind_sector_and_gate_memory.md)：101分碰车、类似GPS漂移的误识别、114分超时及当前提速候选的验证边界。
+模型、标注、实验日志、运行快照和基线备份仍在原目录。
