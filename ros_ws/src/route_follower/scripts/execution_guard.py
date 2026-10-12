@@ -19,6 +19,7 @@ class ExecutionGuard:
         # aircraft's instantaneous physical braking acceleration.
         self.settling=settling
         self.cloud_stamp=None
+        self.cloud_points=None
         self.index=None
         self.faces=()
         self.response_model=None
@@ -127,11 +128,12 @@ class ExecutionGuard:
         if points is None or age is None or not 0.<=age<.5:
             return None, 'LIDAR_STALE'
         if len(points)==0:return None, 'LIDAR_EMPTY'
-        if self.index is None or self.cloud_stamp!=cloud_stamp:
+        if self.index is None or self.cloud_stamp!=cloud_stamp or self.cloud_points is not points:
             self.index=PointIndex(points,origin=position,faces=self.faces,road_height=5.,
                                   continuous_surfaces=self.response_model is not None,
                                   surface_seeds=self.surface_seed_points)
             self.cloud_stamp=cloud_stamp
+            self.cloud_points=points
         return age, None
 
     def command_clearance(self,samples,limit=None):

@@ -10,6 +10,29 @@ from gate_tracker import GateTracker  # noqa: E402
 
 
 class GateTrackerTests(unittest.TestCase):
+    def test_bbox_depth_cannot_move_a_measured_gate_during_occlusion(self):
+        tracker=GateTracker()
+        geometry=dict(width=3.,height=3.,plane_rmse=.05,geometry_valid=True,
+                      position_sigma=.3,normal_world=[1.,0.,0.])
+        track=tracker.update(np.array([10.,0.,-3.]),10.,1.,geom=geometry,conf=.9)
+        for k in range(8):
+            track.update(np.array([11.+k*.1,.7,-2.]),11.+k*.1,1.1+k*.1,.3,conf=.8)
+        tracker.refresh_hard()
+        np.testing.assert_allclose(track.mean,[10.,0.,-3.])
+        np.testing.assert_allclose(track.sigma(),[.3,.3,.3])
+        self.assertEqual(track.s,10.)
+        self.assertTrue(track.hard_anchor)
+        # A new metric measurement can legitimately update the gate.
+        track.update(np.array([10.3,.1,-3.]),10.3,2.,1.,geom=geometry,conf=.9)
+        np.testing.assert_allclose(track.mean,[10.3,.1,-3.])
+
+    def test_first_metric_observation_replaces_a_noisy_bbox_center(self):
+        tracker=GateTracker();track=tracker.update(np.array([13.,1.,-1.]),13.,1.)
+        geometry=dict(width=3.,height=3.,plane_rmse=.05,geometry_valid=True,position_sigma=.3)
+        track.update(np.array([10.,0.,-3.]),10.,2.,.1,geom=geometry)
+        np.testing.assert_allclose(track.mean,[10.,0.,-3.])
+        np.testing.assert_allclose(track.sigma(),[.3,.3,.3])
+
     def test_assoc_radius_prevents_nested_gate_merge(self):
         tracker = GateTracker(assoc_radius=4.0)
         t1 = tracker.update(np.array([0.0, 0.0, -3.0]), 10.0, 1.0)

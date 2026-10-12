@@ -25,13 +25,13 @@ def outbound_response_arguments(mode):
     enabled='true' if mode=='coupled' else 'false'
     return ['coupled_response:='+enabled,'lidar_coupling_limited:='+enabled,
             'lidar_discrete_feedback:='+enabled,'lidar_fresh_publication_check:='+enabled,
-            'lidar_xy_error_max:=4.5']
+            'lidar_xy_error_max:=4.5','lidar_terminal_margin:='+('0.75' if mode=='coupled' else '0')]
 
 def goal_matches_road(splines,road,goal):
     point=splines[road-1][0]
     return math.hypot(point[0]-goal[0],point[1]-goal[1])<35.
 
-def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=False,adaptive_speed=False,control_rate=20.,obstacle_backend='lidar_nav',planner_mode='legacy',spacetime_bridge_hold=None):
+def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=False,adaptive_speed=False,control_rate=20.,obstacle_backend='lidar_nav',planner_mode='legacy',spacetime_bridge_hold=None,stereo_obstacles=None):
     command=['roslaunch','route_follower','route_follower.launch',
             'route_file:='+str(route_file),'route:=race_leg',
             'gates_file:='+str(gates_file),'guides_file:='+str(guides_file),
@@ -46,7 +46,8 @@ def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=Fal
                                'curve_preview_step:=1','z_response_time:=0.15','lidar_envelope_margin:=0.75',
                                'lidar_budget:=0.15','lidar_side_buffer:=0.9','a_up:=8','a_down:=8',
                                'lidar_xy_error_max:=2.0','lidar_gate_opening:=true','lidar_geometry_margin:=0.65',
-                               'lidar_departure_floor_distance:=8']
+                               'lidar_departure_floor_distance:=8',
+                               'lidar_stereo_obstacles:='+('true' if stereo_obstacles is not False and obstacle_backend=='lidar_nav' else 'false')]
     if fast_descent:
         config=Path(__file__).resolve().parents[1]/'ros_ws/src/route_follower/config'
         command+=['slope_eta:=0.95','vz_down_limit:=4.5','z_rate_max:=5',
@@ -214,10 +215,12 @@ def main():
                           '_model:='+str(root/'yolo/weights/best.pt'),
                           '_car_model:='+(str(root/'yolo/weights/car_score91_best.pt') if a.obstacle_backend=='legacy' else ''),
                           '_route_file:='+str(route_file),'_route_name:=race_leg',
+                          '_stereo_obstacles:='+('true' if stage==1 and a.obstacle_backend=='lidar_nav' else 'false'),
                           '_imgsz:=960','_conf:=0.35'],
                          stdout=(folder/'vision.log').open('w'),stderr=subprocess.STDOUT)
         cruise=min(a.cruise,a.vehicle_cruise) if stage==1 else a.cruise
-        command=controller_command(route_file,gates_file,guides_file,cruise,a.fast_descent,a.adaptive_speed,a.control_rate,a.obstacle_backend,a.planner_mode,a.spacetime_bridge_hold)
+        command=controller_command(route_file,gates_file,guides_file,cruise,a.fast_descent,a.adaptive_speed,a.control_rate,a.obstacle_backend,a.planner_mode,a.spacetime_bridge_hold,
+                                   stereo_obstacles=stage==1 and a.obstacle_backend=='lidar_nav')
         if cause=='OFFICIAL_ENDPOINT_CHANGED' and previous is not None:
             command+=['departure_hover_z:='+str(previous[2]-1.5)]
         child=subprocess.Popen(command,stdout=(folder/'controller.log').open('w'),stderr=subprocess.STDOUT)

@@ -46,6 +46,8 @@ class GateTrack(object):
         self.geom_frames = 1 if geom else 0
         self.geom_ok_frames = 1 if (geom and geom["geometry_valid"]) else 0
         self.confidence = float(conf) if conf is not None else None
+        self.geometry_sigma=geom.get('position_sigma') if geom else None
+        self.normal_world=np.asarray(geom['normal_world'],dtype=float) if geom and 'normal_world' in geom else None
         self.last_uv = uv
         # 反投影预测 (由节点按当前相机位姿填充)
         self.predicted_u = None
@@ -58,15 +60,22 @@ class GateTrack(object):
         if stamp <= self.last_seen:
             return
         w = np.asarray(world, dtype=float)
-        self.mean = (1.0 - beta) * self.mean + beta * w
-        self.recent.append(w.copy())
+        measured=geom is not None and geom.get('geometry_valid',False)
+        if measured and not self.geometry_valid:
+            self.mean=w.copy();self.recent.clear()
+        # A noisy bbox depth must not move a previously measured static gate.
+        # Repeated image bearings still confirm its identity while GPS keeps
+        # the metric center through a partial occlusion.
+        if measured or not self.geometry_valid:
+            self.mean = (1.0 - beta) * self.mean + beta * w
+            self.recent.append(w.copy())
         n_new = self.support + 1
         delta = w - self._mean
         self._mean = self._mean + delta / n_new
         self._m2 = self._m2 + delta * (w - self._mean)
         self.support = n_new
         self.last_seen = stamp
-        if route_s is not None:
+        if route_s is not None and (measured or not self.geometry_valid):
             self.s = float(route_s)
         if depth is not None:
             self.depth = depth
@@ -81,15 +90,22 @@ class GateTrack(object):
             self.geometry_valid = bool(geom["geometry_valid"])
             self.geom_frames += 1
             self.geom_ok_frames += 1 if geom["geometry_valid"] else 0
+            if measured and 'position_sigma' in geom:self.geometry_sigma=float(geom['position_sigma'])
+            if measured and 'normal_world' in geom:
+                normal=np.asarray(geom['normal_world'],dtype=float)
+                if self.normal_world is not None and normal@self.normal_world<0:normal=-normal
+                self.normal_world=normal/max(1e-9,np.linalg.norm(normal))
         if conf is not None:
             self.confidence = conf if self.confidence is None else \
                 0.8 * self.confidence + 0.2 * conf
 
     def sigma(self):
-        if self.support < 2:
+        if len(self.recent)<2:
+            if self.geometry_sigma is not None:return np.full(3,self.geometry_sigma)
             return np.array([1e3, 1e3, 1e3])
         # Far-range depth noise must not permanently disqualify later close observations.
-        return np.std(np.asarray(self.recent), axis=0, ddof=1)
+        sigma=np.std(np.asarray(self.recent), axis=0, ddof=1)
+        return sigma if self.geometry_sigma is None else np.maximum(sigma,self.geometry_sigma)
 
     def geometry_ok_ratio(self):
         return self.geom_ok_frames / self.geom_frames if self.geom_frames else 0.0

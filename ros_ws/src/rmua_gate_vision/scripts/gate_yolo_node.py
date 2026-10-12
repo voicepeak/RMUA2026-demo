@@ -41,6 +41,8 @@ from gate_map import GateMap  # noqa: E402
 from gate_geometry import GateGeometry  # noqa: E402
 from latest_frame import LatestFrame
 from car_geometry import car_boxes,locate_car,overlaps_car
+from stereo_obstacles import downward_hits
+from gate_candidates import frame_candidates
 from timestamp_sync import PoseBuffer  # noqa: E402
 import stereo_keypoint_matcher as skm  # noqa: E402
 from gate_reprojection import reproject_gate  # noqa: E402
@@ -106,6 +108,7 @@ class GateYolo(object):
         self.model = YOLO(self.model_path)
         car_path=rospy.get_param('~car_model','')
         self.car_model=YOLO(car_path) if car_path else None
+        self.stereo_obstacles=bool(rospy.get_param('~stereo_obstacles',False))
         self.car_conf=float(rospy.get_param('~car_conf',.5))
         cv2.setNumThreads(2)
         rospy.loginfo("YOLO loaded: %s", self.model_path)
@@ -133,6 +136,7 @@ class GateYolo(object):
         self.pub_o = rospy.Publisher("/rmua/gate_observations", String, queue_size=5)
         self.pub_map = rospy.Publisher("/rmua/gate_map", String, queue_size=2)
         self.pub_cars=rospy.Publisher('/rmua/car_observations',String,queue_size=2)
+        self.pub_obstacles=rospy.Publisher('/rmua/stereo_obstacles',String,queue_size=1)
         rospy.Service("~save", Trigger, self.save)
         rospy.Service("~clear", Trigger, self.clear)
         rospy.Subscriber("/airsim_node/drone_1/debug/pose_gt", PoseStamped, self.pose_cb)
@@ -263,6 +267,10 @@ class GateYolo(object):
         world = gs.body_to_world(gs.camera_to_body(geom["center"]), pos, quat)
         if not np.all(np.isfinite(world)):
             return False
+        # Axis-aligned detector-box corners do not measure the plane's tilt.
+        # Keep the route normal unless real image keypoints measured it.
+        if gl.get('keypoints',False):geom['normal_world']=gs.quat_to_R(quat)@gs.R_BC@geom['normal']
+        geom['position_sigma']=.15+.25*geom['depth_mean']**2/(gs.FX*gs.BASELINE)+geom['plane_rmse']
         uv = np.asarray(gl["center"], dtype=float)
         t = self.gate_map.observe(world, t_img, depth=geom["depth_mean"],
                                   geom=geom, uv=uv, conf=gl["conf"])
@@ -318,6 +326,9 @@ class GateYolo(object):
         results=self.model.predict([left,right],imgsz=self.imgsz,conf=self.conf,iou=.5,verbose=False,device=self.device)
         cl,kp_l=self.candidates(results[0],left)
         cr,_=self.candidates(results[1],right)
+        if self.stereo_obstacles:
+            cl=frame_candidates(left,cl)
+            cr=frame_candidates(right,cr)
         cars_l,cars_r=[],[]
         if self.car_model is not None:
             car_results=self.car_model.predict([left,right],imgsz=self.imgsz,
@@ -338,7 +349,7 @@ class GateYolo(object):
 
         # 兜底: 未匹配上的左目检测 -> 稠密视差 (旧路径)
         if self.fallback_center:
-            unmatched = [c for c in cl if c.get("track_id") is None]
+            unmatched = [c for c in cl if c.get("track_id") is None and not c.get('geometry_only',False)]
             if unmatched:
                 disp = gs.compute_disparity(cv2.cvtColor(left, cv2.COLOR_BGR2GRAY),
                                             cv2.cvtColor(right, cv2.COLOR_BGR2GRAY), self.sgbm)
@@ -350,6 +361,10 @@ class GateYolo(object):
                     cc, depth, _ = r
                     if depth < 1.0 or depth > 200.0:
                         continue
+                    # A merged box spanning buildings/cars is not a gate.
+                    # Dense depth alone cannot validate its opening geometry.
+                    _,_,width,height=c['bbox']
+                    if width*depth/gs.FX>8. or height*depth/gs.FY>8.:continue
                     world = gs.body_to_world(gs.camera_to_body(cc), pos, quat)
                     if not np.all(np.isfinite(world)):
                         continue
@@ -368,6 +383,12 @@ class GateYolo(object):
                     cv2.cvtColor(right,cv2.COLOR_BGR2GRAY),self.sgbm)
             car_observations=[locate_car(car,disp,pos,quat) for car in cars_l]
         self.pub_cars.publish(String(data=json.dumps(dict(stamp=t_img,detections=car_observations))))
+        if self.stereo_obstacles:
+            if disp is None:
+                disp=gs.compute_disparity(cv2.cvtColor(left,cv2.COLOR_BGR2GRAY),
+                    cv2.cvtColor(right,cv2.COLOR_BGR2GRAY),self.sgbm)
+            hits=downward_hits(disp,pos,quat)
+            self.pub_obstacles.publish(String(data=json.dumps(dict(stamp=t_img,points=hits.tolist()))))
         vl, vr = self.draw(left, cl), self.draw(right, cr)
         for view,cars in ((vl,cars_l),(vr,cars_r)):
             for car in cars:
@@ -402,7 +423,8 @@ class GateYolo(object):
     def publish_map(self, _e=None):
         with self.map_lock:
             if self.map_reset_pending:return
-            self.pub_map.publish(String(data=self.gate_map.to_json(min_support=self.min_support)))
+            self.pub_map.publish(String(data=self.gate_map.to_json(min_support=self.min_support,
+                max_d_cross=self.max_d_cross)))
 
     def save(self,req):
         with self.map_lock:

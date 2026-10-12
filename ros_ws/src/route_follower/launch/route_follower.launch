@@ -33,9 +33,11 @@
   <arg name="lidar_anticipation_distance" default="9.0"/>
   <!-- 0 disables; >=0.55 sets the static raw-return stop-envelope margin. Dynamic predictions keep their full buffer. -->
   <arg name="lidar_envelope_margin" default="0.0"/>
+  <arg name="lidar_terminal_margin" default="0.0"/>
   <!-- 0 preserves the guard margin; >=0.45 sets geometry margin before the additional 0.1m path buffer. -->
   <arg name="lidar_geometry_margin" default="0.0"/>
   <arg name="lidar_gate_opening" default="false"/>
+  <arg name="lidar_stereo_obstacles" default="false"/>
   <arg name="lidar_departure_floor_distance" default="20.0"/>
   <!-- Geometry retry budget in seconds for rejected paths; the first attempt always runs. -->
   <arg name="lidar_budget" default="0.06"/>
@@ -208,8 +210,10 @@
     <param name="lidar_path_options" value="$(arg lidar_path_options)"/>
     <param name="lidar_anticipation_distance" value="$(arg lidar_anticipation_distance)"/>
     <param name="lidar_envelope_margin" value="$(arg lidar_envelope_margin)"/>
+    <param name="lidar_terminal_margin" value="$(arg lidar_terminal_margin)"/>
     <param name="lidar_geometry_margin" value="$(arg lidar_geometry_margin)"/>
     <param name="lidar_gate_opening" value="$(arg lidar_gate_opening)"/>
+    <param name="lidar_stereo_obstacles" value="$(arg lidar_stereo_obstacles)"/>
     <param name="lidar_departure_floor_distance" value="$(arg lidar_departure_floor_distance)"/>
     <param name="lidar_budget" value="$(arg lidar_budget)"/>
     <param name="lidar_side_buffer" value="$(arg lidar_side_buffer)"/>

@@ -76,6 +76,19 @@ class LegacyPublicationTests(unittest.TestCase):
         self.assertFalse(result[-1]['conditional_recovery'])
         self.assertLess(abs(result[0].vx),.05)
 
+    def test_new_stereo_hit_is_rechecked_between_lidar_frames(self):
+        from obstacle_cloud_fusion import ObstacleCloudFusion
+        c=self.publication_scene([[30.,0.,0.]])
+        c.lidar_stereo_obstacles=True;c.obstacle_fusion=ObstacleCloudFusion()
+        self.assertTrue(self.recheck(c)[-1]['accepted_original'])
+        old_index=c.execution_guard.index
+        c.obstacle_fusion.update(.97,np.array([[.5,0.,.3]]))
+        result=self.recheck(c)
+        self.assertFalse(result[-1]['accepted_original'])
+        self.assertIsNot(c.execution_guard.index,old_index)
+        self.assertEqual(c.execution_guard.cloud_stamp,.95)
+        self.assertTrue(np.any(np.all(np.isclose(c.execution_guard.index.points,[30.,0.,0.]),axis=1)))
+
     def test_fresh_publication_keeps_configured_envelope_and_side_margins(self):
         for separation,envelope,side in ((1.2,1.15,None),(1.,None,.9)):
             with self.subTest(separation=separation):

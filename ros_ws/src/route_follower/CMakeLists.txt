@@ -36,6 +36,7 @@ catkin_install_python(PROGRAMS
   scripts/predictive_avoidance.py
   scripts/pose_history.py
   scripts/lidar_points.py
+  scripts/obstacle_cloud_fusion.py
   scripts/point_index.py
   scripts/lattice_detour.py
   scripts/async_planner.py

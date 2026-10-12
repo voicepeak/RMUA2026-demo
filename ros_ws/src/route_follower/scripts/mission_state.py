@@ -22,10 +22,13 @@ ABORT = "ABORT"
 
 class MissionState(object):
 
-    def __init__(self, recon_speed=2.0, recon_max_dist=30.0, map_brake_a=1.5):
+    def __init__(self, recon_speed=2.0, recon_max_dist=30.0, map_brake_a=1.5,
+                 gate_search_speed=10.0, gate_search_dist=250.0):
         self.recon_speed = float(recon_speed)
         self.recon_max_dist = float(recon_max_dist)
         self.map_brake_a = float(map_brake_a)
+        self.gate_search_speed=float(gate_search_speed)
+        self.gate_search_dist=float(gate_search_dist)
         self.mode = TRACK
         self.recon_start_s = None
         self.recon_start_z = None
@@ -40,7 +43,8 @@ class MissionState(object):
     def abort(self):
         self.mode = ABORT
 
-    def update(self, use_gate_map, horizon_s, s_now, z_now):
+    def update(self, use_gate_map, horizon_s, s_now, z_now,
+               require_gate=False, gate_horizon=None):
         """返回 (mode, v_map, transition); transition 为模式切换信息或 None。"""
         previous = self.mode
         if previous == ABORT:
@@ -50,6 +54,17 @@ class MissionState(object):
             self.mode = TRACK
             self.recon_start_s = None
             self.recon_start_z = None
+        elif require_gate and (gate_horizon is None or gate_horizon<=s_now+2.):
+            # A calibrated road height guides through the hub; it does not
+            # certify an unseen opening. Preserve the spatial height profile
+            # while searching along the known route at bounded speed/distance.
+            if self.recon_start_s is None:
+                self.recon_start_s=s_now;self.recon_start_z=z_now
+            route_known=horizon_s is not None and horizon_s>s_now+2.
+            distance=s_now-self.recon_start_s
+            limit=self.gate_search_dist if route_known else self.recon_max_dist
+            self.mode=RECON if distance<limit else HOLD
+            v_map=(self.gate_search_speed if route_known else self.recon_speed) if self.mode==RECON else 0.
         elif horizon_s is not None and horizon_s > s_now + 2.0:
             self.mode = TRACK
             self.recon_start_s = None

@@ -187,6 +187,24 @@ class ZControllerTests(unittest.TestCase):
 
 
 class MissionStateTests(unittest.TestCase):
+    def test_height_prior_cannot_certify_a_missing_gate(self):
+        mission=MissionState(gate_search_speed=6.,gate_search_dist=250.)
+        mode,cap,_=mission.update(True,1250.,610.,-135.,require_gate=True,gate_horizon=609.)
+        self.assertEqual(mode,RECON);self.assertEqual(cap,6.)
+        mode,cap,_=mission.update(True,1250.,800.,-120.,require_gate=True,gate_horizon=609.)
+        self.assertEqual(mode,RECON);self.assertEqual(cap,6.)
+        mode,cap,_=mission.update(True,1250.,861.,-116.,require_gate=True,gate_horizon=609.)
+        self.assertEqual(mode,HOLD);self.assertEqual(cap,0.)
+        mode,cap,_=mission.update(True,1250.,861.,-116.,require_gate=True,gate_horizon=900.)
+        self.assertEqual(mode,TRACK);self.assertGreater(cap,6.)
+        self.assertIsNone(mission.recon_start_s)
+
+    def test_gate_search_requires_a_known_route_and_preserves_terminal_approach(self):
+        mission=MissionState()
+        self.assertEqual(mission.update(True,None,610.,-135.,require_gate=True)[1],2.)
+        self.assertEqual(mission.update(True,None,641.,-130.,require_gate=True)[0],HOLD)
+        self.assertEqual(mission.update(True,1250.,1210.,-104.,require_gate=False)[0],TRACK)
+
     def test_track_without_gate_map(self):
         mission = MissionState()
         mode, v_map, transition = mission.update(False, None, 0.0, 0.0)

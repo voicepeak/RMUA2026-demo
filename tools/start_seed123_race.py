@@ -54,6 +54,11 @@ if native.exists():
     shutil.copy2(native,snapshot/'native'/native.name)
 hashes={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdigest()
         for path in sorted(snapshot.rglob('*')) if path.is_file()}
+vision_snapshot=out/'vision_sources'
+shutil.copytree(workspace/'rmua_ws/src/rmua_gate_vision',vision_snapshot,
+                ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
+vision_hashes={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdigest()
+               for path in sorted(vision_snapshot.rglob('*')) if path.is_file()}
 tool_snapshot=out/'tool_sources';tool_snapshot.mkdir(exist_ok=False)
 for name in ('start_seed123_race.py','race_start_watch.py','race_runner.py','watch_debug_race.py',
              'race_monitor_policy.py','summarize_debug_race.py','control_trace.py','system_health.py','vision_runtime.py'):
@@ -72,7 +77,7 @@ sim_hashes={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdige
     outbound_response=args.outbound_response,
     lidar_points_per_second=settings['Vehicles']['drone_1']['Sensors']['lidar']['PointsPerSecond'],
     car_model_enabled=args.obstacle_backend=='legacy',snapshot_kind='runtime package captured before launch',
-    sha256=hashes,tools_sha256=tool_hashes,sim_launch_sha256=sim_hashes),indent=2)+'\n')
+    sha256=hashes,vision_sha256=vision_hashes,tools_sha256=tool_hashes,sim_launch_sha256=sim_hashes),indent=2)+'\n')
 def inspect():
     result=subprocess.run(['docker','inspect','rmua_noetic'],capture_output=True,text=True,check=True)
     return json.loads(result.stdout)[0]['State']
