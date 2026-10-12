@@ -4,18 +4,10 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'ros_ws/src/route_follower/scripts'))
-from terminal_handoff import approach_target,terminal_reference
+from terminal_handoff import approach_target
 
 
 class TerminalHandoffTests(unittest.TestCase):
-    def test_offset_marker_does_not_cut_the_last_gate_approach(self):
-        route=lambda s:(s,0.,0)
-        reference=terminal_reference(route,(101.,2.),100.)
-        self.assertEqual(reference(75.),(75.,0.))
-        self.assertEqual(reference(90.),(90.,0.))
-        self.assertEqual(reference(92.),(92.,0.))
-        self.assertEqual(reference(96.),(96.5,1.))
-        self.assertEqual(reference(100.),(101.,2.))
     def test_low_approach_stays_outside_trigger_before_next_leg(self):
         target,ready=approach_target((20.,0.,-.6),(0.,0.,0.))
         self.assertFalse(ready)

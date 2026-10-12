@@ -58,7 +58,7 @@ from terrain_speed import TerrainSpeedEnvelope
 from predictive_avoidance import PredictiveAvoidance, CarTracks, JoinedDetour, departure_floor_limits, shifted_center
 from execution_guard import ExecutionGuard
 from lidar_navigation import LidarNavigator
-from terminal_handoff import approach_target,terminal_reference
+from terminal_handoff import approach_target
 from velocity_response import VelocityResponse
 from point_index import measured_car_faces
 from lattice_detour import LatticeDetour
@@ -1805,9 +1805,8 @@ class RouteFollower(object):
         if terminal:
             # Brake before reaching the trigger. Entering it close to road
             # level starts the next leg inside the floor buffer.
-            terminal_speed=2. if self.route.total_s-s_now<=15. else 4.
-            v_target=min(v_target,terminal_speed)
-            self.speed_info['hard_cap']=min(self.speed_info['hard_cap'],terminal_speed)
+            v_target=min(v_target,4.)
+            self.speed_info['hard_cap']=min(self.speed_info['hard_cap'],4.)
             self.speed_info.update(terminal_height_ready=terminal_height_ready,
                 terminal_staging=not terminal_height_ready,terminal_target_xy=list(terminal_xy))
 
@@ -1988,12 +1987,9 @@ class RouteFollower(object):
                           if self.departure_hover_z> -900. else None)
             navigation_xy=self.xy_tracker.base_point_at
             if terminal and self.race_goal is not None:
-                if terminal_height_ready:
-                    navigation_xy=terminal_reference(navigation_xy,terminal_xy,self.route.total_s)
-                else:
-                    target=np.asarray(terminal_xy);start=pn[:2].copy()
-                    distance=max(.1,float(np.linalg.norm(target-start)))
-                    navigation_xy=lambda station:tuple(start+np.clip((station-s_now)/distance,0.,1.)*(target-start))
+                target=np.asarray(terminal_xy);start=pn[:2].copy()
+                distance=max(.1,float(np.linalg.norm(target-start)))
+                navigation_xy=lambda station:tuple(start+np.clip((station-s_now)/distance,0.,1.)*(target-start))
             self.navigator.set_gates([g for g in chain.gates
                 if self.lidar_gate_opening and s_now-5.<=g['s']<=s_now+40.],
                 half_width=self.xy_tracker.clearance,half_height=.7)
