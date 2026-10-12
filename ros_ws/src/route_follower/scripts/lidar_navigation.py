@@ -117,6 +117,7 @@ class LidarNavigator:
         # against raw returns. None keeps the full path buffer everywhere.
         # Moving predictions always retain the full buffer.
         self.envelope_margin=None
+        self.terminal_margin=None
         # Optional side-pass floor (e.g. 0.9). A tight raw minimum beside or
         # behind the motion may go down to this floor; returns ahead of the
         # trajectory keep the full buffer. None disables the allowance.
@@ -134,7 +135,25 @@ class LidarNavigator:
 
     @property
     def path_buffer(self):
-        return (self.guard.margin if self.geometry_margin is None else self.geometry_margin)+.1
+        buffer=(self.guard.margin if self.geometry_margin is None else self.geometry_margin)+.1
+        return buffer if self.terminal_margin is None else min(buffer,self.terminal_margin)
+
+    def tracking_error(self,position):
+        """Deviation from the accepted stopping path, including its Z goal.
+
+        A planned avoidance offset is not a road tracking failure. This is
+        only a speed cost; current scene, road and response checks still
+        decide whether any command is publishable.
+        """
+        path=self.braking_path
+        if path is None or len(path)<2:return None
+        path=np.asarray(path,dtype=float);position=np.asarray(position,dtype=float)
+        segments=np.diff(path,axis=0)
+        fraction=np.clip(np.sum((position-path[:-1])*segments,axis=1)/
+                         np.maximum(1e-9,np.sum(segments*segments,axis=1)),0.,1.)
+        residual=position-(path[:-1]+fraction[:,None]*segments)
+        nearest=residual[np.argmin(np.sum(residual*residual,axis=1))]
+        return max(float(np.linalg.norm(nearest[:2])),abs(float(nearest[2])))
 
     def _departure_floors(self,stations,positions,center,floor_offset,index,margin):
         return departure_floor_limits(stations,positions,center,floor_offset,index,margin,
@@ -151,9 +170,10 @@ class LidarNavigator:
             if not gate.get('geometry_valid',False):continue
             n=gate_normal(gate);u,v=local_axes(n)
             c=np.asarray(gate.get('measurement_center',(gate['x'],gate['y'],gate['z'])),dtype=float)
-            width=min(half_width,float(gate['width'])/2.-.5) if gate.get('width') else half_width
-            height=min(half_height,float(gate['height'])/2.-.5) if gate.get('height') else half_height
-            apertures.append((c,n,u,v,max(.1,width),max(.1,height)))
+            uncertainty=float(gate.get('geometry_uncertainty') or 0.)
+            width=min(half_width,float(gate['width'])/2.-.5-uncertainty) if gate.get('width') else half_width
+            height=min(half_height,float(gate['height'])/2.-.5-uncertainty) if gate.get('height') else half_height
+            apertures.append((c,n,u,v,max(0.,width),max(0.,height)))
         self.gate_apertures=tuple(apertures)
 
     def _gate_errors(self,path):
@@ -211,6 +231,7 @@ class LidarNavigator:
         raw,dynamic=self.guard.command_clearance_components(samples,limit=2.)
         if dynamic<buffer:return False,raw,dynamic
         admitted=(raw>=buffer or
+            (self.terminal_margin is not None and raw>=self.terminal_margin) or
             (self.envelope_margin is not None and raw>=self.envelope_margin) or
             (self.side_buffer is not None and raw>=self.side_buffer and
              self.guard.close_pass_ok(samples,self.side_buffer)))
@@ -872,7 +893,7 @@ class LidarNavigator:
         return command,dict(info,**checked,feasible=False,navigation_ms=1000.*(time.monotonic()-started))
 
     def select(self, position, velocity, desired, s, xy, center, points, cloud_stamp,
-               pose_stamp, floor_offset=None, recovery_only=False):
+               pose_stamp, floor_offset=None, recovery_only=False, dynamic_points=None):
         started=time.monotonic()
         self.guard.set_faces(())
         forward=np.asarray(xy(s+.3)[:2])-np.asarray(xy(s-.3)[:2])
@@ -900,7 +921,8 @@ class LidarNavigator:
         if self.guard.response_model is not None:
             forward=np.asarray(xy(s+.3)[:2])-np.asarray(xy(s-.3)[:2])
             forward/=max(1e-6,np.linalg.norm(forward))
-            self.scene.update(points,position,cloud_stamp,pose_stamp,forward,center,s)
+            self.scene.update(points if dynamic_points is None else dynamic_points,
+                              position,cloud_stamp,pose_stamp,forward,center,s)
             self.guard.dynamic_scene=self.scene
             info.update(self.scene.summary(),response_model='SLEW_COUPLED',
                         response_backend=('native' if self.guard.response_model.native is not None and
@@ -982,7 +1004,9 @@ class LidarNavigator:
                 if self.process_planning:
                     snapshot=(np.asarray(position).copy(),s,ss,coordinates,heights,floor_offset,
                         self.guard.index,self.guard.margin,self.horizon,self.budget,self.guard.response_model is not None,
-                        self.anticipation_distance,self.path_options,self.gate_apertures,self.geometry_margin,self.departure_floor_distance)
+                        self.anticipation_distance,self.path_options,self.gate_apertures,
+                        self.geometry_margin if self.terminal_margin is None else self.path_buffer-.1,
+                        self.departure_floor_distance)
                     self.future=self.executor.submit(_plan_snapshot,snapshot)
                 else:
                     self.future=self.executor.submit(self.path,np.asarray(position).copy(),s,frozen_xy,

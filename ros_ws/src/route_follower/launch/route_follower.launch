@@ -33,9 +33,11 @@
   <arg name="lidar_anticipation_distance" default="9.0"/>
   <!-- 0 disables; >=0.55 sets the static raw-return stop-envelope margin. Dynamic predictions keep their full buffer. -->
   <arg name="lidar_envelope_margin" default="0.0"/>
+  <arg name="lidar_terminal_margin" default="0.0"/>
   <!-- 0 preserves the guard margin; >=0.45 sets geometry margin before the additional 0.1m path buffer. -->
   <arg name="lidar_geometry_margin" default="0.0"/>
   <arg name="lidar_gate_opening" default="false"/>
+  <arg name="lidar_stereo_obstacles" default="false"/>
   <arg name="lidar_departure_floor_distance" default="20.0"/>
   <!-- Geometry retry budget in seconds for rejected paths; the first attempt always runs. -->
   <arg name="lidar_budget" default="0.06"/>
@@ -110,6 +112,7 @@
 
   <!-- RECON 独立 mode / 地图可见性 (方案 10, 38.2) -->
   <arg name="recon_speed"        default="2.0"/>
+  <arg name="gate_search_speed" default="10.0"/>
   <arg name="recon_climb"        default="0.6"/>
   <arg name="recon_max_dist"     default="30.0"/>
   <arg name="recon_max_climb"    default="4.0"/>
@@ -208,8 +211,10 @@
     <param name="lidar_path_options" value="$(arg lidar_path_options)"/>
     <param name="lidar_anticipation_distance" value="$(arg lidar_anticipation_distance)"/>
     <param name="lidar_envelope_margin" value="$(arg lidar_envelope_margin)"/>
+    <param name="lidar_terminal_margin" value="$(arg lidar_terminal_margin)"/>
     <param name="lidar_geometry_margin" value="$(arg lidar_geometry_margin)"/>
     <param name="lidar_gate_opening" value="$(arg lidar_gate_opening)"/>
+    <param name="lidar_stereo_obstacles" value="$(arg lidar_stereo_obstacles)"/>
     <param name="lidar_departure_floor_distance" value="$(arg lidar_departure_floor_distance)"/>
     <param name="lidar_budget" value="$(arg lidar_budget)"/>
     <param name="lidar_side_buffer" value="$(arg lidar_side_buffer)"/>
@@ -270,6 +275,7 @@
     <param name="curve_preview_step"  value="$(arg curve_preview_step)"/>
     <param name="curve_brake_a"       value="$(arg curve_brake_a)"/>
     <param name="recon_speed"         value="$(arg recon_speed)"/>
+    <param name="gate_search_speed" value="$(arg gate_search_speed)"/>
     <param name="recon_climb"         value="$(arg recon_climb)"/>
     <param name="recon_max_dist"      value="$(arg recon_max_dist)"/>
     <param name="recon_max_climb"     value="$(arg recon_max_climb)"/>

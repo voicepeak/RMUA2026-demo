@@ -40,6 +40,8 @@ class RaceLegTests(unittest.TestCase):
         for name in ('coupled_response','lidar_coupling_limited','lidar_discrete_feedback','lidar_fresh_publication_check'):
             self.assertIn(name+':=true',args)
         self.assertIn('lidar_xy_error_max:=4.5',args)
+        self.assertIn('lidar_terminal_margin:=0.75',args)
+        self.assertIn('lidar_terminal_margin:=0',outbound_response_arguments('legacy'))
         self.assertIn('lidar_coupling_limited:=false',outbound_response_arguments('legacy'))
         with self.assertRaises(ValueError):outbound_response_arguments('invalid')
 
@@ -65,6 +67,8 @@ class RaceLegTests(unittest.TestCase):
         command=controller_command('route.yaml','gates.yaml','guides.yaml',12.,adaptive_speed=True)
         arguments=dict(s.split(':=',1) for s in command if ':=' in s)
         expected={'lidar_geometry_margin':'0.65','lidar_gate_opening':'true',
+                  'lidar_stereo_obstacles':'true',
+                  'gate_search_speed':'10.0',
                   'lidar_departure_floor_distance':'8','lidar_envelope_margin':'0.75',
                   'lidar_xy_error_max':'2.0'}
         for name,value in expected.items():

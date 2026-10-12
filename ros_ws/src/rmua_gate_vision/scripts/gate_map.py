@@ -84,6 +84,9 @@ class GateMap(object):
     def _to_gate(self, t, source="yolo"):
         sig = t.sigma()
         n = self.tangent(t.s) if self.route is not None else np.array([1.0, 0.0, 0.0])
+        if t.normal_world is not None:
+            normal=t.normal_world
+            n=normal if normal@n>=0. else -normal
         return {
             "id": int(t.id),
             "x": float(t.mean[0]), "y": float(t.mean[1]), "z": float(t.mean[2]),
@@ -95,6 +98,7 @@ class GateMap(object):
             "width": t.width, "height": t.height,
             "plane_rmse": t.plane_rmse,
             "geometry_valid": bool(t.geometry_valid),
+            "geometry_uncertainty": t.geometry_sigma,
             "confidence": t.confidence,
             "predicted_u": t.predicted_u, "predicted_v": t.predicted_v,
             "visible": bool(t.visible),
@@ -120,8 +124,8 @@ class GateMap(object):
         return [g for g in self.gates(min_support, source, hard_only=hard_only)
                 if g["s"] > s_now]
 
-    def to_json(self, min_support=2, source="yolo"):
-        return json.dumps(self.gates(min_support, source))
+    def to_json(self, min_support=2, source="yolo", max_d_cross=None):
+        return json.dumps(self.gates(min_support, source, max_d_cross=max_d_cross))
 
     def save_yaml(self, path, min_support=2, source="yolo", max_d_cross=None):
         gates = self.gates(min_support, source, max_d_cross)

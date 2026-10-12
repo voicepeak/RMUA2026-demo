@@ -11,6 +11,26 @@ from path_sampling import swept_samples
 
 
 class LidarNavigationTests(unittest.TestCase):
+    def test_accepted_detour_offset_is_not_a_tracking_error_but_deviation_is(self):
+        self.assertIsNone(self.nav.tracking_error([5.,0.,0.]))
+        self.nav.braking_path=np.array([[0.,2.,-1.],[10.,2.,-1.]])
+        self.assertAlmostEqual(self.nav.tracking_error([5.,2.,-1.]),0.)
+        self.assertAlmostEqual(self.nav.tracking_error([5.,2.8,-1.]),.8)
+        self.assertAlmostEqual(self.nav.tracking_error([5.,2.,-.1]),.9)
+    def test_terminal_static_clearance_expires_and_keeps_dynamic_buffer(self):
+        self.nav.envelope_margin=1.15
+        self.nav.terminal_margin=.75
+        samples=np.zeros((2,3))
+        self.assertAlmostEqual(self.nav.path_buffer,.75)
+        with patch.object(self.guard,'command_clearance_components',return_value=(.8,2.)):
+            self.assertTrue(self.nav.envelope_admission(samples)[0])
+            self.nav.terminal_margin=None
+            self.assertFalse(self.nav.envelope_admission(samples)[0])
+        self.assertAlmostEqual(self.nav.path_buffer,1.25)
+        self.nav.terminal_margin=.75
+        with patch.object(self.guard,'command_clearance_components',return_value=(.8,1.24)):
+            self.assertFalse(self.nav.envelope_admission(samples)[0])
+
     def test_departure_floor_expires_without_releasing_road_height_bound(self):
         from velocity_response import VelocityResponse
         self.guard.response_model=VelocityResponse()

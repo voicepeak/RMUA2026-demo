@@ -63,6 +63,7 @@ from velocity_response import VelocityResponse
 from point_index import measured_car_faces
 from lattice_detour import LatticeDetour
 from pose_history import PoseHistory
+from obstacle_cloud_fusion import ObstacleCloudFusion
 from lidar_points import valid_points,decode_point_cloud,LidarFrame
 from async_planner import AsyncPlanner
 from yaw_controller import YawController                                         # noqa: E402
@@ -109,6 +110,9 @@ class RouteFollower(object):
             raise ValueError('Unknown obstacle_backend: '+str(self.obstacle_backend))
         self.lidar_navigation=self.adaptive_speed and self.obstacle_backend=='lidar_nav'
         self.lidar_gate_opening=bool(rospy.get_param('~lidar_gate_opening',False))
+        self.lidar_terminal_margin=float(rospy.get_param('~lidar_terminal_margin',0.))
+        self.lidar_stereo_obstacles=bool(rospy.get_param('~lidar_stereo_obstacles',False))
+        self.obstacle_fusion=ObstacleCloudFusion()
         self.lidar_range=float(rospy.get_param('~lidar_range',30.))
         self.lidar_braking=float(rospy.get_param('~lidar_braking',8. if self.adaptive_speed else 4.))
         self.sensor_reaction=float(rospy.get_param('~sensor_reaction',.35))
@@ -384,7 +388,8 @@ class RouteFollower(object):
             yaw_rate_max=self.yaw_rate_max)
         self.mission = MissionState(recon_speed=self.recon_speed,
                                     recon_max_dist=self.recon_max_dist,
-                                    map_brake_a=self.map_brake_a)
+                                    map_brake_a=self.map_brake_a,
+                                    gate_search_speed=float(rospy.get_param('~gate_search_speed',10.)))
         self.task_state = GateTaskState(
             half_width=self.gate_pass_half_width,
             half_height=self.gate_pass_half_height,
@@ -428,6 +433,10 @@ class RouteFollower(object):
         self.last_perception_event = None
 
         self.route = self.load_route(self.route_file, self.route_name)
+        if self.lidar_stereo_obstacles:
+            # GPS defines a finite road through the hub, with every search
+            # command still checked against LiDAR and stereo obstacles.
+            self.mission.gate_search_dist=self.route.total_s
         self.gates = self.load_list(self.gates_file, "gates")
         self.static_gates = [dict(g) for g in self.gates]
         self.verified_ids = set(g.get("id") for g in self.static_gates)
@@ -467,6 +476,8 @@ class RouteFollower(object):
         rospy.Subscriber("/airsim_node/drone_1/debug/pose_gt", PoseStamped, self.pose_cb,
                          queue_size=1,buff_size=1024*1024)
         rospy.Subscriber("/airsim_node/drone_1/lidar", PointCloud2,self.lidar_cb,queue_size=1,buff_size=4*1024*1024)
+        if self.lidar_stereo_obstacles:
+            rospy.Subscriber('/rmua/stereo_obstacles',String,self.stereo_obstacles_cb,queue_size=1)
         rospy.Subscriber('/rmua/car_observations',String,self.car_cb,queue_size=1)
         rospy.Subscriber('/airsim_node/end_goal',PoseStamped,self.race_goal_cb,queue_size=1)
         if self.use_gate_map:
@@ -668,6 +679,18 @@ class RouteFollower(object):
         self.lidar_stamp=stamp
         self.pending_cloud=None
 
+    def stereo_obstacles_cb(self,msg):
+        try:
+            data=json.loads(msg.data)
+            points=np.asarray(data['points'],dtype=float).reshape(-1,3)
+            with self._cloud_lock:self.obstacle_fusion.update(float(data['stamp']),points)
+        except (ValueError,TypeError,KeyError):
+            rospy.logwarn_throttle(5.,'Invalid stereo obstacle observation')
+
+    def _collision_points(self,points,cloud_stamp,pose_stamp):
+        if not getattr(self,'lidar_stereo_obstacles',False):return points
+        return self.obstacle_fusion.combine(points,cloud_stamp,pose_stamp)
+
     def car_cb(self,msg):
         try:
             data=json.loads(msg.data)
@@ -732,6 +755,7 @@ class RouteFollower(object):
             self.raw_cloud=None
             self.pending_cloud=None
             self.cloud_history=[]
+            if getattr(self,'lidar_stereo_obstacles',False):self.obstacle_fusion.reset()
         self.car_tracks=CarTracks()
         self.planning.reset()
         self.predictive=PredictiveAvoidance(margin=1.15,braking=self.lidar_braking,budget=1.5,vertical_limit=1.5)
@@ -926,6 +950,7 @@ class RouteFollower(object):
             p=self.pose.position
             position=np.array([p.x,p.y,p.z]);stamp=self.pose_stamp;fresh_yaw=self.yaw
             points,cloud_stamp=self.lidar_points,self.lidar_stamp
+            points=self._collision_points(points,cloud_stamp,stamp)
             velocity=self.motion.terminal_velocity(self.pose_history.rows,stamp)
         velocity=self.motion.velocity.copy() if velocity is None else velocity
         cy,sy=math.cos(yaw),math.sin(yaw)
@@ -1313,6 +1338,14 @@ class RouteFollower(object):
                                 if planner.plan is not None else None)),file)
         return info,planner.plan
 
+    def _speed_tracking_reference(self,position,road_error,previous_navigation):
+        if (self.lidar_navigation and self.lidar_stereo_obstacles and
+                previous_navigation.get('feasible',False) and
+                previous_navigation.get('command_reason')=='LIDAR_TRACK'):
+            error=self.navigator.tracking_error(position)
+            if error is not None:return error,'LIDAR_PATH'
+        return road_error,'ROAD'
+
     def _control_loop(self, _e):
         if self.spacetime_runtime is not None:return self._spacetime_reference_loop()
         started=time.monotonic()
@@ -1329,6 +1362,7 @@ class RouteFollower(object):
             # cloud after releasing the lock creates a negative cloud age.
             lidar_points, lidar_stamp = self.lidar_points, self.lidar_stamp
             lidar_frame=self.lidar_frame
+            lidar_points=self._collision_points(lidar_points,lidar_stamp,pose_stamp)
             car_tracks=[] if self.lidar_navigation else self.car_tracks.snapshot(pose_stamp)
         if self.reached or self.safety.aborted or self.mission.mode == ABORT:
             self.publish(0.0, 0.0, 0.0, 0.0)
@@ -1535,6 +1569,7 @@ class RouteFollower(object):
         available_cruise=self.speed_sched.set_visibility(
             self.lidar_range if cloud_fresh else 8.,cloud_age if cloud_fresh else .5)
         if self.lidar_navigation:
+            previous_navigation=dict(self.clearance_info)
             self.clearance_info=dict(active=False,feasible=True,cap=None,source="LIDAR_NAV")
         else:
             if self.adaptive_speed:
@@ -1666,6 +1701,11 @@ class RouteFollower(object):
             center_fn = lambda s: base_center(s)+self.clearance_z
             center_fn.batch=lambda stations:base_center.batch(stations)+self.clearance_z
         terminal = self.race_goal is not None and s_now > self.route.total_s-25.
+        self.navigator.terminal_margin=(self.lidar_terminal_margin if
+            self.lidar_navigation and self.coupled_navigation and terminal and
+            self.lidar_terminal_margin>=.75 else None)
+        if self.navigator.terminal_margin is not None:
+            self.execution_guard.dynamic_recovery_full_buffer=True
         terminal_xy=None;terminal_height_ready=None
         if terminal:
             terminal_xy,terminal_height_ready=approach_target(pn,self.race_goal,self.terminal_hover_height)
@@ -1715,6 +1755,14 @@ class RouteFollower(object):
         horizon_s = max((g["s"] for g in chain.gates), default=None)
         if self.planner.trend_horizon is not None:
             horizon_s=max(horizon_s or 0.,self.planner.trend_horizon)
+        if self.lidar_stereo_obstacles and self.planner.height_prior.valid:
+            evidence=self.planner.evidence_horizon
+            if evidence is not None:
+                # Extend only the calibrated road, retaining the fitted height
+                # uncertainty limit. This is not a confirmed gate horizon.
+                road=self.planner.height_prior.horizon(evidence,
+                    limit=max(0.,self.route.total_s-evidence))
+                horizon_s=max(horizon_s or 0.,road)
         if ceiling_horizon is not None:
             horizon_s=max(horizon_s or 0.,ceiling_horizon)
         if self.race_goal is not None and self.route.total_s-s_now<30.:
@@ -1725,8 +1773,11 @@ class RouteFollower(object):
                 and 0.0 <= pose_stamp - self.soft_horizon_stamp <= 8.0 \
                 and soft > s_now + 2.0:
             horizon_s = soft if horizon_s is None else max(horizon_s, soft)
+        gate_horizon=max((g['s'] for g in chain.gates),default=None)
         mode, v_map, transition = self.mission.update(
-            self.use_gate_map, horizon_s, s_now, p.z)
+            self.use_gate_map, horizon_s, s_now, p.z,
+            require_gate=self.lidar_navigation and self.lidar_gate_opening and self.lidar_stereo_obstacles and not terminal,
+            gate_horizon=gate_horizon)
         if transition is not None:
             rospy.logwarn("[MODE] %s -> %s at s=%.1f", transition["from"],
                           transition["to"], s_now)
@@ -1736,6 +1787,10 @@ class RouteFollower(object):
         cross_cap=None
         if self.adaptive_speed:
             tracking_error=max(abs(cross_track_error),abs(e_z0))
+            tracking_reference='ROAD'
+            if self.lidar_navigation:
+                tracking_error,tracking_reference=self._speed_tracking_reference(
+                    pn,tracking_error,previous_navigation)
             cross_cap=self.speed_sched.cruise*max(.35,min(1.,.6/max(.6,tracking_error)))
         # ---- SpeedScheduler: 唯一水平速度 authority (方案 5) ----
         v_target, self.speed_info = self.speed_sched.target(
@@ -1751,6 +1806,7 @@ class RouteFollower(object):
                 self.speed_info['reason']='CROSS_TRACK'
             self.speed_info['v_cross_track']=cross_cap
             self.speed_info['tracking_error']=tracking_error
+            self.speed_info['tracking_reference']=tracking_reference
         self.speed_info['cross_track_error']=cross_track_error
         if terminal:
             # Brake before reaching the trigger. Entering it close to road
@@ -1944,7 +2000,10 @@ class RouteFollower(object):
                 if self.lidar_gate_opening and s_now-5.<=g['s']<=s_now+40.],
                 half_width=self.xy_tracker.clearance,half_height=.7)
             command,nav_info=self.navigator.select(pn,self.motion.velocity,desired,s_now,
-                navigation_xy,center_fn,lidar_points,lidar_stamp,pose_stamp,floor_offset)
+                navigation_xy,center_fn,lidar_points,lidar_stamp,pose_stamp,floor_offset,
+                dynamic_points=None if lidar_frame is None else lidar_frame.points)
+            nav_info.update(stereo_points=max(0,(0 if lidar_points is None else len(lidar_points))-(0 if lidar_frame is None else len(lidar_frame.points))),
+                            stereo_stamp=self.obstacle_fusion.stamp if self.lidar_stereo_obstacles else None)
             self.clearance_info=nav_info
             v_route=command[:2];vz=-float(command[2]);v=float(np.linalg.norm(v_route))
             self.v_cmd_prev=v;self.xy_tracker.previous_velocity=tuple(v_route);self.z_ctrl.prev_vz=vz
@@ -1964,6 +2023,15 @@ class RouteFollower(object):
                 frame_data=({} if lidar_frame is None else dict(frame_points=lidar_frame.points,
                             sensor_origin=lidar_frame.sensor_origin,cloud_stamp=lidar_frame.stamp,
                             lidar_epoch=lidar_frame.epoch))
+                if self.navigator.reference_coordinates is not None:
+                    frame_data.update(navigation_stations=self.navigator.reference_stations,
+                                      navigation_xy=self.navigator.reference_coordinates,
+                                      navigation_heights=self.navigator.reference_heights)
+                model=self.execution_guard.response_model
+                if model is not None:
+                    frame_data['response_previous']=model.previous.copy()
+                    if model.applied_command is not None:frame_data['response_applied']=model.applied_command.copy()
+                    if model.stop_profile is not None:frame_data['stopping_profile']=model.stop_profile.path.copy()
                 np.savez_compressed(name+'.npz',points=lidar_points,position=pn,reference=reference,**frame_data)
                 with open(name+'.json','w') as file:
                     json.dump(dict(clearance=nav_info,s=s_now,pose_stamp=pose_stamp,
@@ -2023,6 +2091,7 @@ class RouteFollower(object):
             measured_ceiling_horizon=ceiling_horizon,
             measured_ceiling_blend=self.ceiling_blend,
             planning_horizon=self.planner.trend_horizon,
+            gate_horizon=gate_horizon,
             v_map=v_map,longitudinal=self.long_stats,
             long_commit=self.long_commit)), allow_nan=False)))
 
