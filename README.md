@@ -2,7 +2,7 @@
 
 本仓库包含 ROS 控制与视觉源码、YOLO 权重、实验工具及开发文档。工作区为 `/home/tianbot/RUMA-by-helinjun`，Git 仓库位于其 `repo/` 子目录。
 
-**当前交接请读 [docs/00_current_handoff.md](docs/00_current_handoff.md)。** 入口更新日期：2026-10-08。跟踪、三态地图、时空Planner/响应序列及独立执行器/共享Guard已实现，宿主/ROS各449项测试通过。源码和运行副本已同步69文件，默认仍为legacy；真实桥接失效时间和完整车辆段实跑尚未验收。代码收尾与证据见[执行层记录](docs/30_spacetime_execution_implementation.md)。
+**当前交接请读 [docs/00_current_handoff.md](docs/00_current_handoff.md)。** 入口更新日期：2026-10-12。第9批合并的实现基线为`5d8ce95`，第10批整理交接与过期文档，最终版本以Git记录为准。宿主/ROS各547项测试通过，默认legacy+lidar_nav；最新run13在111分提前结束，用户确认撞上迎面移动车辆，完整车辆阶段尚未通过。双目占据、门筛选与实跑证据见[本轮记录](docs/34_stereo_blind_sector_and_gate_memory.md)。
 
 ## 文档入口
 
@@ -18,7 +18,7 @@
 | [车辆修复记录](docs/25_car_command_guard.md) | 前期改动、逐轮比赛证据及失败分析 |
 | [规则转写](docs/18_rmua2026_rules.md) | 既有规则资料；本地开发状态已从规则页分离 |
 | [文档索引](docs/README.md) | 文档分类及阅读顺序 |
-| [历史归档](docs/archive/README.md) | 早期 Stage 方案、旧交接、训练和此前实验记录 |
+| [历史归档](docs/archive/README.md) | 早期 Stage 方案、训练和此前实验记录 |
 
 ## 工作目录
 
@@ -37,6 +37,6 @@
 
 代码在 `repo/ros_ws/src/` 修改，确认版本后同步到 `rmua_ws/src/`。当前候选清单、实际启动快照和未提交改动的边界见[当前交接](docs/00_current_handoff.md)。飞行中不修改运行包；每轮使用新实验目录，不覆盖历史证据。
 
-比赛入口为 `tools/start_seed123_race.py`，真实窗口使用 `--mode render`；启动条件、监视顺序和验收要求见当前交接第6–8节。整套实例停止命令是 `docker stop -t 5 rmua_noetic`。
+比赛入口为 `tools/start_seed123_race.py`，真实窗口使用 `--mode render`；启动条件、GPU恢复环境和验收要求见[当前交接](docs/00_current_handoff.md)。整套实例停止命令是 `docker stop -t 5 rmua_noetic`。
 
-此前开发路线和提交索引保存在 [README 历史副本](docs/archive/README_20261001_before_cleanup.md)，其中的“当前状态”和操作约定属于历史。
+过期交接副本、旧README和本地状态清单已按用户要求删除；早期设计和逐轮证据见[归档索引](docs/archive/README.md)，已提交的旧版本仍可从Git历史查阅。
