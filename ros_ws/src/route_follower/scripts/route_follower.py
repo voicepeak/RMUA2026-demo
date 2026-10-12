@@ -46,6 +46,7 @@ from curve_preview import CurveBrakingEnvelope                                  
 from gate_task_state import GateTaskState                                        # noqa: E402
 from mission_state import MissionState, RECON, HOLD, ABORT                       # noqa: E402
 from online_gate_cache import OnlineGateCache                                    # noqa: E402
+from gate_route_membership import gate_route_membership
 from reference_planner import RouteGeometry, ReferencePlanner                    # noqa: E402
 from safety_supervisor import SafetySupervisor                                   # noqa: E402
 from speed_scheduler import SpeedScheduler                                       # noqa: E402
@@ -290,7 +291,8 @@ class RouteFollower(object):
                                       process_planning=self.coupled_navigation,
                                       local_replan=bool(rospy.get_param('~lidar_local_replan',False)),
                                       anticipation_distance=float(rospy.get_param('~lidar_anticipation_distance',0.)),
-                                      path_options=bool(rospy.get_param('~lidar_path_options',False)))
+                                      path_options=bool(rospy.get_param('~lidar_path_options',False)),
+                                      persistent_scene=self.lidar_stereo_obstacles)
         if self.coupled_navigation:self.execution_guard.response_model=VelocityResponse(acceleration=self.a_up,lift_gain=float(rospy.get_param('~lidar_lift_gain',.110)),coupling_gains=(float(rospy.get_param('~lidar_coupling_gain_min',.09)),.110,.13),height_gain=float(rospy.get_param('~lidar_height_gain',2.)),coupling_limited=bool(rospy.get_param('~lidar_coupling_limited',False)),xy_error_max=float(rospy.get_param('~lidar_xy_error_max',float('inf'))),control_periods=((.08,.16,.4) if bool(rospy.get_param('~lidar_discrete_feedback',False)) else None))
         self.navigator.height_reserve=(.5 if self.coupled_navigation and
             self.execution_guard.response_model.height_gain>1. else 0.)
@@ -608,6 +610,15 @@ class RouteFollower(object):
             i, t, d, c = self.route.project((p.x, p.y, p.z))
             s_now = self.route.seg_s[i] + t * self.route.seg_len[i]
             now = self.pose_stamp if self.pose_stamp is not None else 0.0
+            if self.lidar_stereo_obstacles:
+                accepted=[]
+                for g in gates:
+                    member,reason=gate_route_membership(g,self.route,self.planner.height_prior,s_now)
+                    if member:
+                        accepted.append(g)
+                    else:
+                        rospy.logwarn_throttle(2.,'Reject gate %s from route: %s',g.get('id'),reason)
+                gates=accepted
             soft_changed = self.guide_cache.update(
                 gates, now, s_now, lambda g: self.route.project_gate(g["x"],g["y"]),
                 min_support=4 if self.planner.height_prior.valid else 6)
@@ -768,7 +779,8 @@ class RouteFollower(object):
                                       process_planning=self.coupled_navigation,
                                       local_replan=bool(rospy.get_param('~lidar_local_replan',False)),
                                       anticipation_distance=float(rospy.get_param('~lidar_anticipation_distance',0.)),
-                                      path_options=bool(rospy.get_param('~lidar_path_options',False)))
+                                      path_options=bool(rospy.get_param('~lidar_path_options',False)),
+                                      persistent_scene=self.lidar_stereo_obstacles)
         if self.coupled_navigation:self.execution_guard.response_model=VelocityResponse(acceleration=self.a_up,lift_gain=float(rospy.get_param('~lidar_lift_gain',.110)),coupling_gains=(float(rospy.get_param('~lidar_coupling_gain_min',.09)),.110,.13),height_gain=float(rospy.get_param('~lidar_height_gain',2.)),coupling_limited=bool(rospy.get_param('~lidar_coupling_limited',False)),xy_error_max=float(rospy.get_param('~lidar_xy_error_max',float('inf'))),control_periods=((.08,.16,.4) if bool(rospy.get_param('~lidar_discrete_feedback',False)) else None))
         self.navigator.height_reserve=(.5 if self.coupled_navigation and
             self.execution_guard.response_model.height_gain>1. else 0.)

@@ -10,7 +10,7 @@ import multiprocessing
 import numpy as np
 from path_sampling import swept_samples
 from predictive_avoidance import departure_floor_limits
-from lidar_scene import LidarScene
+from lidar_scene import LidarScene,PersistentLidarScene
 from gate_task_state import gate_normal, local_axes
 
 
@@ -87,7 +87,7 @@ class GeometryProcess:
 
 
 class LidarNavigator:
-    def __init__(self, guard, horizon=24., budget=.06,async_planning=False,process_planning=False,local_replan=False,anticipation_distance=0.,path_options=False):
+    def __init__(self, guard, horizon=24., budget=.06,async_planning=False,process_planning=False,local_replan=False,anticipation_distance=0.,path_options=False,persistent_scene=False):
         self.guard=guard
         self.horizon=horizon
         self.budget=budget
@@ -100,7 +100,7 @@ class LidarNavigator:
                        if async_planning and process_planning else
                        ThreadPoolExecutor(max_workers=1) if async_planning else None)
         self.future=None;self.submitted_at=None;self.future_stamp=None
-        self.scene=LidarScene()
+        self.scene=PersistentLidarScene() if persistent_scene else LidarScene()
         self.reference_coordinates=None
         # Conservative road center prior. Visible wall positions do not
         # identify the hidden force-field boundary at hub transitions.

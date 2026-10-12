@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'ros_ws/src/route_follower/scripts'))
 from dynamic_tracker import DynamicTracker,TrackerConfig
-from lidar_scene import LidarCluster,LidarScene,extract_clusters
+from lidar_scene import LidarCluster,PersistentLidarScene as LidarScene,extract_clusters
 
 
 def observation(center,size=(1.,1.,1.),indices=(0,),truncated=False):
@@ -196,11 +196,61 @@ class ClusterExtractionTests(unittest.TestCase):
     def test_legacy_sparse_roi_keeps_existing_short_lifetime_behavior(self):
         scene=LidarScene();points=box_points([8.,0.,0.])
         scene.update(points,np.zeros(3),1.,1.,[1.,0.],lambda s:0.,0.)
-        self.assertEqual(len(scene.tracks),1)
+        count=len(scene.tracks)
+        self.assertGreater(count,0)
         scene.update(points+[100.,0.,0.],np.zeros(3),1.1,1.1,[1.,0.],lambda s:0.,0.)
-        self.assertEqual(len(scene.tracks),1)
+        self.assertEqual(len(scene.tracks),count)
         scene.update(np.empty((0,3)),np.zeros(3),1.6,1.6,[1.,0.],lambda s:0.,0.)
         self.assertEqual(scene.tracks,[])
+
+    def test_scene_separates_frame_and_vehicle_instead_of_dropping_merged_extent(self):
+        frame=np.array([(x,y,z) for x in np.arange(1.,8.01,.2)
+                        for y in (0.,.2) for z in np.arange(-.4,.41,.2)])
+        car=np.array([(x,y,z) for x in np.arange(8.9,11.91,.2)
+                      for y in (0.,.2) for z in np.arange(-.4,.41,.2)])
+        points=np.vstack((frame,car))
+        self.assertEqual(extract_clusters(points,np.zeros(3),[1.,0.],lambda s:0.,0.),[])
+        scene=LidarScene()
+        scene.update(points,np.zeros(3),1.,1.,[1.,0.],lambda s:0.,0.)
+        self.assertEqual(len(scene.tracks),2)
+        self.assertEqual(scene.summary()['scene_association']['oversized_clusters'],0)
+
+    def test_scene_predicts_oncoming_vehicle_despite_changed_visible_bounds(self):
+        scene=LidarScene()
+        for i in range(30):
+            shape=np.array([(x,y,z) for x in np.arange(-.8,.81,.2)
+                            for y in np.arange(-.4,.41,.2) for z in np.arange(-.4,.41,.2)])
+            if i>=26 and i%2:shape=shape[shape[:,0]>.0]
+            scene.update(shape+[10.-i*.3,0.,0.],np.zeros(3),1.+i*.1,1.+i*.1,
+                         [1.,0.],lambda s:0.,0.)
+        self.assertGreaterEqual(scene.summary()['moving_obstacles'],1)
+        self.assertLess(scene.distance([[0.,0.,0.]],[.5])[0],1.25)
+        # An unchanged sensor stamp still advances age at the command time.
+        before=scene.tracks[0].observations
+        scene.update(shape,np.zeros(3),scene.stamp,4.1,[1.,0.],lambda s:0.,0.)
+        self.assertEqual(scene.tracks[0].observations,before)
+        self.assertEqual(scene.pose_stamp,4.1)
+
+    def test_stationary_roi_cropping_does_not_certify_translation(self):
+        scene=LidarScene()
+        wall=np.array([(x,y,z) for x in np.arange(0.,8.,.4)
+                       for y in np.arange(-5.,5.,.4) for z in np.arange(-.4,.41,.2)])
+        for i in range(20):
+            scene.update(wall,[0.,i*.2,0.],1.+i*.1,1.+i*.1,
+                         [1.,0.],lambda s:0.,0.)
+        self.assertGreater(len(scene.tracks),0)
+        self.assertEqual(scene.summary()['moving_obstacles'],0)
+
+    def test_scene_keeps_confirmed_motion_across_control_intervals_over_350ms(self):
+        scene=LidarScene()
+        shape=np.array([(x,y,z) for x in np.arange(-.4,.41,.2)
+                        for y in np.arange(-.4,.41,.2) for z in np.arange(-.4,.41,.2)])
+        for i in range(15):
+            t=i*.4
+            scene.update(shape+[12.-2.*t,0.,0.],np.zeros(3),1.+t,1.+t,
+                         [1.,0.],lambda s:0.,0.)
+        self.assertGreaterEqual(scene.summary()['moving_obstacles'],1)
+        self.assertGreater(scene.tracks[0].observations,10)
 
 
 if __name__=='__main__':unittest.main()

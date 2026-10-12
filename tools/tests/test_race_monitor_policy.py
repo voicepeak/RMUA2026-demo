@@ -2,7 +2,7 @@ import sys
 import unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from race_monitor_policy import should_stop_controller_event
+from race_monitor_policy import should_stop_controller_event,simulator_crashed
 
 
 class MonitorPolicyTests(unittest.TestCase):
@@ -13,3 +13,10 @@ class MonitorPolicyTests(unittest.TestCase):
     def test_abort_still_stops_and_regular_events_do_not(self):
         self.assertTrue(should_stop_controller_event(dict(kind='TERMINATION',reason='STUCK')))
         self.assertFalse(should_stop_controller_event(dict(kind='GATE',reason='PASSED')))
+
+    def test_engine_signal_is_a_crash_and_spawn_collision_warning_is_not(self):
+        for log,code in (('Unhandled Exception: SIGBUS',None),('',135),('',-7),
+                         ('SIGSEGV',139),('SIGABRT',134)):
+            self.assertTrue(simulator_crashed(log,code))
+        self.assertFalse(simulator_crashed('SpawnActor failed because of collision',0))
+        self.assertFalse(simulator_crashed('',None))

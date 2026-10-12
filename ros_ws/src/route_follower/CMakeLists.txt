@@ -19,6 +19,7 @@ install(TARGETS velocity_response_native LIBRARY DESTINATION ${CATKIN_PACKAGE_LI
 catkin_install_python(PROGRAMS
   scripts/route_follower.py
   scripts/online_gate_cache.py
+  scripts/gate_route_membership.py
   scripts/route_recorder.py
   scripts/splines_to_yaml.py
   scripts/make_gates.py

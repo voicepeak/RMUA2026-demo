@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'ros_ws/src/route_follower/scripts'))
 from velocity_response import VelocityResponse
-from lidar_scene import LidarScene
+from lidar_scene import PersistentLidarScene as LidarScene
 from point_index import PointIndex
 from execution_guard import ExecutionGuard
 from lidar_navigation import LidarNavigator,GeometryProcess
@@ -261,9 +261,13 @@ class ResponseTests(unittest.TestCase):
         guard.command_constraint=lambda q:np.all(q[:,0]>=-.05)
         self.assertIsNone(guard.escape(np.zeros(3),np.zeros(3),np.array([-1.,0.,0.]),points,1.,1.05))
         guard.command_constraint=None
-        guard.dynamic_scene=LidarScene();guard.dynamic_scene.pose_stamp=1.05
-        guard.dynamic_scene.tracks=[dict(support=4,velocity=np.array([2.,0.,0.]),stamp=1.,
-            center=np.array([-1.,0.,0.]),half=np.array([.3,.3,.3]))]
+        guard.dynamic_scene=LidarScene()
+        shape=np.array([(x,y,z) for x in np.arange(-.3,.31,.1)
+                        for y in np.arange(-.3,.31,.1) for z in np.arange(-.3,.31,.1)])
+        for i in range(11):
+            stamp=i*.1
+            guard.dynamic_scene.update(shape+[-3.+2.*stamp,0.,0.],np.zeros(3),stamp,stamp+.05,
+                                       [1.,0.],lambda s:0.,0.)
         self.assertIsNone(guard.escape(np.zeros(3),np.zeros(3),np.array([-1.,0.,0.]),points,1.,1.05))
 
     def test_height_feedback_gain_matches_native_response_for_grade_and_vertical_recovery(self):

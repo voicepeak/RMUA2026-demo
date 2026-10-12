@@ -426,7 +426,7 @@ class LidarNavigationTests(unittest.TestCase):
 
     def test_score_pruning_preserves_exhaustive_choice_with_static_and_moving_obstacles(self):
         from velocity_response import VelocityResponse
-        from lidar_scene import LidarScene
+        from lidar_scene import PersistentLidarScene as LidarScene
         walls=np.array([(x,y,z) for x in np.arange(-5.,35.,1.)
                         for y in (-6.,6.) for z in (-3.,0.,3.)])
         wall=np.array([(11.,y,z) for y in np.arange(-5.,5.1,.3) for z in np.arange(-3.,3.1,.3)])
@@ -438,9 +438,13 @@ class LidarNavigationTests(unittest.TestCase):
                 cloud=np.concatenate((walls,wall)) if case=='wall' else walls
                 guard._update(cloud,1.,1.05,np.zeros(3))
                 if case=='moving':
-                    guard.dynamic_scene=LidarScene();guard.dynamic_scene.pose_stamp=1.05
-                    guard.dynamic_scene.tracks=[dict(support=4,velocity=np.array([-2.,0.,0.]),
-                        stamp=1.,center=np.array([14.,0.,0.]),half=np.array([.5,.75,.5]))]
+                    guard.dynamic_scene=LidarScene()
+                    shape=np.array([(x,y,z) for x in np.arange(-.5,.51,.2)
+                                    for y in np.arange(-.75,.76,.2) for z in np.arange(-.5,.51,.2)])
+                    for i in range(11):
+                        stamp=i*.1
+                        guard.dynamic_scene.update(shape+[16.-2.*stamp,0.,0.],np.zeros(3),stamp,stamp+.05,
+                                                   [1.,0.],lambda s:0.,0.)
                 nav=LidarNavigator(guard);nav.prune_candidates=pruning
                 projection=nav._projection(0.,self.xy)
                 nav.reference_stations=projection[0];nav.reference_coordinates=projection[1]

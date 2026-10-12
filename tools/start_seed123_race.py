@@ -9,8 +9,10 @@ import sys
 import time
 import hashlib
 import shutil
+import os
 from system_health import snapshot as system_health_snapshot
 from vision_runtime import probe_cuda
+from race_monitor_policy import simulator_crashed
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--mode',choices=('render','offscreen','background'),default='render')
@@ -109,9 +111,10 @@ command=['docker','exec','rmua_noetic','bash','-c',
 print('Recording:',out,flush=True)
 monitor=None
 health_stamp=None
-if args.mode=='background':
+if args.mode in ('background','render'):
+    display=':2' if args.mode=='background' else os.environ.get('DISPLAY',':0')
     monitor=subprocess.Popen([sys.executable,str(workspace/'repo/tools/watch_debug_race.py'),
-        '--out',str(out),'--display',':2','--stall-seconds',str(args.stall_seconds)],
+        '--out',str(out),'--display',display,'--stall-seconds',str(args.stall_seconds)],
         stdout=(out/'monitor.log').open('w'),stderr=subprocess.STDOUT)
 try:
     watcher=subprocess.Popen(command,cwd=workspace)
@@ -128,7 +131,7 @@ try:
     if code!=0 and not (out/'stop.json').exists():
         log=(out/'simulator.log').read_text(errors='replace')
         (out/'stop.json').write_text(json.dumps(dict(
-            reason=('SIMULATOR_CRASH' if 'SIGSEGV' in log or 'SIGABRT' in log else 'WATCHER_FAILED'),
+            reason=('SIMULATOR_CRASH' if simulator_crashed(log,sim.poll()) else 'WATCHER_FAILED'),
             watcher_returncode=code,simulator_returncode=sim.poll(),
             wall_time=time.time(),official_result='UNKNOWN'),indent=2)+'\n')
 finally:
