@@ -1,5 +1,7 @@
 # RMUA 新会话交接：迎面移动车辆与114号门附近交叉轨道
 
+> 本文是run13结束时的交接。最新代码和14–16结果见[36 动态关联与门层级续修](36_oncoming_scene_and_gate_layer.md)及[当前交接](00_current_handoff.md)。
+
 整理日期：2026-10-12。工作区：`/home/tianbot/RUMA-by-helinjun`；Git仓库在其下的 `repo/`，实际ROS运行源码在 `rmua_ws/src/`。
 
 ## 1. 最新用户反馈与本次任务边界

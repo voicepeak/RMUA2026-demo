@@ -4,7 +4,7 @@
 
 ## 接手阅读顺序
 
-1. [00 当前交接](00_current_handoff.md)：当前实现5d8ce95、run13迎面车碰撞、保留版本、GPU环境和下一步。
+1. [00 当前交接](00_current_handoff.md)及[36 迎面车关联与门层级](36_oncoming_scene_and_gate_layer.md)：当前实现f88012a、14–16续跑、PhysX崩溃、保留版本、GPU环境和下一步。
 2. [34 双目盲区与门位置记忆](34_stereo_blind_sector_and_gate_memory.md)：本轮实现与01–13实跑记录；车辆阶段尚未正式通过。
 3. [26 动态避障设计审查](26_dynamic_avoidance_design_review.md)、[27 跟踪实现](27_dynamic_tracker_implementation.md)、[28 三态地图](28_local_occupancy_implementation.md)、[29 时空Planner](29_spacetime_mvp_implementation.md)、[30 执行层](30_spacetime_execution_implementation.md)：模块设计、实现和未验收边界。
 4. [31 缝隙延迟与门间停滞](31_gap_latency_and_stationary_stall.md)、[32 参考带瞬态](32_reference_band_transient_release.md)、[33 缝隙发布一致性](33_gap_publication_consistency.md)：此前legacy续修、参数依据和逐轮失败证据。
