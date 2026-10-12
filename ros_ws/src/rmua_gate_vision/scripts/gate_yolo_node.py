@@ -122,6 +122,7 @@ class GateYolo(object):
             side_mismatch_max=rospy.get_param("~side_mismatch_max", 0.5))
 
         self.sgbm = gs.build_sgbm()
+        self.obstacle_sgbm=gs.build_sgbm(num_disp=64)
         self.pose = None
         self.imu_quat = None
         self.pose_buf = PoseBuffer(max_age=self.sync_max_age)
@@ -324,6 +325,15 @@ class GateYolo(object):
 
         # Snapshot the image-time pose BEFORE inference. Otherwise a slow GPU
         # evicts that pose from the rolling buffer and every image is discarded.
+        if self.stereo_obstacles:
+            # Occupancy must reach the controller before detector inference
+            # and full-resolution gate depth. Scale all camera intrinsics
+            # with the images; retain the same world projection and field.
+            gray_l=cv2.resize(cv2.cvtColor(left,cv2.COLOR_BGR2GRAY),None,fx=.5,fy=.5,interpolation=cv2.INTER_AREA)
+            gray_r=cv2.resize(cv2.cvtColor(right,cv2.COLOR_BGR2GRAY),None,fx=.5,fy=.5,interpolation=cv2.INTER_AREA)
+            obstacle_disp=gs.compute_disparity(gray_l,gray_r,self.obstacle_sgbm)
+            hits=downward_hits(obstacle_disp,pos,quat,stride=2,scale=.5)
+            self.pub_obstacles.publish(String(data=json.dumps(dict(stamp=t_img,points=hits.tolist()))))
         results=self.model.predict([left,right],imgsz=self.imgsz,conf=self.conf,iou=.5,verbose=False,device=self.device)
         cl,kp_l=self.candidates(results[0],left)
         cr,_=self.candidates(results[1],right)
@@ -384,12 +394,6 @@ class GateYolo(object):
                     cv2.cvtColor(right,cv2.COLOR_BGR2GRAY),self.sgbm)
             car_observations=[locate_car(car,disp,pos,quat) for car in cars_l]
         self.pub_cars.publish(String(data=json.dumps(dict(stamp=t_img,detections=car_observations))))
-        if self.stereo_obstacles:
-            if disp is None:
-                disp=gs.compute_disparity(cv2.cvtColor(left,cv2.COLOR_BGR2GRAY),
-                    cv2.cvtColor(right,cv2.COLOR_BGR2GRAY),self.sgbm)
-            hits=downward_hits(disp,pos,quat)
-            self.pub_obstacles.publish(String(data=json.dumps(dict(stamp=t_img,points=hits.tolist()))))
         vl, vr = self.draw(left, cl), self.draw(right, cr)
         for view,cars in ((vl,cars_l),(vr,cars_r)):
             for car in cars:

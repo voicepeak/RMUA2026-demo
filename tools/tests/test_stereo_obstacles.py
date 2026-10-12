@@ -13,6 +13,14 @@ from gate_candidates import frame_candidates,gate_frame_support,gate_opening_sup
 
 
 class StereoObstacleTests(unittest.TestCase):
+    def test_half_resolution_projection_keeps_metric_depth_and_world_frame(self):
+        disparity=np.zeros((360,480),dtype=np.float32)
+        disparity[299:302,239:242]=.5*FX*BASELINE/5.
+        points=downward_hits(disparity,[100.,20.,-30.],[0.,0.,0.,1.],stride=2,scale=.5)
+        self.assertEqual(len(points),1)
+        expected=camera_to_body(np.array([[0.,240.*5./FX,5.]]))+[100.,20.,-30.]
+        np.testing.assert_allclose(points,expected,atol=1e-6)
+
     def test_gate_requires_both_white_posts_and_a_passable_physical_opening(self):
         image=np.zeros((200,200,3),dtype=np.uint8)
         image[20:180,20:35]=255;image[20:180,35:40]=[30,85,230]

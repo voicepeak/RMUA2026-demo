@@ -24,9 +24,12 @@ def summarize(run):
     stop=run/'stop.json'
     if stop.exists():result['stop']=json.loads(stop.read_text())
     captures=run/'hud/captures.jsonl';cutoff=None;finished=False
+    startup=run/'startup.json'
+    current_start=json.loads(startup.read_text()).get('wall_time') if startup.exists() else None
     if captures.exists():
         for line in captures.open():
             row=json.loads(line);ocr=row.get('ocr','')
+            if current_start is not None and row['wall_time']<current_start:continue
             if re.search(r'\bFinished\b',ocr,re.I):
                 if not finished:result['first_finished_hud']=row
                 finished=True
