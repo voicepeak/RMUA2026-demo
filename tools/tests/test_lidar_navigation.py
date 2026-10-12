@@ -11,6 +11,12 @@ from path_sampling import swept_samples
 
 
 class LidarNavigationTests(unittest.TestCase):
+    def test_accepted_detour_offset_is_not_a_tracking_error_but_deviation_is(self):
+        self.assertIsNone(self.nav.tracking_error([5.,0.,0.]))
+        self.nav.braking_path=np.array([[0.,2.,-1.],[10.,2.,-1.]])
+        self.assertAlmostEqual(self.nav.tracking_error([5.,2.,-1.]),0.)
+        self.assertAlmostEqual(self.nav.tracking_error([5.,2.8,-1.]),.8)
+        self.assertAlmostEqual(self.nav.tracking_error([5.,2.,-.1]),.9)
     def test_terminal_static_clearance_expires_and_keeps_dynamic_buffer(self):
         self.nav.envelope_margin=1.15
         self.nav.terminal_margin=.75

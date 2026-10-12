@@ -138,6 +138,23 @@ class LidarNavigator:
         buffer=(self.guard.margin if self.geometry_margin is None else self.geometry_margin)+.1
         return buffer if self.terminal_margin is None else min(buffer,self.terminal_margin)
 
+    def tracking_error(self,position):
+        """Deviation from the accepted stopping path, including its Z goal.
+
+        A planned avoidance offset is not a road tracking failure. This is
+        only a speed cost; current scene, road and response checks still
+        decide whether any command is publishable.
+        """
+        path=self.braking_path
+        if path is None or len(path)<2:return None
+        path=np.asarray(path,dtype=float);position=np.asarray(position,dtype=float)
+        segments=np.diff(path,axis=0)
+        fraction=np.clip(np.sum((position-path[:-1])*segments,axis=1)/
+                         np.maximum(1e-9,np.sum(segments*segments,axis=1)),0.,1.)
+        residual=position-(path[:-1]+fraction[:,None]*segments)
+        nearest=residual[np.argmin(np.sum(residual*residual,axis=1))]
+        return max(float(np.linalg.norm(nearest[:2])),abs(float(nearest[2])))
+
     def _departure_floors(self,stations,positions,center,floor_offset,index,margin):
         return departure_floor_limits(stations,positions,center,floor_offset,index,margin,
                                       end_s=self.departure_floor_distance)

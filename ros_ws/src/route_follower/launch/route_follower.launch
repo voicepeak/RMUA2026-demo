@@ -112,6 +112,7 @@
 
   <!-- RECON 独立 mode / 地图可见性 (方案 10, 38.2) -->
   <arg name="recon_speed"        default="2.0"/>
+  <arg name="gate_search_speed" default="10.0"/>
   <arg name="recon_climb"        default="0.6"/>
   <arg name="recon_max_dist"     default="30.0"/>
   <arg name="recon_max_climb"    default="4.0"/>
@@ -274,6 +275,7 @@
     <param name="curve_preview_step"  value="$(arg curve_preview_step)"/>
     <param name="curve_brake_a"       value="$(arg curve_brake_a)"/>
     <param name="recon_speed"         value="$(arg recon_speed)"/>
+    <param name="gate_search_speed" value="$(arg gate_search_speed)"/>
     <param name="recon_climb"         value="$(arg recon_climb)"/>
     <param name="recon_max_dist"      value="$(arg recon_max_dist)"/>
     <param name="recon_max_climb"     value="$(arg recon_max_climb)"/>

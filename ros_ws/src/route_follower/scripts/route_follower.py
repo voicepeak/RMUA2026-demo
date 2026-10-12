@@ -388,7 +388,8 @@ class RouteFollower(object):
             yaw_rate_max=self.yaw_rate_max)
         self.mission = MissionState(recon_speed=self.recon_speed,
                                     recon_max_dist=self.recon_max_dist,
-                                    map_brake_a=self.map_brake_a)
+                                    map_brake_a=self.map_brake_a,
+                                    gate_search_speed=float(rospy.get_param('~gate_search_speed',10.)))
         self.task_state = GateTaskState(
             half_width=self.gate_pass_half_width,
             half_height=self.gate_pass_half_height,
@@ -1777,6 +1778,13 @@ class RouteFollower(object):
         cross_cap=None
         if self.adaptive_speed:
             tracking_error=max(abs(cross_track_error),abs(e_z0))
+            tracking_reference='ROAD'
+            if (self.lidar_navigation and self.lidar_stereo_obstacles and
+                    self.clearance_info.get('feasible',False) and
+                    self.clearance_info.get('command_reason')=='LIDAR_TRACK'):
+                path_error=self.navigator.tracking_error(pn)
+                if path_error is not None:
+                    tracking_error=path_error;tracking_reference='LIDAR_PATH'
             cross_cap=self.speed_sched.cruise*max(.35,min(1.,.6/max(.6,tracking_error)))
         # ---- SpeedScheduler: 唯一水平速度 authority (方案 5) ----
         v_target, self.speed_info = self.speed_sched.target(
@@ -1792,6 +1800,7 @@ class RouteFollower(object):
                 self.speed_info['reason']='CROSS_TRACK'
             self.speed_info['v_cross_track']=cross_cap
             self.speed_info['tracking_error']=tracking_error
+            self.speed_info['tracking_reference']=tracking_reference
         self.speed_info['cross_track_error']=cross_track_error
         if terminal:
             # Brake before reaching the trigger. Entering it close to road
