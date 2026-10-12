@@ -58,7 +58,7 @@ from terrain_speed import TerrainSpeedEnvelope
 from predictive_avoidance import PredictiveAvoidance, CarTracks, JoinedDetour, departure_floor_limits, shifted_center
 from execution_guard import ExecutionGuard
 from lidar_navigation import LidarNavigator
-from terminal_handoff import approach_target
+from terminal_handoff import approach_target,terminal_reference
 from velocity_response import VelocityResponse
 from point_index import measured_car_faces
 from lattice_detour import LatticeDetour
@@ -1987,9 +1987,12 @@ class RouteFollower(object):
                           if self.departure_hover_z> -900. else None)
             navigation_xy=self.xy_tracker.base_point_at
             if terminal and self.race_goal is not None:
-                target=np.asarray(terminal_xy);start=pn[:2].copy()
-                distance=max(.1,float(np.linalg.norm(target-start)))
-                navigation_xy=lambda station:tuple(start+np.clip((station-s_now)/distance,0.,1.)*(target-start))
+                if terminal_height_ready:
+                    navigation_xy=terminal_reference(navigation_xy,terminal_xy,self.route.total_s)
+                else:
+                    target=np.asarray(terminal_xy);start=pn[:2].copy()
+                    distance=max(.1,float(np.linalg.norm(target-start)))
+                    navigation_xy=lambda station:tuple(start+np.clip((station-s_now)/distance,0.,1.)*(target-start))
             self.navigator.set_gates([g for g in chain.gates
                 if self.lidar_gate_opening and s_now-5.<=g['s']<=s_now+40.],
                 half_width=self.xy_tracker.clearance,half_height=.7)
@@ -2017,6 +2020,15 @@ class RouteFollower(object):
                 frame_data=({} if lidar_frame is None else dict(frame_points=lidar_frame.points,
                             sensor_origin=lidar_frame.sensor_origin,cloud_stamp=lidar_frame.stamp,
                             lidar_epoch=lidar_frame.epoch))
+                if self.navigator.reference_coordinates is not None:
+                    frame_data.update(navigation_stations=self.navigator.reference_stations,
+                                      navigation_xy=self.navigator.reference_coordinates,
+                                      navigation_heights=self.navigator.reference_heights)
+                model=self.execution_guard.response_model
+                if model is not None:
+                    frame_data['response_previous']=model.previous.copy()
+                    if model.applied_command is not None:frame_data['response_applied']=model.applied_command.copy()
+                    if model.stop_profile is not None:frame_data['stopping_profile']=model.stop_profile.path.copy()
                 np.savez_compressed(name+'.npz',points=lidar_points,position=pn,reference=reference,**frame_data)
                 with open(name+'.json','w') as file:
                     json.dump(dict(clearance=nav_info,s=s_now,pose_stamp=pose_stamp,
