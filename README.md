@@ -2,7 +2,7 @@
 
 本仓库包含 ROS 控制与视觉源码、YOLO 权重、实验工具及开发文档。工作区为 `/home/tianbot/RUMA-by-helinjun`，Git 仓库位于其 `repo/` 子目录。
 
-**当前交接请读 [docs/00_current_handoff.md](docs/00_current_handoff.md)和[种子依赖审查](docs/38_seed_independence_audit_20261013.md)。** 更新日期：2026-10-13。分支`feature/seed-independent-navigation-20261013`，实现`1335b84`/`cac4bd5`，宿主/ROS各572项测试通过。所有seed统一空历史地图、现场观测和导航规则；同配置123/456/789三轮均未通过第一阶段，持续感知、入口与全局性能尚未验收。
+**当前交接请读 [暂停交接文档](docs/40_paused_global_adaptation_handoff_20261013.md)。** 用户因额度耗尽暂停，适配未完成；de35b2b已推远端、596项测试通过。工作树另有未提交候选，600项回归失败1项，尚未飞行。
 
 ## 文档入口
 
