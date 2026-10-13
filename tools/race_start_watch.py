@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Start control as soon as a fresh simulator publishes its initial pose.
+"""Prepare live vision at the fresh ground pose, then start control.
 
 Run inside the container after its restart. Vision and recording launch in
-parallel with control so loading a neural network cannot consume departure time.
+before takeoff; no velocity command consumes race time while the model loads.
 """
 import argparse
 import math
@@ -15,6 +15,7 @@ import time
 
 import rospy
 from geometry_msgs.msg import PoseStamped
+from std_msgs.msg import String
 
 parser=argparse.ArgumentParser()
 parser.add_argument('--seed',type=int,default=123)
@@ -37,7 +38,7 @@ root=Path(__file__).resolve().parents[1]
 workspace=root.parent
 config=workspace/'rmua_ws/src/route_follower/config'
 from race_runner import outbound_response_arguments
-from race_seed import initial_course_inputs,live_gate_vision_arguments
+from race_seed import initial_course_inputs,live_gate_vision_arguments,initial_gate_map_ready
 gates_file,guides_file=initial_course_inputs(config,args.out,args.seed)
 rospy.init_node('race_start_watch')
 pose=rospy.wait_for_message('/airsim_node/drone_1/debug/pose_gt',PoseStamped,timeout=20.)
@@ -63,62 +64,71 @@ command+=['wait_for_first_map:=true','lidar_stereo_obstacles:=true']
 command+=['planner_mode:='+args.planner_mode]
 if args.spacetime_bridge_hold is not None:
     command+=['spacetime_bridge_verified:=true','spacetime_bridge_hold:='+str(args.spacetime_bridge_hold)]
-trace=subprocess.Popen(['python3',str(root/'tools/control_trace.py'),
-                        '--out',str(args.out/'control_trace'),'--save-clouds'],
-                       stdout=(args.out/'control_trace.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
-child=subprocess.Popen(command,stdout=(args.out/'controller.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
-(args.out/'startup.json').write_text(json.dumps(dict(wall_time=time.time(),seed=args.seed,
-    first_pose_stamp=pose.header.stamp.to_sec(),command=command),indent=2))
-recorder=subprocess.Popen(['python3',str(workspace/'frames/flight_probe.py'),
-                  '--out',str(args.out/'flight'),'--seconds','1200',
-                  '--image-interval','0.5','--save-right'],
-                 stdout=(args.out/'probe.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
-vision=subprocess.Popen(['/opt/conda/envs/xal/bin/python',
-                  str(workspace/'rmua_ws/src/rmua_gate_vision/scripts/gate_yolo_node.py'),
-                  '_model:='+str(root/'yolo/weights/best.pt'),
-                  '_car_model:='+(str(root/'yolo/weights/car_score91_best.pt') if args.obstacle_backend=='legacy' else ''),
-                  '_route_file:='+str(config/'route_1_3.yaml'),'_imgsz:=960','_conf:=0.35',
-                  '_stereo_obstacles:=true',*live_gate_vision_arguments()],
-                 stdout=(args.out/'vision.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
-runner=subprocess.Popen(['python3',str(root/'tools/race_runner.py'),
-                         '--seed',str(args.seed),'--measured-map',str(gates_file),
-                         '--out',str(args.out/'mission'),'--cruise','40',
-                         '--fast-descent','--adaptive-speed','--control-rate',str(args.control_rate),
-                         '--obstacle-backend',args.obstacle_backend,'--planner-mode',args.planner_mode,
-                         *([] if args.spacetime_bridge_hold is None else ['--spacetime-bridge-hold',str(args.spacetime_bridge_hold)]),
-                         '--height-trace',str(args.out/'flight/streams.jsonl')],
-                        stdout=(args.out/'runner.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
+processes=[]
+def launch(arguments,logfile):
+    process=subprocess.Popen(arguments,stdout=(args.out/logfile).open('w'),
+        stderr=subprocess.STDOUT,start_new_session=True)
+    processes.append(process)
+    return process
 last_pose_arrival=time.monotonic()
+vision_map=[]
 def received_pose(_):
     global last_pose_arrival
     last_pose_arrival=time.monotonic()
+def received_map(message):
+    global vision_map
+    try:vision_map=json.loads(message.data)
+    except ValueError:pass
 rospy.Subscriber('/airsim_node/drone_1/debug/pose_gt',PoseStamped,received_pose,queue_size=1)
+rospy.Subscriber('/rmua/gate_map',String,received_map,queue_size=1)
+def stop(reason):
+    (args.out/'stop.json').write_text(json.dumps(dict(reason=reason,wall_time=time.time(),official_result='UNKNOWN'),indent=2))
 try:
+    trace=launch(['python3',str(root/'tools/control_trace.py'),'--out',str(args.out/'control_trace'),'--save-clouds'],'control_trace.log')
+    recorder=launch(['python3',str(workspace/'frames/flight_probe.py'),'--out',str(args.out/'flight'),
+        '--seconds','1200','--image-interval','0.5','--save-right'],'probe.log')
+    vision=launch(['/opt/conda/envs/xal/bin/python',str(workspace/'rmua_ws/src/rmua_gate_vision/scripts/gate_yolo_node.py'),
+        '_model:='+str(root/'yolo/weights/best.pt'),
+        '_car_model:='+(str(root/'yolo/weights/car_score91_best.pt') if args.obstacle_backend=='legacy' else ''),
+        '_route_file:='+str(config/'route_1_3.yaml'),'_imgsz:=960','_conf:=0.35',
+        '_stereo_obstacles:=true',*live_gate_vision_arguments()],'vision.log')
+    bootstrap_start=time.monotonic()
+    (args.out/'bootstrap.json').write_text(json.dumps(dict(wall_time=time.time(),state='GROUND_VISION_PREPARATION',seed=args.seed),indent=2))
+    while not initial_gate_map_ready(vision_map,rospy.Time.now().to_sec()):
+        if rospy.is_shutdown() or (args.out/'stop.json').exists():raise SystemExit('Bootstrap stopped')
+        if vision.poll() is not None:stop('VISION_BOOTSTRAP_FAILED');raise SystemExit('Vision exited before readiness')
+        if time.monotonic()-last_pose_arrival>3.:stop('POSE_STREAM_LOST');raise SystemExit('Pose lost before takeoff')
+        if time.monotonic()-bootstrap_start>60.:stop('VISION_BOOTSTRAP_TIMEOUT');raise SystemExit('No fresh stable map before takeoff')
+        time.sleep(.05)
+    (args.out/'bootstrap.json').write_text(json.dumps(dict(wall_time=time.time(),state='LIVE_MAP_READY',seed=args.seed,
+        elapsed_seconds=time.monotonic()-bootstrap_start,gates=vision_map),indent=2))
+    child=launch(command,'controller.log')
+    (args.out/'startup.json').write_text(json.dumps(dict(wall_time=time.time(),seed=args.seed,
+        first_pose_stamp=pose.header.stamp.to_sec(),command=command),indent=2))
+    runner=launch(['python3',str(root/'tools/race_runner.py'),'--seed',str(args.seed),'--measured-map',str(gates_file),
+        '--out',str(args.out/'mission'),'--cruise','40','--fast-descent','--adaptive-speed','--control-rate',str(args.control_rate),
+        '--obstacle-backend',args.obstacle_backend,'--planner-mode',args.planner_mode,
+        *([] if args.spacetime_bridge_hold is None else ['--spacetime-bridge-hold',str(args.spacetime_bridge_hold)]),
+        '--height-trace',str(args.out/'flight/streams.jsonl')],'runner.log')
     while not rospy.is_shutdown():
         if (args.out/'stop.json').exists():break
         if time.monotonic()-last_pose_arrival>3.:
-            (args.out/'simulator_lost.json').write_text(json.dumps(dict(reason='POSE_STREAM_LOST',wall_time=time.time())))
-            raise SystemExit('Simulator pose stream disappeared; see simulator.log')
+            stop('POSE_STREAM_LOST');raise SystemExit('Simulator pose stream disappeared; see simulator.log')
         if child.poll() is not None and child.returncode:raise SystemExit(child.returncode)
         if runner.poll() is not None:raise SystemExit(runner.returncode)
         time.sleep(.2)
 finally:
-    for process in (child,runner,recorder,vision,trace):
+    for process in processes:
         try:os.killpg(process.pid,signal.SIGTERM)
         except ProcessLookupError:pass
-    for process in (child,runner,recorder,vision,trace):
+    for process in processes:
         try:process.wait(timeout=5.)
         except subprocess.TimeoutExpired:
             try:os.killpg(process.pid,signal.SIGKILL)
             except ProcessLookupError:pass
-    # A stage switch in progress can launch descendants after the first TERM.
-    # All group leaders have now exited; remove any remaining descendants.
-    for process in (child,runner,recorder,vision,trace):
+    for process in processes:
         try:os.killpg(process.pid,signal.SIGKILL)
         except ProcessLookupError:pass
-    # roslaunch may give a switched controller its own process group. Remove
-    # its registered nodes too, after the runner can no longer launch a leg.
     try:
-        subprocess.run(['rosnode','kill','/route_follower','/gate_yolo'],
-                       stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=5.)
+        subprocess.run(['rosnode','kill','/route_follower','/gate_yolo'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,timeout=5.)
     except subprocess.TimeoutExpired:pass

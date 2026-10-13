@@ -1,5 +1,6 @@
 """Choose measured inputs without importing another seed's scene geometry."""
 import json
+import math
 import yaml
 
 
@@ -34,3 +35,19 @@ def current_run_measured_map(path,out,seed):
             data.get('provenance')!='live_run' or data.get('run_id')!=str(out.resolve())):
         raise ValueError('Measured-map input must belong to this live run and seed')
     return data.get('gates',[])
+
+
+def initial_gate_map_ready(gates,now):
+    """Require fresh, stable local evidence before issuing the first command."""
+    if not isinstance(gates,list):return False
+    for gate in gates:
+        try:
+            values=[float(gate[k]) for k in ('x','y','z','sigma_x','sigma_y','sigma_z','last_seen')]
+            x,y,z,sx,sy,sz,stamp=values
+            if not all(math.isfinite(v) for v in values):continue
+            if (gate.get('valid',True) and gate.get('hard_anchor',False) and
+                    gate.get('support',0)>=8 and float(gate.get('confidence') or 0)>=.65 and
+                    max(sx,sy)<=1.2 and 0.<=sz<=.6 and min(sx,sy)>=0. and
+                    0.<=now-stamp<=1. and math.hypot(x,y)<60.):return True
+        except (KeyError,TypeError,ValueError):continue
+    return False

@@ -1,11 +1,20 @@
 import json,sys,tempfile,unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from race_seed import initial_course_inputs,cold_start_vision_arguments,current_run_measured_map
+from race_seed import initial_course_inputs,cold_start_vision_arguments,current_run_measured_map,initial_gate_map_ready
 from summarize_debug_race import summarize
 
 
 class RaceSeedTests(unittest.TestCase):
+    def test_first_command_waits_for_fresh_supported_local_map(self):
+        gate=dict(x=20.,y=0.,z=-2.5,sigma_x=.3,sigma_y=.2,sigma_z=.2,
+                  last_seen=10.,hard_anchor=True,support=8,confidence=.8)
+        self.assertTrue(initial_gate_map_ready([gate],10.2))
+        self.assertFalse(initial_gate_map_ready([],10.2))
+        for change in (dict(last_seen=8.),dict(hard_anchor=False),dict(support=2),
+                       dict(confidence=.4),dict(sigma_z=2.),dict(x=100.),dict(z=float('nan'))):
+            self.assertFalse(initial_gate_map_ready([dict(gate,**change)],10.2))
+
     def test_every_seed_uses_live_bootstrap_with_identical_empty_geometry(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);config=root/'config';out=root/'run'
