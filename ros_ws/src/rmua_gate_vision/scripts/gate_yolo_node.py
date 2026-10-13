@@ -160,9 +160,10 @@ class GateYolo(object):
         message_filters.ApproximateTimeSynchronizer([sl, sr], queue_size=5, slop=0.03) \
             .registerCallback(self.enqueue_pair)
         self.route = self.load_route()
-        self.raw_route=self.route.copy()
         self.gate_map = GateMap(self.route, assoc_radius=self.assoc_radius,
                                 max_age=self.max_age)
+        self.gate_map.seg_s=self.seg_s.copy();self.gate_map.seg_len=self.seg_len.copy()
+        rospy.Service('/rmua/configure_vision_course',Trigger,self.configure_course)
         rospy.Subscriber('/rmua/course_frame',String,self.course_frame_cb,queue_size=1)
         self.last_prune = None
         rospy.Timer(rospy.Duration(0.25), self.publish_map)
@@ -171,11 +172,36 @@ class GateYolo(object):
 
     def load_route(self):
         with open(self.route_file) as f:
-            pts = yaml.safe_load(f)["routes"][self.route_name]
-        r = np.array(pts, dtype=np.float64)
-        self.seg_len = np.hypot(np.diff(r[:, 0]), np.diff(r[:, 1]))
+            data=yaml.safe_load(f)
+        sys.path.insert(0,os.path.normpath(os.path.join(os.path.dirname(__file__),'..','..','route_follower','scripts')))
+        from course_frame import course_document
+        raw,r,_=course_document(data,self.route_name)
+        self.raw_route=raw
+        self.seg_len = np.hypot(np.diff(raw[:, 0]), np.diff(raw[:, 1]))
         self.seg_s = np.concatenate([[0.0], np.cumsum(self.seg_len)])
         return r
+
+    def configure_course(self,request):
+        try:
+            config=rospy.get_param('~next_course')
+            path=config['route_file'];name=config['route_name']
+            width=float(config['max_width']);height=float(config['max_height'])
+            if not (0.<width<=18. and 0.<height<=12.):raise ValueError('Invalid opening limits')
+            with open(path) as file:data=yaml.safe_load(file)
+            from course_frame import course_document
+            raw,mapped,_=course_document(data,name)
+            with self.map_lock:
+                self.frame_generation+=1;self.frames.clear()
+                self.route_file=path;self.route_name=name;self.route=mapped;self.raw_route=raw
+                self.seg_len=np.hypot(np.diff(raw[:,0]),np.diff(raw[:,1]))
+                self.seg_s=np.r_[0.,np.cumsum(self.seg_len)]
+                self.gate_map=GateMap(mapped,assoc_radius=self.assoc_radius,max_age=self.max_age)
+                self.gate_map.seg_len=self.seg_len.copy();self.gate_map.seg_s=self.seg_s.copy()
+                self.geom.max_width=width;self.geom.max_height=height
+                self.map_reset_pending=False;self.last_prune=None
+            return TriggerResponse(success=True,message='Course replaced; loaded model retained')
+        except (KeyError,ValueError,TypeError,OSError) as error:
+            return TriggerResponse(success=False,message=str(error))
 
     def course_frame_cb(self,msg):
         try:

@@ -7,6 +7,18 @@ Keep raw spline heights and station labels; only change horizontal geometry.
 import numpy as np
 
 
+def course_document(data,name):
+    raw=np.asarray(data['routes'][name],dtype=float)
+    if raw.ndim!=2 or raw.shape[1]!=3 or len(raw)<2 or not np.all(np.isfinite(raw)):
+        raise ValueError('Invalid course geometry')
+    frame=data.get('course_frame')
+    if frame is None:return raw,raw.copy(),None
+    if data.get('provenance')!='live_run':
+        raise ValueError('A course frame must be declared as current-run evidence')
+    tilt=frame['tilt']
+    return raw,mapped_course_points(raw,tilt),tilt
+
+
 def mapped_course_points(points, tilt):
     points=np.asarray(points,dtype=float)
     tilt=np.asarray(tilt,dtype=float)

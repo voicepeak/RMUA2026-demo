@@ -1,5 +1,6 @@
 # 垂直能力表 vz_available(vxy) —— 上升/下降分开标定 (方案 4.5)
-# 初始为估值, 请用 z_capability_probe.py 实测后覆盖。
+# 公共候选：稳定垂直跟踪约为单位增益；4.0m/s保留4.5指令上限的余量。
+# 在跨种子实跑中核验4.0跟踪后才视为标定通过，不按seed选择本表。
 # 实测: rosrun route_follower z_capability_probe.py _vx_levels:="[0,5,10]" _vz_levels:="[1,2,3,4,5]"
 # 生成 <out>_capability.yaml 后复制到本文件 (旧格式只有 up 时, down 取 up 表)。
 vz_available:
@@ -7,13 +8,13 @@ vz_available:
     - vxy: 0.0
       vz: 4.0
     - vxy: 5.0
-      vz: 3.6
+      vz: 4.0
     - vxy: 10.0
-      vz: 3.0
+      vz: 4.0
   down:
     - vxy: 0.0
-      vz: 3.0
+      vz: 4.0
     - vxy: 5.0
-      vz: 3.0
+      vz: 4.0
     - vxy: 10.0
-      vz: 3.0
+      vz: 4.0

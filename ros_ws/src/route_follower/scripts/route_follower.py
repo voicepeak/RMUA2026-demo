@@ -528,8 +528,12 @@ class RouteFollower(object):
     @staticmethod
     def load_route(path, name):
         with open(path) as f:
-            pts = yaml.safe_load(f)["routes"][name]
-        return RouteGeometry(pts)
+            data=yaml.safe_load(f)
+        from course_frame import course_document
+        raw,_,tilt=course_document(data,name)
+        route=RouteGeometry(raw)
+        if tilt is not None:route.calibrate_frame(tilt)
+        return route
 
     @staticmethod
     def load_list(path, key):

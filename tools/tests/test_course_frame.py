@@ -3,11 +3,23 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'ros_ws/src/route_follower/scripts'))
-from course_frame import mapped_course_points
+from course_frame import mapped_course_points,course_document
 from reference_planner import RouteGeometry,ReferencePlanner
 
 
 class CourseFrameTests(unittest.TestCase):
+    def test_same_run_frame_can_be_carried_without_rotating_raw_heights(self):
+        points=[[0.,0.,0.],[700.,0.,100.]]
+        raw,mapped,tilt=course_document(dict(routes={'leg':points},provenance='live_run',
+            course_frame={'tilt':[-.05,0.]}),'leg')
+        np.testing.assert_array_equal(raw,points)
+        np.testing.assert_allclose(mapped,mapped_course_points(raw,tilt))
+        with self.assertRaises(ValueError):course_document(dict(routes={'leg':points},
+            course_frame={'tilt':[-.05,0.]}),'leg')
+
+    def test_bad_stage_geometry_cannot_replace_a_running_vision_course(self):
+        for points in ([],[[0.,0.,0.]],[[0.,0.,0.],[float('nan'),0.,0.]]):
+            with self.assertRaises(ValueError):course_document(dict(routes={'leg':points}),'leg')
     def test_vertical_tilt_has_horizontal_effect_at_high_elevation(self):
         raw=np.array([[0.,0.,0.],[700.,0.,100.]])
         mapped=mapped_course_points(raw,[-.05,0.])

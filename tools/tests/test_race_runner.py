@@ -106,3 +106,11 @@ class RaceLegTests(unittest.TestCase):
         roads=[[(i,0.,0.) for i in range(30)],[(0.,i,0.) for i in range(30)]]
         _,gates=build_leg(roads,2,1,(0.,0.,0.),[dict(id=7,x=10.,y=8.,z=0.)])
         self.assertEqual(gates,[])
+
+    def test_later_leg_projects_measurements_in_the_current_run_frame(self):
+        from course_frame import mapped_course_points
+        roads=[[(i,0.,100.) for i in range(30)],[(0.,i,100.) for i in range(30)]]
+        world=mapped_course_points([[10.,0.,100.]],[-.05,0.])[0]
+        gate=dict(id=7,x=float(world[0]),y=float(world[1]),z=-100.)
+        _,gates=build_leg(roads,2,1,(0.,0.,0.),[gate],[-.05,0.])
+        self.assertEqual(len(gates),1)

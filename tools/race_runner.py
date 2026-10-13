@@ -56,7 +56,7 @@ def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=Fal
                   'vz_capability_file:='+str(config/'vz_capability.yaml')]
     return command
 
-def build_leg(splines,start,finish,goal,measured):
+def build_leg(splines,start,finish,goal,measured,frame_tilt=None):
     incoming=splines[start-1]
     outgoing=list(reversed(splines[finish-1]))
     if math.hypot(outgoing[-1][0]-goal[0],outgoing[-1][1]-goal[1])>35.:
@@ -64,6 +64,7 @@ def build_leg(splines,start,finish,goal,measured):
     if min(len(incoming),len(outgoing))<20:
         raise ValueError('Incomplete road spline')
     route=RouteGeometry(connect_routes(incoming,outgoing))
+    if frame_tilt is not None:route.calibrate_frame(frame_tilt)
     gates=[]
     for raw in measured:
         i,t,d,c=route.project((raw['x'],raw['y'],raw['z']))
@@ -164,6 +165,10 @@ def main():
             if data.get('reason')=='ROUTE_END':state['route_end']=True
         except ValueError:pass
     rospy.Subscriber('/rmua/controller/events',String,on_event)
+    def on_frame(message):
+        try:state['course_frame']=json.loads(message.data)
+        except ValueError:pass
+    rospy.Subscriber('/rmua/course_frame',String,on_frame,queue_size=1)
     stage=a.stage;previous=None;child=None
     startup=a.out.parent/'startup.json'
     stage_started_at=json.loads(startup.read_text()).get('wall_time',time.time()) if startup.exists() else time.time()
@@ -177,12 +182,13 @@ def main():
             event('FACTORY_INSPECTION_REQUIRED',leg=[SEQUENCE[stage],SEQUENCE[stage+1]])
             return False
         reusable=list(measured)
+        frame=state.get('course_frame');tilt=frame.get('tilt') if frame else None
         for g in state.get('gates',[]):
             if not g.get('hard_anchor') or g.get('support',0)<8:continue
             if any(math.hypot(g['x']-p['x'],g['y']-p['y'])<8. for p in reusable):continue
             reusable.append(g)
         try:
-            points,gates=build_leg(splines,SEQUENCE[stage],SEQUENCE[stage+1],goal,reusable)
+            points,gates=build_leg(splines,SEQUENCE[stage],SEQUENCE[stage+1],goal,reusable,tilt)
         except ValueError as error:
             event('ROUTE_UNAVAILABLE',reason=str(error));return False
         position=state.get('pose')
@@ -190,11 +196,12 @@ def main():
             event('START_MARKER_MISMATCH',pose=position);return False
         # Begin the return from the actual trigger position, without snapping
         # sideways to the exported spline before the forward cameras turn.
-        points.insert(0,position)
         route=RouteGeometry(points)
+        if tilt is not None:route.calibrate_frame(tilt)
         for g in gates:g['s']=route.project_gate(g['x'],g['y'])
         guides=[]
         incoming=RouteGeometry(splines[SEQUENCE[stage]-1])
+        if tilt is not None:incoming.calibrate_frame(tilt)
         measured_trace=[]
         if a.height_trace:
             for line in a.height_trace.open():
@@ -207,15 +214,31 @@ def main():
         sampled=recorded_return_guides(route,incoming,measured_trace)
         folder=a.out/('leg_%d_%d'%(SEQUENCE[stage],SEQUENCE[stage+1]));folder.mkdir(exist_ok=True)
         route_file=folder/'route.yaml';gates_file=folder/'gates.yaml';guides_file=folder/'guides.yaml'
-        route_file.write_text(yaml.safe_dump({'routes':{'race_leg':points}}))
+        document=dict(routes={'race_leg':points},provenance='live_run',seed=a.seed,
+                      run_id=str(a.out.parent.resolve()),start_pose=position)
+        if tilt is not None:document['course_frame']=frame
+        route_file.write_text(yaml.safe_dump(document))
         gates_file.write_text(yaml.safe_dump({'gates':gates}))
         guides_file.write_text(yaml.safe_dump({'altitude_guides':sampled}))
         subprocess.run(['rosnode','kill','/route_follower'],check=False)
         state.pop('route_end',None)
         # A fresh vision process reads the new route; clearing the old map alone
         # leaves its projection/pruning tied to the previous road direction.
-        subprocess.run(['rosnode','kill','/gate_yolo'],check=False)
-        subprocess.Popen(['/opt/conda/envs/xal/bin/python',
+        warm=False
+        if a.obstacle_backend=='lidar_nav':
+            try:
+                from std_srvs.srv import Trigger
+                rospy.set_param('/gate_yolo/next_course',dict(route_file=str(route_file),route_name='race_leg',
+                    max_width=8. if stage==1 else 18.,max_height=8. if stage==1 else 12.))
+                rospy.wait_for_service('/rmua/configure_vision_course',timeout=1.)
+                response=rospy.ServiceProxy('/rmua/configure_vision_course',Trigger)()
+                warm=response.success
+                event('VISION_COURSE_CONFIGURED',success=warm,message=response.message)
+            except (rospy.ROSException,rospy.ServiceException) as error:
+                event('VISION_RELOAD_REQUIRED',reason=str(error))
+        if not warm:
+            subprocess.run(['rosnode','kill','/gate_yolo'],check=False)
+            subprocess.Popen(['/opt/conda/envs/xal/bin/python',
                           str(root/'ros_ws/src/rmua_gate_vision/scripts/gate_yolo_node.py'),
                           '_model:='+str(root/'yolo/weights/best.pt'),
                           '_car_model:='+(str(root/'yolo/weights/car_score91_best.pt') if a.obstacle_backend=='legacy' else ''),
