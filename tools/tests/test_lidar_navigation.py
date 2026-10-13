@@ -515,6 +515,31 @@ class LidarNavigationTests(unittest.TestCase):
             self.assertEqual(info['planner_error'],'failed snapshot')
         finally:self.nav.close()
 
+    def test_exhausted_loop_is_not_a_forward_cache_prefix(self):
+        path=np.array([[0.,0.,0.],[-1.2,0.,0.],[.02,0.,0.]])
+        self.guard._update(np.array([[100.,100.,100.]]),1.,1.05,np.zeros(3))
+        projection=self.nav._projection(0.,self.xy)
+        usable,info=self.nav._usable_path(path,np.zeros(3),0.,self.xy,self.center,None,projection)
+        self.assertIsNone(usable)
+        self.assertTrue(info['exhausted_prefix'])
+        self.assertAlmostEqual(info['remaining_progress'],.02)
+
+    def test_bending_forward_prefix_uses_road_progress(self):
+        xy=lambda s:(s,0.) if s<=5. else ((5.,s-5.) if s<=10. else (15.-s,5.))
+        path=np.array([[0.,0.,0.],[5.,0.,0.],[5.,5.,0.],[-1.,5.,0.]])
+        self.guard._update(np.array([[100.,100.,100.]]),1.,1.05,np.zeros(3))
+        projection=self.nav._projection(0.,xy)
+        usable,_=self.nav._usable_path(path,np.zeros(3),0.,xy,self.center,None,projection)
+        self.assertIsNotNone(usable)
+
+    def test_short_terminal_prefix_can_reach_road_end(self):
+        xy=lambda s:(max(0.,min(.1,s)),0.)
+        path=np.array([[0.,0.,0.],[.1,0.,0.]])
+        self.guard._update(np.array([[100.,100.,100.]]),1.,1.05,np.zeros(3))
+        projection=self.nav._projection(0.,xy)
+        usable,_=self.nav._usable_path(path,np.zeros(3),0.,xy,self.center,None,projection)
+        self.assertIsNotNone(usable)
+
     def test_cached_path_and_command_share_floor_station_with_offset_start(self):
         self.nav=LidarNavigator(self.guard,async_planning=True)
         try:

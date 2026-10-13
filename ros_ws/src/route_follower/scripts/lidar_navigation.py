@@ -643,6 +643,20 @@ class LidarNavigator:
             truncated=True
             if np.min(self.guard.index.distance(samples,limit=1.75))<self.path_buffer:return None,{}
         if not self._floor_ok(samples,stations,center,floor_offset):return None,{}
+        # A fully checked old prefix may still be exhausted. Arc length can
+        # count a backwards connector and return loop as useful travel, while
+        # its endpoint barely advances on the road. Replan rather than keep
+        # reporting that prefix as forward tracking indefinitely. Use road
+        # station, not a tangent dot product, so genuine bends remain valid.
+        ends=self._route_stations(path[[0,-1]],s,xy,projection)
+        road_end=self._route_stations(np.array([[*xy(s+self.horizon)[:2],center(s+self.horizon)]]),
+                                     s,xy,projection)[0]
+        available=max(0.,float(road_end-ends[0]))
+        progress=float(ends[1]-ends[0])
+        required=min(2.,.5*available)
+        if available>.05 and progress<required-1e-8:
+            return None,dict(exhausted_prefix=True,remaining_progress=progress,
+                             required_progress=required)
         return path,dict(truncated=truncated)
 
     def _commands(self, position, velocity, desired, path, age, s, xy, center, floor_offset,projection=None,height_reserve=None):
@@ -1025,6 +1039,8 @@ class LidarNavigator:
             forward=np.asarray(xy(s+.3)[:2])-np.asarray(xy(s-.3)[:2])
             forward/=max(1e-6,np.linalg.norm(forward))
             path,prefix_info=self._usable_path(path,position,s,xy,center,floor_offset,projection)
+            details.update(prefix_info)
+            if prefix_info.get('exhausted_prefix'):self.last_path=None
             if path is not None:details.update(prefix_info,path_distance=float((path[-1]-position)[:2]@forward),cached=True)
         if path is None and self.executor is None:
             path,details=self.path(np.asarray(position),s,xy,center,floor_offset)
