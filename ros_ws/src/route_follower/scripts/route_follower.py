@@ -458,7 +458,8 @@ class RouteFollower(object):
             gate_blend_full=self.gate_blend_full, z_rate_max=self.z_rate_max,
             z_extrap_m=self.z_extrap_m, z_extrap_slope_max=self.z_extrap_slope_max,
             z_soft_guide_max=self.z_soft_guide_max,
-            z_soft_slope_max=self.z_soft_slope_max,corridor_guidance=self.adaptive_speed)
+            z_soft_slope_max=self.z_soft_slope_max,corridor_guidance=self.adaptive_speed,
+            frame_calibration=bool(rospy.get_param('~course_frame_calibration',True)))
 
         rospy.loginfo("route '%s': %d pts, %.0f m; gates=%d",
                       self.route_name, len(self.route.points), self.route.total_s,
@@ -474,6 +475,8 @@ class RouteFollower(object):
         self.published_horizontal_speed=0.
         self.event_pub = rospy.Publisher("/rmua/controller/events", String, queue_size=100, latch=True)
         self.telemetry_pub = rospy.Publisher("/rmua/controller/telemetry", String, queue_size=100)
+        self.course_frame_pub=rospy.Publisher('/rmua/course_frame',String,queue_size=1,latch=True)
+        self.course_frame_sent=None
         self.command_trace_pub = rospy.Publisher("/rmua/controller/command_trace", String, queue_size=100)
         rospy.on_shutdown(self.shutdown)
         rospy.Subscriber("/airsim_node/drone_1/debug/pose_gt", PoseStamped, self.pose_cb,
@@ -537,6 +540,13 @@ class RouteFollower(object):
         return d.get(key, []) if d else []
 
     # ---------- init / rebuild ----------
+    def _publish_course_frame(self):
+        tilt=self.route.frame_tilt
+        if tilt is None or tilt==self.course_frame_sent:return
+        self.course_frame_pub.publish(String(data=json.dumps(dict(
+            route_file=os.path.realpath(self.route_file),route_name=self.route_name,tilt=tilt))))
+        self.course_frame_sent=tilt
+
     def _update_response_tracking(self,s_now):
         if not self.coupled_navigation:return
         model=self.execution_guard.response_model
@@ -561,6 +571,7 @@ class RouteFollower(object):
             self.chain, self.profile = chain, profile
             self.blender.set_initial(profile, self.pose_stamp)
             self.xy_tracker.configure(self.route, chain.gates, s_now,stamp=self.pose_stamp)
+            self._publish_course_frame()
             self.gate_idx = self.planner.initial_index(chain, s_now)
             for g in chain.gates[:self.gate_idx]:
                 self.task_state.resolved_gate_ids.add(g.get("id"))
@@ -645,6 +656,7 @@ class RouteFollower(object):
             self.chain, self.profile, self.gate_idx = chain, profile, idx
             self.blender.switch(profile, self.pose_stamp)
             self.xy_tracker.configure(self.route, chain.gates, s_now,stamp=self.pose_stamp)
+            self._publish_course_frame()
         rospy.loginfo_throttle(
             2.0, "GATE_MAP update: static=%d +online=%d -> %d gates, next_idx=%d, "
             "static_corrections=%d", len(self.static_gates),

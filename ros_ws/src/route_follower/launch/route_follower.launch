@@ -14,6 +14,7 @@
   <arg name="guides_file"    default=""/>
   <arg name="gate_z_uses_offset" default="false"/>
   <arg name="start_anchor_z" default="-999.0"/>
+  <arg name="course_frame_calibration" default="true"/>
 
   <!-- 速度: 巡航/物理限速/斜坡 (方案 13~16) -->
   <arg name="cruise_speed"   default="8.0"/>
@@ -188,6 +189,7 @@
   <node pkg="route_follower" type="route_follower.py" name="route_follower" output="screen">
     <param name="route_file"       value="$(arg route_file)"/>
     <param name="route_name"       value="$(arg route)"/>
+    <param name="course_frame_calibration" value="$(arg course_frame_calibration)"/>
     <param name="gates_file"       value="$(arg gates_file)"/>
     <param name="guides_file"      value="$(arg guides_file)"/>
     <param name="gate_z_uses_offset" value="$(arg gate_z_uses_offset)"/>

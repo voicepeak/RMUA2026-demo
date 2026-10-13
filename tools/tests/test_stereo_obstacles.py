@@ -9,10 +9,37 @@ from stereo_obstacles import downward_hits
 from obstacle_cloud_fusion import ObstacleCloudFusion
 from gate_stereo import FX,BASELINE,camera_to_body
 from gate_map import GateMap
-from gate_candidates import frame_candidates,gate_frame_support,gate_opening_support,passable_gate_geometry
+from gate_candidates import frame_candidates,gate_frame_support,gate_opening_support,passable_gate_geometry,dense_candidates
 
 
 class StereoObstacleTests(unittest.TestCase):
+    def test_supported_color_frame_survives_bbox_only_cold_start(self):
+        import cv2
+        from gate_stereo import gate_center_from_frame
+        from gate_detector_opencv import gate_frame_mask
+        image=np.zeros((240,240,3),dtype=np.uint8)
+        cv2.rectangle(image,(40,40),(200,200),(255,255,255),12)
+        cv2.rectangle(image,(48,48),(192,192),(30,85,230),3)
+        candidates=dense_candidates(frame_candidates(image,[]))
+        self.assertEqual(len(candidates),1)
+        self.assertFalse(candidates[0]['keypoints'])
+        disparity=np.full(image.shape[:2],FX*BASELINE/8.,dtype=np.float32)
+        center,depth,_=gate_center_from_frame(candidates[0],disparity,gate_frame_mask(image))
+        self.assertAlmostEqual(depth,8.,places=5)
+        gate_map=GateMap()
+        for stamp in (1.,1.1,1.2,1.3):gate_map.observe(camera_to_body(center),stamp,depth=depth)
+        gates=gate_map.gates(2)
+        self.assertEqual(len(gates),1)
+        self.assertFalse(gates[0]['geometry_valid'])
+
+    def test_shaded_red_frame_is_valid_but_red_panel_has_no_opening(self):
+        image=np.zeros((200,200,3),dtype=np.uint8)
+        image[20:180,20:35]=150;image[20:180,165:180]=150
+        image[20:180,35:40]=[12,25,110];image[20:180,160:165]=[12,25,110]
+        self.assertTrue(gate_opening_support(image,(20,20,160,160)))
+        panel=np.zeros_like(image);panel[20:180,20:180]=[12,25,110]
+        self.assertFalse(gate_opening_support(panel,(20,20,160,160)))
+
     def test_half_resolution_projection_keeps_metric_depth_and_world_frame(self):
         disparity=np.zeros((360,480),dtype=np.float32)
         disparity[299:302,239:242]=.5*FX*BASELINE/5.

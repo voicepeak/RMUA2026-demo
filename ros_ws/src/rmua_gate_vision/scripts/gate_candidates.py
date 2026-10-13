@@ -10,7 +10,10 @@ def gate_frame_support(image,bbox):
     crop=image[max(0,y):min(image.shape[0],y+h),max(0,x):min(image.shape[1],x+w)]
     if not crop.size:return False
     hsv=cv2.cvtColor(crop,cv2.COLOR_BGR2HSV)
-    mask=(hsv[:,:,0]>=3)&(hsv[:,:,0]<=22)&(hsv[:,:,1]>110)&(hsv[:,:,2]>150)&(crop[:,:,1]>65)
+    # Red/orange trim stays saturated in shade while its green channel and
+    # brightness fall. Hue wraps around zero; neither green intensity nor
+    # a sunlit-only value threshold is a stable identity cue.
+    mask=((hsv[:,:,0]<=22)|(hsv[:,:,0]>=170))&(hsv[:,:,1]>90)&(hsv[:,:,2]>80)
     v,u=np.where(mask)
     # A car's red roof is a horizontal patch, not the gate's vertical trim.
     return len(v)>=30 and np.ptp(v)>=.5*h and np.ptp(u)>=.3*w
@@ -57,7 +60,14 @@ def frame_candidates(image, learned, limit=8):
         corners=np.asarray(g['corners'],dtype=np.float32)
         candidates.append(dict(bbox=g['bbox'],center=corners.mean(axis=0),
             corners=corners,conf=g['confidence'],area=float(w*h),keypoints=False,
-            source='colored_frame',geometry_only=True))
+            # Contour rectangles are not measured corner geometry. A supported
+            # full frame can still supply dense depth without certifying a plane.
+            source='colored_frame',geometry_only=False))
         added+=1
         if added>=limit:break
     return candidates
+
+
+def dense_candidates(candidates):
+    return [c for c in candidates if c.get('track_id') is None and
+            not c.get('geometry_only',False)]

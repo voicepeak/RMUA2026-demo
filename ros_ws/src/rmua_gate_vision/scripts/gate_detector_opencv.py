@@ -16,8 +16,8 @@ DEFAULTS = {
     "white_v_min": 140,
     "orange_h_min": 0,
     "orange_h_max": 22,
-    "orange_s_min": 120,
-    "orange_v_min": 120,
+    "orange_s_min": 90,
+    "orange_v_min": 80,
     "min_area": 800,
     "max_area": 400000,
     "min_ratio": 0.30,
@@ -41,7 +41,8 @@ def detect_gates(img, params=None):
     H, S, V = hsv[..., 0], hsv[..., 1], hsv[..., 2]
 
     white = ((S < p["white_s_max"]) & (V > p["white_v_min"])).astype(np.uint8) * 255
-    orange = ((H >= p["orange_h_min"]) & (H <= p["orange_h_max"]) &
+    orange = (((H >= p["orange_h_min"]) & (H <= p["orange_h_max"]) |
+               ((H>=170) if p['orange_h_min']==0 else np.zeros_like(H,dtype=bool))) &
               (S >= p["orange_s_min"]) & (V >= p["orange_v_min"])).astype(np.uint8) * 255
     frame = ((white > 0) | cv2.dilate(orange, np.ones((3, 3), np.uint8)) > 0).astype(np.uint8) * 255
     frame = cv2.morphologyEx(frame, cv2.MORPH_OPEN, np.ones((3, 3), np.uint8))
@@ -96,7 +97,8 @@ def gate_frame_mask(img, params=None):
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     H, S, V = hsv[..., 0], hsv[..., 1], hsv[..., 2]
     white = (S < p["white_s_max"]) & (V > p["white_v_min"])
-    orange = ((H >= p["orange_h_min"]) & (H <= p["orange_h_max"]) &
+    orange = (((H >= p["orange_h_min"]) & (H <= p["orange_h_max"]) |
+               ((H>=170) if p['orange_h_min']==0 else np.zeros_like(H,dtype=bool))) &
               (S >= p["orange_s_min"]) & (V >= p["orange_v_min"]))
     return white | orange
 

@@ -71,6 +71,7 @@ catkin_install_python(PROGRAMS
   scripts/safety_supervisor.py
   scripts/lidar_clearance.py
   scripts/route_height_prior.py
+  scripts/course_frame.py
   scripts/persistent_guides.py
   scripts/spatial_curve.py
   scripts/xy_tracker.py

@@ -20,7 +20,7 @@ class RouteHeightPrior:
         points=[]
         for g in gates:
             if not g.get('trusted',True): continue
-            s=float(g['s']);x,y,_=self.route.point_at(s)
+            s=float(g['s']);x,y,_=self.route.raw_point_at(s)
             if points and s-points[-1][0]<8.: continue
             points.append((s,x,y,self.height.center(s),float(g['z'])))
         a=np.asarray(points)
@@ -76,7 +76,7 @@ class RouteHeightPrior:
 
     def center(self,s):
         if not self.valid: raise ValueError('Uncalibrated course height')
-        x,y,_=self.route.point_at(s)
+        x,y,_=self.route.raw_point_at(s)
         return float(-self.height.center(s)+np.dot(np.array([x,y])-self.origin,self.coefficients[:2])+self.coefficients[2])
 
     def consistent(self,s,z,tolerance=2.5):
@@ -84,7 +84,7 @@ class RouteHeightPrior:
 
     def uncertainty(self,s):
         if not self.valid: return float('inf')
-        x,y,_=self.route.point_at(s)
+        x,y,_=self.route.raw_point_at(s)
         feature=np.array([x-self.origin[0],y-self.origin[1],1.])
         return self.residual_sigma*float(np.sqrt(1.+feature@self.information_inverse@feature))
 

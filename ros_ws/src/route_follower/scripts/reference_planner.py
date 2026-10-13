@@ -23,6 +23,8 @@ class RouteGeometry(object):
 
     def __init__(self, points):
         self.points = [(float(p[0]), float(p[1]), float(p[2])) for p in points]
+        self.frame_points=self.points
+        self.frame_tilt=None
         self.seg_len = []
         self.seg_s = [0.0]
         acc = 0.0
@@ -37,17 +39,30 @@ class RouteGeometry(object):
         return self.seg_s[-1]
 
     def point_at(self, s):
+        return self._point_at(s,self.frame_points)
+
+    def raw_point_at(self,s):
+        return self._point_at(s,self.points)
+
+    def calibrate_frame(self,tilt):
+        if self.frame_tilt is not None:return False
+        from course_frame import mapped_course_points
+        self.frame_points=mapped_course_points(self.points,tilt).tolist()
+        self.frame_tilt=tuple(float(v) for v in tilt)
+        return True
+
+    def _point_at(self,s,points):
         s = max(0.0, min(self.seg_s[-1], float(s)))
         i=max(0,min(len(self.seg_len)-1,bisect_left(self.seg_s,s)-1))
         r = (s - self.seg_s[i]) / self.seg_len[i] if self.seg_len[i] > 1e-9 else 0.0
-        a, b = self.points[i], self.points[i + 1]
+        a, b = points[i], points[i + 1]
         return (a[0] + r * (b[0] - a[0]), a[1] + r * (b[1] - a[1]), i)
 
     def project(self, p):
         px, py = float(p[0]), float(p[1])
         best = (0, 0.0, 1e9, None)
         for i in range(len(self.points) - 1):
-            a, b = self.points[i], self.points[i + 1]
+            a, b = self.frame_points[i], self.frame_points[i + 1]
             dx, dy = b[0] - a[0], b[1] - a[1]
             den = dx * dx + dy * dy
             t = 0.0 if den < 1e-9 else max(0.0, min(1.0, ((px - a[0]) * dx + (py - a[1]) * dy) / den))
@@ -60,7 +75,7 @@ class RouteGeometry(object):
     def project_gate(self, x, y):
         best_s, best_d = 0.0, 1e9
         for i in range(len(self.points) - 1):
-            a, b = self.points[i], self.points[i + 1]
+            a, b = self.frame_points[i], self.frame_points[i + 1]
             dx, dy = b[0] - a[0], b[1] - a[1]
             den = dx * dx + dy * dy
             t = 0.0 if den < 1e-9 else max(0.0, min(1.0, ((x - a[0]) * dx + (y - a[1]) * dy) / den))
@@ -73,7 +88,7 @@ class RouteGeometry(object):
     def curvature(self, s):
         _, _, i = self.point_at(s)
         i = max(1, min(i, len(self.points) - 3))
-        a, b, c = self.points[i - 1], self.points[i], self.points[i + 1]
+        a, b, c = self.frame_points[i - 1], self.frame_points[i], self.frame_points[i + 1]
         v1 = (b[0] - a[0], b[1] - a[1])
         v2 = (c[0] - b[0], c[1] - b[1])
         n1 = math.hypot(*v1)
@@ -105,8 +120,10 @@ class ReferencePlanner(object):
                  corridor_half=1.5, gate_blend_start=25.0, gate_blend_full=8.0,
                  z_rate_max=4.0,
                  z_extrap_m=50.0, z_extrap_slope_max=0.5,
-                 z_soft_guide_max=120.0, z_soft_slope_max=0.5, corridor_guidance=False):
+                 z_soft_guide_max=120.0, z_soft_slope_max=0.5, corridor_guidance=False,
+                 frame_calibration=False):
         self.route = route
+        self.frame_calibration=bool(frame_calibration)
         self.corridor_guidance=bool(corridor_guidance)
         self.height_prior = RouteHeightPrior(route)
         self.trend_horizon = None
@@ -191,6 +208,18 @@ class ReferencePlanner(object):
         recorded_adj = [dict(gd,s=float(gd["s"]),z=float(gd["z"])+off)
                       for gd in (guides or []) if gd.get("s") is not None]
         self.height_prior.fit_recorded_poses(recorded_adj,chain.gates)
+        if (self.frame_calibration and self.height_prior.valid and
+                self.route.calibrate_frame(self.height_prior.coefficients[:2])):
+            # Freeze this run's first validated rigid datum. Reproject anchors
+            # and refit against raw UP heights; never rotate an already mapped
+            # route or use mapped XY as the raw calibration design matrix.
+            gates_adj=self.adjust_gates(gates_raw,z_offset,corrections,verified_ids)
+            chain=GateChain(gates_adj,slope_factor=self.slope_factor,slope_abs_max=self.slope_abs_max)
+            anchors=chain.anchors()
+            anchor_gates=[dict(s=s,z=z,valid=True) for s,z in anchors]
+            goal_z=anchors[-1][1] if anchors else start_z
+            self.height_prior.fit(chain.gates)
+            self.height_prior.fit_recorded_poses(recorded_adj,chain.gates)
         guides_adj=[g for g in recorded_adj if not g.get('calibration_only',False)]
         # Do not interleave a fitted
         # extrapolation with their covered section of the road.

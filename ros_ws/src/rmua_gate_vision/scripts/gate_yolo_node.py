@@ -42,7 +42,7 @@ from gate_geometry import GateGeometry  # noqa: E402
 from latest_frame import LatestFrame
 from car_geometry import car_boxes,locate_car,overlaps_car
 from stereo_obstacles import downward_hits
-from gate_candidates import frame_candidates,passable_gate_geometry,gate_opening_support
+from gate_candidates import frame_candidates,passable_gate_geometry,gate_opening_support,dense_candidates
 from timestamp_sync import PoseBuffer  # noqa: E402
 import stereo_keypoint_matcher as skm  # noqa: E402
 from gate_reprojection import reproject_gate  # noqa: E402
@@ -151,8 +151,10 @@ class GateYolo(object):
         message_filters.ApproximateTimeSynchronizer([sl, sr], queue_size=5, slop=0.03) \
             .registerCallback(self.enqueue_pair)
         self.route = self.load_route()
+        self.raw_route=self.route.copy()
         self.gate_map = GateMap(self.route, assoc_radius=self.assoc_radius,
                                 max_age=self.max_age)
+        rospy.Subscriber('/rmua/course_frame',String,self.course_frame_cb,queue_size=1)
         self.last_prune = None
         rospy.Timer(rospy.Duration(0.25), self.publish_map)
         self.worker=threading.Thread(target=self.inference_loop,daemon=True)
@@ -165,6 +167,25 @@ class GateYolo(object):
         self.seg_len = np.hypot(np.diff(r[:, 0]), np.diff(r[:, 1]))
         self.seg_s = np.concatenate([[0.0], np.cumsum(self.seg_len)])
         return r
+
+    def course_frame_cb(self,msg):
+        try:
+            data=json.loads(msg.data)
+            if (data.get('route_file')!=os.path.realpath(self.route_file) or
+                    data.get('route_name')!=self.route_name):return
+            sys.path.insert(0,os.path.normpath(os.path.join(os.path.dirname(__file__),'..','..','route_follower','scripts')))
+            from course_frame import mapped_course_points
+            mapped=mapped_course_points(self.raw_route,data['tilt'])
+            with self.map_lock:
+                self.route=mapped
+                self.gate_map.set_route(mapped)
+                # Preserve raw station labels used by the controller ledger.
+                self.gate_map.seg_s=self.seg_s.copy()
+                self.gate_map.seg_len=self.seg_len.copy()
+                for track in self.gate_map.tracker.tracks.values():
+                    track.s=self.gate_map.project(track.mean[:2])[0]
+        except (ValueError,KeyError,TypeError) as error:
+            rospy.logwarn('Discard invalid course frame: %s',error)
 
     def pose_cb(self, m):
         if self.pose is not None:
@@ -303,6 +324,8 @@ class GateYolo(object):
                     if generation!=self.frame_generation:continue
                     if self.map_reset_pending:
                         self.gate_map=GateMap(self.route,assoc_radius=self.assoc_radius,max_age=self.max_age)
+                        self.gate_map.seg_s=self.seg_s.copy()
+                        self.gate_map.seg_len=self.seg_len.copy()
                         self.map_reset_pending=False
                         self.last_prune=None
                     self.cb(ml,mr,aligned)
@@ -366,7 +389,7 @@ class GateYolo(object):
 
         # 兜底: 未匹配上的左目检测 -> 稠密视差 (旧路径)
         if self.fallback_center:
-            unmatched = [c for c in cl if c.get("track_id") is None and not c.get('geometry_only',False)]
+            unmatched = dense_candidates(cl)
             if unmatched:
                 disp = gs.compute_disparity(cv2.cvtColor(left, cv2.COLOR_BGR2GRAY),
                                             cv2.cvtColor(right, cv2.COLOR_BGR2GRAY), self.sgbm)
