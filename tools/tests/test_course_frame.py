@@ -54,5 +54,35 @@ class CourseFrameTests(unittest.TestCase):
         self.assertIsNotNone(route.frame_tilt)
         self.assertAlmostEqual(route.frame_tilt[0],-.05,delta=.005)
 
+    def test_later_depth_error_cannot_shear_the_established_frame(self):
+        from course_frame import course_rotation
+        from route_height_prior import RouteHeightPrior
+        points=[(i*20.,.002*(i*20.)**2,.0005*(i*20.)**2) for i in range(31)]
+        route=RouteGeometry(points);prior=RouteHeightPrior(route)
+        tilt=[-.05,.01];rotation=course_rotation(tilt);gates=[]
+        for i in range(2,15):
+            s=route.seg_s[i];x,y,_=route.raw_point_at(s)
+            z=float(rotation[2]@np.array([x,y,-prior.height.center(s)]))+.8
+            gates.append(dict(s=s,x=x,y=y,z=z,trusted=True))
+        gates[-1]['z']+=.9
+        self.assertTrue(prior.fit(gates))
+        self.assertTrue(prior.constrain_to_frame(tilt,gates))
+        future=route.seg_s[24];x,y,_=route.raw_point_at(future)
+        expected=float(rotation[2]@np.array([x,y,-prior.height.center(future)]))+.8
+        self.assertAlmostEqual(prior.center(future),expected,delta=.02)
+        self.assertEqual(prior.source,'rigid_gates')
+
+    def test_inconsistent_new_heights_cannot_hide_behind_fixed_frame(self):
+        from route_height_prior import RouteHeightPrior
+        route=RouteGeometry([(i*20.,.002*(i*20.)**2,.0005*(i*20.)**2) for i in range(31)])
+        prior=RouteHeightPrior(route);gates=[]
+        for i in range(2,15):
+            s=route.seg_s[i];x,y,_=route.raw_point_at(s)
+            gates.append(dict(s=s,x=x,y=y,z=-prior.height.center(s)-.05*x+.01*y+.8,trusted=True))
+        self.assertTrue(prior.fit(gates))
+        for i,g in enumerate(gates):g['z']+=3.*(-1)**i
+        self.assertFalse(prior.constrain_to_frame([-.05,.01],gates))
+        self.assertFalse(prior.valid)
+
 
 if __name__=='__main__':unittest.main()

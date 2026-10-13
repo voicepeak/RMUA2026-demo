@@ -220,6 +220,8 @@ class ReferencePlanner(object):
             goal_z=anchors[-1][1] if anchors else start_z
             self.height_prior.fit(chain.gates)
             self.height_prior.fit_recorded_poses(recorded_adj,chain.gates)
+        if self.frame_calibration and self.route.frame_tilt is not None:
+            self.height_prior.constrain_to_frame(self.route.frame_tilt,chain.gates,recorded_adj)
         guides_adj=[g for g in recorded_adj if not g.get('calibration_only',False)]
         # Do not interleave a fitted
         # extrapolation with their covered section of the road.

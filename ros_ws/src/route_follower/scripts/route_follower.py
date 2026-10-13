@@ -2113,6 +2113,7 @@ class RouteFollower(object):
             height_prior_valid=self.planner.height_prior.valid,
             height_prior_error=self.planner.height_prior.error,
             height_prior_source=self.planner.height_prior.source,
+            course_frame_tilt=self.route.frame_tilt,
             measured_ceiling_horizon=ceiling_horizon,
             measured_ceiling_blend=self.ceiling_blend,
             planning_horizon=self.planner.trend_horizon,

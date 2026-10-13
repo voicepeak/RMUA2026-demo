@@ -15,6 +15,7 @@ class RouteHeightPrior:
         self.error=None
         self.coefficients=None
         self.source=None
+        self.rigid_rotation=None
 
     def fit(self,gates):
         points=[]
@@ -28,6 +29,7 @@ class RouteHeightPrior:
         self.error=None
         self.source=None
         self.coefficients=None
+        self.rigid_rotation=None
         if len(points)<8 or np.ptp(a[:,0])<150 or np.ptp(a[:,3])<8: return False
         self.origin=np.mean(a[:,1:3],axis=0)
         xy=a[:,1:3]-self.origin
@@ -77,7 +79,37 @@ class RouteHeightPrior:
     def center(self,s):
         if not self.valid: raise ValueError('Uncalibrated course height')
         x,y,_=self.route.raw_point_at(s)
+        if self.rigid_rotation is not None:
+            return float(self.rigid_rotation[2]@np.array([x,y,-self.height.center(s)])+self.rigid_offset)
         return float(-self.height.center(s)+np.dot(np.array([x,y])-self.origin,self.coefficients[:2])+self.coefficients[2])
+
+    def constrain_to_frame(self,tilt,gates,guides=()):
+        """Do not let noisy later bbox depths shear an established world frame."""
+        if not self.valid:return False
+        from course_frame import course_rotation
+        rotation=course_rotation(tilt)
+        measurements=[g for g in gates if g.get('trusted',True)]
+        measurements+= [g for g in guides if g.get('source')=='measured_flight_pose']
+        measurements=sorted(measurements,key=lambda g:float(g['s']))
+        residual=[];features=[];last=-float('inf')
+        for g in measurements:
+            s=float(g['s'])
+            if s-last<8.:continue
+            x,y,_=self.route.raw_point_at(s)
+            residual.append(float(g['z'])-rotation[2]@np.array([x,y,-self.height.center(s)]))
+            features.append([x-self.origin[0],y-self.origin[1],1.]);last=s
+        if len(residual)<4:return False
+        offset=float(np.median(residual));errors=np.asarray(residual)-offset
+        error=float(np.percentile(abs(errors),80))
+        if not np.isfinite(error) or error>.7 or np.count_nonzero(abs(errors)<1.)<.8*len(errors):
+            self.valid=False;self.source=None;return False
+        self.rigid_rotation=rotation;self.rigid_offset=offset;self.error=error
+        inliers=errors[abs(errors)<1.]
+        self.residual_sigma=max(.2,float(np.std(inliers,ddof=1)))
+        X=np.asarray(features);weights=np.minimum(1.,.45/np.maximum(abs(errors),1e-6))
+        self.information_inverse=np.linalg.pinv(X.T@(weights[:,None]*X))
+        self.source='rigid_'+self.source
+        return True
 
     def consistent(self,s,z,tolerance=2.5):
         return not self.valid or abs(z-self.center(s))<=tolerance
