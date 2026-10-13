@@ -390,7 +390,7 @@ class RouteFollower(object):
             yaw_rate_max=self.yaw_rate_max)
         self.mission = MissionState(recon_speed=self.recon_speed,
                                     recon_max_dist=self.recon_max_dist,
-                                    map_brake_a=self.map_brake_a,
+                                    map_brake_a=min(self.map_brake_a,self.execution_guard.braking),
                                     gate_search_speed=float(rospy.get_param('~gate_search_speed',10.)),
                                     wait_for_first_map=bool(rospy.get_param('~wait_for_first_map',True)))
         self.task_state = GateTaskState(
@@ -1809,6 +1809,7 @@ class RouteFollower(object):
             self.use_gate_map, horizon_s, s_now, p.z,
             require_gate=self.lidar_navigation and self.lidar_gate_opening and self.lidar_stereo_obstacles and not terminal,
             gate_horizon=gate_horizon,
+            reaction=(self.sensor_reaction+max(0.,cloud_age if cloud_age is not None else .5) if self.adaptive_speed else 0.),
             first_map_ready=bool(self.online_cache.gates or self.guide_cache.guides or
                 any(g.get('source')=='measured_flight_pose' for g in self.guides)))
         if transition is not None:

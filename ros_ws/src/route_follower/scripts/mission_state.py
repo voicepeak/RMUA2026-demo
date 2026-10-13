@@ -46,8 +46,14 @@ class MissionState(object):
     def abort(self):
         self.mode = ABORT
 
+    def stopping_speed(self, distance, reaction=0.):
+        """Reserve sensing/actuation delay before braking within evidence."""
+        a=self.map_brake_a
+        delay=max(0.,float(reaction))
+        return max(0.,math.sqrt((a*delay)**2+2.*a*max(0.,distance))-a*delay)
+
     def update(self, use_gate_map, horizon_s, s_now, z_now,
-               require_gate=False, gate_horizon=None,first_map_ready=False):
+               require_gate=False, gate_horizon=None,first_map_ready=False,reaction=0.):
         """返回 (mode, v_map, transition); transition 为模式切换信息或 None。"""
         previous = self.mode
         if previous == ABORT:
@@ -73,14 +79,14 @@ class MissionState(object):
             distance=s_now-self.recon_start_s
             limit=self.gate_search_dist if route_known else self.recon_max_dist
             self.mode=RECON if distance<limit else HOLD
-            v_map=(self.gate_search_speed if route_known else
-                   min(self.recon_speed,math.sqrt(2.*self.map_brake_a*max(0.,limit-distance)))) if self.mode==RECON else 0.
+            requested=self.gate_search_speed if route_known else self.recon_speed
+            v_map=min(requested,self.stopping_speed(limit-distance,reaction)) if self.mode==RECON else 0.
         elif horizon_s is not None and horizon_s > s_now + 2.0:
             self.mode = TRACK
             self.recon_start_s = None
             self.recon_start_z = None
             remaining = max(0.0, horizon_s + 3.0 - s_now)
-            v_map = math.sqrt(2.0 * self.map_brake_a * remaining)
+            v_map = self.stopping_speed(remaining,reaction)
         else:
             if self.recon_start_s is None:
                 self.recon_start_s = s_now
@@ -88,7 +94,7 @@ class MissionState(object):
             if s_now - self.recon_start_s < self.recon_max_dist:
                 self.mode = RECON
                 remaining=max(0.,self.recon_max_dist-(s_now-self.recon_start_s))
-                v_map=min(self.recon_speed,math.sqrt(2.*self.map_brake_a*remaining))
+                v_map=min(self.recon_speed,self.stopping_speed(remaining,reaction))
             else:
                 self.mode = HOLD
                 v_map = 0.0
