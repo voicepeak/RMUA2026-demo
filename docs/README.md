@@ -1,6 +1,6 @@
 # 文档索引
 
-整理日期：2026-10-13。当前运行状态由[00 当前交接](00_current_handoff.md)维护，最新审查、修改与跨seed失败证据见[38 种子依赖审查](38_seed_independence_audit_20261013.md)。
+整理日期：2026-10-13。最新持续续修见[39 坐标/门深度/准备](39_global_course_frame_and_bootstrap_20261013.md)。当前运行状态由[00 当前交接](00_current_handoff.md)维护，最新审查、修改与跨seed失败证据见[38 种子依赖审查](38_seed_independence_audit_20261013.md)。
 
 ## 接手阅读顺序
 
