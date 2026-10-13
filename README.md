@@ -2,7 +2,7 @@
 
 本仓库包含 ROS 控制与视觉源码、YOLO 权重、实验工具及开发文档。工作区为 `/home/tianbot/RUMA-by-helinjun`，Git 仓库位于其 `repo/` 子目录。
 
-**当前交接请读 [docs/00_current_handoff.md](docs/00_current_handoff.md)。** 入口更新日期：2026-10-12。第9批合并的实现基线为`5d8ce95`，第10批整理交接与过期文档，最终版本以Git记录为准。宿主/ROS各547项测试通过，默认legacy+lidar_nav；最新run13在111分提前结束，用户确认撞上迎面移动车辆，完整车辆阶段尚未通过。双目占据、门筛选与实跑证据见[本轮记录](docs/34_stereo_blind_sector_and_gate_memory.md)。
+**当前交接请读 [docs/00_current_handoff.md](docs/00_current_handoff.md)和[种子依赖审查](docs/38_seed_independence_audit_20261013.md)。** 更新日期：2026-10-13。分支`feature/seed-independent-navigation-20261013`，实现`1335b84`/`cac4bd5`，宿主/ROS各572项测试通过。所有seed统一空历史地图、现场观测和导航规则；同配置123/456/789三轮均未通过第一阶段，持续感知、入口与全局性能尚未验收。
 
 ## 文档入口
 
@@ -37,6 +37,6 @@
 
 代码在 `repo/ros_ws/src/` 修改，确认版本后同步到 `rmua_ws/src/`。当前候选清单、实际启动快照和未提交改动的边界见[当前交接](docs/00_current_handoff.md)。飞行中不修改运行包；每轮使用新实验目录，不覆盖历史证据。
 
-比赛入口为 `tools/start_seed123_race.py`，真实窗口使用 `--mode render`；启动条件、GPU恢复环境和验收要求见[当前交接](docs/00_current_handoff.md)。整套实例停止命令是 `docker stop -t 5 rmua_noetic`。
+比赛入口为 `tools/start_race.py --seed N`，真实窗口使用 `--mode render`；旧`start_seed123_race.py`只作兼容包装。手动`run_route.sh`/`run_route_vision.sh`默认也从空地图等待本轮YOLO观测。启动条件、GPU恢复环境和验收要求见[当前交接](docs/00_current_handoff.md)。整套实例停止命令是 `docker stop -t 5 rmua_noetic`。
 
 过期交接副本、旧README和本地状态清单已按用户要求删除；早期设计和逐轮证据见[归档索引](docs/archive/README.md)，已提交的旧版本仍可从Git历史查阅。
