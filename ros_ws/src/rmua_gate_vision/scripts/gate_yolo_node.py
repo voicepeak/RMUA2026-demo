@@ -88,7 +88,7 @@ class GateYolo(object):
         self.out_file = rospy.get_param("~out_file", os.path.join(cfg, "gates_yolo_1_3.yaml"))
         self.assoc_radius = rospy.get_param("~assoc_radius", 4.0)
         self.min_support = rospy.get_param("~min_support", 4)
-        self.max_d_cross = rospy.get_param("~max_d_cross", 6.0)
+        self.max_d_cross = rospy.get_param("~max_d_cross", 3.0)
         self.max_age = rospy.get_param("~max_age", 3.0)
         self.use_imu = bool(rospy.get_param("~use_imu", False))
         self.use_keypoints = bool(rospy.get_param("~use_keypoints", True))
@@ -108,17 +108,17 @@ class GateYolo(object):
         self.model = YOLO(self.model_path)
         car_path=rospy.get_param('~car_model','')
         self.car_model=YOLO(car_path) if car_path else None
-        self.stereo_obstacles=bool(rospy.get_param('~stereo_obstacles',False))
-        self.cold_start_gate_map=bool(rospy.get_param('~cold_start_gate_map',False))
+        self.stereo_obstacles=bool(rospy.get_param('~stereo_obstacles',True))
+        self.cold_start_gate_map=bool(rospy.get_param('~cold_start_gate_map',True))
         self.car_conf=float(rospy.get_param('~car_conf',.5))
         cv2.setNumThreads(2)
         rospy.loginfo("YOLO loaded: %s", self.model_path)
 
         self.geom = GateGeometry(
             min_width=rospy.get_param("~min_width", 0.5),
-            max_width=rospy.get_param("~max_width", 8.0),
+            max_width=rospy.get_param("~max_width", 18.0),
             min_height=rospy.get_param("~min_height", 0.5),
-            max_height=rospy.get_param("~max_height", 8.0),
+            max_height=rospy.get_param("~max_height", 12.0),
             plane_rmse_max=rospy.get_param("~plane_rmse_max", 0.25),
             side_mismatch_max=rospy.get_param("~side_mismatch_max", 0.5))
 

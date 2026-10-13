@@ -24,7 +24,7 @@ class LegacyPublicationTests(unittest.TestCase):
         previous['command_reason']='COMMAND_BLOCKED'
         self.assertEqual(c._speed_tracking_reference(position,2.,previous),(2.,'ROAD'))
         previous['command_reason']='LIDAR_TRACK';c.lidar_stereo_obstacles=False
-        self.assertEqual(c._speed_tracking_reference(position,2.,previous),(2.,'ROAD'))
+        self.assertEqual(c._speed_tracking_reference(position,2.,previous),(0.,'LIDAR_PATH'))
 
     def setUp(self):
         script=Path(__file__).resolve().parents[2]/'ros_ws/src/route_follower/scripts/route_follower.py'

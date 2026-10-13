@@ -90,8 +90,8 @@ class RouteFollower(object):
             cfg=os.path.normpath(os.path.join(os.path.dirname(__file__),'..','..','share','route_follower','config'))
         self.route_file = rospy.get_param("~route_file", os.path.join(cfg, "route_1_3.yaml"))
         self.route_name = rospy.get_param("~route_name", "route_1_3")
-        self.gates_file = rospy.get_param("~gates_file", os.path.join(cfg, "gates_vision_1_3.yaml"))
-        self.guides_file = rospy.get_param("~guides_file", os.path.join(cfg, "none.yaml"))
+        self.gates_file = rospy.get_param("~gates_file", "")
+        self.guides_file = rospy.get_param("~guides_file", "")
         self.gate_z_uses_offset = bool(rospy.get_param("~gate_z_uses_offset", True))
         self.start_anchor_z = rospy.get_param("~start_anchor_z", -999.0)
         self.start_anchor_z = None if self.start_anchor_z == -999.0 else self.start_anchor_z
@@ -112,7 +112,7 @@ class RouteFollower(object):
         self.lidar_navigation=self.adaptive_speed and self.obstacle_backend=='lidar_nav'
         self.lidar_gate_opening=bool(rospy.get_param('~lidar_gate_opening',False))
         self.lidar_terminal_margin=float(rospy.get_param('~lidar_terminal_margin',0.))
-        self.lidar_stereo_obstacles=bool(rospy.get_param('~lidar_stereo_obstacles',False))
+        self.lidar_stereo_obstacles=bool(rospy.get_param('~lidar_stereo_obstacles',True))
         self.obstacle_fusion=ObstacleCloudFusion()
         self.lidar_range=float(rospy.get_param('~lidar_range',30.))
         self.lidar_braking=float(rospy.get_param('~lidar_braking',8. if self.adaptive_speed else 4.))
@@ -292,7 +292,7 @@ class RouteFollower(object):
                                       local_replan=bool(rospy.get_param('~lidar_local_replan',False)),
                                       anticipation_distance=float(rospy.get_param('~lidar_anticipation_distance',0.)),
                                       path_options=bool(rospy.get_param('~lidar_path_options',False)),
-                                      persistent_scene=self.lidar_stereo_obstacles)
+                                      persistent_scene=True)
         if self.coupled_navigation:self.execution_guard.response_model=VelocityResponse(acceleration=self.a_up,lift_gain=float(rospy.get_param('~lidar_lift_gain',.110)),coupling_gains=(float(rospy.get_param('~lidar_coupling_gain_min',.09)),.110,.13),height_gain=float(rospy.get_param('~lidar_height_gain',2.)),coupling_limited=bool(rospy.get_param('~lidar_coupling_limited',False)),xy_error_max=float(rospy.get_param('~lidar_xy_error_max',float('inf'))),control_periods=((.08,.16,.4) if bool(rospy.get_param('~lidar_discrete_feedback',False)) else None))
         self.navigator.height_reserve=(.5 if self.coupled_navigation and
             self.execution_guard.response_model.height_gain>1. else 0.)
@@ -305,7 +305,7 @@ class RouteFollower(object):
         self.navigator.departure_floor_distance=float(rospy.get_param('~lidar_departure_floor_distance',20.))
         side_buffer=float(rospy.get_param('~lidar_side_buffer',0.))
         if side_buffer>0.:self.navigator.side_buffer=side_buffer
-        if self.lidar_gate_opening:self.navigator.recovery_budget=.15
+        self.navigator.recovery_budget=float(rospy.get_param('~lidar_recovery_budget',.1))
         if self.coupled_navigation:self.execution_guard.response_model.configured_height_gain=self.execution_guard.response_model.height_gain
         self.planner_info={}
         self.plan_sequence=0
@@ -392,7 +392,7 @@ class RouteFollower(object):
                                     recon_max_dist=self.recon_max_dist,
                                     map_brake_a=self.map_brake_a,
                                     gate_search_speed=float(rospy.get_param('~gate_search_speed',10.)),
-                                    wait_for_first_map=bool(rospy.get_param('~wait_for_first_map',False)))
+                                    wait_for_first_map=bool(rospy.get_param('~wait_for_first_map',True)))
         self.task_state = GateTaskState(
             half_width=self.gate_pass_half_width,
             half_height=self.gate_pass_half_height,
@@ -442,7 +442,7 @@ class RouteFollower(object):
             self.mission.gate_search_dist=self.route.total_s
         self.gates = self.load_list(self.gates_file, "gates")
         self.static_gates = [dict(g) for g in self.gates]
-        self.verified_ids = set(g.get("id") for g in self.static_gates)
+        self.verified_ids = set(g.get("id") for g in self.static_gates if g.get('verified',False))
         self.guides = self.load_list(self.guides_file, "altitude_guides")
         self.yaml_gate_z = {g.get("id"): g.get("z") for g in self.gates}
         self.planner = ReferencePlanner(
@@ -781,7 +781,7 @@ class RouteFollower(object):
                                       local_replan=bool(rospy.get_param('~lidar_local_replan',False)),
                                       anticipation_distance=float(rospy.get_param('~lidar_anticipation_distance',0.)),
                                       path_options=bool(rospy.get_param('~lidar_path_options',False)),
-                                      persistent_scene=self.lidar_stereo_obstacles)
+                                      persistent_scene=True)
         if self.coupled_navigation:self.execution_guard.response_model=VelocityResponse(acceleration=self.a_up,lift_gain=float(rospy.get_param('~lidar_lift_gain',.110)),coupling_gains=(float(rospy.get_param('~lidar_coupling_gain_min',.09)),.110,.13),height_gain=float(rospy.get_param('~lidar_height_gain',2.)),coupling_limited=bool(rospy.get_param('~lidar_coupling_limited',False)),xy_error_max=float(rospy.get_param('~lidar_xy_error_max',float('inf'))),control_periods=((.08,.16,.4) if bool(rospy.get_param('~lidar_discrete_feedback',False)) else None))
         self.navigator.height_reserve=(.5 if self.coupled_navigation and
             self.execution_guard.response_model.height_gain>1. else 0.)
@@ -794,7 +794,7 @@ class RouteFollower(object):
         self.navigator.departure_floor_distance=float(rospy.get_param('~lidar_departure_floor_distance',20.))
         side_buffer=float(rospy.get_param('~lidar_side_buffer',0.))
         if side_buffer>0.:self.navigator.side_buffer=side_buffer
-        if self.lidar_gate_opening:self.navigator.recovery_budget=.15
+        self.navigator.recovery_budget=float(rospy.get_param('~lidar_recovery_budget',.1))
         if self.coupled_navigation:self.execution_guard.response_model.configured_height_gain=self.execution_guard.response_model.height_gain
         self.planner_info={}
         self.plan_sequence=0
@@ -1352,7 +1352,7 @@ class RouteFollower(object):
         return info,planner.plan
 
     def _speed_tracking_reference(self,position,road_error,previous_navigation):
-        if (self.lidar_navigation and self.lidar_stereo_obstacles and
+        if (self.lidar_navigation and
                 previous_navigation.get('feasible',False) and
                 previous_navigation.get('command_reason')=='LIDAR_TRACK'):
             error=self.navigator.tracking_error(position)
@@ -1793,7 +1793,8 @@ class RouteFollower(object):
             self.use_gate_map, horizon_s, s_now, p.z,
             require_gate=self.lidar_navigation and self.lidar_gate_opening and self.lidar_stereo_obstacles and not terminal,
             gate_horizon=gate_horizon,
-            first_map_ready=bool(self.online_cache.gates or self.guide_cache.guides))
+            first_map_ready=bool(self.online_cache.gates or self.guide_cache.guides or
+                any(g.get('source')=='measured_flight_pose' for g in self.guides)))
         if transition is not None:
             rospy.logwarn("[MODE] %s -> %s at s=%.1f", transition["from"],
                           transition["to"], s_now)
@@ -2008,10 +2009,6 @@ class RouteFollower(object):
             floor_offset=(self.departure_hover_z+.25-base_center(0.)
                           if self.departure_hover_z> -900. else None)
             navigation_xy=self.xy_tracker.base_point_at
-            if terminal and self.race_goal is not None:
-                target=np.asarray(terminal_xy);start=pn[:2].copy()
-                distance=max(.1,float(np.linalg.norm(target-start)))
-                navigation_xy=lambda station:tuple(start+np.clip((station-s_now)/distance,0.,1.)*(target-start))
             self.navigator.set_gates([g for g in chain.gates
                 if self.lidar_gate_opening and s_now-5.<=g['s']<=s_now+40.],
                 half_width=self.xy_tracker.clearance,half_height=.7)

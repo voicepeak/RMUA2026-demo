@@ -10,8 +10,8 @@
 
   <arg name="route"          default="route_1_3"/>
   <arg name="route_file"     default="$(find route_follower)/config/route_1_3.yaml"/>
-  <arg name="gates_file"     default="$(find route_follower)/config/gates_vision_1_3.yaml"/>
-  <arg name="guides_file"    default="$(find route_follower)/config/none.yaml"/>
+  <arg name="gates_file"     default=""/>
+  <arg name="guides_file"    default=""/>
   <arg name="gate_z_uses_offset" default="false"/>
   <arg name="start_anchor_z" default="-999.0"/>
 
@@ -37,7 +37,7 @@
   <!-- 0 preserves the guard margin; >=0.45 sets geometry margin before the additional 0.1m path buffer. -->
   <arg name="lidar_geometry_margin" default="0.0"/>
   <arg name="lidar_gate_opening" default="false"/>
-  <arg name="lidar_stereo_obstacles" default="false"/>
+  <arg name="lidar_stereo_obstacles" default="true"/>
   <arg name="lidar_departure_floor_distance" default="20.0"/>
   <!-- Geometry retry budget in seconds for rejected paths; the first attempt always runs. -->
   <arg name="lidar_budget" default="0.06"/>
@@ -115,7 +115,8 @@
   <arg name="gate_search_speed" default="10.0"/>
   <arg name="recon_climb"        default="0.6"/>
   <arg name="recon_max_dist"     default="30.0"/>
-  <arg name="wait_for_first_map" default="false"/>
+  <arg name="wait_for_first_map" default="true"/>
+  <arg name="lidar_recovery_budget" default="0.1"/>
   <arg name="recon_max_climb"    default="4.0"/>
   <arg name="map_brake_a"        default="1.5"/>
 
@@ -280,6 +281,7 @@
     <param name="recon_climb"         value="$(arg recon_climb)"/>
     <param name="recon_max_dist"      value="$(arg recon_max_dist)"/>
     <param name="wait_for_first_map" value="$(arg wait_for_first_map)"/>
+    <param name="lidar_recovery_budget" value="$(arg lidar_recovery_budget)"/>
     <param name="recon_max_climb"     value="$(arg recon_max_climb)"/>
     <param name="map_brake_a"         value="$(arg map_brake_a)"/>
     <param name="safety_z_error"      value="$(arg safety_z_error)"/>

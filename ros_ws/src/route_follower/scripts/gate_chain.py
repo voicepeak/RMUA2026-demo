@@ -57,9 +57,8 @@ class GateChain(object):
         for g in self.gates:
             cls = g.get("anchor_class")
             if cls not in (VERIFIED, HARD, SOFT):
-                source = str(g.get("source", "")).lower()
-                if g.get("verified") or "static" in source or not g.get("hard_anchor", True):
-                    cls = VERIFIED if (g.get("verified") or "static" in source) else SOFT
+                if g.get("verified") or not g.get("hard_anchor", True):
+                    cls = VERIFIED if g.get("verified") else SOFT
                 else:
                     cls = HARD
             g["anchor_class"] = cls

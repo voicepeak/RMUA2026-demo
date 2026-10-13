@@ -59,7 +59,8 @@ class NavigationRecoveryTests(unittest.TestCase):
         def reject(position,velocity,target,cloud,cloud_stamp,pose_stamp):
             tried.append(target.copy());clock[0]+=.1
             return None
-        args=(np.zeros(3),np.zeros(3),0.,lambda s:(s,0.),lambda s:0.,points,.98,1.,None,{},0.)
+        # Expensive earlier geometry work cannot consume recovery's budget.
+        args=(np.zeros(3),np.zeros(3),0.,lambda s:(s,0.),lambda s:0.,points,.98,1.,None,{},-100.)
         with patch('lidar_navigation.time.monotonic',side_effect=lambda:clock[0]),patch.object(guard,'escape',side_effect=reject):
             self.assertIsNone(nav._stationary_escape(*args))
         self.assertEqual(len(tried),2)

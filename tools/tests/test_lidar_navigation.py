@@ -11,6 +11,22 @@ from path_sampling import swept_samples
 
 
 class LidarNavigationTests(unittest.TestCase):
+    def test_response_projection_covers_execution_range_without_false_road_offset(self):
+        from velocity_response import VelocityResponse
+        self.guard.response_model=VelocityResponse()
+        self.guard.horizon=30.;self.nav.horizon=24.
+        projection=self.nav._projection(0.,self.xy)
+        self.nav.reference_stations=projection[0]
+        self.nav.reference_coordinates=projection[1]
+        self.nav.reference_heights=np.zeros(len(projection[0]))
+        samples=np.array([[0.,0.,0.],[27.,0.,0.],[30.,0.,0.]])
+        stations=self.nav._route_stations(samples,0.,self.xy,projection)
+        np.testing.assert_allclose(stations,samples[:,0],atol=1e-6)
+        self.assertTrue(self.nav._floor_ok(samples,stations,self.center,None))
+        outside=samples.copy();outside[-1,1]=2.4
+        self.assertFalse(self.nav._floor_ok(outside,stations,self.center,None))
+        self.assertEqual(self.guard.horizon,30.)
+
     def test_accepted_detour_offset_is_not_a_tracking_error_but_deviation_is(self):
         self.assertIsNone(self.nav.tracking_error([5.,0.,0.]))
         self.nav.braking_path=np.array([[0.,2.,-1.],[10.,2.,-1.]])

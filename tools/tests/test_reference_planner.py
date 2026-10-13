@@ -6,6 +6,16 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]
                        / "ros_ws" / "src" / "route_follower" / "scripts"))
 from gate_chain import GateChain, VERIFIED, HARD  # noqa: E402
+
+
+class EvidenceClassificationTests(unittest.TestCase):
+    def test_static_filename_does_not_turn_an_inconsistent_gate_into_verified_evidence(self):
+        chain=GateChain([dict(id=1,s=10.,z=0.,source='static_yaml',z_suspect=True)])
+        self.assertEqual(chain.gates[0]['anchor_class'],HARD)
+        self.assertFalse(chain.gates[0]['trusted'])
+        verified=GateChain([dict(id=1,s=10.,z=0.,source='static_yaml',z_suspect=True,verified=True)])
+        self.assertEqual(verified.gates[0]['anchor_class'],VERIFIED)
+        self.assertTrue(verified.gates[0]['trusted'])
 from reference_planner import RouteGeometry, ReferencePlanner  # noqa: E402
 
 

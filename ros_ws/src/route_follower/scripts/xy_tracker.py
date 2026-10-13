@@ -41,7 +41,9 @@ class XYTracker:
             # Keep the opening through the crossing and the exit. Removing
             # it before the plane lets a map update steer toward the next
             # opening while the aircraft is still inside this one.
-            if not g.get('valid',True) or g['s'] < s_now-self.exit_blend_distance: continue
+            if (not g.get('valid',True) or not g.get('trusted',True) or
+                    g.get('geometry_valid') is False or
+                    g['s'] < s_now-self.exit_blend_distance):continue
             s = g['s']
             x,y,_ = route.point_at(s)
             dx,dy = self.basis(s)

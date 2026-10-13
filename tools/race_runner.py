@@ -17,7 +17,7 @@ import yaml
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ros_ws/src/route_follower/scripts'))
 from splines_to_yaml import load_splines,connect_routes
 from reference_planner import RouteGeometry
-from race_seed import cold_start_vision_arguments
+from race_seed import live_gate_vision_arguments,current_run_measured_map
 
 SEQUENCE=(1,3,5,8,12,10,7)
 
@@ -53,7 +53,7 @@ def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=Fal
     if fast_descent:
         config=Path(__file__).resolve().parents[1]/'ros_ws/src/route_follower/config'
         command+=['slope_eta:=0.95','vz_down_limit:=4.5','z_rate_max:=5',
-                  'vz_capability_file:='+str(config/'vz_capability_seed123_fast.yaml')]
+                  'vz_capability_file:='+str(config/'vz_capability.yaml')]
     return command
 
 def build_leg(splines,start,finish,goal,measured):
@@ -67,15 +67,21 @@ def build_leg(splines,start,finish,goal,measured):
     gates=[]
     for raw in measured:
         i,t,d,c=route.project((raw['x'],raw['y'],raw['z']))
-        if d>25.:continue
+        if d>3.:continue
         g=dict(raw);g['s']=route.seg_s[i]+t*route.seg_len[i]
-        g['nx'],g['ny'],g['nz']=route.tangent(g['s'])
+        tangent=route.tangent(g['s'])
+        normal=tuple(g.get(k) for k in ('nx','ny','nz'))
+        if (g.get('geometry_valid') and all(isinstance(v,(float,int)) and math.isfinite(v) for v in normal)
+                and sum(v*v for v in normal)>1e-9):
+            length=math.sqrt(sum(v*v for v in normal));sign=1. if sum(a*b for a,b in zip(normal,tangent))>=0. else -1.
+            g['nx'],g['ny'],g['nz']=(sign*v/length for v in normal)
+        else:g['nx'],g['ny'],g['nz']=tangent
         gates.append(g)
     gates.sort(key=lambda g:g['s'])
     for i,g in enumerate(gates):g['id']=i
     return route.points,gates
 
-def recorded_return_guides(route,incoming,height_trace,source='recorded_reference',calibration_only=False):
+def recorded_return_guides(route,incoming,height_trace,source='measured_flight_pose',calibration_only=False):
     guides=[]
     for p in height_trace:
         _,_,distance,_=incoming.project(p)
@@ -140,10 +146,7 @@ def main():
     root=Path(__file__).resolve().parents[1]
     config=root/'ros_ws/src/route_follower/config'
     splines=load_splines(config/'splines.txt')
-    measured=(yaml.safe_load((config/'gates_seed123_recorded.yaml').read_text())['gates']
-              if a.seed==123 else [])
-    if a.measured_map:
-        measured=yaml.safe_load(a.measured_map.read_text())['gates']
+    measured=current_run_measured_map(a.measured_map,a.out.parent,a.seed)
     state={};rospy.init_node('race_runner')
     def pose(m):
         p=m.pose.position;state['pose']=(p.x,p.y,p.z)
@@ -162,12 +165,14 @@ def main():
         except ValueError:pass
     rospy.Subscriber('/rmua/controller/events',String,on_event)
     stage=a.stage;previous=None;child=None
+    startup=a.out.parent/'startup.json'
+    stage_started_at=json.loads(startup.read_text()).get('wall_time',time.time()) if startup.exists() else time.time()
     log=(a.out/'mission.jsonl').open('a',buffering=1)
     def event(kind,**fields):
         payload=dict(kind=kind,stamp=time.time(),stage=stage,**fields)
         log.write(json.dumps(payload)+'\n');print(json.dumps(payload),flush=True)
     def start_leg(goal,cause):
-        nonlocal child
+        nonlocal child,stage_started_at
         if not 0<=stage<3:
             event('FACTORY_INSPECTION_REQUIRED',leg=[SEQUENCE[stage],SEQUENCE[stage+1]])
             return False
@@ -190,20 +195,16 @@ def main():
         for g in gates:g['s']=route.project_gate(g['x'],g['y'])
         guides=[]
         incoming=RouteGeometry(splines[SEQUENCE[stage]-1])
-        height_trace=[]
         measured_trace=[]
         if a.height_trace:
             for line in a.height_trace.open():
                 try:row=json.loads(line)
                 except ValueError:continue  # Recorder may be writing its final line.
-                if row.get('topic')=='telemetry':
+                if row.get('topic')=='telemetry' and row.get('received',0.)>=stage_started_at:
                     data=row['data']
-                    height_trace.append((*data['path_xy'],data.get('z_ref_raw',data['z_ref'])))
                     p=measured_height_pose(data)
                     if p is not None:measured_trace.append(p)
-        sampled=recorded_return_guides(route,incoming,height_trace)
-        sampled+=recorded_return_guides(route,incoming,measured_trace,
-                                       source='measured_flight_pose',calibration_only=True)
+        sampled=recorded_return_guides(route,incoming,measured_trace)
         folder=a.out/('leg_%d_%d'%(SEQUENCE[stage],SEQUENCE[stage+1]));folder.mkdir(exist_ok=True)
         route_file=folder/'route.yaml';gates_file=folder/'gates.yaml';guides_file=folder/'guides.yaml'
         route_file.write_text(yaml.safe_dump({'routes':{'race_leg':points}}))
@@ -219,16 +220,17 @@ def main():
                           '_model:='+str(root/'yolo/weights/best.pt'),
                           '_car_model:='+(str(root/'yolo/weights/car_score91_best.pt') if a.obstacle_backend=='legacy' else ''),
                           '_route_file:='+str(route_file),'_route_name:=race_leg',
-                          '_stereo_obstacles:='+('true' if stage==1 and a.obstacle_backend=='lidar_nav' else 'false'),
-                          '_max_d_cross:='+('3.0' if stage==1 and a.obstacle_backend=='lidar_nav' else '5.0'),
-                          '_imgsz:=960','_conf:=0.35',*cold_start_vision_arguments(a.seed,vehicle=stage==1)],
+                          '_stereo_obstacles:='+('true' if a.obstacle_backend=='lidar_nav' else 'false'),
+                          '_max_d_cross:=3.0',
+                          '_imgsz:=960','_conf:=0.35',*live_gate_vision_arguments(vehicle=stage==1)],
                          stdout=(folder/'vision.log').open('w'),stderr=subprocess.STDOUT)
         cruise=min(a.cruise,a.vehicle_cruise) if stage==1 else a.cruise
         command=controller_command(route_file,gates_file,guides_file,cruise,a.fast_descent,a.adaptive_speed,a.control_rate,a.obstacle_backend,a.planner_mode,a.spacetime_bridge_hold,
-                                   stereo_obstacles=stage==1 and a.obstacle_backend=='lidar_nav')
+                                   stereo_obstacles=a.obstacle_backend=='lidar_nav')
         if cause=='OFFICIAL_ENDPOINT_CHANGED' and previous is not None:
             command+=['departure_hover_z:='+str(previous[2]-2.)]
         child=subprocess.Popen(command,stdout=(folder/'controller.log').open('w'),stderr=subprocess.STDOUT)
+        stage_started_at=time.time()
         event('CONTROLLER_STARTED',leg=[SEQUENCE[stage],SEQUENCE[stage+1]],
               cause=cause,official_completion='UNKNOWN',command=command)
         return True

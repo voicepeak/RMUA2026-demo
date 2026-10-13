@@ -14,7 +14,7 @@ class RaceLegTests(unittest.TestCase):
                (41.,0.,-34.5),(50.,0.,-34.8),(70.,30.,-99.)]
         guides=recorded_return_guides(route,route,trace)
         self.assertEqual([g['s'] for g in guides],[41.,50.])
-        self.assertTrue(all(g['source']=='recorded_reference' for g in guides))
+        self.assertTrue(all(g['source']=='measured_flight_pose' for g in guides))
         measured=recorded_return_guides(route,route,trace,source='measured_flight_pose',calibration_only=True)
         self.assertTrue(all(g['source']=='measured_flight_pose' and g['calibration_only'] for g in measured))
         planner=ReferencePlanner(route)
@@ -94,3 +94,15 @@ class RaceLegTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             build_leg([[(0,0,0),(1,0,0)],[(0,i,0) for i in range(30)]],
                       1,2,(0,0,0),[])
+
+    def test_return_keeps_measured_plane_orientation(self):
+        roads=[[(i,0.,0.) for i in range(30)],[(0.,i,0.) for i in range(30)]]
+        gate=dict(id=7,x=10.,y=0.,z=0.,nx=2.,ny=1.,nz=0.,geometry_valid=True)
+        _,gates=build_leg(roads,2,1,(0.,0.,0.),[gate])
+        self.assertAlmostEqual(gates[0]['nx'],-2./5.**.5)
+        self.assertAlmostEqual(gates[0]['ny'],-1./5.**.5)
+
+    def test_adjacent_road_gate_cannot_become_current_road_anchor(self):
+        roads=[[(i,0.,0.) for i in range(30)],[(0.,i,0.) for i in range(30)]]
+        _,gates=build_leg(roads,2,1,(0.,0.,0.),[dict(id=7,x=10.,y=8.,z=0.)])
+        self.assertEqual(gates,[])

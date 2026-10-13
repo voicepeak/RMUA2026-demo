@@ -87,7 +87,7 @@ class GeometryProcess:
 
 
 class LidarNavigator:
-    def __init__(self, guard, horizon=24., budget=.06,async_planning=False,process_planning=False,local_replan=False,anticipation_distance=0.,path_options=False,persistent_scene=False):
+    def __init__(self, guard, horizon=24., budget=.06,async_planning=False,process_planning=False,local_replan=False,anticipation_distance=0.,path_options=False,persistent_scene=True):
         self.guard=guard
         self.horizon=horizon
         self.budget=budget
@@ -389,7 +389,11 @@ class LidarNavigator:
                 np.take_along_axis(neighbors,best,axis=2)[:,:,0])
 
     def _projection(self, s, xy):
-        stations=s+np.arange(-3.,self.horizon+3.1,.5)
+        # A stopping response may extend beyond the shorter geometry search.
+        # Clamping its road projection there invents lateral error on a clear
+        # straight road. Preserve the independent execution range check.
+        extent=max(self.horizon,float(self.guard.horizon))
+        stations=s+np.arange(-3.,extent+3.1,.5)
         road=np.array([xy(t)[:2] for t in stations])
         segment=np.diff(road,axis=0);length=np.sum(segment*segment,axis=1)
         return stations,road,segment,length
@@ -778,6 +782,9 @@ class LidarNavigator:
 
     def _stationary_escape(self,position,velocity,s,xy,center,points,cloud_stamp,pose_stamp,
                            floor_offset,info,started,departure=False):
+        # Recovery has its own budget: geometry work before this call must
+        # not starve every candidate on each subsequent control tick.
+        recovery_started=time.monotonic()
         if np.linalg.norm(np.asarray(velocity)[:2])<.8 and self.guard.index.distance([position])[0]<self.guard.margin+.1:
             a,b=np.asarray(xy(s-.3)[:2]),np.asarray(xy(s+.3)[:2])
             forward=(b-a)/max(1e-6,np.linalg.norm(b-a));side=np.r_[-forward[1],forward[0],0.]
@@ -855,7 +862,7 @@ class LidarNavigator:
                 if not hint:
                     candidate_index+=1
                     if candidate_index<=self.recovery_cursor:continue
-                if self.recovery_budget is not None and time.monotonic()-started>=self.recovery_budget:
+                if self.recovery_budget is not None and time.monotonic()-recovery_started>=self.recovery_budget:
                     # Resume the candidate ordering next tick. Only an index
                     # is retained; all targets are rebuilt from the new pose
                     # and cloud and still need a complete response check.

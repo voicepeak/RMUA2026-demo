@@ -41,6 +41,9 @@ class RouteFollowerStartupTests(unittest.TestCase):
                     controller=module.RouteFollower()
                     controller._watchdog_stop.set()  # Publication deadlines have their own clock tests.
                     try:
+                        self.assertEqual(controller.static_gates,[])
+                        self.assertEqual(controller.verified_ids,set())
+                        self.assertTrue(controller.mission.wait_for_first_map)
                         self.assertEqual(controller.execution_guard.braking,4.)
                         self.assertIsNone(controller.executing_plan)
                         self.assertEqual(controller.navigator.anticipation_distance,9.)

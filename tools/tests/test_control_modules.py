@@ -29,6 +29,17 @@ class ObstacleAlignmentTests(unittest.TestCase):
 
 
 class XYTrackerTests(unittest.TestCase):
+    def test_bbox_only_or_untrusted_gate_cannot_pull_course_toward_a_frame(self):
+        from reference_planner import RouteGeometry
+        route=RouteGeometry([(0.,0.,0.),(100.,0.,0.)])
+        for gate in (dict(s=20.,x=20.,y=3.,geometry_valid=False,trusted=True),
+                     dict(s=20.,x=20.,y=3.,geometry_valid=True,trusted=False)):
+            tracker=XYTracker();tracker.configure(route,[gate],stamp=0.)
+            self.assertAlmostEqual(tracker.point_at(20.)[1],0.)
+        tracker=XYTracker()
+        tracker.configure(route,[dict(s=20.,x=20.,y=3.,geometry_valid=True,trusted=True)],stamp=0.)
+        self.assertGreater(tracker.point_at(20.)[1],0.)
+
     def test_near_gate_map_update_keeps_opening_until_exit(self):
         from reference_planner import RouteGeometry
         route=RouteGeometry([(0.,0.,0.),(100.,0.,0.)])
