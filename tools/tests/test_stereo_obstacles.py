@@ -76,7 +76,36 @@ class StereoObstacleTests(unittest.TestCase):
         result=gate_center_from_frame(dict(bbox=(40,40,160,160),center=(120,120)),
             disparity,np.ones_like(trim),trim_mask=trim)
         self.assertIsNotNone(result)
-        self.assertAlmostEqual(result[1],9.,delta=.3)
+        self.assertGreaterEqual(result[1],8.)
+        self.assertLessEqual(result[1],10.)
+
+    def test_near_post_component_is_not_outvoted_by_nested_far_gates(self):
+        from gate_stereo import gate_center_from_frame
+        trim=np.zeros((240,240),dtype=bool);trim[40:200,40:46]=True;trim[40:200,194:200]=True
+        depths=np.full(trim.shape,30.,dtype=float)
+        depths[40:200,40]=8.;depths[40:200,199]=8.
+        result=gate_center_from_frame(dict(bbox=(40,40,160,160),center=(120,120)),
+            FX*BASELINE/depths,np.ones_like(trim),trim_mask=trim)
+        self.assertIsNotNone(result)
+        self.assertAlmostEqual(result[1],8.,places=5)
+
+    def test_cap_range_and_complete_opposite_post_share_vertical_center(self):
+        from gate_stereo import gate_center_from_frame,FY,CY
+        trim=np.zeros((240,240),dtype=bool)
+        trim[40:43,40:46]=True;trim[40:200,194:200]=True
+        disparity=np.full(trim.shape,FX*BASELINE/8.)
+        cand=dict(bbox=(40,40,160,160))
+        result=gate_center_from_frame(cand,disparity,np.ones_like(trim),trim_mask=trim)
+        self.assertIsNotNone(result)
+        self.assertAlmostEqual(result[0][1],(119.5-CY)*8./FY,places=4)
+        trim[43:,:]=False
+        self.assertIsNone(gate_center_from_frame(cand,disparity,np.ones_like(trim),trim_mask=trim))
+
+    def test_blue_tinted_white_posts_keep_complete_frame_support(self):
+        image=np.zeros((200,200,3),dtype=np.uint8)
+        image[20:180,20:35]=[150,120,100];image[20:180,165:180]=[150,120,100]
+        image[20:180,35:40]=[12,25,110];image[20:180,160:165]=[12,25,110]
+        self.assertTrue(gate_opening_support(image,(20,20,160,160)))
 
     def test_half_resolution_projection_keeps_metric_depth_and_world_frame(self):
         disparity=np.zeros((360,480),dtype=np.float32)

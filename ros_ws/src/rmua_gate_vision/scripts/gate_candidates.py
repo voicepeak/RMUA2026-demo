@@ -25,8 +25,9 @@ def gate_opening_support(image,bbox):
     if w<24 or h<24 or x<0 or y<0 or x+w>image.shape[1] or y+h>image.shape[0]:return False
     crop=image[y:y+h,x:x+w]
     hsv=cv2.cvtColor(crop,cv2.COLOR_BGR2HSV)
-    white=(hsv[:,:,1]<70)&(hsv[:,:,2]>90)
-    border=max(2,int(.22*w))
+    # White material is blue-tinted in the shaded parts of the course.
+    white=(hsv[:,:,1]<100)&(hsv[:,:,2]>70)
+    border=max(2,int(.35*w))
     top,bottom=int(.1*h),int(.9*h)
     for strip in (white[top:bottom,:border],white[top:bottom,-border:]):
         rows=np.count_nonzero(strip,axis=1)>=max(2,int(.12*border))
