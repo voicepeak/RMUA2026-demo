@@ -56,7 +56,7 @@ command=['roslaunch','route_follower','route_follower.launch',
          'slope_eta:=0.95','vz_down_limit:=4.5','a_up:=8','a_down:=8',
          'z_rate_max:=5','vz_capability_file:='+str(config/'vz_capability.yaml')]
 command+=outbound_response_arguments(args.outbound_response)
-command+=['wait_for_first_map:=true','lidar_stereo_obstacles:=true']
+command+=['wait_for_first_map:=true','lidar_stereo_obstacles:=true','recon_speed:=4.0']
 command+=['planner_mode:='+args.planner_mode]
 if args.spacetime_bridge_hold is not None:
     command+=['spacetime_bridge_verified:=true','spacetime_bridge_hold:='+str(args.spacetime_bridge_hold)]

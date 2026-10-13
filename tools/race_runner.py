@@ -48,6 +48,7 @@ def controller_command(route_file,gates_file,guides_file,cruise,fast_descent=Fal
                                'lidar_budget:=0.15','lidar_side_buffer:=0.9','a_up:=8','a_down:=8',
                                'lidar_xy_error_max:=2.0','lidar_gate_opening:=true','lidar_geometry_margin:=0.65',
                                'lidar_departure_floor_distance:=8',
+                               'recon_speed:=4.0',
                                'gate_search_speed:='+str(min(10.,float(cruise))),
                                'lidar_stereo_obstacles:='+('true' if stereo_obstacles is not False and obstacle_backend=='lidar_nav' else 'false')]
     if fast_descent:

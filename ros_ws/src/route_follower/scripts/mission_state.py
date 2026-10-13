@@ -73,7 +73,8 @@ class MissionState(object):
             distance=s_now-self.recon_start_s
             limit=self.gate_search_dist if route_known else self.recon_max_dist
             self.mode=RECON if distance<limit else HOLD
-            v_map=(self.gate_search_speed if route_known else self.recon_speed) if self.mode==RECON else 0.
+            v_map=(self.gate_search_speed if route_known else
+                   min(self.recon_speed,math.sqrt(2.*self.map_brake_a*max(0.,limit-distance)))) if self.mode==RECON else 0.
         elif horizon_s is not None and horizon_s > s_now + 2.0:
             self.mode = TRACK
             self.recon_start_s = None
@@ -86,7 +87,8 @@ class MissionState(object):
                 self.recon_start_z = z_now
             if s_now - self.recon_start_s < self.recon_max_dist:
                 self.mode = RECON
-                v_map = self.recon_speed
+                remaining=max(0.,self.recon_max_dist-(s_now-self.recon_start_s))
+                v_map=min(self.recon_speed,math.sqrt(2.*self.map_brake_a*remaining))
             else:
                 self.mode = HOLD
                 v_map = 0.0
