@@ -36,6 +36,18 @@ class CourseFrameTests(unittest.TestCase):
         planner.build([],[],[],0.,-2.)
         self.assertIsNone(route.frame_tilt)
 
+    def test_refinement_limits_local_height_change_and_reuses_raw_points(self):
+        from course_frame import course_rotation
+        route=RouteGeometry([[0.,0.,0.],[400.,100.,80.],[600.,300.,100.]])
+        route.calibrate_frame([-.05,0.]);old=course_rotation(route.frame_tilt)
+        self.assertTrue(route.refine_frame([-.055,-.015],300.))
+        new=course_rotation(route.frame_tilt)
+        for s in (295.,300.,330.):
+            raw=np.array([np.interp(s,route.seg_s,np.array(route.points)[:,i]) for i in range(3)])
+            raw[2]*=-1.
+            self.assertLessEqual(abs(raw@(new[2]-old[2])),.251)
+        np.testing.assert_allclose(route.frame_points,mapped_course_points(route.points,route.frame_tilt))
+
     def test_nonfinite_and_unbounded_tilts_are_rejected(self):
         for tilt in ([float('nan'),0.],[.3,0.],[0.]):
             with self.assertRaises(ValueError):mapped_course_points([[0.,0.,0.]],tilt)

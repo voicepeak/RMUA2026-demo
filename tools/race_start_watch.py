@@ -91,6 +91,7 @@ try:
         '_model:='+str(root/'yolo/weights/best.pt'),
         '_car_model:='+(str(root/'yolo/weights/car_score91_best.pt') if args.obstacle_backend=='legacy' else ''),
         '_route_file:='+str(config/'route_1_3.yaml'),'_imgsz:=960','_conf:=0.35',
+        '_debug_pair_dir:='+str(args.out/'stereo_pairs'),
         '_stereo_obstacles:=true',*live_gate_vision_arguments()],'vision.log')
     bootstrap_start=time.monotonic()
     (args.out/'bootstrap.json').write_text(json.dumps(dict(wall_time=time.time(),state='GROUND_VISION_PREPARATION',seed=args.seed),indent=2))

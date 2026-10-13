@@ -51,6 +51,23 @@ class RouteGeometry(object):
         self.frame_tilt=tuple(float(v) for v in tilt)
         return True
 
+    def refine_frame(self,tilt,station,max_height_change=.25):
+        if self.frame_tilt is None:return self.calibrate_frame(tilt)
+        import numpy as np
+        from course_frame import course_rotation,mapped_course_points
+        proposed=np.asarray(tilt,dtype=float);previous=np.asarray(self.frame_tilt)
+        old_rotation=course_rotation(previous);new_rotation=course_rotation(proposed)
+        stations=np.clip([station-5.,station,station+30.],0.,self.total_s)
+        points=np.column_stack([np.interp(stations,self.seg_s,np.array(self.points)[:,i]) for i in range(3)])
+        points[:,2]*=-1.
+        change=float(np.max(abs(points@(new_rotation[2]-old_rotation[2]))))
+        blend=min(1.,max_height_change/max(change,1e-12))
+        updated=previous+blend*(proposed-previous)
+        if np.linalg.norm(updated-previous)<1e-7:return False
+        self.frame_points=mapped_course_points(self.points,updated).tolist()
+        self.frame_tilt=tuple(float(v) for v in updated)
+        return True
+
     def _point_at(self,s,points):
         s = max(0.0, min(self.seg_s[-1], float(s)))
         i=max(0,min(len(self.seg_len)-1,bisect_left(self.seg_s,s)-1))
@@ -208,11 +225,10 @@ class ReferencePlanner(object):
         recorded_adj = [dict(gd,s=float(gd["s"]),z=float(gd["z"])+off)
                       for gd in (guides or []) if gd.get("s") is not None]
         self.height_prior.fit_recorded_poses(recorded_adj,chain.gates)
-        if (self.frame_calibration and self.height_prior.valid and
-                self.route.calibrate_frame(self.height_prior.coefficients[:2])):
-            # Freeze this run's first validated rigid datum. Reproject anchors
-            # and refit against raw UP heights; never rotate an already mapped
-            # route or use mapped XY as the raw calibration design matrix.
+        if (self.frame_calibration and self.height_prior.valid and self.height_prior.error<=.35 and
+                self.route.refine_frame(self.height_prior.coefficients[:2],s_now)):
+            # Reproject anchors and refit against raw UP heights. Refine with
+            # bounded local height change; never rotate already mapped points.
             gates_adj=self.adjust_gates(gates_raw,z_offset,corrections,verified_ids)
             chain=GateChain(gates_adj,slope_factor=self.slope_factor,slope_abs_max=self.slope_abs_max)
             anchors=chain.anchors()

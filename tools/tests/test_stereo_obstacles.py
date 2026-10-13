@@ -40,6 +40,22 @@ class StereoObstacleTests(unittest.TestCase):
         panel=np.zeros_like(image);panel[20:180,20:180]=[12,25,110]
         self.assertFalse(gate_opening_support(panel,(20,20,160,160)))
 
+    def test_frame_depth_ignores_white_background_and_requires_both_posts(self):
+        from gate_detector_opencv import gate_trim_mask
+        from gate_stereo import gate_center_from_frame
+        image=np.zeros((240,240,3),dtype=np.uint8)
+        image[40:200,40:46]=[12,25,110];image[40:200,194:200]=[12,25,110]
+        trim=gate_trim_mask(image)
+        disparity=np.full(image.shape[:2],FX*BASELINE/30.,dtype=np.float32)
+        disparity[trim]=FX*BASELINE/8.
+        cand=dict(bbox=(40,40,160,160),center=(120,120))
+        result=gate_center_from_frame(cand,disparity,np.ones_like(trim),trim_mask=trim)
+        self.assertIsNotNone(result)
+        self.assertAlmostEqual(result[1],8.,places=5)
+        # A single nearer post cannot borrow a distant white wall as its pair.
+        trim[:,150:]=False
+        self.assertIsNone(gate_center_from_frame(cand,disparity,np.ones_like(trim),trim_mask=trim))
+
     def test_half_resolution_projection_keeps_metric_depth_and_world_frame(self):
         disparity=np.zeros((360,480),dtype=np.float32)
         disparity[299:302,239:242]=.5*FX*BASELINE/5.

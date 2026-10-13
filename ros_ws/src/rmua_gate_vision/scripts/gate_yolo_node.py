@@ -23,6 +23,7 @@ import os
 import sys
 import threading
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 import cv2
 import message_filters
@@ -35,7 +36,7 @@ from std_msgs.msg import String
 from std_srvs.srv import Trigger, TriggerResponse
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gate_detector_opencv import gate_frame_mask  # noqa: E402
+from gate_detector_opencv import gate_frame_mask,gate_trim_mask  # noqa: E402
 import gate_stereo as gs  # noqa: E402
 from gate_map import GateMap  # noqa: E402
 from gate_geometry import GateGeometry  # noqa: E402
@@ -110,6 +111,10 @@ class GateYolo(object):
         self.car_model=YOLO(car_path) if car_path else None
         self.stereo_obstacles=bool(rospy.get_param('~stereo_obstacles',True))
         self.cold_start_gate_map=bool(rospy.get_param('~cold_start_gate_map',True))
+        self.debug_pair_dir=rospy.get_param('~debug_pair_dir','')
+        self.debug_pair_stamp=None;self.debug_pair_job=None
+        self.debug_pair_writer=ThreadPoolExecutor(max_workers=1) if self.debug_pair_dir else None
+        if self.debug_pair_dir:os.makedirs(self.debug_pair_dir,exist_ok=True)
         self.car_conf=float(rospy.get_param('~car_conf',.5))
         cv2.setNumThreads(2)
         rospy.loginfo("YOLO loaded: %s", self.model_path)
@@ -332,6 +337,12 @@ class GateYolo(object):
             except Exception as error:
                 rospy.logerr_throttle(2.,"Gate inference failed: %s",error)
 
+    def _save_pair(self,left,right,metadata):
+        name=os.path.join(self.debug_pair_dir,'%.6f'%metadata['stamp'])
+        cv2.imwrite(name+'_left.png',left,[cv2.IMWRITE_PNG_COMPRESSION,1])
+        cv2.imwrite(name+'_right.png',right,[cv2.IMWRITE_PNG_COMPRESSION,1])
+        with open(name+'.json','w') as file:json.dump(metadata,file)
+
     def cb(self, ml, mr, aligned_pose=None):
         started=time.perf_counter()
         if self.pose is None:
@@ -347,6 +358,13 @@ class GateYolo(object):
                                   t_img,self.pose_buf.buf[-1][0] if self.pose_buf.buf else 0.)
             return
 
+        if (self.debug_pair_writer is not None and
+                (self.debug_pair_stamp is None or t_img-self.debug_pair_stamp>=1.) and
+                (self.debug_pair_job is None or self.debug_pair_job.done())):
+            self.debug_pair_stamp=t_img
+            self.debug_pair_job=self.debug_pair_writer.submit(self._save_pair,left.copy(),right.copy(),
+                dict(stamp=t_img,left_stamp=tl,right_stamp=tr,position=list(pos),quaternion=list(quat),
+                     route_file=self.route_file,route_name=self.route_name))
         # Snapshot the image-time pose BEFORE inference. Otherwise a slow GPU
         # evicts that pose from the rolling buffer and every image is discarded.
         if self.stereo_obstacles:
@@ -394,8 +412,10 @@ class GateYolo(object):
                 disp = gs.compute_disparity(cv2.cvtColor(left, cv2.COLOR_BGR2GRAY),
                                             cv2.cvtColor(right, cv2.COLOR_BGR2GRAY), self.sgbm)
                 fmask = gate_frame_mask(left, {})
+                trim=gate_trim_mask(left)
+                gravity=gs.R_BC.T@gs.quat_to_R(quat).T@np.array([0.,0.,1.])
                 for c in unmatched:
-                    r = gs.gate_center_from_frame(c, disp, fmask)
+                    r = gs.gate_center_from_frame(c, disp, fmask,trim_mask=trim,gravity=gravity)
                     if r is None:
                         continue
                     cc, depth, _ = r

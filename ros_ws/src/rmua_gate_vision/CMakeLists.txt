@@ -21,6 +21,7 @@ catkin_install_python(PROGRAMS
   scripts/gate_yolo_node.py
   scripts/gate_detector_opencv.py
   scripts/gate_stereo.py
+  scripts/frame_depth.py
   scripts/gate_tracker.py
   scripts/gate_map.py
   scripts/gate_dataset_capture.py

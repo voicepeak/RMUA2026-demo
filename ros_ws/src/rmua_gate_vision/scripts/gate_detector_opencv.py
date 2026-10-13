@@ -103,6 +103,11 @@ def gate_frame_mask(img, params=None):
     return white | orange
 
 
+def gate_trim_mask(img):
+    hsv=cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+    return ((hsv[:,:,0]<=22)|(hsv[:,:,0]>=170))&(hsv[:,:,1]>90)&(hsv[:,:,2]>80)
+
+
 def draw(img, cands, color=(0, 0, 255)):
     out = img.copy()
     for d in cands:

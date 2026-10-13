@@ -58,8 +58,11 @@ def compute_disparity(gray_l, gray_r, sgbm):
     return sgbm.compute(gray_l, gray_r).astype(np.float32) / 16.0
 
 
-def gate_center_from_frame(cand, disp, frame_mask, min_pixels=25):
+def gate_center_from_frame(cand, disp, frame_mask, min_pixels=25,trim_mask=None,gravity=None):
     """用门框像素的中位视差求门中心相机坐标; 返回 (center_cam(3), depth, n_pix) 或 None。"""
+    if trim_mask is not None:
+        from frame_depth import trim_center
+        return trim_center(cand,disp,trim_mask,FX,FY,CX,CY,BASELINE,gravity)
     x, y, w, h = cand["bbox"]
     x0, y0 = max(0, x), max(0, y)
     x1, y1 = min(frame_mask.shape[1], x + w), min(frame_mask.shape[0], y + h)
