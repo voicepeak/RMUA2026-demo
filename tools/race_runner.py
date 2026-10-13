@@ -110,6 +110,7 @@ def main():
     from geometry_msgs.msg import PoseStamped
     from std_msgs.msg import String
     ap=argparse.ArgumentParser()
+    ap.add_argument('--seed',type=int,default=123)
     ap.add_argument('--out',type=Path,required=True)
     ap.add_argument('--cruise',type=float,default=10.)
     ap.add_argument('--vehicle-cruise',type=float,default=12.,
@@ -138,7 +139,8 @@ def main():
     root=Path(__file__).resolve().parents[1]
     config=root/'ros_ws/src/route_follower/config'
     splines=load_splines(config/'splines.txt')
-    measured=yaml.safe_load((config/'gates_seed123_recorded.yaml').read_text())['gates']
+    measured=(yaml.safe_load((config/'gates_seed123_recorded.yaml').read_text())['gates']
+              if a.seed==123 else [])
     if a.measured_map:
         measured=yaml.safe_load(a.measured_map.read_text())['gates']
     state={};rospy.init_node('race_runner')

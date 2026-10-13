@@ -17,6 +17,7 @@ import rospy
 from geometry_msgs.msg import PoseStamped
 
 parser=argparse.ArgumentParser()
+parser.add_argument('--seed',type=int,default=123)
 parser.add_argument('--out',type=Path,required=True)
 parser.add_argument('--control-rate',type=float,default=20.)
 parser.add_argument('--obstacle-backend',choices=('lidar_nav','legacy'),default='lidar_nav')
@@ -36,16 +37,18 @@ root=Path(__file__).resolve().parents[1]
 workspace=root.parent
 config=workspace/'rmua_ws/src/route_follower/config'
 from race_runner import outbound_response_arguments
+from race_seed import initial_course_inputs
+gates_file,guides_file=initial_course_inputs(config,args.out,args.seed)
 rospy.init_node('race_start_watch')
 pose=rospy.wait_for_message('/airsim_node/drone_1/debug/pose_gt',PoseStamped,timeout=20.)
 position=pose.pose.position
 if abs(position.x)>3. or abs(position.y)>3.:
-    raise RuntimeError('Fresh seed123 start position required')
+    raise RuntimeError('Fresh simulator start position required')
 command=['roslaunch','route_follower','route_follower.launch',
          'control_rate:='+str(args.control_rate),
          'obstacle_backend:='+args.obstacle_backend,
-         'gates_file:='+str(config/'gates_seed123_recorded.yaml'),
-         'guides_file:='+str(config/'guides_seed123_recorded.yaml'),
+         'gates_file:='+str(gates_file),
+         'guides_file:='+str(guides_file),
          'gate_center_pull_max:=0','static_correction_max:=2',
          'cruise_speed:=40','max_speed:=40','adaptive_speed:=true','lidar_braking:=8',
          'curve_preview_max:=100','curve_preview_step:=1','z_response_time:=0.15',
@@ -63,7 +66,7 @@ trace=subprocess.Popen(['python3',str(root/'tools/control_trace.py'),
                         '--out',str(args.out/'control_trace'),'--save-clouds'],
                        stdout=(args.out/'control_trace.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
 child=subprocess.Popen(command,stdout=(args.out/'controller.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
-(args.out/'startup.json').write_text(json.dumps(dict(wall_time=time.time(),
+(args.out/'startup.json').write_text(json.dumps(dict(wall_time=time.time(),seed=args.seed,
     first_pose_stamp=pose.header.stamp.to_sec(),command=command),indent=2))
 recorder=subprocess.Popen(['python3',str(workspace/'frames/flight_probe.py'),
                   '--out',str(args.out/'flight'),'--seconds','1200',
@@ -76,6 +79,7 @@ vision=subprocess.Popen(['/opt/conda/envs/xal/bin/python',
                   '_route_file:='+str(config/'route_1_3.yaml'),'_imgsz:=960','_conf:=0.35'],
                  stdout=(args.out/'vision.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
 runner=subprocess.Popen(['python3',str(root/'tools/race_runner.py'),
+                         '--seed',str(args.seed),'--measured-map',str(gates_file),
                          '--out',str(args.out/'mission'),'--cruise','40',
                          '--fast-descent','--adaptive-speed','--control-rate',str(args.control_rate),
                          '--obstacle-backend',args.obstacle_backend,'--planner-mode',args.planner_mode,

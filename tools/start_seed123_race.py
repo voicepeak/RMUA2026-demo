@@ -15,6 +15,7 @@ from vision_runtime import probe_cuda
 from race_monitor_policy import simulator_crashed
 
 parser=argparse.ArgumentParser()
+parser.add_argument('--seed',type=int,default=123)
 parser.add_argument('--mode',choices=('render','offscreen','background'),default='render')
 parser.add_argument('--clock-speed',type=float,default=1.)
 parser.add_argument('--clock-type',choices=('auto','ScalableClock','SteppableClock'),default='auto')
@@ -63,7 +64,7 @@ vision_hashes={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexd
                for path in sorted(vision_snapshot.rglob('*')) if path.is_file()}
 tool_snapshot=out/'tool_sources';tool_snapshot.mkdir(exist_ok=False)
 for name in ('start_seed123_race.py','race_start_watch.py','race_runner.py','watch_debug_race.py',
-             'race_monitor_policy.py','summarize_debug_race.py','control_trace.py','system_health.py','vision_runtime.py'):
+             'race_monitor_policy.py','race_seed.py','summarize_debug_race.py','control_trace.py','system_health.py','vision_runtime.py'):
     shutil.copy2(Path(__file__).with_name(name),tool_snapshot/name)
 tool_hashes={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdigest()
              for path in sorted(tool_snapshot.glob('*.py'))}
@@ -73,7 +74,7 @@ for path in (workspace/'run_sim.sh',workspace/'simulator/simulator_12.0.0.5/run_
     shutil.copy2(path,sim_snapshot/path.name)
 sim_hashes={str(path.relative_to(out)):hashlib.sha256(path.read_bytes()).hexdigest()
             for path in sorted(sim_snapshot.glob('*'))}
-(out/'controller_versions.json').write_text(json.dumps(dict(wall_time=time.time(),seed=123,
+(out/'controller_versions.json').write_text(json.dumps(dict(wall_time=time.time(),seed=args.seed,
     requested_clock_speed=args.clock_speed,mode=args.mode,backend=args.obstacle_backend,
     requested_clock_type=args.clock_type,planner_mode=args.planner_mode,spacetime_bridge_hold=args.spacetime_bridge_hold,
     outbound_response=args.outbound_response,
@@ -95,7 +96,7 @@ if not vision_health['available'] and not args.allow_cpu_vision:
 print('Vision device:',vision_health.get('device') or 'CPU (explicit override)',flush=True)
 check=subprocess.run(['docker','exec','rmua_noetic','pgrep','-f','RMUA-Linux|rosmaster'],capture_output=True)
 had_sim=check.returncode==0
-sim=subprocess.Popen([str(workspace/'run_sim.sh'),'123',args.mode,str(container_out/'settings.json')],cwd=workspace,
+sim=subprocess.Popen([str(workspace/'run_sim.sh'),str(args.seed),args.mode,str(container_out/'settings.json')],cwd=workspace,
                      stdout=(out/'simulator.log').open('w'),stderr=subprocess.STDOUT)
 deadline=time.monotonic()+30.
 while True:
@@ -106,8 +107,8 @@ while True:
     time.sleep(.2)
 command=['docker','exec','rmua_noetic','bash','-c',
          'source /opt/ros/noetic/setup.bash; source /workspace/rmua_ws/devel/setup.bash; '
-         'exec python3 /workspace/repo/tools/race_start_watch.py --out "$1" --control-rate "$2" --obstacle-backend "$3" --outbound-response "$4" --planner-mode "$5" ${6:+--spacetime-bridge-hold "$6"}',
-         'race-start',str(container_out),str(20.*args.clock_speed),args.obstacle_backend,args.outbound_response,args.planner_mode,'' if args.spacetime_bridge_hold is None else str(args.spacetime_bridge_hold)]
+         'exec python3 /workspace/repo/tools/race_start_watch.py --out "$1" --control-rate "$2" --obstacle-backend "$3" --outbound-response "$4" --planner-mode "$5" --seed "$7" ${6:+--spacetime-bridge-hold "$6"}',
+         'race-start',str(container_out),str(20.*args.clock_speed),args.obstacle_backend,args.outbound_response,args.planner_mode,'' if args.spacetime_bridge_hold is None else str(args.spacetime_bridge_hold),str(args.seed)]
 print('Recording:',out,flush=True)
 monitor=None
 health_stamp=None

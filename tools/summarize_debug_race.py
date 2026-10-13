@@ -17,7 +17,9 @@ def percentiles(values):
 
 def summarize(run):
     settings=json.loads((run/'settings.json').read_text())
-    result=dict(seed=123,requested_clock_speed=settings.get('ClockSpeed',1.),accepted=False,
+    versions=run/'controller_versions.json'
+    seed=json.loads(versions.read_text()).get('seed',123) if versions.exists() else 123
+    result=dict(seed=seed,requested_clock_speed=settings.get('ClockSpeed',1.),accepted=False,
                 requested_clock_type=settings.get('ClockType','auto'),
                 lidar_points_per_second=settings['Vehicles']['drone_1']['Sensors']['lidar']['PointsPerSecond'],
                 scope='Diagnostic summary; local progress does not prove official stage completion')
