@@ -41,10 +41,6 @@ from race_runner import outbound_response_arguments
 from race_seed import initial_course_inputs,live_gate_vision_arguments,initial_gate_map_ready
 gates_file,guides_file=initial_course_inputs(config,args.out,args.seed)
 rospy.init_node('race_start_watch')
-pose=rospy.wait_for_message('/airsim_node/drone_1/debug/pose_gt',PoseStamped,timeout=20.)
-position=pose.pose.position
-if abs(position.x)>3. or abs(position.y)>3.:
-    raise RuntimeError('Fresh simulator start position required')
 command=['roslaunch','route_follower','route_follower.launch',
          'control_rate:='+str(args.control_rate),
          'obstacle_backend:='+args.obstacle_backend,
@@ -93,13 +89,17 @@ try:
         '_route_file:='+str(config/'route_1_3.yaml'),'_imgsz:=960','_conf:=0.35',
         '_debug_pair_dir:='+str(args.out/'stereo_pairs'),
         '_stereo_obstacles:=true',*live_gate_vision_arguments()],'vision.log')
+    pose=rospy.wait_for_message('/airsim_node/drone_1/debug/pose_gt',PoseStamped,timeout=20.)
+    position=pose.pose.position
+    if abs(position.x)>3. or abs(position.y)>3.:
+        raise RuntimeError('Fresh simulator start position required')
     bootstrap_start=time.monotonic()
     (args.out/'bootstrap.json').write_text(json.dumps(dict(wall_time=time.time(),state='GROUND_VISION_PREPARATION',seed=args.seed),indent=2))
     while not initial_gate_map_ready(vision_map,rospy.Time.now().to_sec()):
         if rospy.is_shutdown() or (args.out/'stop.json').exists():raise SystemExit('Bootstrap stopped')
         if vision.poll() is not None:stop('VISION_BOOTSTRAP_FAILED');raise SystemExit('Vision exited before readiness')
         if time.monotonic()-last_pose_arrival>3.:stop('POSE_STREAM_LOST');raise SystemExit('Pose lost before takeoff')
-        if time.monotonic()-bootstrap_start>60.:stop('VISION_BOOTSTRAP_TIMEOUT');raise SystemExit('No fresh stable map before takeoff')
+        if time.monotonic()-bootstrap_start>20.:stop('VISION_BOOTSTRAP_TIMEOUT');raise SystemExit('No fresh stable map before takeoff')
         time.sleep(.05)
     (args.out/'bootstrap.json').write_text(json.dumps(dict(wall_time=time.time(),state='LIVE_MAP_READY',seed=args.seed,
         elapsed_seconds=time.monotonic()-bootstrap_start,gates=vision_map),indent=2))

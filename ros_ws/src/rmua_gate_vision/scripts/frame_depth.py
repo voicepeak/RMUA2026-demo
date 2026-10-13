@@ -30,7 +30,23 @@ def trim_center(cand,disparity,trim,fx,fy,cx,cy,baseline,gravity=None):
         mask=abs((points-sample[0])@n)<.2
         if min(np.count_nonzero(mask&left),np.count_nonzero(mask&right))<12:continue
         if best is None or np.count_nonzero(mask)>np.count_nonzero(best):best=mask
-    if best is None or np.mean(best)<.65:return None
+    if best is None or np.mean(best)<.65:
+        # The two recessed C-shaped posts need not share one front plane.
+        # Keep independent measured post centers as non-geometric depth
+        # evidence; never manufacture four-corner/plane validity for them.
+        vertical=np.asarray([0.,1.,0.] if gravity is None else gravity,dtype=float)
+        vertical/=max(1e-9,np.linalg.norm(vertical));centers=[]
+        for post in (points[left],points[right]):
+            median=float(np.median(post[:,2]));mad=float(np.median(abs(post[:,2]-median)))
+            post=post[abs(post[:,2]-median)<=max(.6,3.*mad)]
+            if len(post)<12:return None
+            lo,hi=np.percentile(post@vertical,[5,95])
+            if hi-lo<.5:return None
+            center=np.median(post,axis=0);center+=vertical*(.5*(lo+hi)-center@vertical)
+            centers.append(center)
+        if np.linalg.norm(centers[1]-centers[0])>18.:return None
+        center=.5*(centers[0]+centers[1])
+        return center,float(center[2]),int(len(points))
     measured=points[best];origin=measured.mean(axis=0)
     _,sv,vt=np.linalg.svd(measured-origin,full_matrices=False);normal=vt[-1]
     if sv[1]<.01 or abs(normal[2])<.25:return None

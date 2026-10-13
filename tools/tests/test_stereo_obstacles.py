@@ -56,6 +56,28 @@ class StereoObstacleTests(unittest.TestCase):
         trim[:,150:]=False
         self.assertIsNone(gate_center_from_frame(cand,disparity,np.ones_like(trim),trim_mask=trim))
 
+    def test_inner_detector_rectangle_can_find_surrounding_complete_posts(self):
+        image=np.zeros((200,200,3),dtype=np.uint8)
+        image[20:180,20:35]=150;image[20:180,165:180]=150
+        image[20:180,35:40]=[12,25,110];image[20:180,160:165]=[12,25,110]
+        inner=dict(bbox=(35,20,130,160),center=np.array([100.,100.]),conf=.9,keypoints=False)
+        self.assertFalse(gate_opening_support(image,inner['bbox']))
+        candidates=frame_candidates(image,[inner])
+        self.assertEqual(len(candidates),1)
+        self.assertTrue(gate_opening_support(image,candidates[0]['bbox']))
+
+    def test_recessed_posts_can_supply_depth_without_a_single_plane(self):
+        from gate_stereo import gate_center_from_frame
+        trim=np.zeros((240,240),dtype=bool);trim[40:200,40:46]=True;trim[40:200,194:200]=True
+        depths=np.full(trim.shape,30.,dtype=float)
+        rng=np.random.default_rng(1)
+        depths[trim]=rng.uniform(8.,10.,np.count_nonzero(trim))
+        disparity=FX*BASELINE/depths
+        result=gate_center_from_frame(dict(bbox=(40,40,160,160),center=(120,120)),
+            disparity,np.ones_like(trim),trim_mask=trim)
+        self.assertIsNotNone(result)
+        self.assertAlmostEqual(result[1],9.,delta=.3)
+
     def test_half_resolution_projection_keeps_metric_depth_and_world_frame(self):
         disparity=np.zeros((360,480),dtype=np.float32)
         disparity[299:302,239:242]=.5*FX*BASELINE/5.

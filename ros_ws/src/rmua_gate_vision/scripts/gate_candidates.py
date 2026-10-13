@@ -42,8 +42,19 @@ def passable_gate_geometry(geometry, body_radius=.5):
 
 
 def frame_candidates(image, learned, limit=8):
-    candidates=[g for g in learned if gate_opening_support(image,g['bbox'])]
     height,width=image.shape[:2]
+    candidates=[]
+    for g in learned:
+        if gate_opening_support(image,g['bbox']):candidates.append(g);continue
+        # Learned rectangles can cover the inner opening and omit the white
+        # posts. Inspect a bounded neighborhood; it must still independently
+        # contain both posts and the distributed trim before it is accepted.
+        x,y,w,h=g['bbox'];px,py=int(.12*w),int(.12*h)
+        x0,y0=max(0,x-px),max(0,y-py);x1,y1=min(width,x+w+px),min(height,y+h+py)
+        bbox=(x0,y0,x1-x0,y1-y0)
+        if gate_opening_support(image,bbox):
+            candidates.append(dict(g,bbox=bbox,center=np.array([.5*(x0+x1),.5*(y0+y1)]),
+                                   area=float((x1-x0)*(y1-y0))))
     added=0
     for g in detect_gates(image):
         x,y,w,h=g['bbox']

@@ -117,6 +117,10 @@ class GateYolo(object):
         if self.debug_pair_dir:os.makedirs(self.debug_pair_dir,exist_ok=True)
         self.car_conf=float(rospy.get_param('~car_conf',.5))
         cv2.setNumThreads(2)
+        # Initialize GPU kernels while the level loads. Dummy detections are
+        # discarded and never become scene or bootstrap evidence.
+        warm=np.zeros((720,960,3),dtype=np.uint8)
+        self.model.predict([warm,warm],imgsz=self.imgsz,conf=self.conf,iou=.5,verbose=False,device=self.device)
         rospy.loginfo("YOLO loaded: %s", self.model_path)
 
         self.geom = GateGeometry(
