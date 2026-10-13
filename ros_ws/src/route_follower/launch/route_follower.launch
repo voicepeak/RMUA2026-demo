@@ -115,6 +115,7 @@
   <arg name="gate_search_speed" default="10.0"/>
   <arg name="recon_climb"        default="0.6"/>
   <arg name="recon_max_dist"     default="30.0"/>
+  <arg name="wait_for_first_map" default="false"/>
   <arg name="recon_max_climb"    default="4.0"/>
   <arg name="map_brake_a"        default="1.5"/>
 
@@ -278,6 +279,7 @@
     <param name="gate_search_speed" value="$(arg gate_search_speed)"/>
     <param name="recon_climb"         value="$(arg recon_climb)"/>
     <param name="recon_max_dist"      value="$(arg recon_max_dist)"/>
+    <param name="wait_for_first_map" value="$(arg wait_for_first_map)"/>
     <param name="recon_max_climb"     value="$(arg recon_max_climb)"/>
     <param name="map_brake_a"         value="$(arg map_brake_a)"/>
     <param name="safety_z_error"      value="$(arg safety_z_error)"/>

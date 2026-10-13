@@ -230,6 +230,23 @@ class MissionStateTests(unittest.TestCase):
         self.assertEqual(v_map, 0.0)
         self.assertEqual(transition["to"], HOLD)
 
+    def test_cold_start_waits_without_consuming_recon_distance(self):
+        mission=MissionState(wait_for_first_map=True,recon_max_dist=10.)
+        for _ in range(30):
+            mode,cap,_=mission.update(True,50.,0.,-1.8,first_map_ready=False)
+            self.assertEqual(mode,HOLD);self.assertEqual(cap,0.)
+        self.assertIsNone(mission.recon_start_s)
+        mode,cap,_=mission.update(True,20.,0.,-1.8,first_map_ready=True)
+        self.assertEqual(mode,TRACK);self.assertGreater(cap,0.)
+
+    def test_cold_start_does_not_remove_later_lost_map_limit_or_abort(self):
+        mission=MissionState(wait_for_first_map=True,recon_max_dist=10.)
+        mission.update(True,20.,0.,-1.8,first_map_ready=True)
+        self.assertEqual(mission.update(True,None,20.,-2.)[0],RECON)
+        self.assertEqual(mission.update(True,None,31.,-2.)[0],HOLD)
+        mission.abort()
+        self.assertEqual(mission.update(True,60.,31.,-2.,first_map_ready=True)[0],ABORT)
+
     def test_abort_is_terminal(self):
         mission = MissionState()
         mission.abort()

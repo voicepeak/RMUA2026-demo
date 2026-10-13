@@ -391,7 +391,8 @@ class RouteFollower(object):
         self.mission = MissionState(recon_speed=self.recon_speed,
                                     recon_max_dist=self.recon_max_dist,
                                     map_brake_a=self.map_brake_a,
-                                    gate_search_speed=float(rospy.get_param('~gate_search_speed',10.)))
+                                    gate_search_speed=float(rospy.get_param('~gate_search_speed',10.)),
+                                    wait_for_first_map=bool(rospy.get_param('~wait_for_first_map',False)))
         self.task_state = GateTaskState(
             half_width=self.gate_pass_half_width,
             half_height=self.gate_pass_half_height,
@@ -1420,6 +1421,8 @@ class RouteFollower(object):
         if self.seg is None:
             self.z_ctrl.reset()
             self.init_once(p)
+            if self.mission.wait_for_first_map:
+                self.z_ctrl.prev_z_ref=float(p.z)
         pn = np.array([p.x, p.y, p.z])
 
         i, t, d_cross, c = self.route.project((p.x, p.y, p.z))
@@ -1789,7 +1792,8 @@ class RouteFollower(object):
         mode, v_map, transition = self.mission.update(
             self.use_gate_map, horizon_s, s_now, p.z,
             require_gate=self.lidar_navigation and self.lidar_gate_opening and self.lidar_stereo_obstacles and not terminal,
-            gate_horizon=gate_horizon)
+            gate_horizon=gate_horizon,
+            first_map_ready=bool(self.online_cache.gates or self.guide_cache.guides))
         if transition is not None:
             rospy.logwarn("[MODE] %s -> %s at s=%.1f", transition["from"],
                           transition["to"], s_now)

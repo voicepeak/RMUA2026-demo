@@ -37,7 +37,7 @@ root=Path(__file__).resolve().parents[1]
 workspace=root.parent
 config=workspace/'rmua_ws/src/route_follower/config'
 from race_runner import outbound_response_arguments
-from race_seed import initial_course_inputs
+from race_seed import initial_course_inputs,cold_start_vision_arguments
 gates_file,guides_file=initial_course_inputs(config,args.out,args.seed)
 rospy.init_node('race_start_watch')
 pose=rospy.wait_for_message('/airsim_node/drone_1/debug/pose_gt',PoseStamped,timeout=20.)
@@ -59,6 +59,7 @@ command=['roslaunch','route_follower','route_follower.launch',
          'slope_eta:=0.95','vz_down_limit:=4.5','a_up:=8','a_down:=8',
          'z_rate_max:=5','vz_capability_file:='+str(config/'vz_capability_seed123_fast.yaml')]
 command+=outbound_response_arguments(args.outbound_response)
+if args.seed!=123:command+=['wait_for_first_map:=true']
 command+=['planner_mode:='+args.planner_mode]
 if args.spacetime_bridge_hold is not None:
     command+=['spacetime_bridge_verified:=true','spacetime_bridge_hold:='+str(args.spacetime_bridge_hold)]
@@ -76,7 +77,8 @@ vision=subprocess.Popen(['/opt/conda/envs/xal/bin/python',
                   str(workspace/'rmua_ws/src/rmua_gate_vision/scripts/gate_yolo_node.py'),
                   '_model:='+str(root/'yolo/weights/best.pt'),
                   '_car_model:='+(str(root/'yolo/weights/car_score91_best.pt') if args.obstacle_backend=='legacy' else ''),
-                  '_route_file:='+str(config/'route_1_3.yaml'),'_imgsz:=960','_conf:=0.35'],
+                  '_route_file:='+str(config/'route_1_3.yaml'),'_imgsz:=960','_conf:=0.35',
+                  *cold_start_vision_arguments(args.seed)],
                  stdout=(args.out/'vision.log').open('w'),stderr=subprocess.STDOUT,start_new_session=True)
 runner=subprocess.Popen(['python3',str(root/'tools/race_runner.py'),
                          '--seed',str(args.seed),'--measured-map',str(gates_file),

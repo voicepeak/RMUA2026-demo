@@ -17,6 +17,7 @@ import yaml
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ros_ws/src/route_follower/scripts'))
 from splines_to_yaml import load_splines,connect_routes
 from reference_planner import RouteGeometry
+from race_seed import cold_start_vision_arguments
 
 SEQUENCE=(1,3,5,8,12,10,7)
 
@@ -220,7 +221,7 @@ def main():
                           '_route_file:='+str(route_file),'_route_name:=race_leg',
                           '_stereo_obstacles:='+('true' if stage==1 and a.obstacle_backend=='lidar_nav' else 'false'),
                           '_max_d_cross:='+('3.0' if stage==1 and a.obstacle_backend=='lidar_nav' else '5.0'),
-                          '_imgsz:=960','_conf:=0.35'],
+                          '_imgsz:=960','_conf:=0.35',*cold_start_vision_arguments(a.seed,vehicle=stage==1)],
                          stdout=(folder/'vision.log').open('w'),stderr=subprocess.STDOUT)
         cruise=min(a.cruise,a.vehicle_cruise) if stage==1 else a.cruise
         command=controller_command(route_file,gates_file,guides_file,cruise,a.fast_descent,a.adaptive_speed,a.control_rate,a.obstacle_backend,a.planner_mode,a.spacetime_bridge_hold,

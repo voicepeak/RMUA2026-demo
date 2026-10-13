@@ -23,12 +23,14 @@ ABORT = "ABORT"
 class MissionState(object):
 
     def __init__(self, recon_speed=2.0, recon_max_dist=30.0, map_brake_a=1.5,
-                 gate_search_speed=10.0, gate_search_dist=250.0):
+                 gate_search_speed=10.0, gate_search_dist=250.0,wait_for_first_map=False):
         self.recon_speed = float(recon_speed)
         self.recon_max_dist = float(recon_max_dist)
         self.map_brake_a = float(map_brake_a)
         self.gate_search_speed=float(gate_search_speed)
         self.gate_search_dist=float(gate_search_dist)
+        self.wait_for_first_map=bool(wait_for_first_map)
+        self.first_map_acquired=False
         self.mode = TRACK
         self.recon_start_s = None
         self.recon_start_z = None
@@ -39,16 +41,23 @@ class MissionState(object):
         self.recon_start_s = None
         self.recon_start_z = None
         self.hold_announced = False
+        self.first_map_acquired=False
 
     def abort(self):
         self.mode = ABORT
 
     def update(self, use_gate_map, horizon_s, s_now, z_now,
-               require_gate=False, gate_horizon=None):
+               require_gate=False, gate_horizon=None,first_map_ready=False):
         """返回 (mode, v_map, transition); transition 为模式切换信息或 None。"""
         previous = self.mode
         if previous == ABORT:
             return self.mode, 0.0, None
+        if use_gate_map and self.wait_for_first_map and not self.first_map_acquired:
+            if not first_map_ready:
+                self.mode=HOLD
+                transition=({'from':previous,'to':HOLD,'s':s_now} if previous!=HOLD else None)
+                return self.mode,0.,transition
+            self.first_map_acquired=True
         v_map = None
         if not use_gate_map:
             self.mode = TRACK

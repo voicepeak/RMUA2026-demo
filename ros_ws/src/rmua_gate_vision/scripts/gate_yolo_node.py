@@ -42,7 +42,7 @@ from gate_geometry import GateGeometry  # noqa: E402
 from latest_frame import LatestFrame
 from car_geometry import car_boxes,locate_car,overlaps_car
 from stereo_obstacles import downward_hits
-from gate_candidates import frame_candidates,passable_gate_geometry
+from gate_candidates import frame_candidates,passable_gate_geometry,gate_opening_support
 from timestamp_sync import PoseBuffer  # noqa: E402
 import stereo_keypoint_matcher as skm  # noqa: E402
 from gate_reprojection import reproject_gate  # noqa: E402
@@ -109,6 +109,7 @@ class GateYolo(object):
         car_path=rospy.get_param('~car_model','')
         self.car_model=YOLO(car_path) if car_path else None
         self.stereo_obstacles=bool(rospy.get_param('~stereo_obstacles',False))
+        self.cold_start_gate_map=bool(rospy.get_param('~cold_start_gate_map',False))
         self.car_conf=float(rospy.get_param('~car_conf',.5))
         cv2.setNumThreads(2)
         rospy.loginfo("YOLO loaded: %s", self.model_path)
@@ -337,6 +338,9 @@ class GateYolo(object):
         results=self.model.predict([left,right],imgsz=self.imgsz,conf=self.conf,iou=.5,verbose=False,device=self.device)
         cl,kp_l=self.candidates(results[0],left)
         cr,_=self.candidates(results[1],right)
+        if self.cold_start_gate_map and not self.stereo_obstacles:
+            cl=[g for g in cl if gate_opening_support(left,g['bbox'])]
+            cr=[g for g in cr if gate_opening_support(right,g['bbox'])]
         if self.stereo_obstacles:
             cl=frame_candidates(left,cl)
             cr=frame_candidates(right,cr)
@@ -356,6 +360,8 @@ class GateYolo(object):
         disp=None
         if not self.corner_only:
             for gl, gr, _ in skm.match_gate_corners(cl, cr):
+                if self.cold_start_gate_map and not (gl.get('keypoints') and gr.get('keypoints')):
+                    continue
                 self._observe_corner_pair(gl, gr, pos, quat, t_img, obs)
 
         # 兜底: 未匹配上的左目检测 -> 稠密视差 (旧路径)
@@ -375,7 +381,7 @@ class GateYolo(object):
                     # A merged box spanning buildings/cars is not a gate.
                     # Dense depth alone cannot validate its opening geometry.
                     _,_,width,height=c['bbox']
-                    if width*depth/gs.FX>8. or height*depth/gs.FY>8.:continue
+                    if width*depth/gs.FX>self.geom.max_width or height*depth/gs.FY>self.geom.max_height:continue
                     world = gs.body_to_world(gs.camera_to_body(cc), pos, quat)
                     if not np.all(np.isfinite(world)):
                         continue
