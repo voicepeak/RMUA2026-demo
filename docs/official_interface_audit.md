@@ -20,3 +20,5 @@ configs/simulator_settings.json 从上述官方 RMUA2026-01 settings.json 固定
 seed1001 实测：GPS 为 geometry_msgs/PoseStamped，正常消息含模拟器时间戳；initial_pose 同类型但 header.stamp=0，按合法初始化信息使用，禁止当持续定位。IMU 静止比力约 (0,0,-9.81)，与 FRD/NED 契约相符。只读状态节点仅订阅 initial_pose、IMU 和 GPS，不使用 debug 真值。
 
 部署审计发现官方两个仓库的 VelCmd 定义不同：基础教程含 geometry_msgs/Twist；模拟器 VelCmdmsg/VelCmd.msg 则是 Header + vx/vy/vz/yawRate/va/stop。已改为模拟器版本，与 beta 本机实跑消息一致。此前 P0 只核对了类型名称，未验证 VEL MD5，不能将旧审计解释为 VEL 通信已验收；PWM 悬停使用 RotorPWM，不受此差异影响。后续独立 VEL 场次必须验证连接和指令符号。
+
+后续本机验证：seed1007 独立 VEL 场次连接成功，MD5=1a888a503939ba521aed68feee8eab6d，悬停/位移与 z-up 适配正常。seed1015 量化偏航：给定 0.1rad/s、2s 的参考，VEL 命令 yawRate 按 deg/s 发送；稳定窗口中 IMU 角速度/命令单位的最小二乘增益为 0.016977rad/单位，接近 π/180=0.017453（约 -2.7%）。该结果支持当前模拟器的 deg/s 适配，不替代正式服务器版本核验。证据见 docs/evidence/p1_seed1015_yaw_pair.json。

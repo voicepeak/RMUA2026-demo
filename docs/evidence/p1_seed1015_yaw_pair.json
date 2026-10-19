@@ -1,0 +1,134 @@
+{
+  "seed": 1015,
+  "unit_tests_passed": 46,
+  "profile": "IMU-time 0.1rad/s yaw for 2s, then hold, in separate scenes",
+  "official_result": "UNKNOWN",
+  "modes": {
+    "VEL": {
+      "run_directory": "runs/20261019T114609Z_8e6d6cadfafc460e8e3b780bef80b362",
+      "source_unchanged": true,
+      "summary": {
+        "commands": 699,
+        "fault": null,
+        "control_mode": "VEL",
+        "connected_subscribers": 1,
+        "message_md5": "1a888a503939ba521aed68feee8eab6d",
+        "duration_s": 14.0,
+        "step": false,
+        "official_result": "UNKNOWN",
+        "reference_clock": "IMU",
+        "graph_monitor": {
+          "successful_checks": 137,
+          "fault": null,
+          "max_rpc_wall_s": 0.011567028937861323,
+          "stale_after_wall_s": 0.3
+        },
+        "yaw_motion": true,
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 699,
+        "commands": 699,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 499,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.020000993041321635,
+          0.023225345421815292,
+          0.025281847687438113
+        ],
+        "minimum_command_wall_interval_s": 0.012181823025457561,
+        "state_position_rmse_m": [
+          0.027152600945024016,
+          0.020491136447106897,
+          0.02189702855695525
+        ],
+        "state_attitude_rmse_rad": 0.01691724853485427,
+        "truth_tracking_rmse_m": [
+          0.016656475475001715,
+          0.010102696930329868,
+          0.012026723932943512
+        ],
+        "truth_tracking_max_norm_m": 0.038226471029703175,
+        "truth_yaw_tracking_rmse_rad": 0.015131995976269049,
+        "truth_yaw_tracking_max_abs_rad": 0.03653282339329511,
+        "evaluation_valid": true,
+        "control_mode": "VEL",
+        "vel_yaw_response_gain_rad_per_command_unit": 0.01697699691851067,
+        "vel_yaw_expected_rad_per_degree": 0.017453292519943295,
+        "vel_yaw_degrees_response_within_20pct": true
+      }
+    },
+    "PWM": {
+      "run_directory": "runs/20261019T114637Z_2a8ebef98cb34e8994d0ca0b55484c03",
+      "source_unchanged": true,
+      "summary": {
+        "commands": 986,
+        "fault": null,
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 14.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {},
+        "injection": null,
+        "graph_monitor": {
+          "successful_checks": 136,
+          "fault": null,
+          "max_rpc_wall_s": 0.015773522085510194,
+          "stale_after_wall_s": 0.3
+        },
+        "gps_bridge_enabled": false,
+        "recovery_transitions": [],
+        "yaw_motion": true,
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 986,
+        "commands": 986,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 712,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012605124968104064,
+          0.020914030005224047,
+          0.022898216089233755
+        ],
+        "minimum_command_wall_interval_s": 0.010607648058794439,
+        "state_position_rmse_m": [
+          0.025968513426244032,
+          0.023397799279486955,
+          0.01895912791865856
+        ],
+        "state_attitude_rmse_rad": 0.0295604892661262,
+        "truth_tracking_rmse_m": [
+          0.058765086708333594,
+          0.06459263116707693,
+          0.044492965004393266
+        ],
+        "truth_tracking_max_norm_m": 0.21009698199868573,
+        "truth_yaw_tracking_rmse_rad": 0.030600651297764684,
+        "truth_yaw_tracking_max_abs_rad": 0.06418284870962854,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      }
+    }
+  }
+}

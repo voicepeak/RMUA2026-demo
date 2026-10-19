@@ -21,9 +21,9 @@ class VelocityCommand:
             raise ValueError('invalid bounded VEL command')
 
 
-def body_velocity(state, position, velocity=(0., 0., 0.), yaw_reference=0.):
-    reference = np.r_[position, velocity, yaw_reference]
-    if reference.shape != (7,) or not np.all(np.isfinite(reference)):
+def body_velocity(state, position, velocity=(0., 0., 0.), yaw_reference=0., yaw_rate=0.):
+    reference = np.r_[position, velocity, yaw_reference, yaw_rate]
+    if reference.shape != (8,) or not np.all(np.isfinite(reference)):
         raise ValueError('invalid VEL reference')
     v = np.asarray(velocity)+1.2*(np.asarray(position)-state.position_ned)
     norm = np.linalg.norm(v)
@@ -34,4 +34,4 @@ def body_velocity(state, position, velocity=(0., 0., 0.), yaw_reference=0.):
     c, s = math.cos(yaw), math.sin(yaw)
     yaw_error = (yaw_reference-yaw+math.pi) % (2*math.pi)-math.pi
     return (float(c*v[0]+s*v[1]), float(-s*v[0]+c*v[1]), float(-v[2]),
-            float(np.clip(math.degrees(yaw_error), -20., 20.)))
+            float(np.clip(math.degrees(yaw_error+yaw_rate), -20., 20.)))

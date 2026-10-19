@@ -1,7 +1,7 @@
 import math
 import unittest
 import numpy as np
-from control.reference import benchmark_reference
+from control.reference import benchmark_reference,benchmark_yaw
 from control.vel_benchmark.controller import body_velocity, VelocityCommand
 from estimation.geometry import delta_quaternion
 from interfaces.contracts import Health, Metadata, StateEstimate
@@ -30,6 +30,15 @@ class BenchmarkTests(unittest.TestCase):
         VelocityCommand(1.,0,0,v)
         with self.assertRaises(ValueError):
             VelocityCommand(1.,0,0,(10.,0.,0.,0.))
+
+    def test_yaw_reference_radians_and_vel_rate_degrees(self):
+        self.assertEqual(benchmark_yaw(.1,4.,True),(.1,0.))
+        angle,rate=benchmark_yaw(.1,6.,True)
+        self.assertAlmostEqual(angle,.2)
+        self.assertAlmostEqual(rate,.1)
+        self.assertAlmostEqual(benchmark_yaw(.1,9.,True)[0],.3)
+        s=StateEstimate(Metadata(1.,2.,0,'test'),(0.,0.,0.),(0.,0.,0.),(1.,0.,0.,0.),(0.,0.,0.),Health.OK)
+        self.assertAlmostEqual(body_velocity(s,(0.,0.,0.),yaw_rate=.1)[3],math.degrees(.1))
 
 
 if __name__ == '__main__':

@@ -22,6 +22,7 @@ def main():
     parser.add_argument('--sensor-fault', choices=('GPS_ZERO','IMU_DROP','IMU_ROLLBACK'))
     parser.add_argument('--fault-seconds', type=float, default=.15)
     parser.add_argument('--gps-bridge',action='store_true')
+    parser.add_argument('--yaw-motion',action='store_true')
     args = parser.parse_args()
     if args.mode == 'VEL' and (args.motor_pulses or not 3 <= args.hover_seconds <= 20):
         parser.error('VEL requires hover-seconds [3,20] and no motor pulses')
@@ -37,7 +38,7 @@ def main():
                             'motor_pulses': args.motor_pulses, 'hover_seconds': args.hover_seconds,
                             'evaluate_truth': args.evaluate_truth, 'step': args.step,
                             'sensor_fault':args.sensor_fault, 'fault_seconds':args.fault_seconds,
-                            'gps_bridge':args.gps_bridge}
+                            'gps_bridge':args.gps_bridge,'yaw_motion':args.yaw_motion}
     run, manifest = prepare_run(root, root/'runs', args.seed, digest, config)
     manifest['stage'] = 'P0_PWM_IDENTIFICATION' if args.mode == 'PWM' else 'P1_VEL_BENCHMARK'
     print(run, flush=True)
@@ -90,6 +91,8 @@ def main():
                 command.extend(['--sensor-fault',args.sensor_fault,'--fault-seconds',str(args.fault_seconds)])
             if args.gps_bridge:
                 command.append('--gps-bridge')
+            if args.yaw_motion:
+                command.append('--yaw-motion')
             code = subprocess.call(command, timeout=40)
         except Exception as error:
             manifest['error'] = str(error)

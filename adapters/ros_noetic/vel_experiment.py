@@ -9,14 +9,14 @@ import numpy as np
 from adapters.ros_noetic.flight_sensors import FlightSensors
 from control.control_authority.lease import ControlLease, check_graph
 from control.pwm_publisher.guard import CommandGuard
-from control.reference import benchmark_reference
+from control.reference import benchmark_reference,benchmark_yaw
 from control.vel_benchmark.controller import VelocityCommand, body_velocity
 from estimation.geometry import rotation
 from interfaces.contracts import Health
 from control.control_authority.graph_monitor import GraphMonitor
 
 
-def run_experiment(run, duration, step):
+def run_experiment(run, duration, step,yaw_motion=False):
     import rosgraph
     import rospy
     from airsim_ros.msg import VelCmd
@@ -81,10 +81,13 @@ def run_experiment(run, duration, step):
                     raise RuntimeError('POSITION_LIMIT')
                 if np.linalg.norm(state.velocity_ned) > 4:
                     raise RuntimeError('SPEED_LIMIT')
+                if np.linalg.norm(state.angular_velocity_body) > 1.:
+                    raise RuntimeError('ANGULAR_RATE_LIMIT')
                 monitor.check()
                 sim_elapsed = state.metadata.stamp-start_stamp
                 reference, velocity, _ = benchmark_reference(origin, sim_elapsed, step)
-                values = body_velocity(state, reference, velocity, yaw)
+                yaw_command,yaw_rate=benchmark_yaw(yaw,sim_elapsed,yaw_motion)
+                values = body_velocity(state, reference, velocity, yaw_command,yaw_rate)
                 command = VelocityCommand(state.metadata.stamp, state.metadata.epoch, sequence, values)
                 with sensors.lock:
                     accepted_wall = time.monotonic()
@@ -101,6 +104,7 @@ def run_experiment(run, duration, step):
                     rows.append({'wall_elapsed':now-start,'guard_accept_wall_elapsed':accepted_wall-start,
                         'publish_wall_elapsed':published_wall-start, 'command':asdict(command),
                         'sim_elapsed':sim_elapsed,
+                        'yaw_reference':yaw_command,'yaw_rate_reference':yaw_rate,
                         'raw':raw,'reference':reference,
                         'state':{k:v for k,v in asdict(state).items() if k != 'metadata'}})
                     sequence += 1
@@ -123,6 +127,7 @@ def run_experiment(run, duration, step):
               'duration_s':duration,'step':step,'official_result':'UNKNOWN',
               'reference_clock':'IMU',
               'graph_monitor':monitor.summary() if monitor else None,
+              'yaw_motion':yaw_motion,
               'host_scene_stop_required':True}
     (run/'vel_summary.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result),flush=True)
@@ -134,10 +139,11 @@ def main():
     parser.add_argument('--run-dir',type=Path,required=True)
     parser.add_argument('--hover-seconds',type=float,required=True)
     parser.add_argument('--step',action='store_true')
+    parser.add_argument('--yaw-motion',action='store_true')
     args=parser.parse_args()
     if not 3 <= args.hover_seconds <= 20 or (args.step and args.hover_seconds < 10):
         parser.error('bounded VEL duration must be [3,20], step >=10')
-    return run_experiment(args.run_dir,args.hover_seconds,args.step)
+    return run_experiment(args.run_dir,args.hover_seconds,args.step,args.yaw_motion)
 
 
 if __name__ == '__main__':

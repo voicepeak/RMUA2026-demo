@@ -17,3 +17,12 @@ def benchmark_reference(origin, elapsed, step=False):
     if step and elapsed >= 4:
         position[0] += .4 if elapsed < 8 else -.4
     return tuple(position), (0., 0., -dh), (0., 0., -ddh)
+
+
+def benchmark_yaw(initial_yaw, elapsed, enabled=False):
+    if not math.isfinite(initial_yaw) or not math.isfinite(elapsed) or elapsed < 0:
+        raise ValueError('invalid yaw reference')
+    if not enabled:
+        return initial_yaw, 0.
+    progress = min(2., max(0., elapsed-5.))
+    return initial_yaw+.1*progress, .1 if 5 <= elapsed < 7 else 0.

@@ -42,6 +42,10 @@ class FlightControlTests(unittest.TestCase):
         self.assertLess(w.moment[1], 0.)
         self.assertAlmostEqual(w.moment[0], 0.)
 
+    def test_yaw_rate_feedforward_produces_positive_torque(self):
+        w=Se3Controller(config()).step(state(),(0.,0.,-1.),yaw_rate=.1)
+        self.assertGreater(w.moment[2],0.)
+
     def test_allocator_saturates_and_reports_achieved_wrench(self):
         a = MotorAllocator(config())
         for thrust, moment in ((8.829, (2., 2., 1.)), (100., (0., 0., 0.)), (0., (1., 0., 0.))):

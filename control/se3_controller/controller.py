@@ -25,9 +25,9 @@ class Se3Controller:
         self.kw = np.array((.035, .045, .035))
 
     def step(self, state, position, velocity=(0., 0., 0.), acceleration=(0., 0., 0.),
-             yaw=0., dt=.0125, allow_integral=True):
-        reference = np.r_[position, velocity, acceleration, yaw, dt]
-        if (reference.shape != (11,) or not np.all(np.isfinite(reference))
+             yaw=0., dt=.0125, allow_integral=True, yaw_rate=0.):
+        reference = np.r_[position, velocity, acceleration, yaw, dt, yaw_rate]
+        if (reference.shape != (12,) or not np.all(np.isfinite(reference))
                 or not 0 < dt <= .05):
             raise ValueError('invalid controller reference or dt')
         R = rotation(state.orientation_wxyz)
@@ -49,6 +49,7 @@ class Se3Controller:
         Rd = np.column_stack((np.cross(b2, b3), b2, b3))
         error_matrix = .5*(Rd.T @ R - R.T @ Rd)
         attitude_error = np.array((error_matrix[2, 1], error_matrix[0, 2], error_matrix[1, 0]))
-        moment = -self.kr*attitude_error-self.kw*omega+np.cross(omega, self.inertia*omega)
+        desired_body_rate = R.T @ (0., 0., yaw_rate)
+        moment = -self.kr*attitude_error-self.kw*(omega-desired_body_rate)+np.cross(omega, self.inertia*omega)
         thrust = max(0., float(-force @ R[:, 2]))
         return Wrench(thrust, tuple(moment), tuple(a), tuple(self.integral))
