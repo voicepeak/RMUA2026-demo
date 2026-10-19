@@ -1,0 +1,420 @@
+{
+  "unit_tests_passed": 49,
+  "official_result": "UNKNOWN",
+  "certified_braking_bound": false,
+  "unexplained_failure_retained": true,
+  "cases": [
+    {
+      "name": "initial_combined_failure",
+      "seed": 1016,
+      "mode": "PWM",
+      "run_directory": "runs/20261019T115059Z_e6fa0becca744f24accba17f5f653dc2",
+      "source_unchanged": true,
+      "summary": {
+        "commands": 386,
+        "fault": "ANGULAR_RATE_LIMIT",
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 14.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {},
+        "injection": null,
+        "graph_monitor": {
+          "successful_checks": 53,
+          "fault": null,
+          "max_rpc_wall_s": 0.012146734050475061,
+          "stale_after_wall_s": 0.3
+        },
+        "gps_bridge_enabled": false,
+        "recovery_transitions": [],
+        "yaw_motion": true,
+        "braking": true,
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 386,
+        "commands": 386,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 97,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012578348047100008,
+          0.020499589364044363,
+          0.02287565651815383
+        ],
+        "minimum_command_wall_interval_s": 0.010606570052914321,
+        "state_position_rmse_m": [
+          0.017318313216668907,
+          0.010399425299783912,
+          0.016045955156692857
+        ],
+        "state_attitude_rmse_rad": 0.012505212536923754,
+        "truth_tracking_rmse_m": [
+          0.16461550905094965,
+          0.222540200028054,
+          0.05610374924157003
+        ],
+        "truth_tracking_max_norm_m": 0.34848263001649693,
+        "truth_yaw_tracking_rmse_rad": 0.014199071377196684,
+        "truth_yaw_tracking_max_abs_rad": 0.020369928478439103,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 2.557527862560797e-06,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": false,
+        "control_mode": "PWM",
+        "braking_response": {
+          "valid": false,
+          "certified_deceleration_bound": false,
+          "stop_speed_threshold_m_s": 0.08,
+          "hold_seconds": 0.35,
+          "reason": "MISSING_DATA"
+        }
+      }
+    },
+    {
+      "name": "static_diagnostic",
+      "seed": 1016,
+      "mode": "PWM",
+      "run_directory": "runs/20261019T115506Z_3de278e907fd48c791673193bce5985c",
+      "source_unchanged": true,
+      "summary": {
+        "commands": 964,
+        "fault": null,
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 14.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {},
+        "injection": null,
+        "graph_monitor": {
+          "successful_checks": 136,
+          "fault": null,
+          "max_rpc_wall_s": 0.02320704096928239,
+          "stale_after_wall_s": 0.3
+        },
+        "gps_bridge_enabled": false,
+        "recovery_transitions": [],
+        "yaw_motion": false,
+        "braking": false,
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 964,
+        "commands": 964,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 694,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.01262930000666529,
+          0.021316591615322976,
+          0.023811404330190272
+        ],
+        "minimum_command_wall_interval_s": 0.010700938990339637,
+        "state_position_rmse_m": [
+          0.01963954575499076,
+          0.022264768981074344,
+          0.013401930952644227
+        ],
+        "state_attitude_rmse_rad": 0.025745426711696783,
+        "truth_tracking_rmse_m": [
+          0.04695312869919837,
+          0.04164046935293547,
+          0.03582171795029569
+        ],
+        "truth_tracking_max_norm_m": 0.11449318321021344,
+        "truth_yaw_tracking_rmse_rad": 0.027490828061182113,
+        "truth_yaw_tracking_max_abs_rad": 0.041790080076186786,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 1.0241483501192899e-06,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      }
+    },
+    {
+      "name": "isolated_braking",
+      "seed": 1016,
+      "mode": "VEL",
+      "run_directory": "runs/20261019T115838Z_6a6442536f4e4971b1ec57e0b81c3fe2",
+      "source_unchanged": true,
+      "summary": {
+        "commands": 695,
+        "fault": null,
+        "control_mode": "VEL",
+        "connected_subscribers": 1,
+        "message_md5": "1a888a503939ba521aed68feee8eab6d",
+        "duration_s": 14.0,
+        "step": false,
+        "official_result": "UNKNOWN",
+        "reference_clock": "IMU",
+        "graph_monitor": {
+          "successful_checks": 137,
+          "fault": null,
+          "max_rpc_wall_s": 0.013890809961594641,
+          "stale_after_wall_s": 0.3
+        },
+        "yaw_motion": false,
+        "braking": true,
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 695,
+        "commands": 695,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 496,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.019996401038952172,
+          0.026001061307033526,
+          0.029646770636318254
+        ],
+        "minimum_command_wall_interval_s": 0.011051771929487586,
+        "state_position_rmse_m": [
+          0.025525795602280767,
+          0.018214889764297536,
+          0.017187859548978633
+        ],
+        "state_attitude_rmse_rad": 0.013407169060199065,
+        "truth_tracking_rmse_m": [
+          0.13986379022880308,
+          0.012227457970601131,
+          0.007462976701264535
+        ],
+        "truth_tracking_max_norm_m": 0.25802414839768817,
+        "truth_yaw_tracking_rmse_rad": 0.010333970964870537,
+        "truth_yaw_tracking_max_abs_rad": 0.02006807282730394,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 1.9751111512312343e-06,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "VEL",
+        "braking_response": {
+          "valid": true,
+          "certified_deceleration_bound": false,
+          "stop_speed_threshold_m_s": 0.08,
+          "hold_seconds": 0.35,
+          "reference_sensor_stamp": 1792411139.092012,
+          "initial_speed_m_s": 0.5372753180091863,
+          "stop_time_s": 1.1910254955291748,
+          "forward_excursion_m": 0.42771345260773863,
+          "effective_average_deceleration_m_s2": 0.3305692215396051,
+          "peak_speed_after_reference_m_s": 0.5435424097147035,
+          "lateral_excursion_m": 0.019505156549470277,
+          "note": "Includes controller/sensing lag; effective average is not an instantaneous lower bound."
+        }
+      }
+    },
+    {
+      "name": "isolated_braking",
+      "seed": 1016,
+      "mode": "PWM",
+      "run_directory": "runs/20261019T115909Z_5a962f7eac2a4aa79a16336bf1c85bbc",
+      "source_unchanged": true,
+      "summary": {
+        "commands": 963,
+        "fault": null,
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 14.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {},
+        "injection": null,
+        "graph_monitor": {
+          "successful_checks": 136,
+          "fault": null,
+          "max_rpc_wall_s": 0.016687887022271752,
+          "stale_after_wall_s": 0.3
+        },
+        "gps_bridge_enabled": false,
+        "recovery_transitions": [],
+        "yaw_motion": false,
+        "braking": true,
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 963,
+        "commands": 963,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 690,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012619087530765682,
+          0.02153187278890982,
+          0.023885901651810853
+        ],
+        "minimum_command_wall_interval_s": 0.010616841958835721,
+        "state_position_rmse_m": [
+          0.025846840646674904,
+          0.02069956646947835,
+          0.025329348895914875
+        ],
+        "state_attitude_rmse_rad": 0.017756428904705766,
+        "truth_tracking_rmse_m": [
+          0.08757508639809661,
+          0.043265630383961494,
+          0.04125977063277059
+        ],
+        "truth_tracking_max_norm_m": 0.18888346610599413,
+        "truth_yaw_tracking_rmse_rad": 0.01780689216279344,
+        "truth_yaw_tracking_max_abs_rad": 0.03577480724109261,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 4.850269965271944e-06,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "PWM",
+        "braking_response": {
+          "valid": true,
+          "certified_deceleration_bound": false,
+          "stop_speed_threshold_m_s": 0.08,
+          "hold_seconds": 0.35,
+          "reference_sensor_stamp": 1792411166.9054036,
+          "initial_speed_m_s": 0.31014187314151087,
+          "stop_time_s": 1.008021593093872,
+          "forward_excursion_m": 0.26261240196798497,
+          "effective_average_deceleration_m_s2": 0.17166874410483374,
+          "peak_speed_after_reference_m_s": 0.33163022179194,
+          "lateral_excursion_m": 0.033274991137116315,
+          "note": "Includes controller/sensing lag; effective average is not an instantaneous lower bound."
+        }
+      }
+    },
+    {
+      "name": "combined_repeat",
+      "seed": 1016,
+      "mode": "PWM",
+      "run_directory": "runs/20261019T120220Z_77feb6afe8a543ebb2c591623105b1dd",
+      "source_unchanged": true,
+      "summary": {
+        "commands": 965,
+        "fault": null,
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 14.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {},
+        "injection": null,
+        "graph_monitor": {
+          "successful_checks": 136,
+          "fault": null,
+          "max_rpc_wall_s": 0.01613915292546153,
+          "stale_after_wall_s": 0.3
+        },
+        "gps_bridge_enabled": false,
+        "recovery_transitions": [],
+        "yaw_motion": true,
+        "braking": true,
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 965,
+        "commands": 965,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 692,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012640887522138655,
+          0.021763558132806792,
+          0.02423282807925716
+        ],
+        "minimum_command_wall_interval_s": 0.01061924803070724,
+        "state_position_rmse_m": [
+          0.022659589880515654,
+          0.02360716290389847,
+          0.02014172507584123
+        ],
+        "state_attitude_rmse_rad": 0.012915156501851344,
+        "truth_tracking_rmse_m": [
+          0.08923076135919965,
+          0.09760410315115137,
+          0.037509692825135735
+        ],
+        "truth_tracking_max_norm_m": 0.23417924935954795,
+        "truth_yaw_tracking_rmse_rad": 0.012425334247075535,
+        "truth_yaw_tracking_max_abs_rad": 0.025050513012352837,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 1.59620069766341e-05,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "PWM",
+        "braking_response": {
+          "valid": true,
+          "certified_deceleration_bound": false,
+          "stop_speed_threshold_m_s": 0.08,
+          "hold_seconds": 0.35,
+          "reference_sensor_stamp": 1792411359.0349586,
+          "initial_speed_m_s": 0.415089861043608,
+          "stop_time_s": 1.4730315208435059,
+          "forward_excursion_m": 0.19392901606303048,
+          "effective_average_deceleration_m_s2": 0.42801648077697035,
+          "peak_speed_after_reference_m_s": 0.415089861043608,
+          "lateral_excursion_m": 0.09646513681722291,
+          "note": "Includes controller/sensing lag; effective average is not an instantaneous lower bound."
+        }
+      }
+    }
+  ],
+  "failure_note": "Initial run tripped the angular-rate guard near sim elapsed 4.9s, before yaw motion starts at 5s. Same-seed static, isolated braking and combined repeats succeeded. Root cause remains unresolved; repeats do not constitute a fix."
+}

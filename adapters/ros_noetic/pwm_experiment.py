@@ -35,7 +35,7 @@ def motor_pattern():
 
 
 def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0, step=False,
-                   sensor_fault=None, fault_seconds=.15, gps_bridge=False, yaw_motion=False):
+                   sensor_fault=None, fault_seconds=.15, gps_bridge=False, yaw_motion=False,braking=False):
     import rospy
     import rosgraph
     from airsim_ros.msg import RotorPWM
@@ -118,7 +118,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 details = {}
                 if hover_seconds:
                     sim_elapsed = state.metadata.stamp-start_stamp
-                    reference, velocity, acceleration = benchmark_reference(origin, sim_elapsed, step)
+                    reference, velocity, acceleration = benchmark_reference(origin, sim_elapsed, step,braking)
                     yaw_command,yaw_rate = benchmark_yaw(yaw_reference,sim_elapsed,yaw_motion)
                     allow_integral = not previous_saturated
                     phase = 'NORMAL'
@@ -190,6 +190,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
               'graph_monitor':monitor.summary() if monitor else None,
               'gps_bridge_enabled':gps_bridge,'recovery_transitions':recovery.transitions,
               'yaw_motion':yaw_motion,
+              'braking':braking,
               'pulse_seconds': pulse_seconds,
               'stage': 'LOCAL_PWM_CLOSED_LOOP_HOVER' if hover_seconds else 'LOCAL_OPEN_LOOP_IDENTIFICATION',
               'official_result': 'UNKNOWN', 'host_scene_stop_required': True}
@@ -210,6 +211,7 @@ def main():
     parser.add_argument('--fault-seconds',type=float,default=.15)
     parser.add_argument('--gps-bridge',action='store_true')
     parser.add_argument('--yaw-motion',action='store_true')
+    parser.add_argument('--braking',action='store_true')
     args = parser.parse_args()
     levels = tuple(float(value) for value in args.levels.split(','))
     if (not levels or len(levels) > 20 or not all(0 < v <= .6 for v in levels)
@@ -218,10 +220,14 @@ def main():
         parser.error('bounded identification requires <=20 levels in (0,.6], pulses [.05,1]s')
     if args.step and args.hover_seconds < 10:
         parser.error('step profile requires hover-seconds >=10')
+    if (args.braking or args.yaw_motion) and args.hover_seconds < 10:
+        parser.error('braking/yaw identification requires >=10s hover experiment')
+    if args.braking and args.step:
+        parser.error('braking and position step are separate experiments')
     if args.sensor_fault and (args.hover_seconds < 8 or not 0 < args.fault_seconds <= 1):
         parser.error('local sensor injection requires >=8s hover and duration (0,1]')
     return run_experiment(args.run_dir, levels, args.pulse_seconds, args.motor_pulses, args.hover_seconds, args.step,
-                          args.sensor_fault,args.fault_seconds,args.gps_bridge,args.yaw_motion)
+                          args.sensor_fault,args.fault_seconds,args.gps_bridge,args.yaw_motion,args.braking)
 
 
 if __name__ == '__main__':

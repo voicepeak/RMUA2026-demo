@@ -60,6 +60,10 @@ class FlightSensors:
                     self.pending_gps = None
                 self.raw = {'stamp': stamp, 'acceleration_body': acceleration,
                             'omega_body': omega}
+                attitude = getattr(msg,'orientation',None)
+                if attitude is not None:
+                    # Record for calibration only; it does not enter the filter.
+                    self.raw['imu_orientation_wxyz']=(attitude.w,attitude.x,attitude.y,attitude.z)
             except (ValueError, ArithmeticError) as error:
                 self.fault = str(error)
 

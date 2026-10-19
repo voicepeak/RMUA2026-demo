@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 
-def benchmark_reference(origin, elapsed, step=False):
+def benchmark_reference(origin, elapsed, step=False, braking=False):
     if not math.isfinite(elapsed) or elapsed < 0:
         raise ValueError('invalid reference time')
     origin = np.asarray(origin, dtype=float)
@@ -16,7 +16,12 @@ def benchmark_reference(origin, elapsed, step=False):
     position = origin+(0., 0., -h)
     if step and elapsed >= 4:
         position[0] += .4 if elapsed < 8 else -.4
-    return tuple(position), (0., 0., -dh), (0., 0., -ddh)
+    vx = 0.
+    if braking:
+        # Deliberate velocity steps identify response; not a mission trajectory.
+        position[0] += .4*min(2.,max(0.,elapsed-4.))
+        vx = .4 if 4 <= elapsed < 6 else 0.
+    return tuple(position), (vx, 0., -dh), (0., 0., -ddh)
 
 
 def benchmark_yaw(initial_yaw, elapsed, enabled=False):

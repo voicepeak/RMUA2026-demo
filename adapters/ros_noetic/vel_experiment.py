@@ -16,7 +16,7 @@ from interfaces.contracts import Health
 from control.control_authority.graph_monitor import GraphMonitor
 
 
-def run_experiment(run, duration, step,yaw_motion=False):
+def run_experiment(run, duration, step,yaw_motion=False,braking=False):
     import rosgraph
     import rospy
     from airsim_ros.msg import VelCmd
@@ -85,7 +85,7 @@ def run_experiment(run, duration, step,yaw_motion=False):
                     raise RuntimeError('ANGULAR_RATE_LIMIT')
                 monitor.check()
                 sim_elapsed = state.metadata.stamp-start_stamp
-                reference, velocity, _ = benchmark_reference(origin, sim_elapsed, step)
+                reference, velocity, _ = benchmark_reference(origin, sim_elapsed, step,braking)
                 yaw_command,yaw_rate=benchmark_yaw(yaw,sim_elapsed,yaw_motion)
                 values = body_velocity(state, reference, velocity, yaw_command,yaw_rate)
                 command = VelocityCommand(state.metadata.stamp, state.metadata.epoch, sequence, values)
@@ -128,6 +128,7 @@ def run_experiment(run, duration, step,yaw_motion=False):
               'reference_clock':'IMU',
               'graph_monitor':monitor.summary() if monitor else None,
               'yaw_motion':yaw_motion,
+              'braking':braking,
               'host_scene_stop_required':True}
     (run/'vel_summary.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result),flush=True)
@@ -140,10 +141,15 @@ def main():
     parser.add_argument('--hover-seconds',type=float,required=True)
     parser.add_argument('--step',action='store_true')
     parser.add_argument('--yaw-motion',action='store_true')
+    parser.add_argument('--braking',action='store_true')
     args=parser.parse_args()
     if not 3 <= args.hover_seconds <= 20 or (args.step and args.hover_seconds < 10):
         parser.error('bounded VEL duration must be [3,20], step >=10')
-    return run_experiment(args.run_dir,args.hover_seconds,args.step,args.yaw_motion)
+    if (args.braking or args.yaw_motion) and args.hover_seconds < 10:
+        parser.error('braking/yaw identification requires >=10s')
+    if args.braking and args.step:
+        parser.error('braking and position step are separate experiments')
+    return run_experiment(args.run_dir,args.hover_seconds,args.step,args.yaw_motion,args.braking)
 
 
 if __name__ == '__main__':

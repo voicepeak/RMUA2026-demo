@@ -45,6 +45,8 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --se
 OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1014 --hover-seconds 14 --sensor-fault GPS_ZERO --fault-seconds .8 --gps-bridge --evaluate-truth
 # 小幅偏航、角速度单位与响应验证（两个 mode 分别运行）
 OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1015 --mode PWM --hover-seconds 14 --yaw-motion --evaluate-truth
+# 低速制动响应与正式传感器场景快照；不会自动认证制动下界
+OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1016 --mode PWM --hover-seconds 14 --braking --snapshot --evaluate-truth
 ```
 
 仅用于本地动力学辨识，会因高度/姿态/状态过期而中止，不能作为比赛控制入口。

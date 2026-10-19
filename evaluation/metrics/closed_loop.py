@@ -9,7 +9,7 @@ def evaluate(telemetry, truth, settled_after=4.):
     ordered = sorted({r['stamp']: r for r in truth if r['stamp'] > 0}.values(),
                      key=lambda r: r['stamp'])
     stamps = np.array([r['stamp'] for r in ordered])
-    errors, tracking, attitudes, yaw_errors = [], [], [], []
+    errors, tracking, attitudes, yaw_errors, imu_attitudes = [], [], [], [], []
     matched = 0
     for row in telemetry:
         stamp = row['command']['stamp']
@@ -32,6 +32,13 @@ def evaluate(telemetry, truth, settled_after=4.):
             errors.append(estimated-position)
             dot = abs(np.array(row['state']['orientation_wxyz']) @ orientation)
             attitudes.append(2*np.arccos(np.clip(dot, 0., 1.)))
+            raw_q=row.get('raw',{}).get('imu_orientation_wxyz')
+            if raw_q is not None:
+                q=np.asarray(raw_q,dtype=float)
+                norm=np.linalg.norm(q)
+                if q.shape==(4,) and np.all(np.isfinite(q)) and abs(norm-1)<.01:
+                    dot=abs(q @ orientation/norm)
+                    imu_attitudes.append(2*np.arccos(np.clip(dot,0.,1.)))
             if 'reference' in row:
                 tracking.append(position-np.array(row['reference']))
             if 'yaw_reference' in row:
@@ -57,6 +64,10 @@ def evaluate(telemetry, truth, settled_after=4.):
     if yaw_errors:
         result['truth_yaw_tracking_rmse_rad']=float(np.sqrt(np.mean(np.array(yaw_errors)**2)))
         result['truth_yaw_tracking_max_abs_rad']=float(np.abs(yaw_errors).max())
+    if imu_attitudes:
+        result['imu_orientation_unit_valid_fraction']=len(imu_attitudes)/len(errors)
+        result['imu_orientation_truth_rmse_rad']=float(np.sqrt(np.mean(np.array(imu_attitudes)**2)))
+        result['imu_orientation_fused_in_estimator']=False
     result['evaluation_valid'] = result['match_fraction'] >= .9 and len(errors) >= 100
     return result
 
@@ -72,6 +83,9 @@ def main():
     telemetry=rows('vel_telemetry.jsonl' if mode == 'VEL' else 'pwm_telemetry.jsonl')
     result = evaluate(telemetry, rows('evaluation_truth.jsonl'))
     result['control_mode'] = mode
+    if manifest['config'].get('experiment',{}).get('braking'):
+        from evaluation.metrics.braking import measure_braking
+        result['braking_response']=measure_braking(telemetry,rows('evaluation_truth.jsonl'))
     if mode == 'VEL':
         samples=[r for r in telemetry if 5.4 <= r.get('sim_elapsed',0) < 6.8
                  and r.get('yaw_rate_reference',0) > 0 and abs(r['command']['values'][3]) > 1.]

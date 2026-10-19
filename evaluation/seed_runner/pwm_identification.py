@@ -23,6 +23,8 @@ def main():
     parser.add_argument('--fault-seconds', type=float, default=.15)
     parser.add_argument('--gps-bridge',action='store_true')
     parser.add_argument('--yaw-motion',action='store_true')
+    parser.add_argument('--braking',action='store_true')
+    parser.add_argument('--snapshot',action='store_true')
     args = parser.parse_args()
     if args.mode == 'VEL' and (args.motor_pulses or not 3 <= args.hover_seconds <= 20):
         parser.error('VEL requires hover-seconds [3,20] and no motor pulses')
@@ -30,6 +32,10 @@ def main():
         parser.error('sensor injection currently available for PWM experiments only')
     if args.gps_bridge and (args.mode != 'PWM' or args.hover_seconds < 3):
         parser.error('GPS bridge is only available in bounded PWM hover')
+    if (args.braking or args.yaw_motion or args.step) and args.hover_seconds < 10:
+        parser.error('response identification requires hover-seconds >=10')
+    if args.braking and args.step:
+        parser.error('braking and step are separate experiments')
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
     digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'], text=True).strip()
     config = json.loads((root/'configs/official_baseline.yaml').read_text())
@@ -38,9 +44,10 @@ def main():
                             'motor_pulses': args.motor_pulses, 'hover_seconds': args.hover_seconds,
                             'evaluate_truth': args.evaluate_truth, 'step': args.step,
                             'sensor_fault':args.sensor_fault, 'fault_seconds':args.fault_seconds,
-                            'gps_bridge':args.gps_bridge,'yaw_motion':args.yaw_motion}
+                            'gps_bridge':args.gps_bridge,'yaw_motion':args.yaw_motion,'braking':args.braking,
+                            'snapshot':args.snapshot}
     run, manifest = prepare_run(root, root/'runs', args.seed, digest, config)
-    manifest['stage'] = 'P0_PWM_IDENTIFICATION' if args.mode == 'PWM' else 'P1_VEL_BENCHMARK'
+    manifest['stage'] = ('P1_PWM_CLOSED_LOOP' if args.hover_seconds else 'P0_PWM_IDENTIFICATION') if args.mode == 'PWM' else 'P1_VEL_BENCHMARK'
     print(run, flush=True)
     code = 1
     evaluator = None
@@ -64,6 +71,10 @@ def main():
                     break
             else:
                 raise RuntimeError('simulator sensor readiness timeout')
+            if args.snapshot:
+                subprocess.run([str(root/'tools/enter_env.sh'),'env','OPENBLAS_NUM_THREADS=1',
+                    'python3','-m','adapters.ros_noetic.scene_snapshot','--run-dir',
+                    '/workspace/main/'+str(run.relative_to(root))],check=True,timeout=25)
             if args.evaluate_truth:
                 evaluation_log = (run/'truth_evaluator.log').open('x')
                 evaluator = subprocess.Popen([str(root/'tools/enter_env.sh'), 'python3', '-m',
@@ -93,6 +104,8 @@ def main():
                 command.append('--gps-bridge')
             if args.yaw_motion:
                 command.append('--yaw-motion')
+            if args.braking:
+                command.append('--braking')
             code = subprocess.call(command, timeout=40)
         except Exception as error:
             manifest['error'] = str(error)
@@ -119,8 +132,9 @@ def main():
             prefix = 'pwm' if args.mode == 'PWM' else 'vel'
             manifest['telemetry'] = [prefix+'_telemetry.jsonl', prefix+'_summary.json', 'simulator.log']
             if args.evaluate_truth:
-                manifest['evaluation_only_inputs'] = ['/airsim_node/drone_1/debug/pose_gt']
-                manifest['telemetry'].append('evaluation_truth.jsonl')
+                manifest['evaluation_only_inputs'] = ['/airsim_node/drone_1/debug/pose_gt',
+                                                     '/airsim_node/drone_1/debug/rotor_pwm']
+                manifest['telemetry'].extend(['evaluation_truth.jsonl','evaluation_actuation.jsonl'])
             (run/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
     if args.evaluate_truth and (run/(prefix+'_telemetry.jsonl')).exists() and (run/'evaluation_truth.jsonl').exists():
         metric_code = subprocess.call(['python3', '-m', 'evaluation.metrics.closed_loop', str(run)], cwd=root)

@@ -27,5 +27,6 @@
 !evaluation/metrics/
 !evaluation/metrics/__init__.py
 !evaluation/metrics/closed_loop.py
+!evaluation/metrics/braking.py
 **/__pycache__/
 **/*.pyc
