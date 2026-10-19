@@ -1,6 +1,6 @@
 # 旧实验公开数据发布
 
-用户指定 Hugging Face 账号 Voicepeak、公开可见，计划仓库 `Voicepeak/rmua2026-legacy-data`。
+用户指定公开可见；凭据认证确认实际 Hugging Face 用户名为 `Vociepeak`（此前口述 Voicepeak）。仓库为 `Vociepeak/rmua2026-legacy-data`。
 上传前必须通过 `whoami()` 核实准确用户名；大小写采用登录账号的规范名称。当前状态以本机上传状态和远端 publication_status.json 为准，不能用脚本存在代表已经上传。
 
 工具环境位于 `/home/tianbot/.local/share/rmua-hf-upload/venv`，与 ROS/Noetic 环境隔离。
@@ -15,7 +15,7 @@ cd /home/tianbot/RUMA-by-helinjun/main
 # 已存在 plan.json 时不重复 prepare；继续 pack 或 upload
 ./tools/publish_legacy_data.sh prepare
 ./tools/publish_legacy_data.sh pack --shard-index 0
-./tools/publish_legacy_data.sh upload --repo-id Voicepeak/rmua2026-legacy-data
+./tools/publish_legacy_data.sh upload --repo-id Vociepeak/rmua2026-legacy-data
 ```
 
 选择实验、图像、运行记录和历史验证附件中的观测及元数据，跳过 Git、模型、驱动/安装包、编译缓存、代码副本、软链接及命中凭据模式的文本。具体排除文件只写入本机 exclusions.local.json。自动扫描不替代针对数据来源的判断。
@@ -27,3 +27,5 @@ cd /home/tianbot/RUMA-by-helinjun/main
 依赖官方 huggingface_hub API；不在命令参数、日志或代码中接收/保存令牌。非 LFS 小文件会读取远端内容校验；LFS/Xet 文件对照服务端 SHA256 和大小。独立测试验证排除规则、源文件变更拒绝、不可覆盖计划、tar 及索引确定性和逐文件校验。
 
 2026-10-19 准备结果：491,550 个文件，90,138,699,132 字节（约 84 GiB），86 个计划分片。扫描未命中已定义的凭据模式。当前未检测到登录凭据，因此尚未创建或上传远端仓库。
+
+凭据认证已完成，公开仓库已创建并开始上传。认证凭据仅在上传进程内存中使用，不保存到 Git、计划清单或日志。上传进度与完整性以远端 publication_status.json 和 shards.json 为准。

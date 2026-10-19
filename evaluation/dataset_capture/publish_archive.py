@@ -333,7 +333,7 @@ def main():
     parser.add_argument("--output", type=Path, default=Path("/home/tianbot/RUMA-hf-public-20261019"))
     parser.add_argument("--shard-gib", type=float, default=1.0)
     parser.add_argument("--shard-index", type=int, default=0)
-    parser.add_argument("--repo-id", default="Voicepeak/rmua2026-legacy-data")
+    parser.add_argument("--repo-id", default="Vociepeak/rmua2026-legacy-data")
     args = parser.parse_args()
     if not 0 < args.shard_gib <= 4:
         parser.error("shard-gib must be in (0, 4]")
