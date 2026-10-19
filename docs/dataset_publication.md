@@ -29,3 +29,16 @@ cd /home/tianbot/RUMA-by-helinjun/main
 2026-10-19 准备结果：491,550 个文件，90,138,699,132 字节（约 84 GiB），86 个计划分片。扫描未命中已定义的凭据模式。当前未检测到登录凭据，因此尚未创建或上传远端仓库。
 
 凭据认证已完成，公开仓库已创建并开始上传。认证凭据仅在上传进程内存中使用，不保存到 Git、计划清单或日志。上传进度与完整性以远端 publication_status.json 和 shards.json 为准。
+
+## 后台上传与状态
+
+`evaluation.dataset_capture.upload_service` 脱离交互终端运行，使用互斥锁防止重复启动，网络异常时重试并验证此前完成的分片。当前服务的 PID、状态及错误写入外部归档目录中的 `upload_service_status.local.json`，不进入公开数据仓库。日志文件权限 0600，并对凭据进行过滤。
+
+```bash
+cd /home/tianbot/RUMA-by-helinjun/main
+./tools/data_upload_status.sh
+```
+
+第一个真实分片已在远端验证：data-00000.tar，1,058,334,720 字节，SHA256 `807a7ed76e93822145ccf22b070af9d07941a7ed8f52592550b071f7b227c1e8`。当前发布状态为 UPLOADING；完成标志只由所有分片校验成功后自动生成。
+
+服务不保存认证凭据；机器重启或进程结束后恢复上传需要重新提供凭据。本机原始档案始终保留。公开链接：https://huggingface.co/datasets/Vociepeak/rmua2026-legacy-data 。
