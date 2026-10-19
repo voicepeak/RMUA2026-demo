@@ -34,6 +34,9 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --se
 OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1003 --motor-pulses --pulse-seconds .1
 # 低高度、有限时长的 PWM 闭环；不是比赛入口
 OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1004 --hover-seconds 10
+# 独立进程记录本地真值，飞行结束后才计算误差；不输入控制器
+OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1005 --hover-seconds 14 --evaluate-truth
+OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1006 --hover-seconds 14 --step --evaluate-truth
 ```
 
 仅用于本地动力学辨识，会因高度/姿态/状态过期而中止，不能作为比赛控制入口。

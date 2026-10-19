@@ -30,7 +30,7 @@ def motor_pattern():
     return tuple(pattern)
 
 
-def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0):
+def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0, step=False):
     import rospy
     import rosgraph
     from airsim_ros.msg import RotorPWM
@@ -66,7 +66,14 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
             if publisher.get_num_connections() != 1:
                 raise RuntimeError('PWM_SUBSCRIBER_COUNT')
             graph(True)
-            guard = CommandGuard(sensors.clock.epoch)
+            _, subscribers, _ = master.getSystemState()
+            runtime_inputs = sorted(topic for topic, nodes in subscribers if rospy.get_name() in nodes)
+            official_config = json.loads((Path(__file__).resolve().parents[2]/'configs/official_baseline.yaml').read_text())
+            if any(topic not in official_config['sensors'] for topic in runtime_inputs):
+                raise RuntimeError('INPUT_WHITELIST_POLICY')
+            (run/'runtime_input_audit.json').write_text(json.dumps({'node': rospy.get_name(),
+                'topics': runtime_inputs, 'debug_inputs': False}, indent=2)+'\n')
+            guard = CommandGuard(sensors.clock.epoch, minimum_period=.0105)
             pattern = motor_pattern() if motor_pulses else tuple((v,)*4 for v in levels)
             config = json.loads((Path(__file__).resolve().parents[2]/'configs/vehicle_identification.json').read_text())
             allocator, controller = MotorAllocator(config), Se3Controller(config)
@@ -102,6 +109,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     dh = (30*s**2-60*s**3+30*s**4)/3
                     ddh = (60*s-180*s**2+120*s**3)/9 if s < 1 else 0.
                     reference = origin + (0., 0., -h)
+                    if step and now-start >= 4:
+                        reference[0] += .4 if now-start < 8 else -.4
                     dt = now-previous_control_wall
                     wrench = controller.step(state, tuple(reference), (0., 0., -dh), (0., 0., -ddh),
                                              yaw_reference, dt, not previous_saturated)
@@ -114,14 +123,18 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     values = pattern[index]
                 command = PwmCommand(state.metadata.stamp, state.metadata.epoch, sequence, values)
                 with sensors.lock:
-                    allowed = guard.accept(command, sensors.clock, time.monotonic())
+                    accepted_wall = time.monotonic()
+                    allowed = guard.accept(command, sensors.clock, accepted_wall)
                 if allowed:
                     msg = RotorPWM()
                     msg.header.stamp = rospy.Time.from_sec(command.stamp)
                     msg.header.seq = sequence
                     msg.rotorPWM0, msg.rotorPWM1, msg.rotorPWM2, msg.rotorPWM3 = command.values
                     publisher.publish(msg)
+                    published_wall = time.monotonic()
                     rows.append({'wall_elapsed': now-start, 'command': asdict(command),
+                                 'guard_accept_wall_elapsed': accepted_wall-start,
+                                 'publish_wall_elapsed': published_wall-start,
                                  'raw': raw, 'state': {k:v for k,v in asdict(state).items() if k != 'metadata'},
                                  **details})
                     sequence += 1
@@ -141,6 +154,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
     result = {'commands': len(rows), 'fault': fault, 'levels': levels,
               'motor_pulses': motor_pulses,
               'hover_seconds': hover_seconds,
+              'step': step,
               'pulse_seconds': pulse_seconds,
               'stage': 'LOCAL_PWM_CLOSED_LOOP_HOVER' if hover_seconds else 'LOCAL_OPEN_LOOP_IDENTIFICATION',
               'official_result': 'UNKNOWN', 'host_scene_stop_required': True}
@@ -156,13 +170,16 @@ def main():
     parser.add_argument('--pulse-seconds', type=float, default=.3)
     parser.add_argument('--motor-pulses', action='store_true')
     parser.add_argument('--hover-seconds', type=float, default=0.)
+    parser.add_argument('--step', action='store_true')
     args = parser.parse_args()
     levels = tuple(float(value) for value in args.levels.split(','))
     if (not levels or len(levels) > 20 or not all(0 < v <= .6 for v in levels)
             or not .05 <= args.pulse_seconds <= 1 or not 0 <= args.hover_seconds <= 20
             or (args.hover_seconds and args.motor_pulses)):
         parser.error('bounded identification requires <=20 levels in (0,.6], pulses [.05,1]s')
-    return run_experiment(args.run_dir, levels, args.pulse_seconds, args.motor_pulses, args.hover_seconds)
+    if args.step and args.hover_seconds < 10:
+        parser.error('step profile requires hover-seconds >=10')
+    return run_experiment(args.run_dir, levels, args.pulse_seconds, args.motor_pulses, args.hover_seconds, args.step)
 
 
 if __name__ == '__main__':

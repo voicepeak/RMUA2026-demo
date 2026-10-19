@@ -2,8 +2,10 @@
 
 目录遵循设计第 14 节。估计、感知异步产生不可变数据；世界模型整合状态、三态占据与动态预测；任务和局部规划产生轨迹，经独立校验后进入飞控及唯一发布者。
 
-当前真实实现：interfaces/contracts.py、world_model/occupancy/grid.py、planning/speed_envelope/braking.py、control/safety_supervisor/preflight.py、adapters/ros_noetic/interface_audit.py、evaluation/seed_runner/manifest.py。
+当前真实实现：不可变接口、三态占据、制动包络、前置检查、ROS 审计、IMU/GPS ESKF、控制租约与指令门、SE(3) 控制和 bounded mixer、有界本地实验、独立真值记录与离线指标。具体运行证据见 implementation_status.md。
 
 occupancy/query 是小规模离线基线，不满足实时大体素地图的性能要求。preflight 只提供必要条件，不证明碰撞安全，也不执行紧急制动。其余目录标记为待实施，不能作为已运行的飞行模块。
 
-PWM/VEL 发布器尚未实现，因此 P0 审计不会锁定模拟器控制接口。不得直接迁移旧 route_follower.py 作为新架构入口。
+PWM 目前只有本地有界实验发布器；P0 只读审计仍不会锁定控制接口。控制节点只订阅 initial_pose、IMU、GPS，ROS 图按官方白名单检查。独立真值进程仅订阅 debug/pose_gt，无发布者；控制完成后，宿主才调用离线指标程序读取真值文件。控制节点不导入评测模块，也不读取真值文件。不得直接迁移旧 route_follower.py 作为新架构入口。
+
+控制与估计目前仍在同一 Python 进程，ROS 图查询尚未异步化，不能声称具备生产级实时隔离或独立的飞行回退。实验结束和保护中止由宿主关闭本轮模拟器；比赛部署禁止照搬此行为。
