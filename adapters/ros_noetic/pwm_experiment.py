@@ -43,6 +43,10 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
     master = rosgraph.Master(rospy.get_name())
     scene_id = rospy.get_param('/run_id')
     rows, fault = [], None
+    latest_state,latest_raw,latest_elapsed=None,None,None
+    fresh_read=False
+    fault_observation=None
+    last_published_wall=None
     def graph(require_self):
         pubs, _, _ = master.getSystemState()
         check_graph(dict(pubs), rospy.get_name(), require_self=require_self)
@@ -102,7 +106,10 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 index = int((now-start)/pulse_seconds)
                 if (hover_seconds and now-start >= hover_seconds) or (not hover_seconds and index >= len(pattern)):
                     break
+                fresh_read=False
                 state, raw = sensors.read()
+                latest_state,latest_raw,latest_elapsed=state,raw,now-start
+                fresh_read=True
                 R = rotation(state.orientation_wxyz)
                 if state.health != Health.OK and not (hover_seconds and gps_bridge):
                     raise RuntimeError('STATE_HEALTH_'+state.health.value)
@@ -158,6 +165,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     msg.rotorPWM0, msg.rotorPWM1, msg.rotorPWM2, msg.rotorPWM3 = command.values
                     publisher.publish(msg)
                     published_wall = time.monotonic()
+                    last_published_wall=published_wall
                     guard.published(published_wall)
                     rows.append({'wall_elapsed': now-start, 'command': asdict(command),
                                  'guard_accept_wall_elapsed': accepted_wall-start,
@@ -173,6 +181,11 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 time.sleep(max(0., delay))
         except Exception as error:
             fault = str(error)
+            failed_wall=time.monotonic()
+            fault_observation={'reason':fault,'fresh_read_in_fault_iteration':fresh_read,
+                'wall_elapsed_at_last_read':latest_elapsed,
+                'wall_since_last_publication_s':None if last_published_wall is None else failed_wall-last_published_wall,
+                'state':asdict(latest_state) if latest_state else None,'raw':latest_raw}
         finally:
             if monitor:
                 monitor.close()
@@ -180,6 +193,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 publisher.unregister()
             sensors.close()
     (run/'pwm_telemetry.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
+    if fault_observation is not None:
+        (run/'fault_observation.json').write_text(json.dumps(fault_observation,indent=2)+'\n')
     result = {'commands': len(rows), 'fault': fault, 'levels': levels,
               'motor_pulses': motor_pulses,
               'hover_seconds': hover_seconds,

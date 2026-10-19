@@ -32,5 +32,6 @@
 !evaluation/seed_runner/__init__.py
 !evaluation/seed_runner/manifest.py
 !evaluation/seed_runner/simulator_preflight.py
+!evaluation/seed_runner/p1_regression.py
 **/__pycache__/
 **/*.pyc

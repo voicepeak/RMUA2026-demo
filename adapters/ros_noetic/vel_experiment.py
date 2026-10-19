@@ -23,6 +23,10 @@ def run_experiment(run, duration, step,yaw_motion=False,braking=False):
     rospy.init_node('rmua_next_vel_benchmark', anonymous=True, disable_signals=True)
     master = rosgraph.Master(rospy.get_name())
     rows, fault = [], None
+    latest_state,latest_raw,latest_elapsed=None,None,None
+    fresh_read=False
+    fault_observation=None
+    last_published_wall=None
     connections = 0
     def graph(require_self):
         pubs, _, _ = master.getSystemState()
@@ -72,7 +76,10 @@ def run_experiment(run, duration, step,yaw_motion=False,braking=False):
             sequence = 0
             while time.monotonic()-start < duration:
                 now = time.monotonic()
+                fresh_read=False
                 state, raw = sensors.read()
+                latest_state,latest_raw,latest_elapsed=state,raw,now-start
+                fresh_read=True
                 if state.health != Health.OK:
                     raise RuntimeError('STATE_HEALTH_'+state.health.value)
                 if rotation(state.orientation_wxyz)[2,2] < math.cos(.35):
@@ -100,6 +107,7 @@ def run_experiment(run, duration, step,yaw_motion=False,braking=False):
                     msg.va, msg.stop = 4, 0
                     publisher.publish(msg)
                     published_wall=time.monotonic()
+                    last_published_wall=published_wall
                     guard.published(published_wall)
                     rows.append({'wall_elapsed':now-start,'guard_accept_wall_elapsed':accepted_wall-start,
                         'publish_wall_elapsed':published_wall-start, 'command':asdict(command),
@@ -115,6 +123,11 @@ def run_experiment(run, duration, step,yaw_motion=False,braking=False):
                 time.sleep(max(0.,delay))
         except Exception as error:
             fault = str(error)
+            failed_wall=time.monotonic()
+            fault_observation={'reason':fault,'fresh_read_in_fault_iteration':fresh_read,
+                'wall_elapsed_at_last_read':latest_elapsed,
+                'wall_since_last_publication_s':None if last_published_wall is None else failed_wall-last_published_wall,
+                'state':asdict(latest_state) if latest_state else None,'raw':latest_raw}
         finally:
             if monitor:
                 monitor.close()
@@ -122,6 +135,8 @@ def run_experiment(run, duration, step,yaw_motion=False,braking=False):
                 publisher.unregister()
             sensors.close()
     (run/'vel_telemetry.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
+    if fault_observation is not None:
+        (run/'fault_observation.json').write_text(json.dumps(fault_observation,indent=2)+'\n')
     result = {'commands':len(rows),'fault':fault,'control_mode':'VEL',
               'connected_subscribers':connections,'message_md5':VelCmd._md5sum,
               'duration_s':duration,'step':step,'official_result':'UNKNOWN',

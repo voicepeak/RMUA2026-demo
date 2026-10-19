@@ -10,7 +10,7 @@ if [[ "$project" != main || "$parent" != RUMA-by-helinjun ]]; then
   echo 'Update the /workspace/main mapping when relocating this workspace.' >&2
   exit 1
 fi
-tty_args=()
+tty_args=(-i)
 if [[ -t 0 && -t 1 ]]; then tty_args=(-it); fi
 if [[ $# == 0 ]]; then set -- bash; fi
 exec docker exec "${tty_args[@]}" -u "$(id -u):$(id -g)" -w /workspace/main "$CONT" bash -c '

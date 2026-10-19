@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "purpose": "development_failure_reproduction_not_held_out_acceptance",
+  "seeds": [1016, 1016, 1016, 1016, 1016, 2021, 2022, 2023],
+  "hover_seconds": 14,
+  "mode": "PWM",
+  "braking": true,
+  "yaw_motion": true,
+  "snapshot": false,
+  "parameter_policy": "freeze all source hashes throughout batch; no tuning between cases",
+  "official_result": "UNKNOWN"
+}

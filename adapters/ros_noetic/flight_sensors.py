@@ -92,6 +92,8 @@ class FlightSensors:
                 raise RuntimeError('STALE_IMU')
             raw = dict(self.raw)
             raw['last_gps_stamp'] = self.estimator.last_gps
+            raw['gyro_bias_body'] = tuple(self.estimator.bg)
+            raw['accel_bias_body'] = tuple(self.estimator.ba)
             return self.estimator.snapshot(), raw
 
     def close(self):
