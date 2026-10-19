@@ -3,3 +3,12 @@ __pycache__/
 build/
 devel/
 install/
+experiments/
+frames/
+runs/
+datasets/
+*.bag
+*.bag.active
+*.log
+*.tmp
+yolo/runs/

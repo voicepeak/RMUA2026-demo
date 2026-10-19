@@ -1,3 +1,10 @@
+# RMUA beta：旧版对照基线
+
+旧版代码位于 `beta/repo`，分支为 `beta`；新工程位于 `main/`，使用 `main` 分支。
+目录、环境兼容与归档位置见 [迁移说明](docs/migration_20261019.md)。
+
+以下保留旧版使用说明，其中 repo/、rmua_ws/ 均相对于 beta/ 或根目录兼容链接。
+
 # RMUA 2026 无人机竞速
 
 本仓库包含 ROS 控制与视觉源码、YOLO 权重、实验工具及开发文档。工作区为 `/home/tianbot/RUMA-by-helinjun`，Git 仓库位于其 `repo/` 子目录。
