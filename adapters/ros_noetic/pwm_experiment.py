@@ -17,6 +17,7 @@ from interfaces.contracts import Health
 from adapters.ros_noetic.flight_sensors import FlightSensors
 from control.motor_allocator.allocator import MotorAllocator
 from control.se3_controller.controller import Se3Controller
+from control.reference import benchmark_reference
 
 
 def motor_pattern():
@@ -104,15 +105,9 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     next_graph = now+.1
                 details = {}
                 if hover_seconds:
-                    s = min(1., (now-start)/3.)
-                    h = 10*s**3-15*s**4+6*s**5
-                    dh = (30*s**2-60*s**3+30*s**4)/3
-                    ddh = (60*s-180*s**2+120*s**3)/9 if s < 1 else 0.
-                    reference = origin + (0., 0., -h)
-                    if step and now-start >= 4:
-                        reference[0] += .4 if now-start < 8 else -.4
+                    reference, velocity, acceleration = benchmark_reference(origin, now-start, step)
                     dt = now-previous_control_wall
-                    wrench = controller.step(state, tuple(reference), (0., 0., -dh), (0., 0., -ddh),
+                    wrench = controller.step(state, reference, velocity, acceleration,
                                              yaw_reference, dt, not previous_saturated)
                     allocation = allocator.allocate(wrench.thrust, wrench.moment)
                     previous_saturated = allocation.saturated

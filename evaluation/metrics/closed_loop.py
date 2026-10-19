@@ -60,7 +60,10 @@ def main():
     args = parser.parse_args()
     def rows(name):
         return [json.loads(line) for line in (args.run/name).read_text().splitlines()]
-    result = evaluate(rows('pwm_telemetry.jsonl'), rows('evaluation_truth.jsonl'))
+    manifest = json.loads((args.run/'manifest.json').read_text())
+    mode = manifest['config'].get('control_mode','PWM')
+    result = evaluate(rows('vel_telemetry.jsonl' if mode == 'VEL' else 'pwm_telemetry.jsonl'), rows('evaluation_truth.jsonl'))
+    result['control_mode'] = mode
     (args.run/'closed_loop_metrics.json').write_text(json.dumps(result, indent=2)+'\n')
     print(json.dumps(result, indent=2))
     return 0 if result['evaluation_valid'] else 2

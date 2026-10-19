@@ -1,0 +1,126 @@
+{
+  "seed": 1007,
+  "profile": "14s 1m climb and +0.4/-0.4m x steps",
+  "reference_clock": "wall_monotonic_development_only",
+  "purpose": "development paired-scene comparison, not a performance acceptance",
+  "official_result": "UNKNOWN",
+  "modes": {
+    "VEL": {
+      "run_directory": "runs/20261019T112932Z_c2023767271f42bdb5bd180a2bb35f97",
+      "source_unchanged": true,
+      "summary": {
+        "commands": 694,
+        "fault": null,
+        "control_mode": "VEL",
+        "connected_subscribers": 1,
+        "message_md5": "1a888a503939ba521aed68feee8eab6d",
+        "duration_s": 14.0,
+        "step": true,
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 694,
+        "commands": 694,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 495,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.020003751968033612,
+          0.023392753419466315,
+          0.029285411420278275
+        ],
+        "minimum_command_wall_interval_s": 0.01189352199435234,
+        "state_position_rmse_m": [
+          0.029949430772424457,
+          0.021663341851881037,
+          0.016049876200063314
+        ],
+        "state_attitude_rmse_rad": 0.018356953141075025,
+        "truth_tracking_rmse_m": [
+          0.3215285643934116,
+          0.008090509273284656,
+          0.005532774773961497
+        ],
+        "truth_tracking_max_norm_m": 0.8372104160995704,
+        "evaluation_valid": true,
+        "control_mode": "VEL"
+      },
+      "runtime_inputs": {
+        "node": "/rmua_next_vel_benchmark_7645_1792409385451",
+        "topics": [
+          "/airsim_node/drone_1/gps",
+          "/airsim_node/drone_1/imu/imu",
+          "/airsim_node/initial_pose"
+        ],
+        "debug_inputs": false
+      }
+    },
+    "PWM": {
+      "run_directory": "runs/20261019T113031Z_b2e3a3788a7a4cb3b78653a64a51ba70",
+      "source_unchanged": true,
+      "summary": {
+        "commands": 985,
+        "fault": null,
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 14.0,
+        "step": true,
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 985,
+        "commands": 985,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 707,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012610439502168447,
+          0.021939199365442617,
+          0.025421131153125297
+        ],
+        "minimum_command_wall_interval_s": 0.010511463042348623,
+        "state_position_rmse_m": [
+          0.020421813266417288,
+          0.029085473899425285,
+          0.016803604736406543
+        ],
+        "state_attitude_rmse_rad": 0.02171694289676043,
+        "truth_tracking_rmse_m": [
+          0.31053158979061635,
+          0.08857493229562258,
+          0.03153875570834532
+        ],
+        "truth_tracking_max_norm_m": 0.8282759046826812,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      },
+      "runtime_inputs": {
+        "node": "/rmua_next_pwm_identification_8264_1792409442246",
+        "topics": [
+          "/airsim_node/drone_1/gps",
+          "/airsim_node/drone_1/imu/imu",
+          "/airsim_node/initial_pose"
+        ],
+        "debug_inputs": false
+      }
+    }
+  }
+}

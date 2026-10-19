@@ -37,6 +37,8 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --se
 # 独立进程记录本地真值，飞行结束后才计算误差；不输入控制器
 OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1005 --hover-seconds 14 --evaluate-truth
 OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1006 --hover-seconds 14 --step --evaluate-truth
+# VEL 必须是另一个全新场次；租约与 ROS 图检查禁止同场混发
+OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1007 --mode VEL --hover-seconds 14 --step --evaluate-truth
 ```
 
 仅用于本地动力学辨识，会因高度/姿态/状态过期而中止，不能作为比赛控制入口。

@@ -18,15 +18,19 @@ def main():
     parser.add_argument('--hover-seconds', type=float, default=0.)
     parser.add_argument('--evaluate-truth', action='store_true')
     parser.add_argument('--step', action='store_true')
+    parser.add_argument('--mode', choices=('PWM', 'VEL'), default='PWM')
     args = parser.parse_args()
+    if args.mode == 'VEL' and (args.motor_pulses or not 3 <= args.hover_seconds <= 20):
+        parser.error('VEL requires hover-seconds [3,20] and no motor pulses')
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
     digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'], text=True).strip()
     config = json.loads((root/'configs/official_baseline.yaml').read_text())
+    config['control_mode'] = args.mode
     config['experiment'] = {'levels': args.levels, 'pulse_seconds': args.pulse_seconds,
                             'motor_pulses': args.motor_pulses, 'hover_seconds': args.hover_seconds,
                             'evaluate_truth': args.evaluate_truth, 'step': args.step}
     run, manifest = prepare_run(root, root/'runs', args.seed, digest, config)
-    manifest['stage'] = 'P0_PWM_IDENTIFICATION'
+    manifest['stage'] = 'P0_PWM_IDENTIFICATION' if args.mode == 'PWM' else 'P1_VEL_BENCHMARK'
     print(run, flush=True)
     code = 1
     evaluator = None
@@ -63,9 +67,10 @@ def main():
                 if not (run/'truth_ready').exists():
                     raise RuntimeError('hidden truth evaluator failed to receive truth')
             command = [str(root/'tools/enter_env.sh'), 'env', 'OPENBLAS_NUM_THREADS=1',
-                    'python3', '-m', 'adapters.ros_noetic.pwm_experiment', '--run-dir',
-                    '/workspace/main/'+str(run.relative_to(root)), '--levels', args.levels,
-                    '--pulse-seconds', str(args.pulse_seconds)]
+                    'python3', '-m', 'adapters.ros_noetic.pwm_experiment' if args.mode == 'PWM' else 'adapters.ros_noetic.vel_experiment',
+                    '--run-dir', '/workspace/main/'+str(run.relative_to(root))]
+            if args.mode == 'PWM':
+                command.extend(['--levels', args.levels, '--pulse-seconds', str(args.pulse_seconds)])
             if args.motor_pulses:
                 command.append('--motor-pulses')
             if args.hover_seconds:
@@ -95,12 +100,13 @@ def main():
             manifest['source_sha256_after'] = source_hashes(root)
             manifest['source_unchanged'] = manifest['source_sha256_before'] == manifest['source_sha256_after']
             manifest['observer_exit_code'] = code
-            manifest['telemetry'] = ['pwm_telemetry.jsonl', 'pwm_summary.json', 'simulator.log']
+            prefix = 'pwm' if args.mode == 'PWM' else 'vel'
+            manifest['telemetry'] = [prefix+'_telemetry.jsonl', prefix+'_summary.json', 'simulator.log']
             if args.evaluate_truth:
                 manifest['evaluation_only_inputs'] = ['/airsim_node/drone_1/debug/pose_gt']
                 manifest['telemetry'].append('evaluation_truth.jsonl')
             (run/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
-    if args.evaluate_truth and (run/'pwm_telemetry.jsonl').exists() and (run/'evaluation_truth.jsonl').exists():
+    if args.evaluate_truth and (run/(prefix+'_telemetry.jsonl')).exists() and (run/'evaluation_truth.jsonl').exists():
         metric_code = subprocess.call(['python3', '-m', 'evaluation.metrics.closed_loop', str(run)], cwd=root)
         if code == 0:
             code = metric_code
