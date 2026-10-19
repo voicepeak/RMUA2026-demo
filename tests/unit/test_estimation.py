@@ -45,6 +45,8 @@ class EstimatorTests(unittest.TestCase):
         self.assertTrue(e.update_gps(1., (1., 2., -1.), (1., 0., 0., 0.)))
         self.assertFalse(e.update_gps(1., (1., 2., -1.), (1., 0., 0., 0.)))
         self.assertEqual(e.snapshot().health, Health.OK)
+        self.assertFalse(e.update_gps(1., (0., 0., 0.), (0., 0., 0., 0.)))
+        self.assertFalse(e.update_gps(1.01, (1., 2., -1.), (1., 0., 0., 0.)))
 
     def test_gps_loss_degrades_without_teleport_and_recovers(self):
         e = self.estimator()

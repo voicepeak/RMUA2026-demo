@@ -18,6 +18,7 @@ from adapters.ros_noetic.flight_sensors import FlightSensors
 from control.motor_allocator.allocator import MotorAllocator
 from control.se3_controller.controller import Se3Controller
 from control.reference import benchmark_reference
+from adapters.ros_noetic.sensor_fault import LocalSensorFault
 
 
 def motor_pattern():
@@ -31,7 +32,8 @@ def motor_pattern():
     return tuple(pattern)
 
 
-def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0, step=False):
+def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0, step=False,
+                   sensor_fault=None, fault_seconds=.15):
     import rospy
     import rosgraph
     from airsim_ros.msg import RotorPWM
@@ -82,8 +84,12 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
             yaw_reference = math.atan2(rotation(state.orientation_wxyz)[1, 0],
                                        rotation(state.orientation_wxyz)[0, 0])
             start = time.monotonic()
+            state, raw = sensors.read()
+            start_stamp = state.metadata.stamp
+            if sensor_fault:
+                sensors.local_injection = LocalSensorFault(sensor_fault, start_stamp+6., fault_seconds)
             next_tick, next_graph = start, start
-            previous_control_wall = start-1/80
+            previous_control_stamp = start_stamp-.01
             sequence = 0
             while True:
                 now = time.monotonic()
@@ -105,15 +111,21 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     next_graph = now+.1
                 details = {}
                 if hover_seconds:
-                    reference, velocity, acceleration = benchmark_reference(origin, now-start, step)
-                    dt = now-previous_control_wall
+                    sim_elapsed = state.metadata.stamp-start_stamp
+                    reference, velocity, acceleration = benchmark_reference(origin, sim_elapsed, step)
+                    dt = state.metadata.stamp-previous_control_stamp
+                    if dt <= 0:
+                        time.sleep(.002)
+                        continue
+                    if dt > .05:
+                        raise RuntimeError('CONTROL_STATE_GAP')
                     wrench = controller.step(state, reference, velocity, acceleration,
                                              yaw_reference, dt, not previous_saturated)
                     allocation = allocator.allocate(wrench.thrust, wrench.moment)
                     previous_saturated = allocation.saturated
                     values = allocation.pwm
                     details = {'reference': tuple(reference), 'wrench': asdict(wrench),
-                               'allocation': asdict(allocation)}
+                               'allocation': asdict(allocation), 'sim_elapsed': sim_elapsed}
                 else:
                     values = pattern[index]
                 command = PwmCommand(state.metadata.stamp, state.metadata.epoch, sequence, values)
@@ -127,13 +139,14 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     msg.rotorPWM0, msg.rotorPWM1, msg.rotorPWM2, msg.rotorPWM3 = command.values
                     publisher.publish(msg)
                     published_wall = time.monotonic()
+                    guard.published(published_wall)
                     rows.append({'wall_elapsed': now-start, 'command': asdict(command),
                                  'guard_accept_wall_elapsed': accepted_wall-start,
                                  'publish_wall_elapsed': published_wall-start,
                                  'raw': raw, 'state': {k:v for k,v in asdict(state).items() if k != 'metadata'},
                                  **details})
                     sequence += 1
-                previous_control_wall = now
+                previous_control_stamp = state.metadata.stamp
                 next_tick += 1/80.
                 delay = next_tick-time.monotonic()
                 if delay < -.1:
@@ -150,6 +163,9 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
               'motor_pulses': motor_pulses,
               'hover_seconds': hover_seconds,
               'step': step,
+              'reference_clock': 'IMU',
+              'gps_rejections': sensors.estimator.rejections,
+              'injection': asdict(sensors.local_injection) if sensors.local_injection else None,
               'pulse_seconds': pulse_seconds,
               'stage': 'LOCAL_PWM_CLOSED_LOOP_HOVER' if hover_seconds else 'LOCAL_OPEN_LOOP_IDENTIFICATION',
               'official_result': 'UNKNOWN', 'host_scene_stop_required': True}
@@ -166,6 +182,8 @@ def main():
     parser.add_argument('--motor-pulses', action='store_true')
     parser.add_argument('--hover-seconds', type=float, default=0.)
     parser.add_argument('--step', action='store_true')
+    parser.add_argument('--sensor-fault', choices=('GPS_ZERO','IMU_DROP','IMU_ROLLBACK'))
+    parser.add_argument('--fault-seconds',type=float,default=.15)
     args = parser.parse_args()
     levels = tuple(float(value) for value in args.levels.split(','))
     if (not levels or len(levels) > 20 or not all(0 < v <= .6 for v in levels)
@@ -174,7 +192,10 @@ def main():
         parser.error('bounded identification requires <=20 levels in (0,.6], pulses [.05,1]s')
     if args.step and args.hover_seconds < 10:
         parser.error('step profile requires hover-seconds >=10')
-    return run_experiment(args.run_dir, levels, args.pulse_seconds, args.motor_pulses, args.hover_seconds, args.step)
+    if args.sensor_fault and (args.hover_seconds < 8 or not 0 < args.fault_seconds <= 1):
+        parser.error('local sensor injection requires >=8s hover and duration (0,1]')
+    return run_experiment(args.run_dir, levels, args.pulse_seconds, args.motor_pulses, args.hover_seconds, args.step,
+                          args.sensor_fault,args.fault_seconds)
 
 
 if __name__ == '__main__':

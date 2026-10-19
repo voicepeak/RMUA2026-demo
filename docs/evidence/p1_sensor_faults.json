@@ -1,0 +1,206 @@
+{
+  "unit_tests_passed": 40,
+  "reference_clock": "IMU",
+  "official_result": "UNKNOWN",
+  "cases": [
+    {
+      "fault_kind": "GPS_ZERO",
+      "seed": 1008,
+      "run_directory": "runs/20261019T113514Z_c90cbcc78860473daf19e4cea89c7ed0",
+      "source_unchanged": true,
+      "expected_outcome_verified": true,
+      "summary": {
+        "commands": 816,
+        "fault": null,
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 12.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {
+          "GPS_ZERO": 2
+        },
+        "injection": {
+          "kind": "GPS_ZERO",
+          "start_stamp": 1792409733.3042474,
+          "duration": 0.15,
+          "injected_samples": 2
+        },
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 816,
+        "commands": 816,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 545,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012618816923350096,
+          0.022741897194646296,
+          0.025547063308767985
+        ],
+        "minimum_command_wall_interval_s": 0.010612269979901612,
+        "state_position_rmse_m": [
+          0.01898967582334305,
+          0.021185331807392297,
+          0.02770985004839762
+        ],
+        "state_attitude_rmse_rad": 0.01769424846976985,
+        "truth_tracking_rmse_m": [
+          0.03215161065776167,
+          0.07209934734740812,
+          0.045581331521828264
+        ],
+        "truth_tracking_max_norm_m": 0.1423180230175437,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      }
+    },
+    {
+      "fault_kind": "IMU_DROP",
+      "seed": 1009,
+      "run_directory": "runs/20261019T113617Z_e1a2b131a7fa46a291e17b15058439c8",
+      "source_unchanged": true,
+      "expected_outcome_verified": true,
+      "summary": {
+        "commands": 473,
+        "fault": "STALE_IMU",
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 12.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {
+          "NOT_INITIALIZED": 1
+        },
+        "injection": {
+          "kind": "IMU_DROP",
+          "start_stamp": 1792409795.054234,
+          "duration": 0.2,
+          "injected_samples": 10
+        },
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 473,
+        "commands": 473,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 187,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012599558511283249,
+          0.021114707144442944,
+          0.02537473951582799
+        ],
+        "minimum_command_wall_interval_s": 0.01063954399432987,
+        "state_position_rmse_m": [
+          0.02413944602359973,
+          0.04243345614075144,
+          0.02538791138925064
+        ],
+        "state_attitude_rmse_rad": 0.019368643759432366,
+        "truth_tracking_rmse_m": [
+          0.0590661953754996,
+          0.168786530830537,
+          0.07657310970662799
+        ],
+        "truth_tracking_max_norm_m": 0.25192498037780525,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      }
+    },
+    {
+      "fault_kind": "IMU_ROLLBACK",
+      "seed": 1010,
+      "run_directory": "runs/20261019T113637Z_0801bb32488d4a78b9572acf956cf11a",
+      "source_unchanged": true,
+      "expected_outcome_verified": true,
+      "summary": {
+        "commands": 467,
+        "fault": "IMU_CLOCK_RESET",
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 12.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {},
+        "injection": {
+          "kind": "IMU_ROLLBACK",
+          "start_stamp": 1792409813.6052005,
+          "duration": 0.2,
+          "injected_samples": 1
+        },
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 467,
+        "commands": 467,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 193,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012631118530407548,
+          0.02200335726956837,
+          0.02611141959787347
+        ],
+        "minimum_command_wall_interval_s": 0.010580639005638659,
+        "state_position_rmse_m": [
+          0.023591514733053875,
+          0.03441236689890508,
+          0.02787373714583893
+        ],
+        "state_attitude_rmse_rad": 0.02437296464129161,
+        "truth_tracking_rmse_m": [
+          0.05448304776139661,
+          0.08244180901657877,
+          0.02961572014739464
+        ],
+        "truth_tracking_max_norm_m": 0.12596024029374853,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      }
+    }
+  ]
+}

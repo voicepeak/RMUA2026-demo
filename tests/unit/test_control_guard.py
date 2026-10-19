@@ -52,6 +52,14 @@ class GuardTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 PwmCommand(10., 0, 0, values)
 
+    def test_blocked_publication_cannot_be_followed_by_a_burst(self):
+        c=SensorClock();c.observe(10.,1.)
+        g=CommandGuard(0)
+        self.assertTrue(g.accept(PwmCommand(10.,0,0,(.2,)*4),c,1.))
+        g.published(1.02)
+        self.assertFalse(g.accept(PwmCommand(10.,0,1,(.2,)*4),c,1.025))
+        self.assertTrue(g.accept(PwmCommand(10.,0,2,(.2,)*4),c,1.04))
+
 
 if __name__ == '__main__':
     unittest.main()

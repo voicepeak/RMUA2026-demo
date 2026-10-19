@@ -57,3 +57,10 @@ class CommandGuard:
                 return False  # Rate limit; no stale command replay to fill gaps.
         self.last_wall, self.last_sequence, self.last_stamp = wall_now, command.sequence, command.stamp
         return True
+
+    def published(self, wall_now):
+        """Space the next command from completion even if ROS publish blocked."""
+        if (self.last_wall is None or not math.isfinite(wall_now)
+                or wall_now < self.last_wall):
+            self.fail('INVALID_PUBLICATION_TIME')
+        self.last_wall = wall_now

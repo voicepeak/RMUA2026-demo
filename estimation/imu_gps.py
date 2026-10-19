@@ -78,15 +78,18 @@ class ImuGpsEstimator:
         return False
 
     def update_gps(self, stamp, position, attitude):
-        position, attitude = vector(position), unit(attitude)
+        position = vector(position)
+        # Factory packets can zero BOTH position and quaternion. Reject the
+        # sentinel before trying to normalize an invalid all-zero quaternion.
+        if np.all(position == 0):
+            return self.reject("GPS_ZERO")
         if not self.initialized or self.stamp is None:
             return self.reject("NOT_INITIALIZED")
-        if not math.isfinite(stamp) or abs(stamp-self.stamp) > .15:
+        if not math.isfinite(stamp) or not 0 <= self.stamp-stamp <= .15:
             return self.reject("GPS_TIME")
         if self.last_gps is not None and stamp <= self.last_gps:
             return self.reject("GPS_REORDERED")
-        if np.all(position == 0):
-            return self.reject("GPS_ZERO")
+        attitude = unit(attitude)
         conjugate = self.q * (1., -1., -1., -1.)
         error_q = multiply(conjugate, attitude)
         if error_q[0] < 0:

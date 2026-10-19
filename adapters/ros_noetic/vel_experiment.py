@@ -63,6 +63,7 @@ def run_experiment(run, duration, step):
             yaw = math.atan2(R[1, 0], R[0, 0])
             guard = CommandGuard(sensors.clock.epoch, minimum_period=.0105)
             start = time.monotonic()
+            start_stamp = state.metadata.stamp
             next_tick, next_graph = start, start
             sequence = 0
             while time.monotonic()-start < duration:
@@ -79,7 +80,8 @@ def run_experiment(run, duration, step):
                 if now >= next_graph:
                     graph(True)
                     next_graph = now+.1
-                reference, velocity, _ = benchmark_reference(origin, now-start, step)
+                sim_elapsed = state.metadata.stamp-start_stamp
+                reference, velocity, _ = benchmark_reference(origin, sim_elapsed, step)
                 values = body_velocity(state, reference, velocity, yaw)
                 command = VelocityCommand(state.metadata.stamp, state.metadata.epoch, sequence, values)
                 with sensors.lock:
@@ -92,8 +94,11 @@ def run_experiment(run, duration, step):
                     msg.vx, msg.vy, msg.vz, msg.yawRate = values
                     msg.va, msg.stop = 4, 0
                     publisher.publish(msg)
+                    published_wall=time.monotonic()
+                    guard.published(published_wall)
                     rows.append({'wall_elapsed':now-start,'guard_accept_wall_elapsed':accepted_wall-start,
-                        'publish_wall_elapsed':time.monotonic()-start, 'command':asdict(command),
+                        'publish_wall_elapsed':published_wall-start, 'command':asdict(command),
+                        'sim_elapsed':sim_elapsed,
                         'raw':raw,'reference':reference,
                         'state':{k:v for k,v in asdict(state).items() if k != 'metadata'}})
                     sequence += 1
@@ -112,6 +117,7 @@ def run_experiment(run, duration, step):
     result = {'commands':len(rows),'fault':fault,'control_mode':'VEL',
               'connected_subscribers':connections,'message_md5':VelCmd._md5sum,
               'duration_s':duration,'step':step,'official_result':'UNKNOWN',
+              'reference_clock':'IMU',
               'host_scene_stop_required':True}
     (run/'vel_summary.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result),flush=True)
