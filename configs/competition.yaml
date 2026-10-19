@@ -1,0 +1,6 @@
+{
+  "extends": "official_baseline.yaml",
+  "profile": "competition_pending_acceptance",
+  "runtime_control_enabled": false,
+  "acceptance_required": ["P0", "P1", "P2", "P3", "P4", "P5", "P6"]
+}

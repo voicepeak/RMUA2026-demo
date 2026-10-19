@@ -1,0 +1,26 @@
+{
+  "copied_from": "beta/simulator/simulator_12.0.0.5",
+  "upstream_metadata_branch": "RMUA2025-01",
+  "upstream_metadata_commit": "8d04689860385ca824227b503590be7cd57baf26",
+  "local_modifications": [
+    "settings.json",
+    "run_simulator.sh",
+    "run_simulator_offscreen.sh"
+  ],
+  "sha256": {
+    "settings.json": "01525e0cad36ad0ba175f0deb0b35abc4032535eda3ff31b61a043d92e9f0366",
+    "run_simulator.sh": "64f84c66e6d758b96151152c8b8fae45cb62c1d9a24b1aa9b03769f2b30f8023",
+    "run_simulator_offscreen.sh": "9d5642dc5967247a10db1227581039a011547b5a70667b0224b47a005621f512",
+    "Build/LinuxNoEditor/RMUA/Binaries/Linux/RMUA-Linux-Shipping": "5231addfa25ddaa9e4473ea9ac40c9c0bc685174e69cd14bb49159f443b97800"
+  },
+  "note": "Build version requires live confirmation; upstream checkout metadata says RMUA2025-01. Do not infer simulator season from that metadata.",
+  "runtime_settings": {
+    "file": "configs/simulator_settings.json",
+    "source": "https://raw.githubusercontent.com/RoboMaster/IntelligentUAVChampionshipSimulator/RMUA2026-01/settings.json",
+    "sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+    "fetched_on": "2026-10-19",
+    "upstream_sha256": "2ae29d7c7484e81241a49bbdeba9f221bfab1b10f3fc6aa57da83175df406211",
+    "formatting": "JSON indentation normalized; values unchanged"
+  },
+  "runtime_version_observed": "12.0.0.5"
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "world_frame": "world_ned",
+  "control_mode": "PWM",
+  "control_hz_limit": 100,
+  "runtime_control_enabled": false,
+  "sensors": [
+    "/airsim_node/drone_1/front_left/Scene",
+    "/airsim_node/drone_1/front_right/Scene",
+    "/airsim_node/drone_1/back_left/Scene",
+    "/airsim_node/drone_1/back_right/Scene",
+    "/airsim_node/drone_1/imu/imu",
+    "/airsim_node/drone_1/lidar",
+    "/airsim_node/drone_1/gps",
+    "/airsim_node/initial_pose",
+    "/airsim_node/end_goal"
+  ],
+  "control_topics": [
+    "/airsim_node/drone_1/rotor_pwm_cmd",
+    "/airsim_node/drone_1/vel_body_cmd"
+  ],
+  "services": ["/airsim_node/meter_report"],
+  "debug_input_policy": "DENY",
+  "pwm_motor_order": ["front_right", "rear_left", "front_left", "rear_right"],
+  "pwm_range": null,
+  "pwm_mapping_verified": false,
+  "braking_deceleration_verified_m_s2": null
+}
