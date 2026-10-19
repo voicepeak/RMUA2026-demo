@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "file_count": 491550,
+  "source_bytes": 90138699132,
+  "target_shard_bytes": 1073741824,
+  "excluded_counts": {
+    "not_observation_or_metadata": 3089,
+    "excluded_directory": 286,
+    "symlink": 9
+  },
+  "shard_count": 86,
+  "target_repo": "Voicepeak/rmua2026-legacy-data",
+  "remote_state": "NOT_UPLOADED_AUTHENTICATION_REQUIRED"
+}
