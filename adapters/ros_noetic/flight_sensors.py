@@ -86,7 +86,9 @@ class FlightSensors:
                 raise RuntimeError(self.fault)
             if not self.clock.fresh(time.monotonic()):
                 raise RuntimeError('STALE_IMU')
-            return self.estimator.snapshot(), dict(self.raw)
+            raw = dict(self.raw)
+            raw['last_gps_stamp'] = self.estimator.last_gps
+            return self.estimator.snapshot(), raw
 
     def close(self):
         for subscriber in self.subscribers:

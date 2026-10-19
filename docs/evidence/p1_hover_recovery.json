@@ -1,0 +1,164 @@
+{
+  "unit_tests_passed": 44,
+  "official_result": "UNKNOWN",
+  "scope": "bounded local hover recovery, not factory localization or permanent IMU loss",
+  "cases": [
+    {
+      "name": "GPS_ZERO_800ms",
+      "seed": 1014,
+      "run_directory": "runs/20261019T114253Z_9e215b06bf5c425eae85a71154c3aed0",
+      "source_unchanged": true,
+      "summary": {
+        "commands": 977,
+        "fault": null,
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 14.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {
+          "GPS_ZERO": 9
+        },
+        "injection": {
+          "kind": "GPS_ZERO",
+          "start_stamp": 1792410190.8192372,
+          "duration": 0.8,
+          "injected_samples": 9
+        },
+        "graph_monitor": {
+          "successful_checks": 136,
+          "fault": null,
+          "max_rpc_wall_s": 0.015591645962558687,
+          "stale_after_wall_s": 0.3
+        },
+        "gps_bridge_enabled": true,
+        "recovery_transitions": [
+          {
+            "stamp": 1792410191.0593703,
+            "from": "NORMAL",
+            "to": "GPS_BRIDGE"
+          },
+          {
+            "stamp": 1792410191.6863837,
+            "from": "GPS_BRIDGE",
+            "to": "NORMAL"
+          }
+        ],
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 977,
+        "commands": 977,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 699,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012637599487788975,
+          0.021569457749137655,
+          0.023872242774814367
+        ],
+        "minimum_command_wall_interval_s": 0.010588933015242219,
+        "state_position_rmse_m": [
+          0.032684783997860976,
+          0.030174496644492343,
+          0.022786038126124352
+        ],
+        "state_attitude_rmse_rad": 0.023182824291464052,
+        "truth_tracking_rmse_m": [
+          0.08786306575458126,
+          0.08430106460884786,
+          0.04069126507277841
+        ],
+        "truth_tracking_max_norm_m": 0.2833415865466874,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      }
+    },
+    {
+      "name": "IMU_DROP_30ms",
+      "seed": 1013,
+      "run_directory": "runs/20261019T114126Z_f1c3b4fa8fc84a2791cda94c781f42d4",
+      "source_unchanged": true,
+      "summary": {
+        "commands": 991,
+        "fault": null,
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 14.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {},
+        "injection": {
+          "kind": "IMU_DROP",
+          "start_stamp": 1792410102.0262015,
+          "duration": 0.03,
+          "injected_samples": 3
+        },
+        "graph_monitor": {
+          "successful_checks": 137,
+          "fault": null,
+          "max_rpc_wall_s": 0.01453694503288716,
+          "stale_after_wall_s": 0.3
+        },
+        "gps_bridge_enabled": false,
+        "recovery_transitions": [],
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 991,
+        "commands": 991,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 711,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012560039933305234,
+          0.02084467572858557,
+          0.024643395679304386
+        ],
+        "minimum_command_wall_interval_s": 0.010786482016555965,
+        "state_position_rmse_m": [
+          0.02010927118852498,
+          0.018347670995145605,
+          0.019528691618887623
+        ],
+        "state_attitude_rmse_rad": 0.010958251303038158,
+        "truth_tracking_rmse_m": [
+          0.06043990326280151,
+          0.056194034508680005,
+          0.03627709706976706
+        ],
+        "truth_tracking_max_norm_m": 0.1648759885222827,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      }
+    }
+  ]
+}

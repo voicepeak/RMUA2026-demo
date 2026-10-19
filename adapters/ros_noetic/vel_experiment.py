@@ -13,6 +13,7 @@ from control.reference import benchmark_reference
 from control.vel_benchmark.controller import VelocityCommand, body_velocity
 from estimation.geometry import rotation
 from interfaces.contracts import Health
+from control.control_authority.graph_monitor import GraphMonitor
 
 
 def run_experiment(run, duration, step):
@@ -30,6 +31,7 @@ def run_experiment(run, duration, step):
         graph(False)
         sensors = FlightSensors()
         publisher = None
+        monitor = None
         try:
             deadline = time.monotonic()+5
             while time.monotonic() < deadline:
@@ -57,6 +59,8 @@ def run_experiment(run, duration, step):
                 raise RuntimeError('INPUT_WHITELIST_POLICY')
             (run/'runtime_input_audit.json').write_text(json.dumps({'node':rospy.get_name(),
                 'topics':inputs,'debug_inputs':False},indent=2)+'\n')
+            monitor=GraphMonitor(lambda:graph(True))
+            monitor.start()
             state, raw = sensors.read()
             origin = np.array(state.position_ned)
             R = rotation(state.orientation_wxyz)
@@ -64,7 +68,7 @@ def run_experiment(run, duration, step):
             guard = CommandGuard(sensors.clock.epoch, minimum_period=.0105)
             start = time.monotonic()
             start_stamp = state.metadata.stamp
-            next_tick, next_graph = start, start
+            next_tick = start
             sequence = 0
             while time.monotonic()-start < duration:
                 now = time.monotonic()
@@ -77,9 +81,7 @@ def run_experiment(run, duration, step):
                     raise RuntimeError('POSITION_LIMIT')
                 if np.linalg.norm(state.velocity_ned) > 4:
                     raise RuntimeError('SPEED_LIMIT')
-                if now >= next_graph:
-                    graph(True)
-                    next_graph = now+.1
+                monitor.check()
                 sim_elapsed = state.metadata.stamp-start_stamp
                 reference, velocity, _ = benchmark_reference(origin, sim_elapsed, step)
                 values = body_velocity(state, reference, velocity, yaw)
@@ -110,6 +112,8 @@ def run_experiment(run, duration, step):
         except Exception as error:
             fault = str(error)
         finally:
+            if monitor:
+                monitor.close()
             if publisher:
                 publisher.unregister()
             sensors.close()
@@ -118,6 +122,7 @@ def run_experiment(run, duration, step):
               'connected_subscribers':connections,'message_md5':VelCmd._md5sum,
               'duration_s':duration,'step':step,'official_result':'UNKNOWN',
               'reference_clock':'IMU',
+              'graph_monitor':monitor.summary() if monitor else None,
               'host_scene_stop_required':True}
     (run/'vel_summary.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result),flush=True)

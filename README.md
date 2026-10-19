@@ -41,6 +41,8 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --se
 OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1007 --mode VEL --hover-seconds 14 --step --evaluate-truth
 # 显式本地故障注入；不会修改 ROS 原始话题
 OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1008 --hover-seconds 12 --sensor-fault GPS_ZERO --fault-seconds .15 --evaluate-truth
+# 局部悬停的短时 GPS 桥接；不等于工厂无 GPS 导航
+OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1014 --hover-seconds 14 --sensor-fault GPS_ZERO --fault-seconds .8 --gps-bridge --evaluate-truth
 ```
 
 仅用于本地动力学辨识，会因高度/姿态/状态过期而中止，不能作为比赛控制入口。

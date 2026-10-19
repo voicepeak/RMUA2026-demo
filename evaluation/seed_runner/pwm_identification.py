@@ -21,11 +21,14 @@ def main():
     parser.add_argument('--mode', choices=('PWM', 'VEL'), default='PWM')
     parser.add_argument('--sensor-fault', choices=('GPS_ZERO','IMU_DROP','IMU_ROLLBACK'))
     parser.add_argument('--fault-seconds', type=float, default=.15)
+    parser.add_argument('--gps-bridge',action='store_true')
     args = parser.parse_args()
     if args.mode == 'VEL' and (args.motor_pulses or not 3 <= args.hover_seconds <= 20):
         parser.error('VEL requires hover-seconds [3,20] and no motor pulses')
     if args.sensor_fault and args.mode != 'PWM':
         parser.error('sensor injection currently available for PWM experiments only')
+    if args.gps_bridge and (args.mode != 'PWM' or args.hover_seconds < 3):
+        parser.error('GPS bridge is only available in bounded PWM hover')
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
     digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'], text=True).strip()
     config = json.loads((root/'configs/official_baseline.yaml').read_text())
@@ -33,7 +36,8 @@ def main():
     config['experiment'] = {'levels': args.levels, 'pulse_seconds': args.pulse_seconds,
                             'motor_pulses': args.motor_pulses, 'hover_seconds': args.hover_seconds,
                             'evaluate_truth': args.evaluate_truth, 'step': args.step,
-                            'sensor_fault':args.sensor_fault, 'fault_seconds':args.fault_seconds}
+                            'sensor_fault':args.sensor_fault, 'fault_seconds':args.fault_seconds,
+                            'gps_bridge':args.gps_bridge}
     run, manifest = prepare_run(root, root/'runs', args.seed, digest, config)
     manifest['stage'] = 'P0_PWM_IDENTIFICATION' if args.mode == 'PWM' else 'P1_VEL_BENCHMARK'
     print(run, flush=True)
@@ -84,6 +88,8 @@ def main():
                 command.append('--step')
             if args.sensor_fault:
                 command.extend(['--sensor-fault',args.sensor_fault,'--fault-seconds',str(args.fault_seconds)])
+            if args.gps_bridge:
+                command.append('--gps-bridge')
             code = subprocess.call(command, timeout=40)
         except Exception as error:
             manifest['error'] = str(error)

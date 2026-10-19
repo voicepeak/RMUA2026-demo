@@ -19,6 +19,8 @@ from control.motor_allocator.allocator import MotorAllocator
 from control.se3_controller.controller import Se3Controller
 from control.reference import benchmark_reference
 from adapters.ros_noetic.sensor_fault import LocalSensorFault
+from control.control_authority.graph_monitor import GraphMonitor
+from control.safety_supervisor.hover_recovery import HoverRecovery
 
 
 def motor_pattern():
@@ -33,7 +35,7 @@ def motor_pattern():
 
 
 def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0, step=False,
-                   sensor_fault=None, fault_seconds=.15):
+                   sensor_fault=None, fault_seconds=.15, gps_bridge=False):
     import rospy
     import rosgraph
     from airsim_ros.msg import RotorPWM
@@ -49,6 +51,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
         graph(False)
         sensors = FlightSensors()
         publisher = None
+        monitor = None
+        recovery = HoverRecovery()
         try:
             deadline = time.monotonic()+5
             while time.monotonic() < deadline:
@@ -76,6 +80,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 raise RuntimeError('INPUT_WHITELIST_POLICY')
             (run/'runtime_input_audit.json').write_text(json.dumps({'node': rospy.get_name(),
                 'topics': runtime_inputs, 'debug_inputs': False}, indent=2)+'\n')
+            monitor = GraphMonitor(lambda: graph(True))
+            monitor.start()
             guard = CommandGuard(sensors.clock.epoch, minimum_period=.0105)
             pattern = motor_pattern() if motor_pulses else tuple((v,)*4 for v in levels)
             config = json.loads((Path(__file__).resolve().parents[2]/'configs/vehicle_identification.json').read_text())
@@ -88,7 +94,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
             start_stamp = state.metadata.stamp
             if sensor_fault:
                 sensors.local_injection = LocalSensorFault(sensor_fault, start_stamp+6., fault_seconds)
-            next_tick, next_graph = start, start
+            next_tick = start
             previous_control_stamp = start_stamp-.01
             sequence = 0
             while True:
@@ -98,7 +104,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     break
                 state, raw = sensors.read()
                 R = rotation(state.orientation_wxyz)
-                if state.health != Health.OK:
+                if state.health != Health.OK and not (hover_seconds and gps_bridge):
                     raise RuntimeError('STATE_HEALTH_'+state.health.value)
                 if R[2, 2] < math.cos(.25):
                     raise RuntimeError('TILT_LIMIT')
@@ -106,13 +112,20 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     raise RuntimeError('SPEED_LIMIT')
                 if np.linalg.norm(np.array(state.position_ned)-origin) > (1.8 if hover_seconds else 1.2):
                     raise RuntimeError('POSITION_LIMIT')
-                if now >= next_graph:
-                    graph(True)
-                    next_graph = now+.1
+                monitor.check()
                 details = {}
                 if hover_seconds:
                     sim_elapsed = state.metadata.stamp-start_stamp
                     reference, velocity, acceleration = benchmark_reference(origin, sim_elapsed, step)
+                    allow_integral = not previous_saturated
+                    phase = 'NORMAL'
+                    if gps_bridge:
+                        gps_stamp = raw['last_gps_stamp']
+                        gps_age = math.inf if gps_stamp is None else state.metadata.stamp-gps_stamp
+                        decision = recovery.decide(state,gps_age,(reference,velocity,acceleration))
+                        reference,velocity,acceleration = decision.position,decision.velocity,decision.acceleration
+                        allow_integral = allow_integral and decision.allow_integral
+                        phase = decision.phase
                     dt = state.metadata.stamp-previous_control_stamp
                     if dt <= 0:
                         time.sleep(.002)
@@ -120,12 +133,12 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     if dt > .05:
                         raise RuntimeError('CONTROL_STATE_GAP')
                     wrench = controller.step(state, reference, velocity, acceleration,
-                                             yaw_reference, dt, not previous_saturated)
+                                             yaw_reference, dt, allow_integral)
                     allocation = allocator.allocate(wrench.thrust, wrench.moment)
                     previous_saturated = allocation.saturated
                     values = allocation.pwm
                     details = {'reference': tuple(reference), 'wrench': asdict(wrench),
-                               'allocation': asdict(allocation), 'sim_elapsed': sim_elapsed}
+                               'allocation': asdict(allocation), 'sim_elapsed': sim_elapsed,'supervisor_phase':phase}
                 else:
                     values = pattern[index]
                 command = PwmCommand(state.metadata.stamp, state.metadata.epoch, sequence, values)
@@ -155,6 +168,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
         except Exception as error:
             fault = str(error)
         finally:
+            if monitor:
+                monitor.close()
             if publisher:
                 publisher.unregister()
             sensors.close()
@@ -166,6 +181,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
               'reference_clock': 'IMU',
               'gps_rejections': sensors.estimator.rejections,
               'injection': asdict(sensors.local_injection) if sensors.local_injection else None,
+              'graph_monitor':monitor.summary() if monitor else None,
+              'gps_bridge_enabled':gps_bridge,'recovery_transitions':recovery.transitions,
               'pulse_seconds': pulse_seconds,
               'stage': 'LOCAL_PWM_CLOSED_LOOP_HOVER' if hover_seconds else 'LOCAL_OPEN_LOOP_IDENTIFICATION',
               'official_result': 'UNKNOWN', 'host_scene_stop_required': True}
@@ -184,6 +201,7 @@ def main():
     parser.add_argument('--step', action='store_true')
     parser.add_argument('--sensor-fault', choices=('GPS_ZERO','IMU_DROP','IMU_ROLLBACK'))
     parser.add_argument('--fault-seconds',type=float,default=.15)
+    parser.add_argument('--gps-bridge',action='store_true')
     args = parser.parse_args()
     levels = tuple(float(value) for value in args.levels.split(','))
     if (not levels or len(levels) > 20 or not all(0 < v <= .6 for v in levels)
@@ -195,7 +213,7 @@ def main():
     if args.sensor_fault and (args.hover_seconds < 8 or not 0 < args.fault_seconds <= 1):
         parser.error('local sensor injection requires >=8s hover and duration (0,1]')
     return run_experiment(args.run_dir, levels, args.pulse_seconds, args.motor_pulses, args.hover_seconds, args.step,
-                          args.sensor_fault,args.fault_seconds)
+                          args.sensor_fault,args.fault_seconds,args.gps_bridge)
 
 
 if __name__ == '__main__':
