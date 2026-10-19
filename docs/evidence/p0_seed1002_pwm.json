@@ -1,0 +1,35 @@
+{
+  "commands": 125,
+  "fault": "POSITION_LIMIT",
+  "levels": [
+    0.1,
+    0.15,
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4
+  ],
+  "pulse_seconds": 0.3,
+  "stage": "LOCAL_OPEN_LOOP_IDENTIFICATION",
+  "official_result": "UNKNOWN",
+  "host_scene_stop_required": true,
+  "seed": 1002,
+  "run_directory": "runs/20261019T111605Z_d75f5e3729a74ecfa3e4a15956b9cb03",
+  "source_unchanged": true,
+  "interpretation": "Position guard terminated the scene as designed; not a hover acceptance.",
+  "collective_observations": [
+    {
+      "pwm": 0.2,
+      "median_specific_force_z_m_s2": -11.021
+    },
+    {
+      "pwm": 0.25,
+      "median_specific_force_z_m_s2": -13.603
+    },
+    {
+      "pwm": 0.3,
+      "median_specific_force_z_m_s2": -15.595
+    }
+  ]
+}

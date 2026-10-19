@@ -15,5 +15,11 @@ exec docker exec -u 1000:1000 "$CONT" bash -c '
       exit 1
     fi
     kill -- "-$pid" 2>/dev/null || true
+    stopped=false
+    for attempt in {1..100}; do
+      if ! kill -0 -- "-$pid" 2>/dev/null; then stopped=true; break; fi
+      sleep .1
+    done
+    "$stopped" || { echo "Process group $pid did not stop in 10s" >&2; exit 1; }
   done
 '
