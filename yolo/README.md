@@ -10,8 +10,6 @@
 yolo/
 ├── weights/best.pt          # 已训练权重 (yolov8s, 38图/115框, mAP50~0.75)
 ├── tools/xany_to_yolo.py    # X-AnyLabeling JSON -> YOLO detection 数据集
-├── samples/                 # 标注格式样例 (L图 + 原生json + YOLO txt)
-├── runs/                    # 训练曲线 / 混淆矩阵
 └── data.yaml.example        # 数据集配置模板
 ```
 
@@ -116,3 +114,5 @@ Precision=88.8%、Recall=90.1%、mAP50=93.9%、mAP50-95=55.5%；
 当前轨迹避障仍依赖 LiDAR，汽车三维观测尚未直接控制绕行轨迹。
 标注多数覆盖汽车前脸，LiDAR 负责车身占用范围，不能把前脸框当作完整车身尺寸。
 训练图表及部署指标在工作区 `experiments/car_training_20260930`。
+
+2026-10-19：samples/ 与 runs/ 的历史附件已归档；可从标签 archive/pre-refactor-20261019 或外部归档恢复，见 docs/migration_20261019.md。

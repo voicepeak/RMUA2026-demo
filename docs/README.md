@@ -11,14 +11,17 @@
 5. [无人机避障调研](无人机避障调研_20261004.md)、[25 车辆碰撞记录](25_car_command_guard.md)：调研依据、前期诊断与修复记录。
 6. [18 规则转写](18_rmua2026_rules.md)：既有赛事资料，不承担当前开发状态说明。
 
+## 迁移后的历史资料
+
+2026-10-19 已冻结到 beta；目录与归档位置见 [迁移说明](migration_20261019.md)，本次回归见 [冻结验证](validation_beta_20261019.md)。
+
 ## 方案、验证与历史记录
 
-- [已确认的重构方案](specs/RMUA2026_dynamic_avoidance_refactor_plan.md)；占据避障草稿仍在specs目录，未跟踪且不作当前实现承诺。
-- [时空模块验证](validation/spacetime_release_20261007/README.md)、[10月8日缝隙验证](validation/gap_release_20261008/README.md)、[10月10日验证](validation/gap_release_20261010/README.md)：对应当时版本的测试与证据。
-- [历史归档索引](archive/README.md)：早期Stage设计、训练和实验记录；其中参数与开发进度属于当时版本。
+- [已确认的重构方案](specs/RMUA2026_dynamic_avoidance_refactor_plan.md)；占据避障草稿已随冻结提交保存，不作当前实现承诺。
+- 历史 validation、archive 附件已移出当前树，可从标签 `archive/pre-refactor-20261019` 或本机 `/home/tianbot/RUMA-legacy-archive-20261019/tracked_iteration_artifacts/docs/` 恢复。
 
 按用户要求删除了过期交接快照、旧README、非官方本地规则附录和旧源码清单，清单见归档索引。保留当前交接、有效方案和原始证据；旧文档的已提交版本可从Git历史查阅。
 
-模型、标注、实验日志、运行快照和基线备份仍在原目录。
+模型和运行快照保留；历史标注样例、图像和实验日志的位置以迁移说明为准。
 
 - [40 暂停交接：未提交候选、回归失败及恢复步骤](40_paused_global_adaptation_handoff_20261013.md)（当前入口）
