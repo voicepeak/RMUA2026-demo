@@ -28,5 +28,9 @@
 !evaluation/metrics/__init__.py
 !evaluation/metrics/closed_loop.py
 !evaluation/metrics/braking.py
+!evaluation/seed_runner/
+!evaluation/seed_runner/__init__.py
+!evaluation/seed_runner/manifest.py
+!evaluation/seed_runner/simulator_preflight.py
 **/__pycache__/
 **/*.pyc

@@ -6,6 +6,8 @@ from pathlib import Path
 import subprocess
 import time
 from evaluation.seed_runner.manifest import prepare_run, source_hashes
+from evaluation.seed_runner.simulator_preflight import verify_local_simulator
+from evaluation.seed_runner.controller_cleanup import stop_bound_controller
 
 
 def main():
@@ -25,6 +27,7 @@ def main():
     parser.add_argument('--yaw-motion',action='store_true')
     parser.add_argument('--braking',action='store_true')
     parser.add_argument('--snapshot',action='store_true')
+    parser.add_argument('--controller-image',help='locally built immutable standalone image; no beta bind mount')
     args = parser.parse_args()
     if args.mode == 'VEL' and (args.motor_pulses or not 3 <= args.hover_seconds <= 20):
         parser.error('VEL requires hover-seconds [3,20] and no motor pulses')
@@ -37,7 +40,12 @@ def main():
     if args.braking and args.step:
         parser.error('braking and step are separate experiments')
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
-    digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'], text=True).strip()
+    simulator_digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'], text=True).strip()
+    image_info=None
+    if args.controller_image:
+        image_info=json.loads(subprocess.check_output(['docker','image','inspect',args.controller_image],text=True))[0]
+    digest=image_info['Id'] if image_info else simulator_digest
+    simulator_evidence=verify_local_simulator(root)
     config = json.loads((root/'configs/official_baseline.yaml').read_text())
     config['control_mode'] = args.mode
     config['experiment'] = {'levels': args.levels, 'pulse_seconds': args.pulse_seconds,
@@ -45,13 +53,24 @@ def main():
                             'evaluate_truth': args.evaluate_truth, 'step': args.step,
                             'sensor_fault':args.sensor_fault, 'fault_seconds':args.fault_seconds,
                             'gps_bridge':args.gps_bridge,'yaw_motion':args.yaw_motion,'braking':args.braking,
-                            'snapshot':args.snapshot}
+                            'snapshot':args.snapshot,'controller_image':args.controller_image}
     run, manifest = prepare_run(root, root/'runs', args.seed, digest, config)
     manifest['stage'] = ('P1_PWM_CLOSED_LOOP' if args.hover_seconds else 'P0_PWM_IDENTIFICATION') if args.mode == 'PWM' else 'P1_VEL_BENCHMARK'
+    manifest['simulator_preflight']=simulator_evidence
+    manifest['simulator_container_image_digest']=simulator_digest
+    manifest['controller_source_kind']='immutable_docker_image' if image_info else 'workspace_bind_mount'
+    if image_info:
+        manifest['controller_git_revision']=(image_info['Config'].get('Labels') or {}).get('org.opencontainers.image.revision','unknown')
+    manifest['run_state']='PREPARED'
+    (run/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print(run, flush=True)
     code = 1
     evaluator = None
     evaluation_log = None
+    controller_name='rmua-next-flight-'+run.name
+    module='adapters.ros_noetic.pwm_experiment' if args.mode == 'PWM' else 'adapters.ros_noetic.vel_experiment'
+    readiness_marker='rmua_next_sensor_readiness'
+    container_run='/workspace/main/'+str(run.relative_to(root))
     with (run/'simulator.log').open('x') as output:
         simulator = subprocess.Popen([str(root/'tools/run_sim.sh'), str(args.seed), 'offscreen'],
                                      stdout=output, stderr=subprocess.STDOUT)
@@ -63,9 +82,13 @@ def main():
                     raise RuntimeError('fresh simulator failed; see simulator.log')
                 try:
                     probe = subprocess.run([str(root/'tools/enter_env.sh'), 'python3', '-c',
-                        'import rospy; from sensor_msgs.msg import Imu; rospy.init_node("pwm_ready", anonymous=True); rospy.wait_for_message("/airsim_node/drone_1/imu/imu", Imu, timeout=2)'],
+                        'import socket,sys; socket.setdefaulttimeout(2.); import rosgraph,rospy; from sensor_msgs.msg import Imu; '
+                        'sys.exit(2) if not rosgraph.is_master_online() else None; '
+                        'rospy.init_node("pwm_ready", anonymous=True); rospy.wait_for_message("/airsim_node/drone_1/imu/imu", Imu, timeout=2)',
+                        readiness_marker,'--run-dir',container_run],
                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=8)
                 except subprocess.TimeoutExpired:
+                    stop_bound_controller(container,readiness_marker,container_run)
                     continue
                 if probe.returncode == 0:
                     break
@@ -87,9 +110,15 @@ def main():
                     time.sleep(.05)
                 if not (run/'truth_ready').exists():
                     raise RuntimeError('hidden truth evaluator failed to receive truth')
-            command = [str(root/'tools/enter_env.sh'), 'env', 'OPENBLAS_NUM_THREADS=1',
-                    'python3', '-m', 'adapters.ros_noetic.pwm_experiment' if args.mode == 'PWM' else 'adapters.ros_noetic.vel_experiment',
-                    '--run-dir', '/workspace/main/'+str(run.relative_to(root))]
+            if image_info:
+                (run/'ros_home').mkdir()
+                command=['docker','run','--rm','--name',controller_name,'--network','host',
+                         '--user',str(os.getuid())+':'+str(os.getgid()),'-e','ROS_HOME=/rmua-run/ros_home',
+                         '--mount','type=bind,source='+str(run)+',target=/rmua-run',digest,
+                         'python3','-m',module,'--run-dir','/rmua-run']
+            else:
+                command = [str(root/'tools/enter_env.sh'), 'env', 'OPENBLAS_NUM_THREADS=1',
+                        'python3','-m',module,'--run-dir','/workspace/main/'+str(run.relative_to(root))]
             if args.mode == 'PWM':
                 command.extend(['--levels', args.levels, '--pulse-seconds', str(args.pulse_seconds)])
             if args.motor_pulses:
@@ -106,11 +135,30 @@ def main():
                 command.append('--yaw-motion')
             if args.braking:
                 command.append('--braking')
+            manifest['controller_command']=command
+            manifest['run_state']='CONTROL_RUNNING'
+            (run/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
             code = subprocess.call(command, timeout=40)
         except Exception as error:
             manifest['error'] = str(error)
             print(str(error), flush=True)
         finally:
+            try:
+                manifest['terminated_owned_readiness_pids']=stop_bound_controller(container,readiness_marker,container_run)
+            except Exception as error:
+                manifest['readiness_cleanup_error']=str(error)
+                code=1
+            if image_info:
+                # The UUID name belongs exclusively to this host invocation.
+                subprocess.run(['docker','rm','-f',controller_name],stdout=subprocess.DEVNULL,
+                               stderr=subprocess.DEVNULL,timeout=10)
+            else:
+                try:
+                    manifest['terminated_owned_controller_pids']=stop_bound_controller(container,module,
+                                        container_run)
+                except Exception as error:
+                    manifest['controller_cleanup_error']=str(error)
+                    code=1
             if evaluator:
                 (run/'truth_stop').touch()
                 try:
@@ -129,17 +177,23 @@ def main():
             manifest['source_sha256_after'] = source_hashes(root)
             manifest['source_unchanged'] = manifest['source_sha256_before'] == manifest['source_sha256_after']
             manifest['observer_exit_code'] = code
+            manifest['run_state']='CONTROL_COMPLETE' if code==0 else 'CONTROL_FAILED'
             prefix = 'pwm' if args.mode == 'PWM' else 'vel'
             manifest['telemetry'] = [prefix+'_telemetry.jsonl', prefix+'_summary.json', 'simulator.log']
             if args.evaluate_truth:
                 manifest['evaluation_only_inputs'] = ['/airsim_node/drone_1/debug/pose_gt',
                                                      '/airsim_node/drone_1/debug/rotor_pwm']
                 manifest['telemetry'].extend(['evaluation_truth.jsonl','evaluation_actuation.jsonl'])
+            manifest['artifacts']=sorted(p.name for p in run.iterdir() if p.is_file() and p.name!='manifest.json')
             (run/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
     if args.evaluate_truth and (run/(prefix+'_telemetry.jsonl')).exists() and (run/'evaluation_truth.jsonl').exists():
         metric_code = subprocess.call(['python3', '-m', 'evaluation.metrics.closed_loop', str(run)], cwd=root)
+        manifest['evaluation_exit_code']=metric_code
         if code == 0:
             code = metric_code
+        manifest['run_state']='EVALUATED' if code==0 else 'FAILED'
+        manifest['artifacts']=sorted(p.name for p in run.iterdir() if p.is_file() and p.name!='manifest.json')
+        (run/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     return code
 
 

@@ -4,7 +4,7 @@ P0 输入和控制话题候选记录于 configs/official_baseline.yaml；实际�
 
 官方依据（核对于 2026-10-19）：
 
-- https://bbs.robomaster.com/wiki/20204847/809873?source=7 ：官方规则中心列出比赛规则手册 V1.0.0（2026-01-30）、参赛手册 V1.0.0（2026-01-15）；本轮网页可确认版本，PDF 附件未成功提取，不能声称逐页复核了原文。设计与旧版结构化条款继续作为待对照的需求。
+- https://bbs.robomaster.com/wiki/20204847/809873?source=7 ：官方比赛规则手册 V1.0.0（2026-01-30）、参赛手册 V1.0.0（2026-01-15）。后续已成功取得 PDF 原件并逐页核对，长度/MD5 与官方附件元数据匹配；冻结 URL/SHA256 见 configs/official_rules_baseline.json，工程核对见 official_rules_review.md。
 - https://github.com/RoboMaster/IntelligentUAVChampionshipSimulator/blob/RMUA2026-01/README.md
 - https://github.com/RoboMaster/IntelligentUAVChampionshipSimulator/blob/RMUA2026-01/settings.json
 - https://github.com/RoboMaster/IntelligentUAVChampionshipBase/blob/RMUA2026/README.md

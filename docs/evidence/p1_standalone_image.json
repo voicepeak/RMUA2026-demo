@@ -1,0 +1,254 @@
+{
+  "host_unit_tests_passed": 50,
+  "image_unit_tests_passed": 49,
+  "owned_process_cleanup_integration": "PASS: exact UUID path killed; neighboring process remained running",
+  "image_tag": "rmua-next:16da241",
+  "image_digest": "sha256:f185ea8449aa3061b17f2f828eaa80e40dc51dbd33563235fe09d16960abb9ef",
+  "image_size_bytes": 1163205947,
+  "controller_source_git_revision": "16da2417e7e58b90355aa0b53d47bb42f98b7f35",
+  "official_result": "UNKNOWN",
+  "cases": [
+    {
+      "seed": 1017,
+      "run_directory": "runs/20261019T120936Z_c095b1e1c1304a0db40938568d808a37",
+      "source_unchanged": true,
+      "controller_source_kind": "immutable_docker_image",
+      "controller_git_revision": "16da2417e7e58b90355aa0b53d47bb42f98b7f35",
+      "strict_rules_verified": true,
+      "summary": {
+        "commands": 978,
+        "fault": null,
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 14.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {},
+        "injection": null,
+        "graph_monitor": {
+          "successful_checks": 136,
+          "fault": null,
+          "max_rpc_wall_s": 0.014280881965532899,
+          "stale_after_wall_s": 0.3
+        },
+        "gps_bridge_enabled": false,
+        "recovery_transitions": [],
+        "yaw_motion": true,
+        "braking": true,
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 978,
+        "commands": 978,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 694,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012574688997119665,
+          0.021062699356116352,
+          0.023021069034002722
+        ],
+        "minimum_command_wall_interval_s": 0.010665494948625565,
+        "state_position_rmse_m": [
+          0.01935777065378086,
+          0.02142005355320189,
+          0.016113026803761577
+        ],
+        "state_attitude_rmse_rad": 0.02484627886850065,
+        "truth_tracking_rmse_m": [
+          0.12059290112267632,
+          0.07069502116517459,
+          0.03960271591000423
+        ],
+        "truth_tracking_max_norm_m": 0.3255728071637614,
+        "truth_yaw_tracking_rmse_rad": 0.025240875389029426,
+        "truth_yaw_tracking_max_abs_rad": 0.05110558860327474,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 7.463743828452375e-07,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "PWM",
+        "braking_response": {
+          "valid": true,
+          "certified_deceleration_bound": false,
+          "stop_speed_threshold_m_s": 0.08,
+          "hold_seconds": 0.35,
+          "reference_sensor_stamp": 1792411795.0026119,
+          "initial_speed_m_s": 0.5489205002174771,
+          "stop_time_s": 1.9380414485931396,
+          "forward_excursion_m": 0.23249619572092384,
+          "effective_average_deceleration_m_s2": 0.63502387394033,
+          "peak_speed_after_reference_m_s": 0.5489205002174771,
+          "lateral_excursion_m": 0.15269114317307242,
+          "note": "Includes controller/sensing lag; effective average is not an instantaneous lower bound."
+        }
+      }
+    },
+    {
+      "seed": 1018,
+      "run_directory": "runs/20261019T121412Z_0cfde48d1e9f4e20be0ac9b626ce8632",
+      "source_unchanged": true,
+      "controller_source_kind": "immutable_docker_image",
+      "controller_git_revision": "16da2417e7e58b90355aa0b53d47bb42f98b7f35",
+      "strict_rules_verified": true,
+      "summary": {
+        "commands": 680,
+        "fault": null,
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 10.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {},
+        "injection": null,
+        "graph_monitor": {
+          "successful_checks": 97,
+          "fault": null,
+          "max_rpc_wall_s": 0.0218287599273026,
+          "stale_after_wall_s": 0.3
+        },
+        "gps_bridge_enabled": false,
+        "recovery_transitions": [],
+        "yaw_motion": false,
+        "braking": false,
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 680,
+        "commands": 680,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 405,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012655756087042391,
+          0.022074663673993203,
+          0.024918582900427283
+        ],
+        "minimum_command_wall_interval_s": 0.010605570976622403,
+        "state_position_rmse_m": [
+          0.01827164707667446,
+          0.021149616091819548,
+          0.015781276213325594
+        ],
+        "state_attitude_rmse_rad": 0.014666657788357037,
+        "truth_tracking_rmse_m": [
+          0.07178537633610843,
+          0.05952814446016913,
+          0.038976525357925014
+        ],
+        "truth_tracking_max_norm_m": 0.1740508177386658,
+        "truth_yaw_tracking_rmse_rad": 0.016888029572778233,
+        "truth_yaw_tracking_max_abs_rad": 0.03747597104357325,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 2.381847523083313e-05,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      }
+    },
+    {
+      "seed": 1019,
+      "run_directory": "runs/20261019T121725Z_85c91e597f0e41da91fd9659753fbd57",
+      "source_unchanged": true,
+      "controller_source_kind": "workspace_bind_mount",
+      "controller_git_revision": null,
+      "strict_rules_verified": true,
+      "summary": {
+        "commands": 551,
+        "fault": null,
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 8.0,
+        "step": false,
+        "reference_clock": "IMU",
+        "gps_rejections": {},
+        "injection": null,
+        "graph_monitor": {
+          "successful_checks": 78,
+          "fault": null,
+          "max_rpc_wall_s": 0.015373102971352637,
+          "stale_after_wall_s": 0.3
+        },
+        "gps_bridge_enabled": false,
+        "recovery_transitions": [],
+        "yaw_motion": false,
+        "braking": false,
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 551,
+        "commands": 551,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 270,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012653265497647226,
+          0.02126807213644497,
+          0.02434829456964507
+        ],
+        "minimum_command_wall_interval_s": 0.010761648998595774,
+        "state_position_rmse_m": [
+          0.02705817694561248,
+          0.026075624162491734,
+          0.017282385447337033
+        ],
+        "state_attitude_rmse_rad": 0.013697448964236178,
+        "truth_tracking_rmse_m": [
+          0.064273307017863,
+          0.06754085423218241,
+          0.044250841599565945
+        ],
+        "truth_tracking_max_norm_m": 0.16631109351551746,
+        "truth_yaw_tracking_rmse_rad": 0.017571151766391988,
+        "truth_yaw_tracking_max_abs_rad": 0.03272167144029181,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 9.349449936515373e-06,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      }
+    }
+  ]
+}
