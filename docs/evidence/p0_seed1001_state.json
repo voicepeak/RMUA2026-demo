@@ -1,0 +1,49 @@
+{
+  "state_count": 788,
+  "health_counts": {
+    "LOST": 4,
+    "OK": 784
+  },
+  "events": {
+    "IMU_DUPLICATE": 10
+  },
+  "gps_rejections": {},
+  "epoch": 0,
+  "control_published": false,
+  "noise_calibrated": false,
+  "official_result": "UNKNOWN",
+  "last_state": {
+    "metadata": {
+      "stamp": 1792408376.4322681,
+      "valid_until": 1792408376.482268,
+      "epoch": 0,
+      "source": "imu_gps_eskf_v1",
+      "frame_id": "world_ned"
+    },
+    "position_ned": [
+      0.01264020091876883,
+      -0.03421204943426388,
+      0.31209028311778664
+    ],
+    "velocity_ned": [
+      0.019281562815126423,
+      -0.0834656364648128,
+      0.010163548998406931
+    ],
+    "orientation_wxyz": [
+      0.9999938793112021,
+      -0.0013451160048599615,
+      -0.0029534128398513563,
+      -0.0013074232918481197
+    ],
+    "angular_velocity_body": [
+      -0.0024065019468873525,
+      -0.005377378623547998,
+      0.00010481276310387103
+    ],
+    "health": "OK"
+  },
+  "run_directory": "runs/20261019T111256Z_60f0a4d4b2404938b8dba2724a85a12d",
+  "seed": 1001,
+  "source_unchanged": true
+}

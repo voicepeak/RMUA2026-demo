@@ -18,4 +18,12 @@ cd /home/tianbot/RUMA-by-helinjun/main
 ./tools/stop_sim.sh
 ```
 
+新增只读状态观测（在已启动的对应种子场景内运行）：
+
+```bash
+OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.state_observation --seed 1001 --duration 8
+```
+
+状态链包含 IMU/GPS ESKF、零 GPS 拒绝和 reset epoch；噪声参数尚未标定，不能据此宣称 P2 已验收。
+
 两个版本共享容器、GPU 和 ROS master，依次运行。启动脚本发现现有 ROS/模拟器会退出，先关闭已有场次。目录迁移和环境说明见 [工作区迁移](docs/workspace_migration.md)。
