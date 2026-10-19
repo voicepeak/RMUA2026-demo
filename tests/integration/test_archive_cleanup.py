@@ -6,11 +6,13 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from evaluation.dataset_capture.publish_archive import prepare, pack
 from evaluation.dataset_capture.cleanup_archive import (
-    PublicationPending, delete_verified_members, verify_publication,
+    PublicationPending, delete_verified_members, verify_publication, incremental_cleanup,
 )
+from evaluation.dataset_capture.publish_archive import sha256, write_json
 
 
 class FakeRemote:
@@ -130,6 +132,59 @@ class ArchiveCleanupTests(unittest.TestCase):
             self.assertEqual(result["deleted_files"], 1)
             self.assertEqual(result["preserved_changed_files"], 1)
             self.assertTrue((run / "a.jpg").exists())
+
+    def test_one_completed_shard_can_be_cleaned_while_another_is_unuploaded(self):
+        with tempfile.TemporaryDirectory() as temp:
+            base = Path(temp)
+            source = base / "archive"
+            run = source / "experiments/run1"
+            run.mkdir(parents=True)
+            (run / "a.jpg").write_bytes(b"camera frame")
+            (run / "b.npz").write_bytes(b"point cloud")
+            output = base / "upload"
+            with redirect_stdout(io.StringIO()):
+                plan = prepare(source, output, 3000)
+            self.assertEqual(len(plan["shards"]), 2)
+            _, index, receipt = pack(plan, output, plan["shards"][0])
+            state = {"repo_id": "test/archive", "verified": {receipt["name"]: receipt}}
+            remote = FakeRemote(plan, receipt, index)
+            remote.data["publication_status.json"] = b'{"state":"UPLOADING","shards_expected":2}'
+            verify_publication(plan, state, remote, output, {receipt["name"]})
+            result = delete_verified_members({"source_root": plan["source_root"], "file_count": 1,
+                                               "shards": [plan["shards"][0]]}, output)
+            self.assertEqual(result["deleted_files"], 1)
+            self.assertFalse((run / "a.jpg").exists())
+            self.assertTrue((run / "b.npz").exists())
+
+    def test_partial_cleanup_waits_for_remote_receipt_commit(self):
+        with tempfile.TemporaryDirectory() as temp:
+            _, run, output, plan, state, remote = self.fixture(Path(temp))
+            remote.data["shards.json"] = b'[]'
+            with self.assertRaises(PublicationPending):
+                verify_publication(plan, state, remote, output, {"data-00000.tar"})
+            self.assertTrue((run / "a.jpg").exists())
+
+    def test_retry_after_permission_repair_keeps_prior_deletion_receipt(self):
+        with tempfile.TemporaryDirectory() as temp:
+            _, run, output, plan, state, remote = self.fixture(Path(temp))
+            digest = sha256(output / "plan.json")
+            size = (run / "a.jpg").stat().st_size
+            (run / "a.jpg").unlink()
+            write_json(output / "upload_state.local.json", state)
+            write_json(output / "per_shard_cleanup_state.local.json", {
+                "plan_sha256": digest, "cleaned": {}, "retry_previous": {
+                    "data-00000.tar": {"deleted_files": 1, "deleted_bytes": size,
+                        "already_missing_files": 0, "preserved_changed_files": 1}}})
+            with patch('evaluation.dataset_capture.cleanup_archive.PublicArchive', return_value=remote), \
+                    redirect_stdout(io.StringIO()):
+                incremental_cleanup(plan, output, lambda **kw: None, digest)
+            saved = json.loads((output / "per_shard_cleanup_state.local.json").read_text())
+            result = saved["cleaned"]["data-00000.tar"]
+            self.assertEqual(result["deleted_files"], 2)
+            self.assertEqual(result["deleted_bytes"], plan["source_bytes"])
+            self.assertEqual(result["already_missing_files"], 0)
+            self.assertEqual(result["preserved_changed_files"], 0)
+            self.assertFalse((run / "b.npz").exists())
 
 
 if __name__ == "__main__":

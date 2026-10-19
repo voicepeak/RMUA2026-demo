@@ -20,7 +20,7 @@ cd /home/tianbot/RUMA-by-helinjun/main
 
 选择实验、图像、运行记录和历史验证附件中的观测及元数据，跳过 Git、模型、驱动/安装包、编译缓存、代码副本、软链接及命中凭据模式的文本。具体排除文件只写入本机 exclusions.local.json。自动扫描不替代针对数据来源的判断。
 
-按约 1 GiB 生成可复现 tar，保留观测相对路径；每个分片有带逐文件 SHA256 的压缩索引。一次仅暂存一个分片，上传并对照远端大小与 SHA256 后删除临时副本。上传进程不删除原始数据；根据用户后续授权，全部上传完成后由独立清理进程复核并删除已备份的原始数据。失败后重新执行 upload 可恢复。
+按约 1 GiB 生成可复现 tar，保留观测相对路径；每个分片有带逐文件 SHA256 的压缩索引。一次仅暂存一个分片，上传并对照远端大小与 SHA256 后删除临时副本。用户现已授权逐分片清理：每个分片上传并复核通过后，由独立进程删除该分片已备份的本地原始文件，不等全部上传结束。失败后重新执行 upload 可恢复；已上传分片会直接复核远端，无须重新读取已删除的本地原始文件。
 
 远端仓库公开创建。若同名仓库已经是私有，脚本退出，不擅自改变已有仓库可见性。远端状态在所有计划分片完成校验后才改为 COMPLETE。仓库在 UPLOADING 状态时只包含部分数据，不应当作完整备份。
 
@@ -43,12 +43,12 @@ cd /home/tianbot/RUMA-by-helinjun/main
 
 服务不保存认证凭据；机器重启或进程结束后恢复上传需要重新提供凭据。公开链接：https://huggingface.co/datasets/Vociepeak/rmua2026-legacy-data 。
 
-## 上传后自动清理（用户已授权）
+## 逐分片清理（用户已授权）
 
-用户要求“如果上传完了本地就删掉”。已增加独立的 cleanup_archive 后台进程，不重启上传进程，也不需要认证凭据。
+用户最新要求“上传一个删一个”，替代此前全部上传后才清理的策略。独立的 cleanup_archive 后台进程使用 `--per-shard` 模式，不重启上传进程，也不需要认证凭据。
 
-清理进程等待 86 个分片全部上传完成，固定远端 commit，核对 COMPLETE 标记、全量清单、每个 tar 的服务端 SHA256/大小及逐文件索引。然后先对全部本地候选文件计算 SHA256；完成核对后才删除与备份一致、且在删除前未再次变化的文件，并清理这些文件留下的空目录。
+每发现一个已上传分片，清理进程固定远端 commit，核对该分片的公开回执、tar 服务端 SHA256/大小及逐文件索引。然后计算该分片对应本地文件的 SHA256；只删除与备份一致、且在删除前未再次变化的成员，并清理这些文件留下的空目录。全局 UPLOADING 状态下也可以清理已核实的分片，未上传的分片不受影响。
 
-范围只包含已审核上传计划中的历史归档成员，约 83.95 GiB。新文件、内容有变化的文件、未上传的文件、Git 历史、模型、模拟器及环境不在清理范围。发生远端不完整或校验不一致时不执行删除。
+范围只包含已审核上传计划中的历史归档成员，约 83.95 GiB。新文件、内容有变化的文件、未上传的文件、Git 历史、模型、模拟器及环境不在清理范围。某分片缺少远端回执或校验不一致时，不删除该分片的本地文件。已修正历史 Docker 实验目录的所有者，以便处理已备份的 root 创建目录；不修改原始文件内容和 mtime。
 
-清理状态、远端验证记录与保留文件清单分别写入外部数据目录中的 local_cleanup_status.local.json、cleanup_remote_verification.local.json、cleanup_preserved.local.jsonl。使用同一个 `./tools/data_upload_status.sh` 查看上传与清理进度。机器重启会终止当前后台进程；可用独立上传环境重新执行 `python -m evaluation.dataset_capture.cleanup_archive --authorize-cleanup` 恢复等待或复核。
+清理状态、逐片回执与保留文件清单写入外部数据目录中的 local_cleanup_status.local.json、per_shard_cleanup_state.local.json、cleanup_preserved.local.jsonl。全量上传计划和上传回执继续保留，供恢复与校验使用。使用 `./tools/data_upload_status.sh` 查看上传和清理进度。机器重启会终止当前后台进程；可用独立上传环境重新执行 `python -m evaluation.dataset_capture.cleanup_archive --authorize-cleanup --per-shard` 恢复。

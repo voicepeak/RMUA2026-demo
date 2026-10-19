@@ -3,6 +3,7 @@ set -euo pipefail
 python3 - <<'PY'
 from pathlib import Path
 import json
+import shutil
 root = Path('/home/tianbot/RUMA-hf-public-20261019')
 service = json.loads((root / 'upload_service_status.local.json').read_text())
 state = json.loads((root / 'upload_state.local.json').read_text())
@@ -24,6 +25,8 @@ print(json.dumps({
     'verified_source_gib': round(done_bytes / 1024 ** 3, 2),
     'total_source_gib': round(source_bytes / 1024 ** 3, 2),
     'percent': round(100 * done_bytes / source_bytes, 2),
+    'local_deleted_source_gib': round((cleanup or {}).get('deleted_bytes', 0) / 1024 ** 3, 2),
+    'disk_free_gib': round(shutil.disk_usage(root).free / 1024 ** 3, 2),
     'error': service.get('error'),
     'local_cleanup': cleanup,
 }, ensure_ascii=False, indent=2))

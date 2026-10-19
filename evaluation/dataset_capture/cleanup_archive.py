@@ -45,13 +45,17 @@ class PublicArchive:
                 for r in rows}
 
 
-def verify_publication(plan, state, remote, output):
+def verify_publication(plan, state, remote, output, shard_names=None):
     expected = {s["name"] for s in plan["shards"]}
-    if len(expected) != len(plan["shards"]) or set(state["verified"]) != expected:
+    partial = shard_names is not None
+    selected = set(shard_names) if partial else expected
+    if not selected or not selected <= expected or not selected <= set(state["verified"]):
+        raise ValueError("Requested shards are not locally verified")
+    if len(expected) != len(plan["shards"]) or (not partial and set(state["verified"]) != expected):
         raise ValueError("Local upload receipts are incomplete")
     status = json.loads(remote.read("publication_status.json"))
-    if (status.get("state") != "COMPLETE" or status.get("shards_expected") != len(expected)
-            or status.get("shards_verified") != len(expected)):
+    if not partial and (status.get("state") != "COMPLETE" or status.get("shards_expected") != len(expected)
+                        or status.get("shards_verified") != len(expected)):
         raise PublicationPending("Remote publication is not COMPLETE")
     summary = json.loads(remote.read("dataset_summary.json"))
     for key in ("file_count", "source_bytes"):
@@ -59,16 +63,20 @@ def verify_publication(plan, state, remote, output):
             raise ValueError("Remote summary does not match reviewed plan")
     records = json.loads(remote.read("shards.json"))
     by_name = {r["name"]: r for r in records}
-    if len(by_name) != len(records) or set(by_name) != expected:
+    if len(by_name) != len(records) or not set(by_name) <= expected:
         raise ValueError("Remote shard index is incomplete")
+    if not selected <= set(by_name):
+        raise PublicationPending("Remote shard index has not committed requested receipts yet")
     paths = []
-    for name in sorted(expected):
+    for name in sorted(selected):
         paths.extend(("data/" + name, "indices/" + name + ".files.jsonl.gz"))
     metadata = remote.metadata(paths)
     indices = output / "cleanup_indices"
     indices.mkdir(exist_ok=True)
     for shard in plan["shards"]:
         name = shard["name"]
+        if name not in selected:
+            continue
         receipt, published = state["verified"][name], by_name[name]
         for key in ("sha256", "size", "index_sha256", "index_size", "file_count"):
             if receipt[key] != published[key]:
@@ -93,7 +101,8 @@ def verify_publication(plan, state, remote, output):
                 raise ValueError("Per-file index differs from reviewed plan: " + name)
         (indices / (name + ".files.jsonl.gz")).write_bytes(data)
     return {"repo_id": state["repo_id"], "revision": remote.revision,
-            "shards_verified": len(expected), "file_count": plan["file_count"]}
+            "shards_verified": len(selected),
+            "file_count": sum(len(s["entries"]) for s in plan["shards"] if s["name"] in selected)}
 
 
 def parent_fd(root_fd, relative):
@@ -125,10 +134,10 @@ def delete_verified_members(plan, output, progress=lambda **kwargs: None):
     empty_candidates = set()
     last_update = time.monotonic()
     try:
-        # All remote artifacts have already been verified before this function runs.
-        # Hash every local candidate before deleting even the first file.
+        # All remote artifacts for this selection have already been verified.
+        # Hash all members of the selected shard before deleting its first member.
         with tempfile.TemporaryFile(mode="w+t", dir=output) as candidates, \
-                (output / "cleanup_preserved.local.jsonl").open("w") as preserved:
+                (output / "cleanup_preserved.local.jsonl").open("a") as preserved:
             inspected = 0
             for shard in plan["shards"]:
                 index = output / "cleanup_indices" / (shard["name"] + ".files.jsonl.gz")
@@ -210,10 +219,79 @@ def delete_verified_members(plan, output, progress=lambda **kwargs: None):
     return report
 
 
+def incremental_cleanup(plan, output, update, plan_digest):
+    journal_path = output / "per_shard_cleanup_state.local.json"
+    journal = json.loads(journal_path.read_text()) if journal_path.exists() else {
+        "plan_sha256": plan_digest, "cleaned": {}}
+    if journal["plan_sha256"] != plan_digest:
+        raise ValueError("Cleanup journal belongs to another reviewed plan")
+    shards = {s["name"]: s for s in plan["shards"]}
+
+    def totals():
+        keys = ("deleted_files", "deleted_bytes", "preserved_changed_files", "already_missing_files")
+        records = list(journal["cleaned"].values()) + list(journal.get("retry_previous", {}).values())
+        return {key: sum(r.get(key, 0) for r in records) for key in keys}
+
+    while len(journal["cleaned"]) < len(shards):
+        if sha256(output / "plan.json") != plan_digest:
+            raise ValueError("Reviewed upload plan changed")
+        state_path = output / "upload_state.local.json"
+        state = json.loads(state_path.read_text()) if state_path.exists() else {"verified": {}}
+        pending = sorted(set(state["verified"]) - set(journal["cleaned"]))
+        if not pending:
+            update(state="WAITING_FOR_NEXT_SHARD", error=None, cleaned_shards=len(journal["cleaned"]), **totals())
+            time.sleep(10)
+            continue
+        for name in pending:
+            update(state="VERIFYING_SHARD", current_shard=name, cleaned_shards=len(journal["cleaned"]), **totals())
+            for attempt in range(1, 13):
+                try:
+                    remote = PublicArchive(state["repo_id"])
+                    verified = verify_publication(plan, state, remote, output, {name})
+                    break
+                except PublicationPending:
+                    if attempt == 12:
+                        raise
+                    time.sleep(5)
+                except ValueError:
+                    raise
+                except Exception as error:
+                    if attempt == 12:
+                        raise
+                    update(state="RETRYING_SHARD_VERIFICATION", error=str(error), current_shard=name)
+                    time.sleep(10)
+            subset = {"source_root": plan["source_root"], "file_count": len(shards[name]["entries"]),
+                      "shards": [shards[name]]}
+            base = totals()
+
+            def progress(**values):
+                for key in base:
+                    if key in values:
+                        values[key] += base[key]
+                update(state="CLEANING_SHARD", current_shard=name, cleaned_shards=len(journal["cleaned"]), **values)
+
+            result = delete_verified_members(subset, output, progress)
+            previous = journal.get("retry_previous", {}).pop(name, None)
+            if previous:
+                result["already_missing_files"] = max(previous.get("already_missing_files", 0),
+                    result["already_missing_files"] - previous.get("deleted_files", 0))
+                result["deleted_files"] += previous.get("deleted_files", 0)
+                result["deleted_bytes"] += previous.get("deleted_bytes", 0)
+            result["remote_revision"] = verified["revision"]
+            journal["cleaned"][name] = result
+            write_json(journal_path, journal)
+            update(state="SHARD_CLEANED", error=None, current_shard=name, cleaned_shards=len(journal["cleaned"]), **totals())
+            print(json.dumps({"shard_cleaned": name, "deleted_bytes": result["deleted_bytes"],
+                              "cleaned_shards": len(journal["cleaned"])}), flush=True)
+    update(state="COMPLETE", cleaned_shards=len(journal["cleaned"]), **totals())
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=Path("/home/tianbot/RUMA-hf-public-20261019"))
     parser.add_argument("--authorize-cleanup", action="store_true", required=True)
+    parser.add_argument("--per-shard", action="store_true",
+                        help="remove each verified shard immediately while the rest uploads")
     args = parser.parse_args()
     output = args.output.resolve()
     with (output / "cleanup_service.lock").open("a") as lock:
@@ -227,13 +305,21 @@ def main():
             raise ValueError("Refusing cleanup outside the explicitly authorized historical archive")
         status_path = output / "local_cleanup_status.local.json"
         status = {"pid": os.getpid(), "source_root": str(source), "plan_sha256": plan_digest,
-                  "authorized": True, "state": "WAITING_FOR_UPLOAD", "updated_at_unix": time.time()}
+                  "authorized": True, "per_shard": args.per_shard,
+                  "state": "WAITING_FOR_UPLOAD", "updated_at_unix": time.time()}
 
         def update(**values):
             status.update(values, updated_at_unix=time.time())
             write_json(status_path, status)
 
         update()
+        if args.per_shard:
+            try:
+                incremental_cleanup(plan, output, update, plan_digest)
+            except Exception as error:
+                update(state="FAILED", error=str(error))
+                raise
+            return
         while True:
             if sha256(plan_path) != plan_digest:
                 update(state="FAILED", error="Reviewed upload plan changed; no cleanup attempted")
