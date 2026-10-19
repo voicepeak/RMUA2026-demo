@@ -439,8 +439,8 @@ class GateYolo(object):
         if self.fallback_center:
             unmatched = dense_candidates(cl)
             if unmatched:
-                disp = gs.compute_disparity(cv2.cvtColor(left, cv2.COLOR_BGR2GRAY),
-                                            cv2.cvtColor(right, cv2.COLOR_BGR2GRAY), self.sgbm)
+                disp = gs.compute_gate_disparity(cv2.cvtColor(left, cv2.COLOR_BGR2GRAY),
+                                            cv2.cvtColor(right, cv2.COLOR_BGR2GRAY), self.sgbm,unmatched)
                 fmask = gate_frame_mask(left, {})
                 trim=gate_trim_mask(left)
                 gravity=gs.R_BC.T@gs.quat_to_R(quat).T@np.array([0.,0.,1.])
@@ -459,7 +459,7 @@ class GateYolo(object):
                     if not np.all(np.isfinite(world)):
                         continue
                     t = self.gate_map.observe(world, t_img, depth=depth,
-                                              uv=np.asarray(c["center"], float), conf=c["conf"])
+                                              uv=np.asarray(c["center"], float), conf=c["conf"],position_valid=True)
                     c["track_id"] = int(t.id)
                     obs.append({"world": world.tolist(), "depth": float(depth),
                                 "conf": c["conf"], "track_id": int(t.id),

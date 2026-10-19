@@ -94,6 +94,13 @@ class OnlineGateCacheTests(unittest.TestCase):
         self.assertFalse(self.ingest(observation(geometry_valid=False, support=5)))
         self.assertTrue(self.ingest(observation(geometry_valid=False, support=8)))
 
+    def test_repeated_metric_frame_support_is_separate_from_detector_confidence(self):
+        g=observation(geometry_valid=False,confidence=.5,support=8)
+        g['position_support']=7
+        self.assertFalse(self.ingest(g))
+        g['position_support']=8
+        self.assertTrue(self.ingest(g))
+
     def test_match_updates_ema_and_keeps_identity(self):
         self.ingest(observation(s=100.0, x=0.0, last_seen=10.0))
         self.ingest(observation(s=101.0, x=1.0, last_seen=11.0), now=11.5)

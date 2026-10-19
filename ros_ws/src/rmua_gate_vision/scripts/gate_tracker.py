@@ -25,12 +25,13 @@ except Exception:                       # 允许无 cv2/ros 环境单测
 class GateTrack(object):
 
     def __init__(self, tid, world, route_s, stamp, depth=None, geom=None,
-                 uv=None, conf=None):
+                 uv=None, conf=None,position_valid=False):
         w = np.asarray(world, dtype=float)
         self.id = int(tid)
         self.mean = w.copy()
         self.s = float(route_s) if route_s is not None else 0.0
         self.support = 1
+        self.position_support=int(position_valid)
         self.first_seen = stamp
         self.last_seen = stamp
         self.depth = depth
@@ -56,9 +57,10 @@ class GateTrack(object):
         self.visible = False
 
     def update(self, world, route_s, stamp, beta, depth=None, geom=None,
-               uv=None, conf=None):
+               uv=None, conf=None,position_valid=False):
         if stamp <= self.last_seen:
             return
+        self.position_support+=int(position_valid)
         w = np.asarray(world, dtype=float)
         measured=geom is not None and geom.get('geometry_valid',False)
         if measured and not self.geometry_valid:
@@ -172,7 +174,7 @@ class GateTracker(object):
         return cost, "world"
 
     def update(self, world, route_s, stamp, depth=None, geom=None, uv=None,
-               conf=None):
+               conf=None,position_valid=False):
         w = np.asarray(world, dtype=float)
         best, best_cost = None, 1e9
         for t in self.tracks.values():
@@ -180,9 +182,9 @@ class GateTracker(object):
             if cost is not None and cost < best_cost:
                 best_cost, best = cost, t
         if best is not None:
-            best.update(w, route_s, stamp, self._beta(depth), depth, geom, uv, conf)
+            best.update(w, route_s, stamp, self._beta(depth), depth, geom, uv, conf,position_valid)
             return best
-        t = GateTrack(self._next_id, w, route_s, stamp, depth, geom, uv, conf)
+        t = GateTrack(self._next_id, w, route_s, stamp, depth, geom, uv, conf,position_valid)
         self.tracks[self._next_id] = t
         self._next_id += 1
         return t
@@ -198,7 +200,7 @@ class GateTracker(object):
         for t in self.tracks.values():
             s = t.sigma()
             geom_ok = (t.geometry_valid if t.geom_frames else
-                       t.support >= 8 and (t.confidence or 0) >= .65)
+                       t.support >= 8 and ((t.confidence or 0) >= .65 or t.position_support>=8))
             t.hard_anchor = (t.support >= self.min_support_hard and
                              float(np.max(s[:2])) <= 1.0 and
                              float(s[2]) <= self.sigma_hard and geom_ok)

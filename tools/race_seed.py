@@ -46,7 +46,7 @@ def initial_gate_map_ready(gates,now):
             x,y,z,sx,sy,sz,stamp=values
             if not all(math.isfinite(v) for v in values):continue
             if (gate.get('valid',True) and gate.get('hard_anchor',False) and
-                    gate.get('support',0)>=8 and float(gate.get('confidence') or 0)>=.65 and
+                    gate.get('support',0)>=8 and (float(gate.get('confidence') or 0)>=.65 or gate.get('position_support',0)>=8) and
                     max(sx,sy)<=1.2 and 0.<=sz<=.6 and min(sx,sy)>=0. and
                     0.<=now-stamp<=1. and math.hypot(x,y)<60.):return True
         except (KeyError,TypeError,ValueError):continue

@@ -13,6 +13,23 @@ from gate_candidates import frame_candidates,gate_frame_support,gate_opening_sup
 
 
 class StereoObstacleTests(unittest.TestCase):
+    def test_clipped_frame_cannot_supply_a_center(self):
+        import cv2
+        image=np.zeros((240,240,3),dtype=np.uint8)
+        cv2.rectangle(image,(40,40),(200,239),(255,255,255),12)
+        cv2.rectangle(image,(48,48),(192,239),(30,85,230),3)
+        self.assertFalse(gate_opening_support(image,(40,40,160,200)))
+
+    def test_cropped_stereo_preserves_metric_disparity_and_invalid_exterior(self):
+        import cv2
+        from gate_stereo import build_sgbm,compute_gate_disparity
+        left=np.random.default_rng(7).integers(0,256,(240,480),dtype=np.uint8)
+        right=np.zeros_like(left);right[:,:-16]=left[:,16:]
+        disp=compute_gate_disparity(left,right,build_sgbm(64),[dict(bbox=(180,80,100,80))])
+        self.assertAlmostEqual(float(np.median(disp[85:155,185:275])),16.,places=1)
+        self.assertTrue(np.all(disp[:60]<0))
+        self.assertTrue(np.all(disp[:,300:]<0))
+
     def test_supported_color_frame_survives_bbox_only_cold_start(self):
         import cv2
         from gate_stereo import gate_center_from_frame

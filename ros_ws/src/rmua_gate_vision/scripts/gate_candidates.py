@@ -22,7 +22,8 @@ def gate_frame_support(image,bbox):
 def gate_opening_support(image,bbox):
     """Require two tall white posts, rather than one post or a car panel."""
     x,y,w,h=(int(v) for v in bbox)
-    if w<24 or h<24 or x<0 or y<0 or x+w>image.shape[1] or y+h>image.shape[0]:return False
+    # A clipped frame's visible midpoint is not its physical center.
+    if w<24 or h<24 or x<4 or y<4 or x+w>image.shape[1]-4 or y+h>image.shape[0]-4:return False
     crop=image[y:y+h,x:x+w]
     hsv=cv2.cvtColor(crop,cv2.COLOR_BGR2HSV)
     # White material is blue-tinted in the shaded parts of the course.

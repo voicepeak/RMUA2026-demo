@@ -10,6 +10,17 @@ from gate_tracker import GateTracker  # noqa: E402
 
 
 class GateTrackerTests(unittest.TestCase):
+    def test_measured_frame_centers_can_be_stable_without_high_detector_score(self):
+        tracker=GateTracker()
+        for stamp in range(8):
+            track=tracker.update(np.array([10.,0.,-3.]),10.,stamp,conf=.5,position_valid=True)
+        tracker.refresh_hard()
+        self.assertTrue(track.hard_anchor)
+        self.assertEqual(track.position_support,8)
+        self.assertFalse(track.geometry_valid)
+        tracker.update(np.array([10.,0.,-3.]),10.,7.,conf=.5,position_valid=True)
+        self.assertEqual(track.position_support,8)
+
     def test_bbox_depth_cannot_move_a_measured_gate_during_occlusion(self):
         tracker=GateTracker()
         geometry=dict(width=3.,height=3.,plane_rmse=.05,geometry_valid=True,

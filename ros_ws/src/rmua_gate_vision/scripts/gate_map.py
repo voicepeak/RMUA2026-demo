@@ -71,12 +71,12 @@ class GateMap(object):
             r = reproject_gate(t.mean, pos, quat)
             self.tracker.set_prediction(t.id, r["u"], r["v"], r["depth"], r["visible"])
 
-    def observe(self, world, stamp, depth=None, geom=None, uv=None, conf=None):
+    def observe(self, world, stamp, depth=None, geom=None, uv=None, conf=None,position_valid=False):
         w = np.asarray(world, dtype=float)
         s = 0.0
         if self.route is not None:
             s, _ = self.project(w[:2])
-        return self.tracker.update(w, s, stamp, depth, geom, uv, conf)
+        return self.tracker.update(w, s, stamp, depth, geom, uv, conf,position_valid)
 
     def prune(self, stamp):
         return self.tracker.prune(stamp)
@@ -92,6 +92,7 @@ class GateMap(object):
             "x": float(t.mean[0]), "y": float(t.mean[1]), "z": float(t.mean[2]),
             "nx": float(n[0]), "ny": float(n[1]), "nz": float(n[2]),
             "s": float(t.s), "support": int(t.support),
+            "position_support": int(t.position_support),
             "sigma_x": float(sig[0]), "sigma_y": float(sig[1]), "sigma_z": float(sig[2]),
             "hard_anchor": bool(t.hard_anchor),
             "last_seen": float(t.last_seen),

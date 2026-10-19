@@ -58,6 +58,22 @@ def compute_disparity(gray_l, gray_r, sgbm):
     return sgbm.compute(gray_l, gray_r).astype(np.float32) / 16.0
 
 
+def compute_gate_disparity(gray_l, gray_r, sgbm, candidates, padding=16):
+    """Match observed frame bands with equal crop origins and full search range."""
+    result=np.full(gray_l.shape,-1.,dtype=np.float32)
+    if not candidates:return result
+    boxes=np.asarray([c['bbox'] for c in candidates],dtype=int)
+    height,width=gray_l.shape
+    span=sgbm.getNumDisparities()+max(0,sgbm.getMinDisparity())
+    x0=max(0,int(boxes[:,0].min())-span-padding)
+    y0=max(0,int(boxes[:,1].min())-padding)
+    x1=min(width,int((boxes[:,0]+boxes[:,2]).max())+padding)
+    y1=min(height,int((boxes[:,1]+boxes[:,3]).max())+padding)
+    if x1-x0<=span or y1<=y0:return result
+    result[y0:y1,x0:x1]=compute_disparity(gray_l[y0:y1,x0:x1],gray_r[y0:y1,x0:x1],sgbm)
+    return result
+
+
 def gate_center_from_frame(cand, disp, frame_mask, min_pixels=25,trim_mask=None,gravity=None):
     """用门框像素的中位视差求门中心相机坐标; 返回 (center_cam(3), depth, n_pix) 或 None。"""
     if trim_mask is not None:

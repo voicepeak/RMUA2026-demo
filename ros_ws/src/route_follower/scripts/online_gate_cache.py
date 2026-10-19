@@ -169,9 +169,10 @@ class OnlineGateCache:
         if g.get("support", 0) < 5 or max(_finite(g.get("sigma_x"), 9), _finite(g.get("sigma_y"), 9)) > 1.2 \
                 or _finite(g.get("sigma_z"), 9) > .6:
             return False
-        # Dense stereo is usable only after repeated, stable, confident observations.
+        # Repeated metric frame support is independent of detector confidence.
+        # It certifies a center observation, never four-corner geometry.
         if not g.get("geometry_valid", False) and (g.get("support", 0) < 8
-                                                   or (g.get("confidence") or 0) < .65):
+                or ((g.get("confidence") or 0) < .65 and g.get('position_support',0)<8)):
             return False
         return True
 
