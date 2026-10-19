@@ -1,7 +1,7 @@
-"""Bounded local simulator identification. Host harness MUST stop scene on return.
+"""Bounded local simulator identification/hover. Host MUST stop scene on return.
 
 No zero-PWM hover fallback. No VEL, debug input, task service or competition mode.
-This is an open-loop experiment, not an accepted flight controller.
+These are development experiments, not an accepted competition controller.
 """
 import argparse
 from dataclasses import asdict
@@ -15,9 +15,22 @@ from control.pwm_publisher.guard import CommandGuard, PwmCommand
 from estimation.geometry import rotation
 from interfaces.contracts import Health
 from adapters.ros_noetic.flight_sensors import FlightSensors
+from control.motor_allocator.allocator import MotorAllocator
+from control.se3_controller.controller import Se3Controller
 
 
-def run_experiment(run, levels, pulse_seconds):
+def motor_pattern():
+    # Lift gently, then probe one motor at a time with very small positive pulses.
+    pattern = [(.20,)*4]*4 + [(.176,)*4]*2
+    for motor in range(4):
+        values = [.176]*4
+        values[motor] += .003
+        pattern.append(tuple(values))
+        pattern.append((.176,)*4)
+    return tuple(pattern)
+
+
+def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0):
     import rospy
     import rosgraph
     from airsim_ros.msg import RotorPWM
@@ -54,13 +67,20 @@ def run_experiment(run, levels, pulse_seconds):
                 raise RuntimeError('PWM_SUBSCRIBER_COUNT')
             graph(True)
             guard = CommandGuard(sensors.clock.epoch)
+            pattern = motor_pattern() if motor_pulses else tuple((v,)*4 for v in levels)
+            config = json.loads((Path(__file__).resolve().parents[2]/'configs/vehicle_identification.json').read_text())
+            allocator, controller = MotorAllocator(config), Se3Controller(config)
+            previous_saturated = False
+            yaw_reference = math.atan2(rotation(state.orientation_wxyz)[1, 0],
+                                       rotation(state.orientation_wxyz)[0, 0])
             start = time.monotonic()
             next_tick, next_graph = start, start
+            previous_control_wall = start-1/80
             sequence = 0
             while True:
                 now = time.monotonic()
                 index = int((now-start)/pulse_seconds)
-                if index >= len(levels):
+                if (hover_seconds and now-start >= hover_seconds) or (not hover_seconds and index >= len(pattern)):
                     break
                 state, raw = sensors.read()
                 R = rotation(state.orientation_wxyz)
@@ -70,12 +90,29 @@ def run_experiment(run, levels, pulse_seconds):
                     raise RuntimeError('TILT_LIMIT')
                 if np.linalg.norm(state.velocity_ned) > 4:
                     raise RuntimeError('SPEED_LIMIT')
-                if np.linalg.norm(np.array(state.position_ned)-origin) > 1.2:
+                if np.linalg.norm(np.array(state.position_ned)-origin) > (1.8 if hover_seconds else 1.2):
                     raise RuntimeError('POSITION_LIMIT')
                 if now >= next_graph:
                     graph(True)
                     next_graph = now+.1
-                command = PwmCommand(state.metadata.stamp, state.metadata.epoch, sequence, (levels[index],)*4)
+                details = {}
+                if hover_seconds:
+                    s = min(1., (now-start)/3.)
+                    h = 10*s**3-15*s**4+6*s**5
+                    dh = (30*s**2-60*s**3+30*s**4)/3
+                    ddh = (60*s-180*s**2+120*s**3)/9 if s < 1 else 0.
+                    reference = origin + (0., 0., -h)
+                    dt = now-previous_control_wall
+                    wrench = controller.step(state, tuple(reference), (0., 0., -dh), (0., 0., -ddh),
+                                             yaw_reference, dt, not previous_saturated)
+                    allocation = allocator.allocate(wrench.thrust, wrench.moment)
+                    previous_saturated = allocation.saturated
+                    values = allocation.pwm
+                    details = {'reference': tuple(reference), 'wrench': asdict(wrench),
+                               'allocation': asdict(allocation)}
+                else:
+                    values = pattern[index]
+                command = PwmCommand(state.metadata.stamp, state.metadata.epoch, sequence, values)
                 with sensors.lock:
                     allowed = guard.accept(command, sensors.clock, time.monotonic())
                 if allowed:
@@ -85,8 +122,10 @@ def run_experiment(run, levels, pulse_seconds):
                     msg.rotorPWM0, msg.rotorPWM1, msg.rotorPWM2, msg.rotorPWM3 = command.values
                     publisher.publish(msg)
                     rows.append({'wall_elapsed': now-start, 'command': asdict(command),
-                                 'raw': raw, 'state': {k:v for k,v in asdict(state).items() if k != 'metadata'}})
+                                 'raw': raw, 'state': {k:v for k,v in asdict(state).items() if k != 'metadata'},
+                                 **details})
                     sequence += 1
+                previous_control_wall = now
                 next_tick += 1/80.
                 delay = next_tick-time.monotonic()
                 if delay < -.1:
@@ -100,7 +139,10 @@ def run_experiment(run, levels, pulse_seconds):
             sensors.close()
     (run/'pwm_telemetry.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
     result = {'commands': len(rows), 'fault': fault, 'levels': levels,
-              'pulse_seconds': pulse_seconds, 'stage': 'LOCAL_OPEN_LOOP_IDENTIFICATION',
+              'motor_pulses': motor_pulses,
+              'hover_seconds': hover_seconds,
+              'pulse_seconds': pulse_seconds,
+              'stage': 'LOCAL_PWM_CLOSED_LOOP_HOVER' if hover_seconds else 'LOCAL_OPEN_LOOP_IDENTIFICATION',
               'official_result': 'UNKNOWN', 'host_scene_stop_required': True}
     (run/'pwm_summary.json').write_text(json.dumps(result, indent=2)+'\n')
     print(json.dumps(result), flush=True)
@@ -112,12 +154,15 @@ def main():
     parser.add_argument('--run-dir', type=Path, required=True)
     parser.add_argument('--levels', default='.10,.15,.20,.25,.30,.35,.40')
     parser.add_argument('--pulse-seconds', type=float, default=.3)
+    parser.add_argument('--motor-pulses', action='store_true')
+    parser.add_argument('--hover-seconds', type=float, default=0.)
     args = parser.parse_args()
     levels = tuple(float(value) for value in args.levels.split(','))
     if (not levels or len(levels) > 20 or not all(0 < v <= .6 for v in levels)
-            or not .05 <= args.pulse_seconds <= 1):
+            or not .05 <= args.pulse_seconds <= 1 or not 0 <= args.hover_seconds <= 20
+            or (args.hover_seconds and args.motor_pulses)):
         parser.error('bounded identification requires <=20 levels in (0,.6], pulses [.05,1]s')
-    return run_experiment(args.run_dir, levels, args.pulse_seconds)
+    return run_experiment(args.run_dir, levels, args.pulse_seconds, args.motor_pulses, args.hover_seconds)
 
 
 if __name__ == '__main__':

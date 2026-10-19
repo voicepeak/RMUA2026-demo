@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "mass_kg": 0.9,
+  "arm_radius_m": 0.18,
+  "inertia_kg_m2": [0.0046890742, 0.0069312, 0.010421166],
+  "max_rpm": 11079.03,
+  "thrust_coefficient_rps2": 0.000367717,
+  "torque_coefficient_rps2": 0.000004888486266072161,
+  "yaw_torque_signs": [1, 1, -1, -1],
+  "motor_order": ["front_right", "rear_left", "front_left", "rear_right"],
+  "local_pwm_ceiling": 0.6,
+  "full_range_verified": false,
+  "parameter_status": "official_parameters_with_provisional_rps_units_supported_by_local_response",
+  "evidence": ["docs/evidence/p0_seed1002_pwm.json", "docs/evidence/p0_seed1003_motor_signs.json"],
+  "source": "https://github.com/RoboMaster/IntelligentUAVChampionshipSimulator/blob/RMUA2026-01/README.md"
+}

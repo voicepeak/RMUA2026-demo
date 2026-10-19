@@ -14,11 +14,14 @@ def main():
     parser.add_argument('--seed', type=int, required=True)
     parser.add_argument('--levels', default='.10,.15,.20,.25,.30,.35,.40')
     parser.add_argument('--pulse-seconds', type=float, default=.3)
+    parser.add_argument('--motor-pulses', action='store_true')
+    parser.add_argument('--hover-seconds', type=float, default=0.)
     args = parser.parse_args()
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
     digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'], text=True).strip()
     config = json.loads((root/'configs/official_baseline.yaml').read_text())
-    config['experiment'] = {'levels': args.levels, 'pulse_seconds': args.pulse_seconds}
+    config['experiment'] = {'levels': args.levels, 'pulse_seconds': args.pulse_seconds,
+                            'motor_pulses': args.motor_pulses, 'hover_seconds': args.hover_seconds}
     run, manifest = prepare_run(root, root/'runs', args.seed, digest, config)
     manifest['stage'] = 'P0_PWM_IDENTIFICATION'
     print(run, flush=True)
@@ -42,10 +45,15 @@ def main():
                     break
             else:
                 raise RuntimeError('simulator sensor readiness timeout')
-            code = subprocess.call([str(root/'tools/enter_env.sh'), 'env', 'OPENBLAS_NUM_THREADS=1',
+            command = [str(root/'tools/enter_env.sh'), 'env', 'OPENBLAS_NUM_THREADS=1',
                     'python3', '-m', 'adapters.ros_noetic.pwm_experiment', '--run-dir',
                     '/workspace/main/'+str(run.relative_to(root)), '--levels', args.levels,
-                    '--pulse-seconds', str(args.pulse_seconds)], timeout=40)
+                    '--pulse-seconds', str(args.pulse_seconds)]
+            if args.motor_pulses:
+                command.append('--motor-pulses')
+            if args.hover_seconds:
+                command.extend(['--hover-seconds', str(args.hover_seconds)])
+            code = subprocess.call(command, timeout=40)
         except Exception as error:
             manifest['error'] = str(error)
             print(str(error), flush=True)

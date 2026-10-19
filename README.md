@@ -30,6 +30,10 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.state_observation --see
 
 ```bash
 OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1002
+# 已辨识方向的逐电机小脉冲
+OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1003 --motor-pulses --pulse-seconds .1
+# 低高度、有限时长的 PWM 闭环；不是比赛入口
+OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 1004 --hover-seconds 10
 ```
 
 仅用于本地动力学辨识，会因高度/姿态/状态过期而中止，不能作为比赛控制入口。

@@ -1,0 +1,1 @@
+"""Calibrated FRD rotor allocation."""

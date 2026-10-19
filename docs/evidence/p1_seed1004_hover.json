@@ -1,0 +1,34 @@
+{
+  "commands": 697,
+  "fault": null,
+  "levels": [
+    0.1,
+    0.15,
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4
+  ],
+  "motor_pulses": false,
+  "hover_seconds": 10.0,
+  "pulse_seconds": 0.3,
+  "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+  "official_result": "UNKNOWN",
+  "host_scene_stop_required": true,
+  "seed": 1004,
+  "run_directory": "runs/20261019T111921Z_e06a937eddeb4b12a19aeaa9c50aef66",
+  "source_unchanged": true,
+  "estimated_tracking_rmse_m": [
+    0.1065565427705253,
+    0.07911557420150157,
+    0.038364159469820316
+  ],
+  "truth_evaluated": false,
+  "duration_observed_s": 9.987566655967385,
+  "saturated_commands": 0,
+  "pwm_range_observed": [
+    0.16200200075178878,
+    0.19703154397896297
+  ]
+}

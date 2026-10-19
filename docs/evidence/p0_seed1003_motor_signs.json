@@ -1,0 +1,59 @@
+{
+  "commands": 109,
+  "fault": null,
+  "levels": [
+    0.1,
+    0.15,
+    0.2,
+    0.25,
+    0.3,
+    0.35,
+    0.4
+  ],
+  "motor_pulses": true,
+  "pulse_seconds": 0.1,
+  "stage": "LOCAL_OPEN_LOOP_IDENTIFICATION",
+  "official_result": "UNKNOWN",
+  "host_scene_stop_required": true,
+  "seed": 1003,
+  "run_directory": "runs/20261019T111735Z_a198ecfdf6d240e5a244e6ecd1431597",
+  "source_unchanged": true,
+  "motor_responses": [
+    {
+      "motor": 0,
+      "angular_acceleration_body_rad_s2": [
+        -0.8211201859733144,
+        0.5614340506609974,
+        0.07220194093634975
+      ],
+      "pulse_pwm_delta": 0.003
+    },
+    {
+      "motor": 1,
+      "angular_acceleration_body_rad_s2": [
+        0.8027493746161904,
+        -0.5095845995285916,
+        0.04314098453924791
+      ],
+      "pulse_pwm_delta": 0.003
+    },
+    {
+      "motor": 2,
+      "angular_acceleration_body_rad_s2": [
+        0.7937450012404933,
+        0.5418630548196206,
+        -0.06143618233289227
+      ],
+      "pulse_pwm_delta": 0.003
+    },
+    {
+      "motor": 3,
+      "angular_acceleration_body_rad_s2": [
+        -1.0168729789192645,
+        -0.6325765397111025,
+        -0.02552771908089432
+      ],
+      "pulse_pwm_delta": 0.003
+    }
+  ]
+}
