@@ -42,3 +42,5 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --se
 仅用于本地动力学辨识，会因高度/姿态/状态过期而中止，不能作为比赛控制入口。
 
 两个版本共享容器、GPU 和 ROS master，依次运行。启动脚本发现现有 ROS/模拟器会退出，先关闭已有场次。目录迁移和环境说明见 [工作区迁移](docs/workspace_migration.md)。
+
+另有固定基础 digest、无需 beta 挂载的独立开发镜像：`bash tools/build_image.sh`，部署范围和限制见 [独立部署说明](deployment/README.md)。

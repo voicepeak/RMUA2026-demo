@@ -1,0 +1,15 @@
+{
+  "image": "sha256:3f1c3974c80bce3a021f2e99c76a7420581f7c013161a44b8f68bbd00fd43a29",
+  "size_bytes": 1163189792,
+  "image_tag": "rmua-next:p1-development",
+  "base_digest": "osrf/ros@sha256:7dbfb9576d8e6d226c31e06129a82aaab8702695f38eca2116918cb9b9308797",
+  "build_network": "none",
+  "standalone_imports": "PASS",
+  "unit_tests_passed": 34,
+  "default_no_master_remains_running": true,
+  "gui_used": false,
+  "competition_accepted": false,
+  "velcmd_md5": "1a888a503939ba521aed68feee8eab6d",
+  "velcmd_source_commit": "9f0afeaa857b3b1f2a52d03b9f57b2716d5765a0",
+  "velcmd_source_sha256_normalized": "79a50adcd4eb907633e0afb48ec3098f048dc1358a4fe49ac0445fde04c895e3"
+}

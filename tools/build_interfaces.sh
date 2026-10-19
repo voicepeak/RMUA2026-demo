@@ -5,5 +5,5 @@ mkdir -p "$root/.runtime_ws/src"
 if [[ ! -e "$root/.runtime_ws/src/airsim_ros" ]]; then
   ln -s ../../interfaces/ros/airsim_ros "$root/.runtime_ws/src/airsim_ros"
 fi
-exec "$root/tools/enter_env.sh" catkin_make -C /workspace/main/.runtime_ws \
+exec "$root/tools/enter_env.sh" catkin_make --force-cmake -C /workspace/main/.runtime_ws \
   -DPYTHON_EXECUTABLE=/usr/bin/python3

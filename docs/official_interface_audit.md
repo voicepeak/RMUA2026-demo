@@ -18,3 +18,5 @@ configs/simulator_settings.json 从上述官方 RMUA2026-01 settings.json 固定
 2026-10-19 第一轮实施前重新读取了官方 RMUA2026 模拟器 README、settings.json 和基础开发 README：IMU 时间戳作为全局时钟；正式服务器仅开放规则话题；容器自动启动、无 GUI，不在提交镜像入口硬编码 ROS_IP/ROS_MASTER_URI。官方给出质量 0.9kg、电机距中心 0.18m、惯量、电机系数和最大 RPM；电机系数单位、旋向和实际 PWM 映射仍需辨识。
 
 seed1001 实测：GPS 为 geometry_msgs/PoseStamped，正常消息含模拟器时间戳；initial_pose 同类型但 header.stamp=0，按合法初始化信息使用，禁止当持续定位。IMU 静止比力约 (0,0,-9.81)，与 FRD/NED 契约相符。只读状态节点仅订阅 initial_pose、IMU 和 GPS，不使用 debug 真值。
+
+部署审计发现官方两个仓库的 VelCmd 定义不同：基础教程含 geometry_msgs/Twist；模拟器 VelCmdmsg/VelCmd.msg 则是 Header + vx/vy/vz/yawRate/va/stop。已改为模拟器版本，与 beta 本机实跑消息一致。此前 P0 只核对了类型名称，未验证 VEL MD5，不能将旧审计解释为 VEL 通信已验收；PWM 悬停使用 RotorPWM，不受此差异影响。后续独立 VEL 场次必须验证连接和指令符号。
