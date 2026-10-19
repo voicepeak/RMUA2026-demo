@@ -1,0 +1,126 @@
+{
+  "topics": {
+    "/airsim_node/drone_1/front_left/Scene": {
+      "type": "sensor_msgs/Image",
+      "publishers": [
+        "/airsim_node"
+      ],
+      "message_class_available": true,
+      "received_count": 174,
+      "receiver_hz": 17.36894922586479,
+      "stamp_regressions": 0,
+      "ros_clock_difference_median_s": 1.4601200819015503
+    },
+    "/airsim_node/drone_1/front_right/Scene": {
+      "type": "sensor_msgs/Image",
+      "publishers": [
+        "/airsim_node"
+      ],
+      "message_class_available": true,
+      "received_count": 174,
+      "receiver_hz": 17.348870585221107,
+      "stamp_regressions": 0,
+      "ros_clock_difference_median_s": 1.4731353521347046
+    },
+    "/airsim_node/drone_1/back_left/Scene": {
+      "type": "sensor_msgs/Image",
+      "publishers": [
+        "/airsim_node"
+      ],
+      "message_class_available": true,
+      "received_count": 174,
+      "receiver_hz": 17.359801051387212,
+      "stamp_regressions": 0,
+      "ros_clock_difference_median_s": 1.4342541694641113
+    },
+    "/airsim_node/drone_1/back_right/Scene": {
+      "type": "sensor_msgs/Image",
+      "publishers": [
+        "/airsim_node"
+      ],
+      "message_class_available": true,
+      "received_count": 173,
+      "receiver_hz": 17.340285481235558,
+      "stamp_regressions": 0,
+      "ros_clock_difference_median_s": 1.446502923965454
+    },
+    "/airsim_node/drone_1/imu/imu": {
+      "type": "sensor_msgs/Imu",
+      "publishers": [
+        "/airsim_node"
+      ],
+      "message_class_available": true,
+      "received_count": 1001,
+      "receiver_hz": 99.99335017157026,
+      "stamp_regressions": 0,
+      "ros_clock_difference_median_s": 1.302248477935791
+    },
+    "/airsim_node/drone_1/lidar": {
+      "type": "sensor_msgs/PointCloud2",
+      "publishers": [
+        "/airsim_node"
+      ],
+      "message_class_available": true,
+      "received_count": 94,
+      "receiver_hz": 9.356635723566542,
+      "stamp_regressions": 0,
+      "ros_clock_difference_median_s": 1.3084405660629272
+    },
+    "/airsim_node/drone_1/gps": {
+      "type": "geometry_msgs/PoseStamped",
+      "publishers": [
+        "/airsim_node"
+      ],
+      "message_class_available": true,
+      "received_count": 100,
+      "receiver_hz": 9.998558638122157,
+      "stamp_regressions": 0,
+      "ros_clock_difference_median_s": 1.3028416633605957
+    },
+    "/airsim_node/initial_pose": {
+      "type": "geometry_msgs/PoseStamped",
+      "publishers": [
+        "/airsim_node"
+      ],
+      "message_class_available": true,
+      "received_count": 200,
+      "receiver_hz": 19.99953991018204,
+      "stamp_regressions": 0,
+      "ros_clock_difference_median_s": null
+    },
+    "/airsim_node/end_goal": {
+      "type": "geometry_msgs/PoseStamped",
+      "publishers": [
+        "/airsim_node"
+      ],
+      "message_class_available": true,
+      "received_count": 200,
+      "receiver_hz": 19.99955237178889,
+      "stamp_regressions": 0,
+      "ros_clock_difference_median_s": null
+    }
+  },
+  "controls": {
+    "/airsim_node/drone_1/rotor_pwm_cmd": {
+      "type": "airsim_ros/RotorPWM",
+      "publishers": [],
+      "subscribers": [
+        "/airsim_node"
+      ]
+    },
+    "/airsim_node/drone_1/vel_body_cmd": {
+      "type": "airsim_ros/VelCmd",
+      "publishers": [],
+      "subscribers": [
+        "/airsim_node"
+      ]
+    }
+  },
+  "services": {
+    "/airsim_node/meter_report": "airsim_ros/MeterReport"
+  },
+  "missing_topics": [],
+  "formal_server_permissions_verified": false,
+  "pwm_range_and_motor_signs_verified": false,
+  "clock_note": "receiver rate is wall time; ROS clock difference is not end-to-end control latency"
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "seed": 789,
+  "seed_evidence": "operator_declared",
+  "git_sha": "940d520579154a68d90203cf14cdcc6d5e82e823",
+  "git_status": "",
+  "image_digest": "sha256:a1bfe1df3d0f0b57c406fc7873803c07a812f291e42c1a7eba13d2f9328fc106",
+  "source_unchanged": true,
+  "audit_state": "OBSERVED",
+  "official_result": "UNKNOWN",
+  "observer_exit_code": 0,
+  "local_run": "runs/20261019T104104Z_6e494c2e44904567856ea9e50b336bea",
+  "observed_build_version": "12.0.0.5"
+}
