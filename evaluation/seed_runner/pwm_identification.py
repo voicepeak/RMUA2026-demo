@@ -219,8 +219,11 @@ def main():
             if args.contract_audit_only:manifest['telemetry']=['service_contract_audit.json','simulator.log']
             if args.evaluate_truth:
                 manifest['evaluation_only_inputs'] = ['/airsim_node/drone_1/debug/pose_gt',
-                                                     '/airsim_node/drone_1/debug/rotor_pwm']
-                manifest['telemetry'].extend(['evaluation_truth.jsonl','evaluation_actuation.jsonl'])
+                                                     '/airsim_node/drone_1/debug/rotor_pwm',
+                                                     '/airsim_node/drone_1/debug/wind',
+                                                     '/airsim_node/drone_1/imu/imu','/rosout_agg']
+                manifest['telemetry'].extend(['evaluation_truth.jsonl','evaluation_actuation.jsonl',
+                                             'evaluation_wind.jsonl','evaluation_imu.jsonl','evaluation_rosout.jsonl'])
             manifest['artifacts']=sorted(p.name for p in run.iterdir() if p.is_file() and p.name!='manifest.json')
             (run/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
     if args.evaluate_truth and (run/(prefix+'_telemetry.jsonl')).exists() and (run/'evaluation_truth.jsonl').exists():

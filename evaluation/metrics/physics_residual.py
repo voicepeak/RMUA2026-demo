@@ -79,14 +79,21 @@ def main():
     parser.add_argument('run',type=Path)
     args=parser.parse_args()
     def rows(name):return [json.loads(line) for line in (args.run/name).read_text().splitlines()]
-    raw=[r['raw'] for r in rows('pwm_telemetry.jsonl')]
+    imu_file=args.run/'evaluation_imu.jsonl'
+    raw=rows('evaluation_imu.jsonl') if imu_file.exists() else [r['raw'] for r in rows('pwm_telemetry.jsonl')]
+    telemetry=rows('pwm_telemetry.jsonl')
+    start=telemetry[0]['command']['stamp'] if telemetry else float('inf')
+    end=telemetry[-1]['command']['stamp'] if telemetry else float('-inf')
     fault=args.run/'fault_observation.json'
     if fault.exists():
         value=json.loads(fault.read_text())
-        if value.get('fresh_read_in_fault_iteration') and value.get('raw'):raw.append(value['raw'])
+        if value.get('fresh_read_in_fault_iteration') and value.get('raw'):
+            raw.append(value['raw']);end=max(end,value['raw']['stamp'])
+    raw=[r for r in raw if start<=r['stamp']<=end]
     root=Path(__file__).resolve().parents[2]
     result=evaluate(raw,rows('evaluation_actuation.jsonl'),
                     json.loads((root/'configs/vehicle_identification.json').read_text()))
+    result['imu_source']='independent_full_rate_recorder' if imu_file.exists() else 'controller_sampled_imu'
     (args.run/'physics_residual.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result,indent=2))
     return 0 if result['matched_intervals'] else 2
