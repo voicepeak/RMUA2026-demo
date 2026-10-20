@@ -31,6 +31,8 @@ def main():
     parser.add_argument('--stationary-bootstrap',action='store_true',help='experimental resting initialization before PWM')
     parser.add_argument('--angular-recovery',action='store_true')
     parser.add_argument('--angular-pulse',action='store_true')
+    parser.add_argument('--isolated-reference',action='store_true')
+    parser.add_argument('--reference-stall-seconds',type=float,default=0.)
     parser.add_argument('--controller-image',help='locally built immutable standalone image; no beta bind mount')
     parser.add_argument('--contract-audit-only',action='store_true',help='read-only service handshake; no controller')
     args = parser.parse_args()
@@ -44,6 +46,11 @@ def main():
         parser.error('angular recovery requires >=10s healthy-state PWM hover without GPS/fault modes')
     if args.angular_pulse and (not args.angular_recovery or args.step or args.braking or args.yaw_motion):
         parser.error('angular pulse requires isolated angular-recovery hover')
+    if args.isolated_reference and (args.mode!='PWM' or args.hover_seconds<10 or args.angular_recovery
+                                   or args.gps_bridge or args.sensor_fault):
+        parser.error('isolated reference requires >=10s healthy-state PWM hover without other fault modes')
+    if args.reference_stall_seconds and (not args.isolated_reference or not .1<=args.reference_stall_seconds<=1.):
+        parser.error('reference stall requires isolated reference and duration [.1,1]')
     if args.gps_bridge and (args.mode != 'PWM' or args.hover_seconds < 3):
         parser.error('GPS bridge is only available in bounded PWM hover')
     if (args.braking or args.yaw_motion or args.step) and args.hover_seconds < 10:
@@ -53,7 +60,7 @@ def main():
     if args.contract_audit_only and (args.controller_image or args.hover_seconds or args.motor_pulses
             or args.step or args.sensor_fault or args.gps_bridge or args.yaw_motion or args.braking
             or args.evaluate_truth or args.snapshot or args.scene_trace or args.stationary_bootstrap
-            or args.angular_recovery or args.angular_pulse):
+            or args.angular_recovery or args.angular_pulse or args.isolated_reference or args.reference_stall_seconds):
         parser.error('contract-audit-only cannot be combined with flight/recording modes')
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
     simulator_digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'], text=True).strip()
@@ -72,7 +79,9 @@ def main():
                             'snapshot':args.snapshot,'scene_trace':args.scene_trace,'controller_image':args.controller_image,
                             'contract_audit_only':args.contract_audit_only,
                             'stationary_bootstrap':args.stationary_bootstrap,
-                            'angular_recovery':args.angular_recovery,'angular_pulse':args.angular_pulse}
+                            'angular_recovery':args.angular_recovery,'angular_pulse':args.angular_pulse,
+                            'isolated_reference':args.isolated_reference,
+                            'reference_stall_seconds':args.reference_stall_seconds}
     run, manifest = prepare_run(root, root/'runs', args.seed, digest, config)
     manifest['stage'] = ('P1_PWM_CLOSED_LOOP' if args.hover_seconds else 'P0_PWM_IDENTIFICATION') if args.mode == 'PWM' else 'P1_VEL_BENCHMARK'
     if args.contract_audit_only:manifest['stage']='P0_READ_ONLY_SERVICE_CONTRACT'
@@ -172,6 +181,8 @@ def main():
             if args.stationary_bootstrap:command.append('--stationary-bootstrap')
             if args.angular_recovery:command.append('--angular-recovery')
             if args.angular_pulse:command.append('--angular-pulse')
+            if args.isolated_reference:command.append('--isolated-reference')
+            if args.reference_stall_seconds:command.extend(['--reference-stall-seconds',str(args.reference_stall_seconds)])
             manifest['controller_command']=command
             manifest['run_state']='AUDIT_RUNNING' if args.contract_audit_only else 'CONTROL_RUNNING'
             (run/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')

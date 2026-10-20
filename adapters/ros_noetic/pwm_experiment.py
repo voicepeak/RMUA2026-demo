@@ -22,6 +22,8 @@ from adapters.ros_noetic.sensor_fault import LocalSensorFault
 from control.control_authority.graph_monitor import GraphMonitor
 from control.safety_supervisor.hover_recovery import HoverRecovery
 from control.safety_supervisor.angular_recovery import AngularRecovery
+from control.reference_worker import BenchmarkSpec,ReferenceWorker
+from control.safety_supervisor.reference_hold import ReferenceHold
 
 
 def motor_pattern():
@@ -37,7 +39,8 @@ def motor_pattern():
 
 def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0, step=False,
                    sensor_fault=None, fault_seconds=.15, gps_bridge=False, yaw_motion=False,braking=False,
-                   stationary_bootstrap=False,angular_recovery=False,angular_pulse=False):
+                   stationary_bootstrap=False,angular_recovery=False,angular_pulse=False,
+                   isolated_reference=False,reference_stall_seconds=0.):
     import rospy
     import rosgraph
     from airsim_ros.msg import RotorPWM
@@ -61,6 +64,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
         recovery = HoverRecovery()
         angular_supervisor=AngularRecovery()
         pulse_sent=False
+        reference_worker=None
+        reference_hold=ReferenceHold()
         try:
             deadline = time.monotonic()+5
             while time.monotonic() < deadline:
@@ -104,6 +109,19 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
             previous_saturated = False
             yaw_reference = math.atan2(rotation(state.orientation_wxyz)[1, 0],
                                        rotation(state.orientation_wxyz)[0, 0])
+            state, raw = sensors.read()
+            if isolated_reference:
+                reference_worker=ReferenceWorker(BenchmarkSpec(tuple(origin),yaw_reference,step,braking,yaw_motion),
+                                                  stall_seconds=reference_stall_seconds)
+                reference_worker.start()
+                deadline=time.monotonic()+3.
+                while time.monotonic()<deadline:
+                    state,raw=sensors.read()
+                    reference_worker.submit(state.metadata.stamp,state.metadata.epoch,0.)
+                    packet,reason=reference_worker.snapshot(state.metadata.stamp,state.metadata.epoch)
+                    if packet is not None:break
+                    time.sleep(.005)
+                else:raise RuntimeError('REFERENCE_WORKER_STARTUP')
             start = time.monotonic()
             state, raw = sensors.read()
             start_stamp = state.metadata.stamp
@@ -137,11 +155,20 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 details = {}
                 if hover_seconds:
                     sim_elapsed = state.metadata.stamp-start_stamp
-                    reference, velocity, acceleration = benchmark_reference(origin, sim_elapsed, step,braking)
-                    yaw_command,yaw_rate = benchmark_yaw(yaw_reference,sim_elapsed,yaw_motion)
+                    if reference_worker is None:
+                        reference, velocity, acceleration = benchmark_reference(origin, sim_elapsed, step,braking)
+                        yaw_command,yaw_rate = benchmark_yaw(yaw_reference,sim_elapsed,yaw_motion)
                     allow_integral = not previous_saturated
                     phase = 'NORMAL'
                     rate_gain_scale=1.
+                    if reference_worker is not None:
+                        reference_worker.submit(state.metadata.stamp,state.metadata.epoch,sim_elapsed)
+                        packet,reason=reference_worker.snapshot(state.metadata.stamp,state.metadata.epoch)
+                        selected=reference_hold.select(state,packet,reason)
+                        reference,velocity,acceleration=selected.position,selected.velocity,selected.acceleration
+                        yaw_command,yaw_rate=selected.yaw,selected.yaw_rate
+                        phase=selected.phase
+                        allow_integral=allow_integral and selected.allow_integral
                     if gps_bridge:
                         gps_stamp = raw['last_gps_stamp']
                         gps_age = math.inf if gps_stamp is None else state.metadata.stamp-gps_stamp
@@ -220,6 +247,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 monitor.close()
             if publisher:
                 publisher.unregister()
+            if reference_worker:reference_worker.close()
             sensors.close()
     (run/'pwm_telemetry.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
     if fault_observation is not None:
@@ -238,6 +266,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
               'angular_recovery_enabled':angular_recovery,
               'angular_recovery_transitions':angular_supervisor.transitions,
               'angular_pulse_sent':pulse_sent,
+              'reference_worker':reference_worker.summary() if reference_worker else None,
+              'reference_hold_transitions':reference_hold.transitions,
               'pulse_seconds': pulse_seconds,
               'stage': 'LOCAL_PWM_CLOSED_LOOP_HOVER' if hover_seconds else 'LOCAL_OPEN_LOOP_IDENTIFICATION',
               'official_result': 'UNKNOWN', 'host_scene_stop_required': True}
@@ -262,6 +292,8 @@ def main():
     parser.add_argument('--stationary-bootstrap',action='store_true')
     parser.add_argument('--angular-recovery',action='store_true')
     parser.add_argument('--angular-pulse',action='store_true',help='single bounded pitch moment pulse at 5s')
+    parser.add_argument('--isolated-reference',action='store_true')
+    parser.add_argument('--reference-stall-seconds',type=float,default=0.)
     args = parser.parse_args()
     levels = tuple(float(value) for value in args.levels.split(','))
     if (not levels or len(levels) > 20 or not all(0 < v <= .6 for v in levels)
@@ -280,9 +312,14 @@ def main():
         parser.error('angular recovery requires >=10s healthy-state hover without GPS/fault modes')
     if args.angular_pulse and (not args.angular_recovery or args.step or args.braking or args.yaw_motion):
         parser.error('angular pulse requires isolated angular-recovery hover')
+    if args.isolated_reference and (args.hover_seconds<10 or args.angular_recovery or args.gps_bridge or args.sensor_fault):
+        parser.error('isolated reference requires >=10s healthy-state hover without other fault modes')
+    if args.reference_stall_seconds and (not args.isolated_reference or not .1<=args.reference_stall_seconds<=1.):
+        parser.error('reference stall requires isolated reference and duration [.1,1]')
     return run_experiment(args.run_dir, levels, args.pulse_seconds, args.motor_pulses, args.hover_seconds, args.step,
                           args.sensor_fault,args.fault_seconds,args.gps_bridge,args.yaw_motion,args.braking,
-                          args.stationary_bootstrap,args.angular_recovery,args.angular_pulse)
+                          args.stationary_bootstrap,args.angular_recovery,args.angular_pulse,
+                          args.isolated_reference,args.reference_stall_seconds)
 
 
 if __name__ == '__main__':

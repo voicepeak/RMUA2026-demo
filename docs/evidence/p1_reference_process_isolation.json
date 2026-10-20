@@ -1,0 +1,173 @@
+{
+  "cases": [
+    {
+      "case": "normal",
+      "run_directory": "runs/20261020T084531Z_a2c39a7f9b7f4daeb922f4eac88cc58a",
+      "source_unchanged": true,
+      "fault": null,
+      "reference_worker": {
+        "pid": 39536,
+        "submitted": 1027,
+        "requests_dropped": 2,
+        "received": 989,
+        "stale_observations": 0,
+        "max_compute_wall_s": 0.0007426299853250384,
+        "stall_observed": false,
+        "fault": null,
+        "sensor_ttl_s": 0.08,
+        "wall_ttl_s": 0.15,
+        "alive_after_close": false
+      },
+      "transitions": [],
+      "commands": 842,
+      "minimum_command_wall_interval_s": 0.01064616593066603,
+      "maximum_command_wall_interval_s": 0.025655187899246812,
+      "metrics": {
+        "matched_commands": 842,
+        "commands": 842,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 560,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012596354936249554,
+          0.021288173971697688,
+          0.023110253433696926
+        ],
+        "minimum_command_wall_interval_s": 0.01064616593066603,
+        "state_position_rmse_m": [
+          0.025265280779072197,
+          0.022491523317298447,
+          0.018311479910851913
+        ],
+        "state_attitude_rmse_rad": 0.024546847246018775,
+        "truth_tracking_rmse_m": [
+          0.053706125928116445,
+          0.04098478245417859,
+          0.028615360201567817
+        ],
+        "truth_tracking_max_norm_m": 0.13243797923351733,
+        "truth_yaw_tracking_rmse_rad": 0.027178404518927328,
+        "truth_yaw_tracking_max_abs_rad": 0.04118524118763789,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 1.2665880577491471e-06,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      }
+    },
+    {
+      "case": "stall_500ms",
+      "run_directory": "runs/20261020T084619Z_c9f42e476e4941f6b01f79cf990d837d",
+      "source_unchanged": true,
+      "fault": null,
+      "reference_worker": {
+        "pid": 40245,
+        "submitted": 1211,
+        "requests_dropped": 3,
+        "received": 1114,
+        "stale_observations": 33,
+        "max_compute_wall_s": 0.5004017250612378,
+        "stall_observed": true,
+        "fault": null,
+        "sensor_ttl_s": 0.08,
+        "wall_ttl_s": 0.15,
+        "alive_after_close": false
+      },
+      "transitions": [
+        {
+          "stamp": 1792485997.6806052,
+          "from": "NORMAL",
+          "to": "REFERENCE_HOLD",
+          "reason": "REFERENCE_STALE"
+        }
+      ],
+      "commands": 977,
+      "minimum_command_wall_interval_s": 0.01059630699455738,
+      "maximum_command_wall_interval_s": 0.03145098406821489,
+      "metrics": {
+        "matched_commands": 977,
+        "commands": 977,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 700,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012722996470984071,
+          0.02138737650238909,
+          0.02424972754670307
+        ],
+        "minimum_command_wall_interval_s": 0.01059630699455738,
+        "state_position_rmse_m": [
+          0.01843225656811508,
+          0.023140101714584065,
+          0.01607891755224991
+        ],
+        "state_attitude_rmse_rad": 0.02498465153388017,
+        "truth_tracking_rmse_m": [
+          0.15366761294993764,
+          0.07266469459110478,
+          0.0416548689282672
+        ],
+        "truth_tracking_max_norm_m": 0.45460925384287326,
+        "truth_yaw_tracking_rmse_rad": 0.02529824282304513,
+        "truth_yaw_tracking_max_abs_rad": 0.04420873974012496,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 7.917572956220451e-06,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      },
+      "post_hold_metrics": {
+        "matched_commands": 420,
+        "commands": 420,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 0.0,
+        "settled_samples": 420,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012702045030891895,
+          0.021537784230895342,
+          0.024584869903046636
+        ],
+        "minimum_command_wall_interval_s": 0.01059630699455738,
+        "state_position_rmse_m": [
+          0.01803356181068771,
+          0.025085736052783216,
+          0.013705239244808843
+        ],
+        "state_attitude_rmse_rad": 0.031061721763804978,
+        "truth_tracking_rmse_m": [
+          0.069972168427428,
+          0.08473917223085828,
+          0.03453361143060285
+        ],
+        "truth_tracking_max_norm_m": 0.16580560407675618,
+        "truth_yaw_tracking_rmse_rad": 0.029990155729186573,
+        "truth_yaw_tracking_max_abs_rad": 0.04420873974012496,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 7.635741794331344e-06,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true
+      },
+      "reference_after_8s_peak_to_peak_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "post_stall_hold_samples": 420
+    }
+  ],
+  "unit_tests_passed": 60,
+  "noetic_worker_unit_tests_passed": 2,
+  "parent_death_cleanup_integration_tests_passed": 1,
+  "stage_acceptance": false,
+  "root_cause_resolved": false,
+  "limitations": "Local reference-worker loss with healthy IMU/GPS only. Does not establish IMU-loss recovery, full perception isolation, collision clearance, or mission continuation."
+}
