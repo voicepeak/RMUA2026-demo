@@ -91,8 +91,17 @@ def main():
             raw.append(value['raw']);end=max(end,value['raw']['stamp'])
     raw=[r for r in raw if start<=r['stamp']<=end]
     root=Path(__file__).resolve().parents[2]
-    result=evaluate(raw,rows('evaluation_actuation.jsonl'),
-                    json.loads((root/'configs/vehicle_identification.json').read_text()))
+    model_path=args.run/'vehicle_model.json'
+    if not model_path.exists():
+        # Historical runs did not emit their effective controller model. Refuse
+        # silent analysis with subsequently changed workspace coefficients.
+        from evaluation.seed_runner.manifest import file_hash
+        manifest=json.loads((args.run/'manifest.json').read_text())
+        model_path=root/'configs/vehicle_identification.json'
+        expected=manifest['source_sha256_before']['configs/vehicle_identification.json']
+        if file_hash(model_path)!=expected:raise ValueError('historical motor model changed')
+    result=evaluate(raw,rows('evaluation_actuation.jsonl'),json.loads(model_path.read_text()))
+    result['model_provenance']='controller_emitted_snapshot' if model_path.parent==args.run else 'historical_source_hash_match'
     result['imu_source']='independent_full_rate_recorder' if imu_file.exists() else 'controller_sampled_imu'
     (args.run/'physics_residual.json').write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result,indent=2))

@@ -21,6 +21,7 @@ from control.reference import benchmark_reference,benchmark_yaw
 from adapters.ros_noetic.sensor_fault import LocalSensorFault
 from control.control_authority.graph_monitor import GraphMonitor
 from control.safety_supervisor.hover_recovery import HoverRecovery
+from control.safety_supervisor.angular_recovery import AngularRecovery
 
 
 def motor_pattern():
@@ -36,7 +37,7 @@ def motor_pattern():
 
 def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0, step=False,
                    sensor_fault=None, fault_seconds=.15, gps_bridge=False, yaw_motion=False,braking=False,
-                   stationary_bootstrap=False):
+                   stationary_bootstrap=False,angular_recovery=False,angular_pulse=False):
     import rospy
     import rosgraph
     from airsim_ros.msg import RotorPWM
@@ -58,6 +59,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
         publisher = None
         monitor = None
         recovery = HoverRecovery()
+        angular_supervisor=AngularRecovery()
+        pulse_sent=False
         try:
             deadline = time.monotonic()+5
             while time.monotonic() < deadline:
@@ -96,6 +99,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
             guard = CommandGuard(sensors.clock.epoch, minimum_period=.0105)
             pattern = motor_pattern() if motor_pulses else tuple((v,)*4 for v in levels)
             config = json.loads((Path(__file__).resolve().parents[2]/'configs/vehicle_identification.json').read_text())
+            (run/'vehicle_model.json').write_text(json.dumps(config,indent=2)+'\n')
             allocator, controller = MotorAllocator(config), Se3Controller(config)
             previous_saturated = False
             yaw_reference = math.atan2(rotation(state.orientation_wxyz)[1, 0],
@@ -120,11 +124,12 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 R = rotation(state.orientation_wxyz)
                 if state.health != Health.OK and not (hover_seconds and gps_bridge):
                     raise RuntimeError('STATE_HEALTH_'+state.health.value)
-                if R[2, 2] < math.cos(.25):
+                angular_decision=angular_supervisor.decide(state) if angular_recovery else None
+                if not angular_recovery and R[2, 2] < math.cos(.25):
                     raise RuntimeError('TILT_LIMIT')
                 if np.linalg.norm(state.velocity_ned) > 4:
                     raise RuntimeError('SPEED_LIMIT')
-                if np.linalg.norm(state.angular_velocity_body) > 1.:
+                if not angular_recovery and np.linalg.norm(state.angular_velocity_body) > 1.:
                     raise RuntimeError('ANGULAR_RATE_LIMIT')
                 if np.linalg.norm(np.array(state.position_ned)-origin) > (1.8 if hover_seconds else 1.2):
                     raise RuntimeError('POSITION_LIMIT')
@@ -136,6 +141,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     yaw_command,yaw_rate = benchmark_yaw(yaw_reference,sim_elapsed,yaw_motion)
                     allow_integral = not previous_saturated
                     phase = 'NORMAL'
+                    rate_gain_scale=1.
                     if gps_bridge:
                         gps_stamp = raw['last_gps_stamp']
                         gps_age = math.inf if gps_stamp is None else state.metadata.stamp-gps_stamp
@@ -145,6 +151,13 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                         phase = decision.phase
                         if phase != 'NORMAL':
                             yaw_command,yaw_rate = yaw_reference,0.
+                    if angular_decision is not None and angular_decision.phase!='NORMAL':
+                        reference=angular_decision.hold_position
+                        velocity=acceleration=(0.,0.,0.)
+                        yaw_command,yaw_rate=angular_decision.hold_yaw,0.
+                        rate_gain_scale=angular_decision.rate_gain_scale
+                        allow_integral=False
+                        phase=angular_decision.phase
                     dt = state.metadata.stamp-previous_control_stamp
                     if dt <= 0:
                         time.sleep(.002)
@@ -152,13 +165,21 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     if dt > .05:
                         raise RuntimeError('CONTROL_STATE_GAP')
                     wrench = controller.step(state, reference, velocity, acceleration,
-                                             yaw_command, dt, allow_integral,yaw_rate=yaw_rate)
-                    allocation = allocator.allocate(wrench.thrust, wrench.moment)
+                                             yaw_command, dt, allow_integral,yaw_rate=yaw_rate,
+                                             rate_gain_scale=rate_gain_scale)
+                    moment=np.array(wrench.moment)
+                    pulse_this_tick=(angular_pulse and not pulse_sent and sim_elapsed>=5.
+                                     and phase=='NORMAL')
+                    if pulse_this_tick:moment[1]+=.5
+                    allocation = allocator.allocate(wrench.thrust, moment)
                     previous_saturated = allocation.saturated
                     values = allocation.pwm
                     details = {'reference': tuple(reference), 'wrench': asdict(wrench),
                                'allocation': asdict(allocation), 'sim_elapsed': sim_elapsed,'supervisor_phase':phase,
                                'yaw_reference':yaw_command,'yaw_rate_reference':yaw_rate}
+                    details['angular_pulse_applied']=pulse_this_tick
+                    details['rate_gain_scale']=rate_gain_scale
+                    details['moment_requested_including_experiment_pulse']=moment.tolist()
                 else:
                     values = pattern[index]
                 command = PwmCommand(state.metadata.stamp, state.metadata.epoch, sequence, values)
@@ -180,6 +201,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                                  'raw': raw, 'state': {k:v for k,v in asdict(state).items() if k != 'metadata'},
                                  **details})
                     sequence += 1
+                    if details.get('angular_pulse_applied'):pulse_sent=True
                 previous_control_stamp = state.metadata.stamp
                 next_tick += 1/80.
                 delay = next_tick-time.monotonic()
@@ -213,6 +235,9 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
               'gps_bridge_enabled':gps_bridge,'recovery_transitions':recovery.transitions,
               'yaw_motion':yaw_motion,
               'braking':braking,
+              'angular_recovery_enabled':angular_recovery,
+              'angular_recovery_transitions':angular_supervisor.transitions,
+              'angular_pulse_sent':pulse_sent,
               'pulse_seconds': pulse_seconds,
               'stage': 'LOCAL_PWM_CLOSED_LOOP_HOVER' if hover_seconds else 'LOCAL_OPEN_LOOP_IDENTIFICATION',
               'official_result': 'UNKNOWN', 'host_scene_stop_required': True}
@@ -235,6 +260,8 @@ def main():
     parser.add_argument('--yaw-motion',action='store_true')
     parser.add_argument('--braking',action='store_true')
     parser.add_argument('--stationary-bootstrap',action='store_true')
+    parser.add_argument('--angular-recovery',action='store_true')
+    parser.add_argument('--angular-pulse',action='store_true',help='single bounded pitch moment pulse at 5s')
     args = parser.parse_args()
     levels = tuple(float(value) for value in args.levels.split(','))
     if (not levels or len(levels) > 20 or not all(0 < v <= .6 for v in levels)
@@ -249,9 +276,13 @@ def main():
         parser.error('braking and position step are separate experiments')
     if args.sensor_fault and (args.hover_seconds < 8 or not 0 < args.fault_seconds <= 1):
         parser.error('local sensor injection requires >=8s hover and duration (0,1]')
+    if args.angular_recovery and (args.hover_seconds<10 or args.gps_bridge or args.sensor_fault):
+        parser.error('angular recovery requires >=10s healthy-state hover without GPS/fault modes')
+    if args.angular_pulse and (not args.angular_recovery or args.step or args.braking or args.yaw_motion):
+        parser.error('angular pulse requires isolated angular-recovery hover')
     return run_experiment(args.run_dir, levels, args.pulse_seconds, args.motor_pulses, args.hover_seconds, args.step,
                           args.sensor_fault,args.fault_seconds,args.gps_bridge,args.yaw_motion,args.braking,
-                          args.stationary_bootstrap)
+                          args.stationary_bootstrap,args.angular_recovery,args.angular_pulse)
 
 
 if __name__ == '__main__':

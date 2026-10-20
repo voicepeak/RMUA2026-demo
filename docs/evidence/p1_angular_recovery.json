@@ -1,0 +1,147 @@
+{
+  "controlled_pulse": {
+    "run_directory": "runs/20261020T083527Z_511512270d4746f78121d6c30f607764",
+    "source_unchanged": true,
+    "summary": {
+      "commands": 831,
+      "fault": null,
+      "levels": [
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4
+      ],
+      "motor_pulses": false,
+      "hover_seconds": 12.0,
+      "step": false,
+      "reference_clock": "IMU",
+      "gps_rejections": {},
+      "injection": null,
+      "graph_monitor": {
+        "successful_checks": 117,
+        "fault": null,
+        "max_rpc_wall_s": 0.015460814931429923,
+        "stale_after_wall_s": 0.3
+      },
+      "gps_bridge_enabled": false,
+      "recovery_transitions": [],
+      "yaw_motion": false,
+      "braking": false,
+      "angular_recovery_enabled": true,
+      "angular_recovery_transitions": [
+        {
+          "stamp": 1792485345.7147422,
+          "from": "NORMAL",
+          "to": "ANGULAR_RECOVERY",
+          "rate_rad_s": 0.8597235104505424,
+          "tilt_rad": 0.01141622418646679
+        },
+        {
+          "stamp": 1792485346.170752,
+          "from": "ANGULAR_RECOVERY",
+          "to": "RECOVERY_HOLD",
+          "rate_rad_s": 0.04922840025065411,
+          "tilt_rad": 0.05197387111772216
+        }
+      ],
+      "angular_pulse_sent": true,
+      "pulse_seconds": 0.3,
+      "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+      "official_result": "UNKNOWN",
+      "host_scene_stop_required": true
+    },
+    "pulse_commands": 1,
+    "pulse_request_moment_Nm": [
+      -0.000594841124088418,
+      0.501340095857791,
+      -0.000700884517666042
+    ],
+    "pulse_pwm": [
+      0.25527586200930635,
+      0.09800609679157361,
+      0.2571920068751217,
+      0.10029500122056967
+    ],
+    "recovery_time_to_hold_s": 0.4560098648071289,
+    "truth_peak_tilt_during_recovery_and_half_second_hold_rad": 0.05864800664829297,
+    "truth_peak_displacement_from_trigger_m": 0.083853829194895,
+    "metrics": {
+      "matched_commands": 831,
+      "commands": 831,
+      "match_fraction": 1.0,
+      "settled_after_wall_s": 4.0,
+      "settled_samples": 560,
+      "command_timing_measurement": "after_publish",
+      "official_result": "UNKNOWN",
+      "truth_use": "offline_evaluation_only",
+      "command_wall_interval_p50_p95_p99_s": [
+        0.012611641956027597,
+        0.02149860604549758,
+        0.023319519959623003
+      ],
+      "minimum_command_wall_interval_s": 0.010581991984508932,
+      "state_position_rmse_m": [
+        0.02701052401525099,
+        0.017289712120419302,
+        0.027509426805773847
+      ],
+      "state_attitude_rmse_rad": 0.03696601371466624,
+      "truth_tracking_rmse_m": [
+        0.058049606955227775,
+        0.06771831832432813,
+        0.043849910251950903
+      ],
+      "truth_tracking_max_norm_m": 0.16442843358006765,
+      "truth_yaw_tracking_rmse_rad": 0.039067476401777844,
+      "truth_yaw_tracking_max_abs_rad": 0.058857040388188064,
+      "imu_orientation_unit_valid_fraction": 1.0,
+      "imu_orientation_truth_rmse_rad": 4.0796153463988156e-06,
+      "imu_orientation_fused_in_estimator": false,
+      "evaluation_valid": true,
+      "control_mode": "PWM"
+    }
+  },
+  "unforced_repeats": [
+    {
+      "run_directory": "runs/20261020T083607Z_1fd96f5d628b4abca8bfa3201c8265cc",
+      "source_unchanged": true,
+      "fault": null,
+      "recovery_transitions": []
+    },
+    {
+      "run_directory": "runs/20261020T083636Z_207cb4e788d949c1b16c989e934214b9",
+      "source_unchanged": true,
+      "fault": null,
+      "recovery_transitions": []
+    }
+  ],
+  "model_only_validation": {
+    "control_hz": 80,
+    "assumed_motor_lag_s": 0.02,
+    "impulses_rad_s": [
+      1.8,
+      2.3
+    ],
+    "axes": [
+      "roll",
+      "pitch",
+      "yaw"
+    ],
+    "all_six_within_experimental_bounds": true,
+    "larger_3_7_rad_s_model_cases": "not supported by this envelope; timeout or displacement breach"
+  },
+  "experimental_bounds": {
+    "rate_rad_s": 2.5,
+    "tilt_rad": 0.35,
+    "displacement_from_trigger_m": 0.8,
+    "recovery_timeout_s": 3.0,
+    "settle_hold_s": 0.35
+  },
+  "stage_acceptance": false,
+  "root_cause_resolved": false,
+  "collision_result": "UNKNOWN",
+  "limitations": "Only the approximately 0.86rad/s controlled pulse has flight recovery evidence; unforced repeats contained no impulse. Does not establish 2.3rad/s flight recovery, resolve physical impulses, reverse a collision, or implement persistent IMU-loss recovery."
+}
