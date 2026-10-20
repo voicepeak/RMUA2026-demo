@@ -33,6 +33,8 @@ def main():
     parser.add_argument('--angular-pulse',action='store_true')
     parser.add_argument('--isolated-reference',action='store_true')
     parser.add_argument('--reference-stall-seconds',type=float,default=0.)
+    parser.add_argument('--collective-pulse-pwm',type=float)
+    parser.add_argument('--record-pwm-commands',action='store_true',help='opt in for a new observer-compatible standalone image')
     parser.add_argument('--controller-image',help='locally built immutable standalone image; no beta bind mount')
     parser.add_argument('--contract-audit-only',action='store_true',help='read-only service handshake; no controller')
     args = parser.parse_args()
@@ -51,6 +53,12 @@ def main():
         parser.error('isolated reference requires >=10s healthy-state PWM hover without other fault modes')
     if args.reference_stall_seconds and (not args.isolated_reference or not .1<=args.reference_stall_seconds<=1.):
         parser.error('reference stall requires isolated reference and duration [.1,1]')
+    if args.collective_pulse_pwm is not None and (args.mode!='PWM' or not 0<=args.collective_pulse_pwm<=1
+            or args.hover_seconds<10 or args.step or args.braking or args.yaw_motion or args.sensor_fault
+            or args.gps_bridge or args.angular_recovery or args.isolated_reference):
+        parser.error('collective pulse requires isolated >=10s healthy-state PWM hover, input in [0,1]')
+    if args.record_pwm_commands and (not args.evaluate_truth or args.mode!='PWM'):
+        parser.error('record-pwm-commands requires evaluated PWM experiment')
     if args.gps_bridge and (args.mode != 'PWM' or args.hover_seconds < 3):
         parser.error('GPS bridge is only available in bounded PWM hover')
     if (args.braking or args.yaw_motion or args.step) and args.hover_seconds < 10:
@@ -60,7 +68,8 @@ def main():
     if args.contract_audit_only and (args.controller_image or args.hover_seconds or args.motor_pulses
             or args.step or args.sensor_fault or args.gps_bridge or args.yaw_motion or args.braking
             or args.evaluate_truth or args.snapshot or args.scene_trace or args.stationary_bootstrap
-            or args.angular_recovery or args.angular_pulse or args.isolated_reference or args.reference_stall_seconds):
+            or args.angular_recovery or args.angular_pulse or args.isolated_reference or args.reference_stall_seconds
+            or args.collective_pulse_pwm is not None or args.record_pwm_commands):
         parser.error('contract-audit-only cannot be combined with flight/recording modes')
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
     simulator_digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'], text=True).strip()
@@ -68,6 +77,7 @@ def main():
     if args.controller_image:
         image_info=json.loads(subprocess.check_output(['docker','image','inspect',args.controller_image],text=True))[0]
     digest=image_info['Id'] if image_info else simulator_digest
+    record_commands=args.mode=='PWM' and (not image_info or args.record_pwm_commands)
     simulator_evidence=verify_local_simulator(root)
     config = json.loads((root/'configs/official_baseline.yaml').read_text())
     config['control_mode'] = args.mode
@@ -81,7 +91,9 @@ def main():
                             'stationary_bootstrap':args.stationary_bootstrap,
                             'angular_recovery':args.angular_recovery,'angular_pulse':args.angular_pulse,
                             'isolated_reference':args.isolated_reference,
-                            'reference_stall_seconds':args.reference_stall_seconds}
+                            'reference_stall_seconds':args.reference_stall_seconds,
+                            'collective_pulse_pwm':args.collective_pulse_pwm,
+                            'record_pwm_commands':record_commands if args.evaluate_truth else False}
     run, manifest = prepare_run(root, root/'runs', args.seed, digest, config)
     manifest['stage'] = ('P1_PWM_CLOSED_LOOP' if args.hover_seconds else 'P0_PWM_IDENTIFICATION') if args.mode == 'PWM' else 'P1_VEL_BENCHMARK'
     if args.contract_audit_only:manifest['stage']='P0_READ_ONLY_SERVICE_CONTRACT'
@@ -133,9 +145,11 @@ def main():
                     '/workspace/main/'+str(run.relative_to(root))],check=True,timeout=25)
             if args.evaluate_truth:
                 evaluation_log = (run/'truth_evaluator.log').open('x')
-                evaluator = subprocess.Popen([str(root/'tools/enter_env.sh'), 'python3', '-m',
+                evaluation_command=[str(root/'tools/enter_env.sh'), 'python3', '-m',
                     'evaluation.metrics.truth_recorder', '--run-dir',
-                    '/workspace/main/'+str(run.relative_to(root))], stdout=evaluation_log, stderr=subprocess.STDOUT)
+                    '/workspace/main/'+str(run.relative_to(root))]
+                if record_commands:evaluation_command.append('--record-pwm-commands')
+                evaluator = subprocess.Popen(evaluation_command, stdout=evaluation_log, stderr=subprocess.STDOUT)
                 ready_deadline = time.monotonic()+5
                 while not (run/'truth_ready').exists() and time.monotonic() < ready_deadline:
                     if evaluator.poll() is not None:
@@ -183,6 +197,7 @@ def main():
             if args.angular_pulse:command.append('--angular-pulse')
             if args.isolated_reference:command.append('--isolated-reference')
             if args.reference_stall_seconds:command.extend(['--reference-stall-seconds',str(args.reference_stall_seconds)])
+            if args.collective_pulse_pwm is not None:command.extend(['--collective-pulse-pwm',str(args.collective_pulse_pwm)])
             manifest['controller_command']=command
             manifest['run_state']='AUDIT_RUNNING' if args.contract_audit_only else 'CONTROL_RUNNING'
             (run/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
@@ -245,6 +260,9 @@ def main():
                                                      '/airsim_node/drone_1/imu/imu','/rosout_agg']
                 manifest['telemetry'].extend(['evaluation_truth.jsonl','evaluation_actuation.jsonl',
                                              'evaluation_wind.jsonl','evaluation_imu.jsonl','evaluation_rosout.jsonl'])
+                if record_commands:
+                    manifest['evaluation_only_inputs'].append('/airsim_node/drone_1/rotor_pwm_cmd')
+                    manifest['telemetry'].append('evaluation_pwm_commands.jsonl')
             manifest['artifacts']=sorted(p.name for p in run.iterdir() if p.is_file() and p.name!='manifest.json')
             (run/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
     if args.evaluate_truth and (run/(prefix+'_telemetry.jsonl')).exists() and (run/'evaluation_truth.jsonl').exists():
@@ -256,6 +274,12 @@ def main():
             manifest['physics_diagnostic_exit_code']=subprocess.call(
                 ['python3','-m','evaluation.metrics.physics_residual',str(run)],cwd=root,
                 stdout=subprocess.DEVNULL)
+            if record_commands:
+                manifest['command_trace_audit_exit_code']=subprocess.call(
+                    ['python3','-m','evaluation.metrics.command_trace',str(run)],cwd=root,
+                    stdout=subprocess.DEVNULL)
+                if code==0 and manifest['command_trace_audit_exit_code']!=0:
+                    code=manifest['command_trace_audit_exit_code']
         manifest['run_state']='EVALUATED' if code==0 else 'FAILED'
         manifest['artifacts']=sorted(p.name for p in run.iterdir() if p.is_file() and p.name!='manifest.json')
         (run/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')

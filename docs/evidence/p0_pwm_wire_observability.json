@@ -1,0 +1,349 @@
+{
+  "cases": [
+    {
+      "name": "wire_04",
+      "run_directory": "runs/20261020T090218Z_c01d59f000a0464d85aaaf57cb004080",
+      "seed": 2041,
+      "source_unchanged": true,
+      "fault": null,
+      "excitation": {
+        "pwm": 0.4,
+        "sent": true,
+        "stamp": 1792486956.092479
+      },
+      "trace_reanalysis": {
+        "sender_commands": 835,
+        "wire_records": 835,
+        "matched_commands": 835,
+        "wire_match_fraction": 1.0,
+        "missing_sequences": [],
+        "mismatched_sequences": [],
+        "unexpected_sequences": [],
+        "invalid_records": 0,
+        "duplicate_sequences": 0,
+        "actuator_consumption_verified": false,
+        "debug_pwm_is_verified_actual_motor_output": false,
+        "official_result": "UNKNOWN",
+        "ros_header_sequence_offset": 1,
+        "wire_trace_valid": true,
+        "debug_message_stamp_interval_median_s": 0.009000301361083984,
+        "observed_debug_value_change_interval_p10_p50_p90_s": [
+          0.04800105094909668,
+          0.05100107192993164,
+          0.060001373291015625
+        ],
+        "experiment_pulses": [
+          {
+            "sequence": 394,
+            "stamp": 1792486956.092479,
+            "values": [
+              0.4,
+              0.4,
+              0.4,
+              0.4
+            ],
+            "next_command_after_sensor_s": 0.012000322341918945,
+            "debug_samples_in_window": 10,
+            "debug_samples_matching_pulse": 0
+          }
+        ],
+        "analysis_code_sha256": "59e7ec2876d0732ef95e19b31dd0e842cc78ad356bee9982e270d5aa32233738",
+        "analysis_matches_run_source_snapshot": false
+      },
+      "runtime_input_audit": {
+        "node": "/rmua_next_pwm_identification_44939_1792486949695",
+        "topics": [
+          "/airsim_node/drone_1/gps",
+          "/airsim_node/drone_1/imu/imu",
+          "/airsim_node/initial_pose"
+        ],
+        "debug_inputs": false,
+        "expected_control_connections": 2,
+        "control_connections": 2,
+        "backend_subscriber_nodes": [
+          "/airsim_node"
+        ]
+      },
+      "body_specific_force_z_minmax_150ms_m_s2": [
+        -21.407304763793945,
+        -9.281149864196777
+      ]
+    },
+    {
+      "name": "wire_06_failed_before_pulse",
+      "run_directory": "runs/20261020T090605Z_113eb3bb66c2468bba807c25b8cef711",
+      "seed": 2041,
+      "source_unchanged": true,
+      "fault": "ANGULAR_RATE_LIMIT",
+      "excitation": {
+        "pwm": 0.6,
+        "sent": false,
+        "stamp": null
+      },
+      "trace_reanalysis": {
+        "sender_commands": 135,
+        "wire_records": 135,
+        "matched_commands": 135,
+        "wire_match_fraction": 1.0,
+        "missing_sequences": [],
+        "mismatched_sequences": [],
+        "unexpected_sequences": [],
+        "invalid_records": 0,
+        "duplicate_sequences": 0,
+        "actuator_consumption_verified": false,
+        "debug_pwm_is_verified_actual_motor_output": false,
+        "official_result": "UNKNOWN",
+        "ros_header_sequence_offset": 1,
+        "wire_trace_valid": true,
+        "debug_message_stamp_interval_median_s": 0.009000301361083984,
+        "observed_debug_value_change_interval_p10_p50_p90_s": [
+          0.04800105094909668,
+          0.05700111389160156,
+          0.06840143203735352
+        ],
+        "experiment_pulses": [],
+        "analysis_code_sha256": "59e7ec2876d0732ef95e19b31dd0e842cc78ad356bee9982e270d5aa32233738",
+        "analysis_matches_run_source_snapshot": false
+      },
+      "runtime_input_audit": {
+        "node": "/rmua_next_pwm_identification_45648_1792487176899",
+        "topics": [
+          "/airsim_node/drone_1/gps",
+          "/airsim_node/drone_1/imu/imu",
+          "/airsim_node/initial_pose"
+        ],
+        "debug_inputs": false,
+        "expected_control_connections": 2,
+        "control_connections": 2,
+        "backend_subscriber_nodes": [
+          "/airsim_node"
+        ]
+      }
+    },
+    {
+      "name": "wire_10",
+      "run_directory": "runs/20261020T090622Z_5e73b25faee14af680c7532e2500a2f8",
+      "seed": 2041,
+      "source_unchanged": true,
+      "fault": null,
+      "excitation": {
+        "pwm": 1.0,
+        "sent": true,
+        "stamp": 1792487198.4210312
+      },
+      "trace_reanalysis": {
+        "sender_commands": 813,
+        "wire_records": 813,
+        "matched_commands": 813,
+        "wire_match_fraction": 1.0,
+        "missing_sequences": [],
+        "mismatched_sequences": [],
+        "unexpected_sequences": [],
+        "invalid_records": 0,
+        "duplicate_sequences": 0,
+        "actuator_consumption_verified": false,
+        "debug_pwm_is_verified_actual_motor_output": false,
+        "official_result": "UNKNOWN",
+        "ros_header_sequence_offset": 1,
+        "wire_trace_valid": true,
+        "debug_message_stamp_interval_median_s": 0.009000301361083984,
+        "observed_debug_value_change_interval_p10_p50_p90_s": [
+          0.04800097942352295,
+          0.05100131034851074,
+          0.060001373291015625
+        ],
+        "experiment_pulses": [
+          {
+            "sequence": 388,
+            "stamp": 1792487198.4210312,
+            "values": [
+              1.0,
+              1.0,
+              1.0,
+              1.0
+            ],
+            "next_command_after_sensor_s": 0.009000062942504883,
+            "debug_samples_in_window": 10,
+            "debug_samples_matching_pulse": 5
+          }
+        ],
+        "analysis_code_sha256": "59e7ec2876d0732ef95e19b31dd0e842cc78ad356bee9982e270d5aa32233738",
+        "analysis_matches_run_source_snapshot": false
+      },
+      "runtime_input_audit": {
+        "node": "/rmua_next_pwm_identification_46359_1792487192198",
+        "topics": [
+          "/airsim_node/drone_1/gps",
+          "/airsim_node/drone_1/imu/imu",
+          "/airsim_node/initial_pose"
+        ],
+        "debug_inputs": false,
+        "expected_control_connections": 2,
+        "control_connections": 2,
+        "backend_subscriber_nodes": [
+          "/airsim_node"
+        ]
+      },
+      "body_specific_force_z_minmax_150ms_m_s2": [
+        -53.78862380981445,
+        -7.995436191558838
+      ]
+    },
+    {
+      "name": "wire_00",
+      "run_directory": "runs/20261020T090648Z_b99c04ecd2d443abb0aff46d3a147731",
+      "seed": 2041,
+      "source_unchanged": true,
+      "fault": null,
+      "excitation": {
+        "pwm": 0.0,
+        "sent": true,
+        "stamp": 1792487223.979858
+      },
+      "trace_reanalysis": {
+        "sender_commands": 808,
+        "wire_records": 808,
+        "matched_commands": 808,
+        "wire_match_fraction": 1.0,
+        "missing_sequences": [],
+        "mismatched_sequences": [],
+        "unexpected_sequences": [],
+        "invalid_records": 0,
+        "duplicate_sequences": 0,
+        "actuator_consumption_verified": false,
+        "debug_pwm_is_verified_actual_motor_output": false,
+        "official_result": "UNKNOWN",
+        "ros_header_sequence_offset": 1,
+        "wire_trace_valid": true,
+        "debug_message_stamp_interval_median_s": 0.009000301361083984,
+        "observed_debug_value_change_interval_p10_p50_p90_s": [
+          0.0480008602142334,
+          0.05100131034851074,
+          0.060001373291015625
+        ],
+        "experiment_pulses": [
+          {
+            "sequence": 389,
+            "stamp": 1792487223.979858,
+            "values": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "next_command_after_sensor_s": 0.012000322341918945,
+            "debug_samples_in_window": 12,
+            "debug_samples_matching_pulse": 0
+          }
+        ],
+        "analysis_code_sha256": "59e7ec2876d0732ef95e19b31dd0e842cc78ad356bee9982e270d5aa32233738",
+        "analysis_matches_run_source_snapshot": false
+      },
+      "runtime_input_audit": {
+        "node": "/rmua_next_pwm_identification_47069_1792487217663",
+        "topics": [
+          "/airsim_node/drone_1/gps",
+          "/airsim_node/drone_1/imu/imu",
+          "/airsim_node/initial_pose"
+        ],
+        "debug_inputs": false,
+        "expected_control_connections": 2,
+        "control_connections": 2,
+        "backend_subscriber_nodes": [
+          "/airsim_node"
+        ]
+      },
+      "body_specific_force_z_minmax_150ms_m_s2": [
+        -9.933150291442871,
+        -1.629423975944519
+      ]
+    },
+    {
+      "name": "wire_06_repeat",
+      "run_directory": "runs/20261020T090922Z_24c772f8a6fd4afa8b86481a6f477e6e",
+      "seed": 2042,
+      "source_unchanged": true,
+      "fault": null,
+      "excitation": {
+        "pwm": 0.6,
+        "sent": true,
+        "stamp": 1792487380.1998086
+      },
+      "trace_reanalysis": {
+        "sender_commands": 826,
+        "wire_records": 826,
+        "matched_commands": 826,
+        "wire_match_fraction": 1.0,
+        "missing_sequences": [],
+        "mismatched_sequences": [],
+        "unexpected_sequences": [],
+        "invalid_records": 0,
+        "duplicate_sequences": 0,
+        "actuator_consumption_verified": false,
+        "debug_pwm_is_verified_actual_motor_output": false,
+        "official_result": "UNKNOWN",
+        "ros_header_sequence_offset": 1,
+        "wire_trace_valid": true,
+        "debug_message_stamp_interval_median_s": 0.009000301361083984,
+        "observed_debug_value_change_interval_p10_p50_p90_s": [
+          0.04800105094909668,
+          0.05100107192993164,
+          0.060001373291015625
+        ],
+        "experiment_pulses": [
+          {
+            "sequence": 388,
+            "stamp": 1792487380.1998086,
+            "values": [
+              0.6,
+              0.6,
+              0.6,
+              0.6
+            ],
+            "next_command_after_sensor_s": 0.012000083923339844,
+            "debug_samples_in_window": 10,
+            "debug_samples_matching_pulse": 0
+          }
+        ],
+        "analysis_code_sha256": "59e7ec2876d0732ef95e19b31dd0e842cc78ad356bee9982e270d5aa32233738",
+        "analysis_matches_run_source_snapshot": true
+      },
+      "runtime_input_audit": {
+        "node": "/rmua_next_pwm_identification_47841_1792487373831",
+        "topics": [
+          "/airsim_node/drone_1/gps",
+          "/airsim_node/drone_1/imu/imu",
+          "/airsim_node/initial_pose"
+        ],
+        "debug_inputs": false,
+        "expected_control_connections": 2,
+        "control_connections": 2,
+        "backend_subscriber_nodes": [
+          "/airsim_node"
+        ]
+      },
+      "body_specific_force_z_minmax_150ms_m_s2": [
+        -32.46516799926758,
+        -8.945795059204102
+      ]
+    }
+  ],
+  "total_matched_wire_commands": 3417,
+  "unit_tests_passed": 63,
+  "noetic_new_tests_passed": 3,
+  "old_image_compatibility": {
+    "run_directory": "runs/20261020T090949Z_0ffe2669545c4c2a90ecce1a039c30f2",
+    "image_revision": "e14b2650d14a79a3182ae5eb16dc5885a94db4ac",
+    "fault": null,
+    "source_unchanged": true,
+    "wire_recorder_enabled": false
+  },
+  "conclusion": "Header.seq is reassigned by rospy. After aligning its one constant offset from matching stamps and exact float32 payloads, every recorded ROS command matches the sender log. Debug values change at about 20Hz despite about 100Hz message stamps, and can miss or extend a single-command pulse. They are not verified instantaneous applied motor inputs.",
+  "withdrawn_inference": "Earlier debug-based torque residuals and claims of steady actual actuator output cannot exclude changes in applied PWM. Original observations are preserved.",
+  "wire_record_does_not_prove_actuator_consumption": true,
+  "full_range_steady_state_curve_verified": false,
+  "normal_pwm_ceiling_unchanged": 0.6,
+  "physical_impulse_root_cause_resolved": false,
+  "stage_acceptance": false,
+  "offline_reanalysis_note": "The first trace analyzer incorrectly equated the logical sender sequence with rospy Header.seq. Raw flight data were not modified. Corrected analysis code hashes and source-snapshot agreement are included per case."
+}

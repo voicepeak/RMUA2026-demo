@@ -416,5 +416,11 @@
       }
     }
   ],
-  "failure_note": "Initial run tripped the angular-rate guard near sim elapsed 4.9s, before yaw motion starts at 5s. Same-seed static, isolated braking and combined repeats succeeded. Root cause remains unresolved; repeats do not constitute a fix."
+  "failure_note": "Initial run tripped the angular-rate guard near sim elapsed 4.9s, before yaw motion starts at 5s. Same-seed static, isolated braking and combined repeats succeeded. Root cause remains unresolved; repeats do not constitute a fix.",
+  "actuation_interpretation_correction_2026_10_20": {
+    "evidence": "docs/evidence/p0_pwm_wire_observability.json",
+    "debug_pwm_is_verified_applied_motor_input": false,
+    "previous_actual_output_interpretation": "withdrawn",
+    "scope": "Original raw observations retained. Debug-based torque residuals cannot establish steady actual motor input or exclude unobserved applied PWM changes."
+  }
 }

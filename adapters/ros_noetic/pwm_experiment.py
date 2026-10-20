@@ -15,7 +15,7 @@ from control.pwm_publisher.guard import CommandGuard, PwmCommand
 from estimation.geometry import rotation
 from interfaces.contracts import Health
 from adapters.ros_noetic.flight_sensors import FlightSensors
-from control.motor_allocator.allocator import MotorAllocator
+from control.motor_allocator.allocator import MotorAllocator,Allocation
 from control.se3_controller.controller import Se3Controller
 from control.reference import benchmark_reference,benchmark_yaw
 from adapters.ros_noetic.sensor_fault import LocalSensorFault
@@ -24,6 +24,8 @@ from control.safety_supervisor.hover_recovery import HoverRecovery
 from control.safety_supervisor.angular_recovery import AngularRecovery
 from control.reference_worker import BenchmarkSpec,ReferenceWorker
 from control.safety_supervisor.reference_hold import ReferenceHold
+from control.collective_identification import CollectivePulse
+from adapters.ros_noetic.control_connections import expected_control_connections
 
 
 def motor_pattern():
@@ -40,7 +42,7 @@ def motor_pattern():
 def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0, step=False,
                    sensor_fault=None, fault_seconds=.15, gps_bridge=False, yaw_motion=False,braking=False,
                    stationary_bootstrap=False,angular_recovery=False,angular_pulse=False,
-                   isolated_reference=False,reference_stall_seconds=0.):
+                   isolated_reference=False,reference_stall_seconds=0.,collective_pulse_pwm=None):
     import rospy
     import rosgraph
     from airsim_ros.msg import RotorPWM
@@ -66,6 +68,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
         pulse_sent=False
         reference_worker=None
         reference_hold=ReferenceHold()
+        collective_pulse=CollectivePulse(collective_pulse_pwm) if collective_pulse_pwm is not None else None
         try:
             deadline = time.monotonic()+5
             while time.monotonic() < deadline:
@@ -86,10 +89,12 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 raise RuntimeError('NO_HEALTHY_STATE')
             origin = np.array(state.position_ned)
             publisher = rospy.Publisher('/airsim_node/drone_1/rotor_pwm_cmd', RotorPWM, queue_size=1)
+            expected_connections,backend_nodes=expected_control_connections(master.getSystemState(),
+                                               '/airsim_node/drone_1/rotor_pwm_cmd')
             deadline = time.monotonic()+2
-            while publisher.get_num_connections() != 1 and time.monotonic() < deadline:
+            while publisher.get_num_connections() < expected_connections and time.monotonic() < deadline:
                 time.sleep(.01)
-            if publisher.get_num_connections() != 1:
+            if publisher.get_num_connections() < expected_connections:
                 raise RuntimeError('PWM_SUBSCRIBER_COUNT')
             graph(True)
             _, subscribers, _ = master.getSystemState()
@@ -98,7 +103,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
             if any(topic not in official_config['sensors'] for topic in runtime_inputs):
                 raise RuntimeError('INPUT_WHITELIST_POLICY')
             (run/'runtime_input_audit.json').write_text(json.dumps({'node': rospy.get_name(),
-                'topics': runtime_inputs, 'debug_inputs': False}, indent=2)+'\n')
+                'topics': runtime_inputs, 'debug_inputs': False,'expected_control_connections':expected_connections,
+                'control_connections':publisher.get_num_connections(),'backend_subscriber_nodes':backend_nodes}, indent=2)+'\n')
             monitor = GraphMonitor(lambda: graph(True))
             monitor.start()
             guard = CommandGuard(sensors.clock.epoch, minimum_period=.0105)
@@ -199,6 +205,11 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                                      and phase=='NORMAL')
                     if pulse_this_tick:moment[1]+=.5
                     allocation = allocator.allocate(wrench.thrust, moment)
+                    collective_values=collective_pulse.request(state,sim_elapsed) if collective_pulse else None
+                    if collective_values is not None:
+                        achieved=allocator.B@(allocator.max_thrust*np.array(collective_values))
+                        allocation=Allocation(collective_values,tuple(achieved),True,0.,
+                                              min(collective_values[0],1-collective_values[0]))
                     previous_saturated = allocation.saturated
                     values = allocation.pwm
                     details = {'reference': tuple(reference), 'wrench': asdict(wrench),
@@ -207,6 +218,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     details['angular_pulse_applied']=pulse_this_tick
                     details['rate_gain_scale']=rate_gain_scale
                     details['moment_requested_including_experiment_pulse']=moment.tolist()
+                    details['collective_pulse_applied']=collective_values is not None
                 else:
                     values = pattern[index]
                 command = PwmCommand(state.metadata.stamp, state.metadata.epoch, sequence, values)
@@ -229,12 +241,16 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                                  **details})
                     sequence += 1
                     if details.get('angular_pulse_applied'):pulse_sent=True
+                    if details.get('collective_pulse_applied'):collective_pulse.published(command.stamp)
                 previous_control_stamp = state.metadata.stamp
                 next_tick += 1/80.
                 delay = next_tick-time.monotonic()
                 if delay < -.1:
                     raise RuntimeError('CONTROL_DEADLINE')
                 time.sleep(max(0., delay))
+            if collective_pulse is not None and not collective_pulse.sent:
+                raise RuntimeError('COLLECTIVE_EXCITATION_NOT_SENT')
+            if angular_pulse and not pulse_sent:raise RuntimeError('ANGULAR_EXCITATION_NOT_SENT')
         except Exception as error:
             fault = str(error)
             failed_wall=time.monotonic()
@@ -268,6 +284,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
               'angular_pulse_sent':pulse_sent,
               'reference_worker':reference_worker.summary() if reference_worker else None,
               'reference_hold_transitions':reference_hold.transitions,
+              'collective_excitation':None if collective_pulse is None else vars(collective_pulse),
               'pulse_seconds': pulse_seconds,
               'stage': 'LOCAL_PWM_CLOSED_LOOP_HOVER' if hover_seconds else 'LOCAL_OPEN_LOOP_IDENTIFICATION',
               'official_result': 'UNKNOWN', 'host_scene_stop_required': True}
@@ -294,6 +311,7 @@ def main():
     parser.add_argument('--angular-pulse',action='store_true',help='single bounded pitch moment pulse at 5s')
     parser.add_argument('--isolated-reference',action='store_true')
     parser.add_argument('--reference-stall-seconds',type=float,default=0.)
+    parser.add_argument('--collective-pulse-pwm',type=float)
     args = parser.parse_args()
     levels = tuple(float(value) for value in args.levels.split(','))
     if (not levels or len(levels) > 20 or not all(0 < v <= .6 for v in levels)
@@ -316,10 +334,14 @@ def main():
         parser.error('isolated reference requires >=10s healthy-state hover without other fault modes')
     if args.reference_stall_seconds and (not args.isolated_reference or not .1<=args.reference_stall_seconds<=1.):
         parser.error('reference stall requires isolated reference and duration [.1,1]')
+    if args.collective_pulse_pwm is not None and (not 0<=args.collective_pulse_pwm<=1
+            or args.hover_seconds<10 or args.step or args.braking or args.yaw_motion or args.sensor_fault
+            or args.gps_bridge or args.angular_recovery or args.isolated_reference):
+        parser.error('collective pulse requires isolated >=10s healthy-state hover, PWM in [0,1]')
     return run_experiment(args.run_dir, levels, args.pulse_seconds, args.motor_pulses, args.hover_seconds, args.step,
                           args.sensor_fault,args.fault_seconds,args.gps_bridge,args.yaw_motion,args.braking,
                           args.stationary_bootstrap,args.angular_recovery,args.angular_pulse,
-                          args.isolated_reference,args.reference_stall_seconds)
+                          args.isolated_reference,args.reference_stall_seconds,args.collective_pulse_pwm)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
-"""Offline consistency diagnostics from IMU and evaluation-only rotor feedback.
+"""Offline consistency diagnostics from IMU and recorded PWM commands.
 
-Motor coefficients are provisional. Residuals locate discrepancies; they do not
+Motor coefficients and actuator consumption are unverified. Residuals locate discrepancies; they do not
 identify collision, wind, numerical faults, or prove an actuator latency bound.
 """
 import argparse
@@ -10,7 +10,7 @@ import numpy as np
 from control.motor_allocator.allocator import MotorAllocator
 
 
-def feedback_samples(rows,model):
+def pwm_samples(rows,model):
     samples={}
     for row in rows:
         data=row.get('data',{})
@@ -27,7 +27,7 @@ def feedback_samples(rows,model):
 
 
 def interval_wrench(stamps,wrenches,start,end,max_gap=.04):
-    """Integrate zero-order-held feedback; reject gaps or absent coverage."""
+    """Integrate recorded PWM as a held model input; reject missing coverage."""
     index=int(np.searchsorted(stamps,start,side='right'))-1
     if index<0 or not start<end:return None
     if end>stamps[-1]+max_gap:return None
@@ -46,7 +46,7 @@ def interval_wrench(stamps,wrenches,start,end,max_gap=.04):
 def evaluate(raw_rows,actuation,config):
     model=MotorAllocator(config)
     inertia=np.array(config['inertia_kg_m2'])
-    stamps,wrenches=feedback_samples(actuation,model)
+    stamps,wrenches=pwm_samples(actuation,model)
     raw=sorted({r['stamp']:r for r in raw_rows}.values(),key=lambda r:r['stamp'])
     residuals=[]
     for a,b in zip(raw,raw[1:]):
@@ -62,11 +62,12 @@ def evaluate(raw_rows,actuation,config):
         linear=specific-np.array((0.,0.,-mean[0]/config['mass_kg']))
         residuals.append({'stamp':b['stamp'],'interval_s':dt,
             'angular_residual_Nm':angular.tolist(),'angular_norm_Nm':float(np.linalg.norm(angular)),
-            'specific_force_residual_m_s2':linear.tolist(),'mean_feedback_wrench':mean.tolist(),
+            'specific_force_residual_m_s2':linear.tolist(),'mean_recorded_pwm_model_wrench':mean.tolist(),
             'omega_body_rad_s':wb.tolist()})
     result={'matched_intervals':len(residuals),'candidate_intervals':max(0,len(raw)-1),
         'evaluation_only':True,'cause_identified':False,'motor_model_status':config['parameter_status'],
-        'actuation_latency_verified':False,'official_result':'UNKNOWN'}
+        'actuation_latency_verified':False,'actuator_consumption_verified':False,
+        'debug_pwm_temporal_fidelity_verified':False,'official_result':'UNKNOWN'}
     if residuals:
         magnitudes=[r['angular_norm_Nm'] for r in residuals]
         result['angular_residual_p50_p95_p99_max_Nm']=np.percentile(magnitudes,[50,95,99,100]).tolist()
@@ -100,7 +101,9 @@ def main():
         model_path=root/'configs/vehicle_identification.json'
         expected=manifest['source_sha256_before']['configs/vehicle_identification.json']
         if file_hash(model_path)!=expected:raise ValueError('historical motor model changed')
-    result=evaluate(raw,rows('evaluation_actuation.jsonl'),json.loads(model_path.read_text()))
+    wire=args.run/'evaluation_pwm_commands.jsonl'
+    result=evaluate(raw,rows(wire.name if wire.exists() else 'evaluation_actuation.jsonl'),json.loads(model_path.read_text()))
+    result['pwm_source']='independent_ros_command_recorder' if wire.exists() else 'unverified_debug_pwm_record'
     result['model_provenance']='controller_emitted_snapshot' if model_path.parent==args.run else 'historical_source_hash_match'
     result['imu_source']='independent_full_rate_recorder' if imu_file.exists() else 'controller_sampled_imu'
     (args.run/'physics_residual.json').write_text(json.dumps(result,indent=2)+'\n')

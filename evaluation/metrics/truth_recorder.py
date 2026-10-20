@@ -14,12 +14,14 @@ def main():
     from rosgraph_msgs.msg import Log
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run-dir', type=Path, required=True)
+    parser.add_argument('--record-pwm-commands',action='store_true',help='requires observer-compatible PWM publisher')
     args = parser.parse_args()
     run = args.run_dir
     rospy.init_node('rmua_hidden_truth_evaluator', anonymous=True, disable_signals=True)
     lock = threading.Lock()
     rows = []
     actuation=[]
+    commands=[]
     wind=[]
     imu=[]
     logs=[]
@@ -38,7 +40,7 @@ def main():
         if isinstance(value,(list,tuple)):
             return [plain(v) for v in value]
         return value
-    def receive_actuation(msg):
+    def receive_actuation(msg,destination=None):
         header=msg._connection_header
         cls=roslib.message.get_message_class(header['type'])
         row={'arrival_wall_monotonic':time.monotonic(),'type':header['type'],
@@ -49,9 +51,13 @@ def main():
         else:
             row['raw_hex']=msg._buff.hex()
         with lock:
-            if len(actuation)<30000:actuation.append(row)
+            target=actuation if destination is None else destination
+            if len(target)<30000:target.append(row)
     actuator_listener=rospy.Subscriber('/airsim_node/drone_1/debug/rotor_pwm',rospy.AnyMsg,
                                        receive_actuation,queue_size=1)
+    command_listener=(rospy.Subscriber('/airsim_node/drone_1/rotor_pwm_cmd',rospy.AnyMsg,
+                        lambda msg:receive_actuation(msg,commands),queue_size=1000)
+                        if args.record_pwm_commands else None)
     def receive_wind(msg):
         v=msg.vector
         with lock:
@@ -80,12 +86,15 @@ def main():
     finally:
         listener.unregister()
         actuator_listener.unregister()
+        if command_listener:command_listener.unregister()
         wind_listener.unregister()
         imu_listener.unregister()
         log_listener.unregister()
         with lock:
             (run/'evaluation_truth.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
             (run/'evaluation_actuation.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in actuation))
+            if command_listener:
+                (run/'evaluation_pwm_commands.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in commands))
             for name,data in (('wind',wind),('imu',imu),('rosout',logs)):
                 (run/('evaluation_'+name+'.jsonl')).write_text(''.join(json.dumps(row)+'\n' for row in data))
     return 0 if rows else 2

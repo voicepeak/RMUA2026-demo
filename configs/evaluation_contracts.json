@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "policy": "offline evaluation only; never supplies the flight algorithm",
+  "debug_pwm": {
+    "topic": "/airsim_node/drone_1/debug/rotor_pwm",
+    "type": "airsim_ros/RotorPWM",
+    "md5": "4967432b608c06d70b17be20124fa258",
+    "wire_format_verified": true,
+    "instantaneous_applied_motor_input_verified": false,
+    "value_measurement_stamp_semantics_verified": false,
+    "observed_value_update_median_s": 0.051,
+    "use_to_exclude_actuator_transients": false
+  },
+  "pwm_command_record": {
+    "topic": "/airsim_node/drone_1/rotor_pwm_cmd",
+    "meaning": "serialized ROS commands, not acknowledged actuator consumption",
+    "matching": "logical sequence offset inferred from matching timestamp and exact float32 payload; all commands audited",
+    "old_standalone_images": "wire recording opt-in; old exact-one-subscriber startup policy requires no command observer"
+  },
+  "evidence": "docs/evidence/p0_pwm_wire_observability.json"
+}
