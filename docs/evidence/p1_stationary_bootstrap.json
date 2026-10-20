@@ -1,0 +1,218 @@
+{
+  "run_directory": "runs/20261020T082525Z_9ccf14f46e9e4ca187ddf2a7db1ebd01",
+  "source_unchanged": true,
+  "stationary_bootstrap": {
+    "position": [
+      -0.00024010617653213683,
+      0.009255229449063988,
+      0.3177311997931901
+    ],
+    "gyro_bias": [
+      -8.222573019059742e-05,
+      1.386124692527239e-05,
+      -5.045295547718541e-06
+    ],
+    "imu_samples": 106,
+    "gps_samples": 10,
+    "span_s": 1.005021572113037,
+    "gps_position_std_m": [
+      0.024639932917482,
+      0.040161349506321976,
+      0.02807595313412265
+    ],
+    "acceleration_std_m_s2": [
+      0.04411193212116786,
+      0.04615322208555817,
+      0.04184212805890041
+    ],
+    "assumption": "fresh ground-start scene, before any control publisher",
+    "imu_orientation_use": "resting alignment check only; initial_pose supplies attitude"
+  },
+  "fault": "ANGULAR_RATE_LIMIT",
+  "wall_elapsed_at_fault": 3.487619974068366,
+  "position_ned_at_fault": [
+    -0.09929395872074401,
+    0.0519840111529013,
+    -0.6217640641622084
+  ],
+  "raw_at_fault": {
+    "stamp": 1792484741.6056185,
+    "acceleration_body": [
+      0.1159028708934784,
+      0.0443449467420578,
+      -16.607603073120117
+    ],
+    "omega_body": [
+      -0.08801031112670898,
+      1.675383448600769,
+      -0.024446729570627213
+    ],
+    "imu_orientation_wxyz": [
+      0.9998898506164551,
+      -0.0027962042950093746,
+      0.002199191367253661,
+      -0.014410167932510376
+    ],
+    "last_gps_stamp": 1792484741.5756178,
+    "gyro_bias_body": [
+      -0.0005467192795677251,
+      -0.005269555740714122,
+      -0.00929426241516747
+    ],
+    "accel_bias_body": [
+      0.01642452801270315,
+      -0.008318831554026055,
+      -0.0026913551366439265
+    ]
+  },
+  "physics_residual": {
+    "matched_intervals": 246,
+    "candidate_intervals": 246,
+    "evaluation_only": true,
+    "cause_identified": false,
+    "motor_model_status": "official_parameters_with_provisional_rps_units_supported_by_local_response",
+    "actuation_latency_verified": false,
+    "official_result": "UNKNOWN",
+    "angular_residual_p50_p95_p99_max_Nm": [
+      0.00286041269090355,
+      0.00654899415152225,
+      0.008223913378255569,
+      1.060184265351793
+    ],
+    "largest_angular_discrepancies": [
+      {
+        "stamp": 1792484741.6056185,
+        "interval_s": 0.012000322341918945,
+        "angular_residual_Nm": [
+          0.0009070816057880373,
+          1.0601821147054908,
+          0.0019332255623247655
+        ],
+        "angular_norm_Nm": 1.060184265351793,
+        "specific_force_residual_m_s2": [
+          0.058505624532699585,
+          0.036165157333016396,
+          -3.228640003105827
+        ],
+        "mean_feedback_wrench": [
+          8.966979286282514,
+          -0.0007695575042161451,
+          0.0010590421952623164,
+          0.0008183052141449536
+        ],
+        "omega_body_rad_s": [
+          -0.08801031112670898,
+          1.675383448600769,
+          -0.024446729570627213
+        ]
+      },
+      {
+        "stamp": 1792484738.683556,
+        "interval_s": 0.009000062942504883,
+        "angular_residual_Nm": [
+          -0.006613286361641459,
+          0.0035289287655833287,
+          -0.005968671854218358
+        ],
+        "angular_norm_Nm": 0.009581959008312069,
+        "specific_force_residual_m_s2": [
+          0.016531380359083414,
+          0.0037780124694108963,
+          0.050735951664147905
+        ],
+        "mean_feedback_wrench": [
+          9.174669743658988,
+          0.0014847088171137113,
+          0.00027792813117688553,
+          0.0010953074638843027
+        ],
+        "omega_body_rad_s": [
+          0.027256352826952934,
+          0.027122678235173225,
+          0.015643693506717682
+        ]
+      },
+      {
+        "stamp": 1792484739.5595748,
+        "interval_s": 0.0060002803802490234,
+        "angular_residual_Nm": [
+          -0.0007889097393018697,
+          -0.0015807035323633185,
+          0.008062470783921876
+        ],
+        "angular_norm_Nm": 0.008253752926734907,
+        "specific_force_residual_m_s2": [
+          0.02982564363628626,
+          -0.024844759609550238,
+          0.1572583551804616
+        ],
+        "mean_feedback_wrench": [
+          9.50600223859552,
+          0.000556046493791984,
+          -0.004490936234628318,
+          0.00030026190479597037
+        ],
+        "omega_body_rad_s": [
+          0.2591233551502228,
+          -0.3221546709537506,
+          0.006669539958238602
+        ]
+      },
+      {
+        "stamp": 1792484741.4166143,
+        "interval_s": 0.009000062942504883,
+        "angular_residual_Nm": [
+          0.0019249842197424727,
+          -0.0019854232958249804,
+          0.007706279906970834
+        ],
+        "angular_norm_Nm": 0.008187442819003042,
+        "specific_force_residual_m_s2": [
+          -0.030888178385794163,
+          0.04858491197228432,
+          0.003053647973878526
+        ],
+        "mean_feedback_wrench": [
+          8.73123277071006,
+          -0.002216600496570631,
+          -0.0002809004973984286,
+          -1.7934647000939635e-05
+        ],
+        "omega_body_rad_s": [
+          -0.054935455322265625,
+          -0.1432885378599167,
+          -0.031687188893556595
+        ]
+      },
+      {
+        "stamp": 1792484739.3195696,
+        "interval_s": 0.009000062942504883,
+        "angular_residual_Nm": [
+          0.0033776280889359564,
+          -0.006779956346183962,
+          -0.001708124916202051
+        ],
+        "angular_norm_Nm": 0.007764912767873159,
+        "specific_force_residual_m_s2": [
+          0.005463805049657822,
+          0.036009250208735466,
+          0.14868974950339542
+        ],
+        "mean_feedback_wrench": [
+          9.530556824205156,
+          0.00352824626280257,
+          -0.004944233972874801,
+          -0.0013230484217504265
+        ],
+        "omega_body_rad_s": [
+          0.12663137912750244,
+          0.02122417651116848,
+          -0.009941269643604755
+        ]
+      }
+    ]
+  },
+  "stage_acceptance": false,
+  "root_cause_resolved": false,
+  "conclusion": "Pre-control resting initialization removes the artificial launch velocity; an angular impulse still occurs after takeoff at about 3.49s. Startup convergence alone does not explain the physical transient. Feature remains optional for development."
+}

@@ -35,7 +35,8 @@ def motor_pattern():
 
 
 def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0, step=False,
-                   sensor_fault=None, fault_seconds=.15, gps_bridge=False, yaw_motion=False,braking=False):
+                   sensor_fault=None, fault_seconds=.15, gps_bridge=False, yaw_motion=False,braking=False,
+                   stationary_bootstrap=False):
     import rospy
     import rosgraph
     from airsim_ros.msg import RotorPWM
@@ -62,7 +63,13 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
             while time.monotonic() < deadline:
                 try:
                     state, raw = sensors.read()
-                    if state.health == Health.OK:
+                    bootstrap=None
+                    if state.health == Health.OK and stationary_bootstrap:
+                        bootstrap=sensors.bootstrap_at_rest_before_control()
+                    if state.health == Health.OK and (not stationary_bootstrap or bootstrap is not None):
+                        if bootstrap is not None:
+                            (run/'stationary_bootstrap.json').write_text(json.dumps(bootstrap,indent=2)+'\n')
+                            state,raw=sensors.read()
                         break
                 except (ValueError, RuntimeError):
                     pass
@@ -227,6 +234,7 @@ def main():
     parser.add_argument('--gps-bridge',action='store_true')
     parser.add_argument('--yaw-motion',action='store_true')
     parser.add_argument('--braking',action='store_true')
+    parser.add_argument('--stationary-bootstrap',action='store_true')
     args = parser.parse_args()
     levels = tuple(float(value) for value in args.levels.split(','))
     if (not levels or len(levels) > 20 or not all(0 < v <= .6 for v in levels)
@@ -242,7 +250,8 @@ def main():
     if args.sensor_fault and (args.hover_seconds < 8 or not 0 < args.fault_seconds <= 1):
         parser.error('local sensor injection requires >=8s hover and duration (0,1]')
     return run_experiment(args.run_dir, levels, args.pulse_seconds, args.motor_pulses, args.hover_seconds, args.step,
-                          args.sensor_fault,args.fault_seconds,args.gps_bridge,args.yaw_motion,args.braking)
+                          args.sensor_fault,args.fault_seconds,args.gps_bridge,args.yaw_motion,args.braking,
+                          args.stationary_bootstrap)
 
 
 if __name__ == '__main__':
