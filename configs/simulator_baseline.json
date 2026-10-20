@@ -11,7 +11,8 @@
     "settings.json": "01525e0cad36ad0ba175f0deb0b35abc4032535eda3ff31b61a043d92e9f0366",
     "run_simulator.sh": "64f84c66e6d758b96151152c8b8fae45cb62c1d9a24b1aa9b03769f2b30f8023",
     "run_simulator_offscreen.sh": "9d5642dc5967247a10db1227581039a011547b5a70667b0224b47a005621f512",
-    "Build/LinuxNoEditor/RMUA/Binaries/Linux/RMUA-Linux-Shipping": "5231addfa25ddaa9e4473ea9ac40c9c0bc685174e69cd14bb49159f443b97800"
+    "Build/LinuxNoEditor/RMUA/Binaries/Linux/RMUA-Linux-Shipping": "5231addfa25ddaa9e4473ea9ac40c9c0bc685174e69cd14bb49159f443b97800",
+    "Build/LinuxNoEditor/RMUA/Plugins/AirSimROS/Binaries/Linux/libairsimros.so": "69d5ea3302bdd5f20b842ec3d3e84bafcb50ef3649ada42c4d346c9bcd389885"
   },
   "note": "Build version requires live confirmation; upstream checkout metadata says RMUA2025-01. Do not infer simulator season from that metadata.",
   "runtime_settings": {

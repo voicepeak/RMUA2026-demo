@@ -2,7 +2,7 @@
 <package format="2">
   <name>airsim_ros</name>
   <version>0.1.0</version>
-  <description>Pinned official RMUA control message definitions, without flight nodes.</description>
+  <description>RMUA interface definitions verified against a pinned simulator, without flight nodes.</description>
   <maintainer email="voicepeak@users.noreply.github.com">voicepeak</maintainer>
   <license>See UPSTREAM_LICENSE.txt and UPSTREAM.md</license>
   <buildtool_depend>catkin</buildtool_depend>

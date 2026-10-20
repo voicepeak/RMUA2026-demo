@@ -22,3 +22,5 @@ seed1001 实测：GPS 为 geometry_msgs/PoseStamped，正常消息含模拟器�
 部署审计发现官方两个仓库的 VelCmd 定义不同：基础教程含 geometry_msgs/Twist；模拟器 VelCmdmsg/VelCmd.msg 则是 Header + vx/vy/vz/yawRate/va/stop。已改为模拟器版本，与 beta 本机实跑消息一致。此前 P0 只核对了类型名称，未验证 VEL MD5，不能将旧审计解释为 VEL 通信已验收；PWM 悬停使用 RotorPWM，不受此差异影响。后续独立 VEL 场次必须验证连接和指令符号。
 
 后续本机验证：seed1007 独立 VEL 场次连接成功，MD5=1a888a503939ba521aed68feee8eab6d，悬停/位移与 z-up 适配正常。seed1015 量化偏航：给定 0.1rad/s、2s 的参考，VEL 命令 yawRate 按 deg/s 发送；稳定窗口中 IMU 角速度/命令单位的最小二乘增益为 0.016977rad/单位，接近 π/180=0.017453（约 -2.7%）。该结果支持当前模拟器的 deg/s 适配，不替代正式服务器版本核验。证据见 docs/evidence/p1_seed1015_yaw_pair.json。
+
+2026-10-19 seed2025：只读 TCPROS 服务头握手确认 MeterReport MD5=40e1aa17dd96ff6a8c88396581d6a491，与本地插件序列化 ABI 推导的 int64 index/int64 value → bool success 一致；Noetic 两项线格式测试通过。没有提交服务请求，业务返回语义和正式权限仍未验证。详见 interfaces/ros/airsim_ros/UPSTREAM.md 和 docs/evidence/p0_meter_report_contract.json。后续场次预检同时核对主程序与 ROS 插件哈希。

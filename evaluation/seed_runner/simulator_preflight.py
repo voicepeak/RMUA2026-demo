@@ -28,8 +28,12 @@ def verify_local_simulator(root):
     binary_hash=file_hash(simulator/binary)
     if binary_hash != baseline['sha256'][binary]:
         raise ValueError('simulator binary changed from the frozen baseline')
+    plugin='Build/LinuxNoEditor/RMUA/Plugins/AirSimROS/Binaries/Linux/libairsimros.so'
+    plugin_hash=file_hash(simulator/plugin)
+    if plugin_hash != baseline['sha256'][plugin]:
+        raise ValueError('simulator ROS plugin changed from the frozen baseline')
     settings_hash=file_hash(settings_path)
     if settings_hash != baseline['runtime_settings']['sha256']:
         raise ValueError('simulator settings changed from the frozen baseline')
     return {'strict_rules_verified':True,'game_config':game,'game_config_sha256':file_hash(game_path),
-            'binary_sha256':binary_hash,'settings_sha256':settings_hash}
+            'binary_sha256':binary_hash,'ros_plugin_sha256':plugin_hash,'settings_sha256':settings_hash}

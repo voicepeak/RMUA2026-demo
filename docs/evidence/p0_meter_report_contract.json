@@ -1,0 +1,26 @@
+{
+  "service": "/airsim_node/meter_report",
+  "type": "airsim_ros/MeterReport",
+  "server_md5": "40e1aa17dd96ff6a8c88396581d6a491",
+  "local_md5": "40e1aa17dd96ff6a8c88396581d6a491",
+  "headers": {
+    "callerid": "/airsim_node",
+    "md5sum": "40e1aa17dd96ff6a8c88396581d6a491",
+    "request_type": "airsim_ros/MeterReportRequest",
+    "response_type": "airsim_ros/MeterReportResponse",
+    "type": "airsim_ros/MeterReport"
+  },
+  "service_request_sent": false,
+  "business_success_semantics_verified": false,
+  "formal_server_permissions_verified": false,
+  "compatible": true,
+  "run_directory": "runs/20261019T130123Z_c66f9651072d442f92154bd68ab503cf",
+  "seed": 2025,
+  "source_unchanged": true,
+  "observer_exit_code": 0,
+  "plugin_sha256": "69d5ea3302bdd5f20b842ec3d3e84bafcb50ef3649ada42c4d346c9bcd389885",
+  "definition": "int64 index\nint64 value\n---\nbool success",
+  "definition_provenance": "local pinned simulator serialization ABI and read-only TCPROS header; not a published upstream srv file",
+  "offline_serialization_tests_passed": 2,
+  "stage_acceptance": false
+}

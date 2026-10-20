@@ -28,6 +28,7 @@ def main():
     parser.add_argument('--braking',action='store_true')
     parser.add_argument('--snapshot',action='store_true')
     parser.add_argument('--controller-image',help='locally built immutable standalone image; no beta bind mount')
+    parser.add_argument('--contract-audit-only',action='store_true',help='read-only service handshake; no controller')
     args = parser.parse_args()
     if args.mode == 'VEL' and (args.motor_pulses or not 3 <= args.hover_seconds <= 20):
         parser.error('VEL requires hover-seconds [3,20] and no motor pulses')
@@ -39,6 +40,10 @@ def main():
         parser.error('response identification requires hover-seconds >=10')
     if args.braking and args.step:
         parser.error('braking and step are separate experiments')
+    if args.contract_audit_only and (args.controller_image or args.hover_seconds or args.motor_pulses
+            or args.step or args.sensor_fault or args.gps_bridge or args.yaw_motion or args.braking
+            or args.evaluate_truth or args.snapshot):
+        parser.error('contract-audit-only cannot be combined with flight/recording modes')
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
     simulator_digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'], text=True).strip()
     image_info=None
@@ -53,12 +58,15 @@ def main():
                             'evaluate_truth': args.evaluate_truth, 'step': args.step,
                             'sensor_fault':args.sensor_fault, 'fault_seconds':args.fault_seconds,
                             'gps_bridge':args.gps_bridge,'yaw_motion':args.yaw_motion,'braking':args.braking,
-                            'snapshot':args.snapshot,'controller_image':args.controller_image}
+                            'snapshot':args.snapshot,'controller_image':args.controller_image,
+                            'contract_audit_only':args.contract_audit_only}
     run, manifest = prepare_run(root, root/'runs', args.seed, digest, config)
     manifest['stage'] = ('P1_PWM_CLOSED_LOOP' if args.hover_seconds else 'P0_PWM_IDENTIFICATION') if args.mode == 'PWM' else 'P1_VEL_BENCHMARK'
+    if args.contract_audit_only:manifest['stage']='P0_READ_ONLY_SERVICE_CONTRACT'
     manifest['simulator_preflight']=simulator_evidence
     manifest['simulator_container_image_digest']=simulator_digest
     manifest['controller_source_kind']='immutable_docker_image' if image_info else 'workspace_bind_mount'
+    if args.contract_audit_only:manifest['controller_source_kind']='none_read_only_observer'
     if image_info:
         manifest['controller_git_revision']=(image_info['Config'].get('Labels') or {}).get('org.opencontainers.image.revision','unknown')
     manifest['run_state']='PREPARED'
@@ -69,6 +77,7 @@ def main():
     evaluation_log = None
     controller_name='rmua-next-flight-'+run.name
     module='adapters.ros_noetic.pwm_experiment' if args.mode == 'PWM' else 'adapters.ros_noetic.vel_experiment'
+    if args.contract_audit_only:module='adapters.ros_noetic.service_contract_audit'
     readiness_marker='rmua_next_sensor_readiness'
     container_run='/workspace/main/'+str(run.relative_to(root))
     with (run/'simulator.log').open('x') as output:
@@ -119,7 +128,7 @@ def main():
             else:
                 command = [str(root/'tools/enter_env.sh'), 'env', 'OPENBLAS_NUM_THREADS=1',
                         'python3','-m',module,'--run-dir','/workspace/main/'+str(run.relative_to(root))]
-            if args.mode == 'PWM':
+            if args.mode == 'PWM' and not args.contract_audit_only:
                 command.extend(['--levels', args.levels, '--pulse-seconds', str(args.pulse_seconds)])
             if args.motor_pulses:
                 command.append('--motor-pulses')
@@ -136,7 +145,7 @@ def main():
             if args.braking:
                 command.append('--braking')
             manifest['controller_command']=command
-            manifest['run_state']='CONTROL_RUNNING'
+            manifest['run_state']='AUDIT_RUNNING' if args.contract_audit_only else 'CONTROL_RUNNING'
             (run/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
             code = subprocess.call(command, timeout=40)
         except Exception as error:
@@ -177,9 +186,10 @@ def main():
             manifest['source_sha256_after'] = source_hashes(root)
             manifest['source_unchanged'] = manifest['source_sha256_before'] == manifest['source_sha256_after']
             manifest['observer_exit_code'] = code
-            manifest['run_state']='CONTROL_COMPLETE' if code==0 else 'CONTROL_FAILED'
+            manifest['run_state']=('AUDIT_COMPLETE' if args.contract_audit_only else 'CONTROL_COMPLETE') if code==0 else 'FAILED'
             prefix = 'pwm' if args.mode == 'PWM' else 'vel'
             manifest['telemetry'] = [prefix+'_telemetry.jsonl', prefix+'_summary.json', 'simulator.log']
+            if args.contract_audit_only:manifest['telemetry']=['service_contract_audit.json','simulator.log']
             if args.evaluate_truth:
                 manifest['evaluation_only_inputs'] = ['/airsim_node/drone_1/debug/pose_gt',
                                                      '/airsim_node/drone_1/debug/rotor_pwm']
