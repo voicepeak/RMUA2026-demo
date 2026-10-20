@@ -28,6 +28,7 @@
 !evaluation/metrics/__init__.py
 !evaluation/metrics/closed_loop.py
 !evaluation/metrics/braking.py
+!evaluation/metrics/physics_residual.py
 !evaluation/seed_runner/
 !evaluation/seed_runner/__init__.py
 !evaluation/seed_runner/manifest.py
