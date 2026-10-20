@@ -16,8 +16,17 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --se
 
 构建使用本机 Noetic 容器的 ABI，先固定源码副本，再原子替换输出共享库，避免覆盖正在映射的库文件。原生 mock 测试只操作自有假库，验证透传、不同线程重叠与互斥，不依赖或启动模拟器。
 
-记录里的时间来自 CLOCK_MONOTONIC，参数与指令载荷不记录。没有最终 exit 记录时累计调用数视为下界；已有重叠事件仍可用于证明对应调用区间重叠。完整载荷核查另由 `command_trace.py` 执行，缺失记录会如实失败。
+记录里的时间来自 CLOCK_MONOTONIC，不记录 PWM 载荷。没有最终 exit 记录时累计调用数视为下界；已有重叠事件仍可用于证明对应调用区间重叠。完整载荷核查另由 `command_trace.py` 执行，缺失记录会如实失败。
 
 初步两场结果及限制见 `docs/evidence/p0_bridge_concurrency_probe.json`。两场构建不同，不构成冻结对照；不能把插桩结果混入正式可靠性统计。
 
 冻结三组对照已通过 `python3 -m evaluation.seed_runner.bridge_comparison` 运行 18 场，协议为 configs/bridge_comparison_v1.json。开发种子每模式重复三次、轮换组内顺序，每场源码归档与模拟器摘要复核。结果与边界见 docs/bridge_concurrency_investigation.md；原始环境故障未关闭，P1 未验收。
+
+`bash tools/build_bridge_probe.sh lifetime` 构建额外命令存活期包装；默认 concurrency 变体不含这些符号。用 `--bridge-probe lifetime` 显式启动，仅记录对象地址和桥接交接/释放时序，仍透传原调用，不读取载荷或游戏对象。运行后产生 bridge_lifetime_audit.json，只把严格发生在借用后、Command 交接前的释放标记为存活期问题，不声称观察了消费端实际读取或证明物理冲击因果。
+
+```bash
+OPENBLAS_NUM_THREADS=1 python3 -m unittest tests.integration.test_bridge_lifetime_probe -v
+OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.bridge_comparison --protocol configs/bridge_lifetime_comparison_v1.json
+```
+
+已有 8 场冻结对照与一次探索记录见 docs/evidence/p0_bridge_lifetime.json。分析器还可离线执行 `python3 -m evaluation.metrics.bridge_lifetime runs/<run-id>`。复现只用于本地调查，不进入部署镜像。

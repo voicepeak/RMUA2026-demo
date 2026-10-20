@@ -26,11 +26,14 @@ def case_order(protocol):
     if (not isinstance(seeds, list) or not 1 <= len(seeds) <= 4
             or any(type(seed) is not int or seed < 0 for seed in seeds)):
         raise ValueError('invalid development seeds')
+    modes = tuple(protocol.get('modes', MODES))
+    if modes not in (MODES, ('none', 'lifetime')):
+        raise ValueError('unsupported fixed diagnostic comparison')
     cases = []
     for repeat in range(protocol['repeats']):
         for index, seed in enumerate(seeds):
-            offset = (repeat * len(seeds) + index) % len(MODES)
-            for mode in MODES[offset:] + MODES[:offset]:
+            offset = (repeat + index) % len(modes)
+            for mode in modes[offset:] + modes[:offset]:
                 cases.append({'seed': seed, 'repeat': repeat, 'mode': mode})
     return cases
 
@@ -43,6 +46,8 @@ def collect_case(run):
     metrics = json.loads(metrics_path.read_text()) if metrics_path.exists() else None
     trace_path = run / 'command_trace_audit.json'
     trace = json.loads(trace_path.read_text()) if trace_path.exists() else None
+    lifetime_path = run / 'bridge_lifetime_audit.json'
+    lifetime = json.loads(lifetime_path.read_text()) if lifetime_path.exists() else None
     return {'run_directory': str(run), 'run_state': manifest.get('run_state'),
             'controller_fault': summary.get('fault') if summary else 'MISSING_SUMMARY',
             'controller_completed': bool(summary and summary.get('fault') is None
@@ -51,6 +56,7 @@ def collect_case(run):
             'command_trace_audit_exit_code': manifest.get('command_trace_audit_exit_code'),
             'evaluation_valid': metrics.get('evaluation_valid', False) if metrics else False,
             'summary': summary, 'metrics': metrics, 'command_trace': trace,
+            'lifetime_audit': lifetime,
             'bridge_probe_summary': manifest.get('bridge_probe_summary'),
             'source_archive': manifest.get('source_archive'),
             'instrumentation': manifest.get('simulator_runtime_instrumentation')}
@@ -67,7 +73,8 @@ def main():
     simulator = verify_local_simulator(root)
     container_digest = subprocess.check_output(['docker', 'inspect', os.environ.get('RMUA_CONTAINER', 'rmua_noetic'),
                                                 '--format', '{{.Image}}'], text=True).strip()
-    probe = Path(subprocess.check_output(['bash', str(root / 'tools/build_bridge_probe.sh')],
+    variant = 'lifetime' if any(c['mode'] == 'lifetime' for c in planned) else 'concurrency'
+    probe = Path(subprocess.check_output(['bash', str(root / 'tools/build_bridge_probe.sh'), variant],
                                         cwd=root, text=True).strip())
     probe_hash = file_hash(probe)
     batch = root / 'runs/batches' / (datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ_')
@@ -77,6 +84,7 @@ def main():
               'source_archive': archive_sources(root, batch, frozen), 'simulator': simulator,
               'simulator_container_image_digest': container_digest,
               'probe_binary_sha256': probe_hash, 'cases': [], 'status': 'RUNNING',
+              'probe_build_variant': variant,
               'stage_acceptance': False, 'physical_impulse_root_cause_proven': False,
               'official_result': 'UNKNOWN'}
 

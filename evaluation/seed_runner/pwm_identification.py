@@ -35,7 +35,7 @@ def main():
     parser.add_argument('--reference-stall-seconds',type=float,default=0.)
     parser.add_argument('--collective-pulse-pwm',type=float)
     parser.add_argument('--record-pwm-commands',action='store_true',help='opt in for a new observer-compatible standalone image')
-    parser.add_argument('--bridge-probe',choices=('observe','serialize'),help='instrumented simulator, never acceptance eligible')
+    parser.add_argument('--bridge-probe',choices=('observe','serialize','lifetime'),help='instrumented simulator, never acceptance eligible')
     parser.add_argument('--controller-image',help='locally built immutable standalone image; no beta bind mount')
     parser.add_argument('--contract-audit-only',action='store_true',help='read-only service handshake; no controller')
     args = parser.parse_args()
@@ -86,7 +86,8 @@ def main():
     simulator_evidence=verify_local_simulator(root)
     probe_path=None
     if args.bridge_probe:
-        probe_path=Path(subprocess.check_output(['bash',str(root/'tools/build_bridge_probe.sh')],cwd=root,text=True).strip()).resolve()
+        probe_variant='lifetime' if args.bridge_probe=='lifetime' else 'concurrency'
+        probe_path=Path(subprocess.check_output(['bash',str(root/'tools/build_bridge_probe.sh'),probe_variant],cwd=root,text=True).strip()).resolve()
         if not probe_path.is_file() or root/'runs/probe_builds' not in probe_path.parents:
             raise ValueError('invalid owned probe build path')
     config = json.loads((root/'configs/official_baseline.yaml').read_text())
@@ -112,6 +113,7 @@ def main():
         manifest['stage']='P0_INSTRUMENTED_BRIDGE_DIAGNOSIS'
         manifest['acceptance_eligible']=False
         manifest['simulator_runtime_instrumentation']={'mode':args.bridge_probe,
+            'build_variant':probe_variant,
             'source_sha256':file_hash(root/'tools/diagnostics/bridge_probe.cpp'),
             'binary_sha256':file_hash(probe_path),'original_simulator_files_modified':False}
     manifest['simulator_preflight']=simulator_evidence
@@ -279,6 +281,16 @@ def main():
                     manifest['bridge_probe_summary']={key:max(r[key] for r in observations)
                         for key in ('pwm_calls','bridge_calls','overlap_entries','write_errors')}
                     manifest['bridge_probe_summary']['complete_exit_record']=any(r['event']=='exit' for r in observations)
+                    if args.bridge_probe=='lifetime':
+                        required=('parameter_borrow','command_constructed','command_handoff',
+                                  'parameter_free_begin','parameter_free_end','bridge_begin','bridge_end')
+                        counts={event:sum(r['event']==event for r in observations) for event in required}
+                        manifest['bridge_lifetime_event_counts']=counts
+                        if min(counts.values())==0:raise RuntimeError('lifetime hook coverage missing')
+                        from evaluation.metrics.bridge_lifetime import evaluate as evaluate_lifetime
+                        lifetime=evaluate_lifetime(observations)
+                        (run/'bridge_lifetime_audit.json').write_text(json.dumps(lifetime,indent=2)+'\n')
+                        if not lifetime['hook_coverage_valid']:raise RuntimeError('lifetime handoff coverage missing')
                     if (not manifest['original_simulator_files_unchanged'] or
                             min(manifest['bridge_probe_summary'][key] for key in ('pwm_calls','bridge_calls'))==0
                             or manifest['bridge_probe_summary']['write_errors']

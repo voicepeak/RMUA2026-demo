@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "seeds": [2024, 2041],
+  "repeats": 2,
+  "modes": ["none", "lifetime"],
+  "hover_seconds": 14,
+  "stationary_bootstrap": true,
+  "purpose": "Frozen development-only address lifetime diagnosis with uninstrumented controls. No stage acceptance, tuning or claims about downstream payload reads."
+}

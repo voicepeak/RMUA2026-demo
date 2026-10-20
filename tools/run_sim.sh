@@ -10,7 +10,7 @@ DIAGNOSTIC=${3:-}
 [[ -z "$DIAGNOSTIC" || "$DIAGNOSTIC" == diagnostic-bridge-probe ]] || { echo 'Unknown diagnostic mode.' >&2; exit 2; }
 probe_environment=(-e RMUA_BRIDGE_PROBE_ENABLED=0)
 if [[ "$DIAGNOSTIC" == diagnostic-bridge-probe ]]; then
-  [[ "${RMUA_BRIDGE_PROBE_MODE:-}" == observe || "${RMUA_BRIDGE_PROBE_MODE:-}" == serialize ]] || exit 2
+  [[ "${RMUA_BRIDGE_PROBE_MODE:-}" == observe || "${RMUA_BRIDGE_PROBE_MODE:-}" == serialize || "${RMUA_BRIDGE_PROBE_MODE:-}" == lifetime ]] || exit 2
   [[ -n "${RMUA_BRIDGE_PROBE_SO:-}" && -n "${RMUA_BRIDGE_PROBE_OUTPUT:-}" ]] || exit 2
   probe_environment=(-e RMUA_BRIDGE_PROBE_ENABLED=1 -e "RMUA_BRIDGE_PROBE_SO=$RMUA_BRIDGE_PROBE_SO"
                      -e "RMUA_BRIDGE_PROBE_MODE=$RMUA_BRIDGE_PROBE_MODE"
