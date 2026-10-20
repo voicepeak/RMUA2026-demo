@@ -62,3 +62,5 @@
 2026-10-20 迭代 22：增加仅本地使用的两函数桥接时序诊断，源文件/二进制摘要入清单；observe 只记录入口时序，serialize 对这两个调用加互斥。两种模式都会改变运行时序，统一标记 P0_INSTRUMENTED_BRIDGE_DIAGNOSIS、acceptance_eligible=false，不进入部署镜像。原模拟器文件与规则设置运行前后校验一致，参数内容不读取或修改。原生 mock 验证透传及跨线程互斥；实际 observe 场次记录 27 次重叠入口，serialize 为 0，两场控制均完成，但 observe 丢失一条独立指令记录，严格审计判失败，保留该限制。未插桩默认启动的服务握手复核完成。此结果只证明并发存在，不证明悬空指针或物理冲击根因。证据见 docs/evidence/p0_bridge_concurrency_probe.json。
 
 2026-10-20 迭代 23：每场实验启动前保存确定性 source_snapshot.tar.gz 与摘要，保留未提交/未跟踪但未忽略的源码、配置和执行权限；源码在归档中变化则拒绝启动，禁止覆盖旧归档。实际只读服务握手场次保留 201 个文件，独立解包逐个重算 SHA256 与启动清单一致，未发控制或上报业务请求。宿主 66 项单元测试通过；Noetic 63 项通过，3 项依赖 Git 的宿主归档测试跳过（容器无 Git）。快照范围不包含模拟器、容器和忽略的模型/数据，相关二进制仍需单独摘要。证据见 docs/evidence/p0_source_archive.json；P1 保持未验收。
+
+2026-10-20 迭代 24：冻结开发种子 2024/2041，每种子三次原始/observe/serialize 轮换对照，共 18 场；205 文件源码内容、探针构建与原模拟器摘要均一致，19 份源码归档逐文件独立重核。原始 2/6、observe 3/6 触发角速度保护，serialize 0/6；五次故障线上载荷审计均通过且独立姿态确认运动。另两场完成控制但漏录指令，严格审计失败，分别记录而不混称物理故障。三个 observe 故障最近重叠入口在对应姿态消息到达前约 15–20ms，支持继续调查桥接所有权，但不证明 use-after-free 或原始环境修复。证据见 docs/evidence/p0_bridge_frozen_comparison.json 与 docs/bridge_concurrency_investigation.md。P1 仍未通过，下一步验证参数借用/销毁/消费存活期。

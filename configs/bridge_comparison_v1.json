@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "seeds": [2024, 2041],
+  "repeats": 3,
+  "hover_seconds": 14,
+  "stationary_bootstrap": true,
+  "purpose": "Development-only comparison of uninstrumented, observe and serialize bridge timing. No parameter tuning, stage acceptance or causal claim from failure counts alone."
+}

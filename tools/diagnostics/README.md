@@ -18,4 +18,6 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --se
 
 记录里的时间来自 CLOCK_MONOTONIC，参数与指令载荷不记录。没有最终 exit 记录时累计调用数视为下界；已有重叠事件仍可用于证明对应调用区间重叠。完整载荷核查另由 `command_trace.py` 执行，缺失记录会如实失败。
 
-初步两场结果及限制见 `docs/evidence/p0_bridge_concurrency_probe.json`。下一步需要同版本、无调参、包含未插桩对照的重复实验；不能把插桩结果混入正式可靠性统计。
+初步两场结果及限制见 `docs/evidence/p0_bridge_concurrency_probe.json`。两场构建不同，不构成冻结对照；不能把插桩结果混入正式可靠性统计。
+
+冻结三组对照已通过 `python3 -m evaluation.seed_runner.bridge_comparison` 运行 18 场，协议为 configs/bridge_comparison_v1.json。开发种子每模式重复三次、轮换组内顺序，每场源码归档与模拟器摘要复核。结果与边界见 docs/bridge_concurrency_investigation.md；原始环境故障未关闭，P1 未验收。
