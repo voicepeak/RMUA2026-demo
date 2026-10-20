@@ -27,6 +27,7 @@ def main():
     parser.add_argument('--yaw-motion',action='store_true')
     parser.add_argument('--braking',action='store_true')
     parser.add_argument('--snapshot',action='store_true')
+    parser.add_argument('--scene-trace',action='store_true',help='isolated, bounded camera/LiDAR recording')
     parser.add_argument('--controller-image',help='locally built immutable standalone image; no beta bind mount')
     parser.add_argument('--contract-audit-only',action='store_true',help='read-only service handshake; no controller')
     args = parser.parse_args()
@@ -42,7 +43,7 @@ def main():
         parser.error('braking and step are separate experiments')
     if args.contract_audit_only and (args.controller_image or args.hover_seconds or args.motor_pulses
             or args.step or args.sensor_fault or args.gps_bridge or args.yaw_motion or args.braking
-            or args.evaluate_truth or args.snapshot):
+            or args.evaluate_truth or args.snapshot or args.scene_trace):
         parser.error('contract-audit-only cannot be combined with flight/recording modes')
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
     simulator_digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'], text=True).strip()
@@ -58,7 +59,7 @@ def main():
                             'evaluate_truth': args.evaluate_truth, 'step': args.step,
                             'sensor_fault':args.sensor_fault, 'fault_seconds':args.fault_seconds,
                             'gps_bridge':args.gps_bridge,'yaw_motion':args.yaw_motion,'braking':args.braking,
-                            'snapshot':args.snapshot,'controller_image':args.controller_image,
+                            'snapshot':args.snapshot,'scene_trace':args.scene_trace,'controller_image':args.controller_image,
                             'contract_audit_only':args.contract_audit_only}
     run, manifest = prepare_run(root, root/'runs', args.seed, digest, config)
     manifest['stage'] = ('P1_PWM_CLOSED_LOOP' if args.hover_seconds else 'P0_PWM_IDENTIFICATION') if args.mode == 'PWM' else 'P1_VEL_BENCHMARK'
@@ -75,6 +76,8 @@ def main():
     code = 1
     evaluator = None
     evaluation_log = None
+    scene_recorder=None
+    scene_log=None
     controller_name='rmua-next-flight-'+run.name
     module='adapters.ros_noetic.pwm_experiment' if args.mode == 'PWM' else 'adapters.ros_noetic.vel_experiment'
     if args.contract_audit_only:module='adapters.ros_noetic.service_contract_audit'
@@ -119,6 +122,16 @@ def main():
                     time.sleep(.05)
                 if not (run/'truth_ready').exists():
                     raise RuntimeError('hidden truth evaluator failed to receive truth')
+            if args.scene_trace:
+                scene_log=(run/'scene_recorder.log').open('x')
+                scene_recorder=subprocess.Popen([str(root/'tools/enter_env.sh'),'env','OPENBLAS_NUM_THREADS=1',
+                    'python3','-m','adapters.ros_noetic.scene_trace','--run-dir',container_run],
+                    stdout=scene_log,stderr=subprocess.STDOUT)
+                ready_deadline=time.monotonic()+8
+                while not (run/'scene_ready').exists() and time.monotonic()<ready_deadline:
+                    if scene_recorder.poll() is not None:break
+                    time.sleep(.05)
+                if not (run/'scene_ready').exists():raise RuntimeError('scene recorder not ready')
             if image_info:
                 (run/'ros_home').mkdir()
                 command=['docker','run','--rm','--name',controller_name,'--network','host',
@@ -168,6 +181,15 @@ def main():
                 except Exception as error:
                     manifest['controller_cleanup_error']=str(error)
                     code=1
+            if scene_recorder:
+                (run/'scene_stop').touch()
+                try:
+                    manifest['scene_recorder_exit_code']=scene_recorder.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    manifest['scene_recorder_exit_code']='TIMEOUT'
+                    stop_bound_controller(container,'adapters.ros_noetic.scene_trace',container_run)
+                    scene_recorder.terminate()
+                scene_log.close()
             if evaluator:
                 (run/'truth_stop').touch()
                 try:
@@ -201,6 +223,10 @@ def main():
         manifest['evaluation_exit_code']=metric_code
         if code == 0:
             code = metric_code
+        if args.mode=='PWM':
+            manifest['physics_diagnostic_exit_code']=subprocess.call(
+                ['python3','-m','evaluation.metrics.physics_residual',str(run)],cwd=root,
+                stdout=subprocess.DEVNULL)
         manifest['run_state']='EVALUATED' if code==0 else 'FAILED'
         manifest['artifacts']=sorted(p.name for p in run.iterdir() if p.is_file() and p.name!='manifest.json')
         (run/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')

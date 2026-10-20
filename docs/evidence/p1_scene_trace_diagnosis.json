@@ -1,0 +1,448 @@
+{
+  "stage_acceptance": false,
+  "official_result": "UNKNOWN",
+  "cause_identified": false,
+  "cases": [
+    {
+      "name": "seed2024_pwm",
+      "run_directory": "runs/20261020T081649Z_ce7bae74b74c410b8c7afd6cb3d62780",
+      "source_unchanged": true,
+      "fault": "ANGULAR_RATE_LIMIT",
+      "scene_counts": {
+        "front_left": 7,
+        "lidar": 29,
+        "back_left": 7,
+        "back_right": 7,
+        "front_right": 7
+      },
+      "scene_fault": null,
+      "metrics": {
+        "matched_commands": 94,
+        "commands": 94,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 0,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012565538054332137,
+          0.020514712017029525,
+          0.02168419255875051
+        ],
+        "minimum_command_wall_interval_s": 0.011090656975284219,
+        "evaluation_valid": false,
+        "control_mode": "PWM"
+      },
+      "physics_residual": {
+        "matched_intervals": 94,
+        "candidate_intervals": 94,
+        "evaluation_only": true,
+        "cause_identified": false,
+        "motor_model_status": "official_parameters_with_provisional_rps_units_supported_by_local_response",
+        "actuation_latency_verified": false,
+        "official_result": "UNKNOWN",
+        "angular_residual_p50_p95_p99_max_Nm": [
+          0.002917721100798272,
+          0.0078056254700186465,
+          0.24224548194034556,
+          1.8488242744796797
+        ],
+        "largest_angular_discrepancies": [
+          {
+            "stamp": 1792484222.9457831,
+            "interval_s": 0.012000322341918945,
+            "angular_residual_Nm": [
+              0.0006107450206650766,
+              1.8488233091008648,
+              -0.0017879097187222092
+            ],
+            "angular_norm_Nm": 1.8488242744796797,
+            "specific_force_residual_m_s2": [
+              0.050453710835427046,
+              -0.0405015810392797,
+              -5.864744805151437
+            ],
+            "mean_feedback_wrench": [
+              9.326808372568296,
+              0.0004900361847445245,
+              0.0011174194678530425,
+              -0.00057621852562139
+            ],
+            "omega_body_rad_s": [
+              0.23616941273212433,
+              3.670200824737549,
+              -0.010586108081042767
+            ]
+          },
+          {
+            "stamp": 1792484222.9337828,
+            "interval_s": 0.018000364303588867,
+            "angular_residual_Nm": [
+              0.0014773756207306565,
+              0.12130284026029191,
+              0.0014242121001679592
+            ],
+            "angular_norm_Nm": 0.12132019648040837,
+            "specific_force_residual_m_s2": [
+              -0.002348479349166155,
+              0.018769523594528437,
+              -3.712443493658517
+            ],
+            "mean_feedback_wrench": [
+              9.326808372568296,
+              0.0004900361847445245,
+              0.0011174194678530425,
+              -0.00057621852562139
+            ],
+            "omega_body_rad_s": [
+              0.23319341242313385,
+              0.46732884645462036,
+              -0.006610229145735502
+            ]
+          },
+          {
+            "stamp": 1792484222.6787775,
+            "interval_s": 0.009000301361083984,
+            "angular_residual_Nm": [
+              -0.002620904038252378,
+              0.00795915526007131,
+              -0.00043085983704338536
+            ],
+            "angular_norm_Nm": 0.008390645423972193,
+            "specific_force_residual_m_s2": [
+              -0.05344459693878889,
+              -0.04628635197877884,
+              0.13781496811539284
+            ],
+            "mean_feedback_wrench": [
+              9.52905904884902,
+              -0.002170778498899739,
+              -0.001133636697957574,
+              -5.635467946978057e-05
+            ],
+            "omega_body_rad_s": [
+              0.22132135927677155,
+              0.048603542149066925,
+              0.014036192558705807
+            ]
+          },
+          {
+            "stamp": 1792484222.0367637,
+            "interval_s": 0.021000385284423828,
+            "angular_residual_Nm": [
+              0.008029972009161009,
+              -0.0022420248519537393,
+              0.00034097918517800047
+            ],
+            "angular_norm_Nm": 0.008344063321272924,
+            "specific_force_residual_m_s2": [
+              0.019102595979347825,
+              -0.03395861806347966,
+              -0.13068392534344397
+            ],
+            "mean_feedback_wrench": [
+              9.00258176333348,
+              -0.0019308728764285688,
+              -0.0009316822474025876,
+              0.0008784450206095369
+            ],
+            "omega_body_rad_s": [
+              -0.22706036269664764,
+              -0.089804507791996,
+              -0.005649788770824671
+            ]
+          },
+          {
+            "stamp": 1792484222.6607769,
+            "interval_s": 0.021000385284423828,
+            "angular_residual_Nm": [
+              -0.001447768375984254,
+              0.00742552574643824,
+              -0.0023011357184279935
+            ],
+            "angular_norm_Nm": 0.007907571781282948,
+            "specific_force_residual_m_s2": [
+              0.06923123449087143,
+              -0.07229990512132645,
+              0.11854788590103738
+            ],
+            "mean_feedback_wrench": [
+              9.52905904884902,
+              -0.0021707784988997396,
+              -0.001133636697957574,
+              -5.6354679469780566e-05
+            ],
+            "omega_body_rad_s": [
+              0.2390960156917572,
+              0.034312937408685684,
+              0.014541484415531158
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "seed2024_vel",
+      "run_directory": "runs/20261020T081752Z_88e3759cc7da4c2ea5703b37af94e6ea",
+      "source_unchanged": true,
+      "fault": null,
+      "scene_counts": {
+        "front_left": 23,
+        "front_right": 23,
+        "lidar": 103,
+        "back_left": 23,
+        "back_right": 23
+      },
+      "scene_fault": null,
+      "metrics": {
+        "matched_commands": 500,
+        "commands": 500,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 300,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.020001213997602463,
+          0.024487211031373586,
+          0.025882533856201914
+        ],
+        "minimum_command_wall_interval_s": 0.01082192303147167,
+        "state_position_rmse_m": [
+          0.030821941697022445,
+          0.028348974878476672,
+          0.02576845406509496
+        ],
+        "state_attitude_rmse_rad": 0.017875276834405648,
+        "truth_tracking_rmse_m": [
+          0.014356911712726121,
+          0.013412560491622654,
+          0.013895113209504827
+        ],
+        "truth_tracking_max_norm_m": 0.03693494732983269,
+        "truth_yaw_tracking_rmse_rad": 0.014063415371016769,
+        "truth_yaw_tracking_max_abs_rad": 0.02927506389761181,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 1.4720255719909502e-07,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "VEL"
+      }
+    },
+    {
+      "name": "seed1016_pwm",
+      "run_directory": "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871",
+      "source_unchanged": true,
+      "fault": null,
+      "scene_counts": {
+        "front_left": 31,
+        "front_right": 31,
+        "back_left": 31,
+        "back_right": 31,
+        "lidar": 141
+      },
+      "scene_fault": null,
+      "metrics": {
+        "matched_commands": 986,
+        "commands": 986,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 712,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012571388040669262,
+          0.020609962381422518,
+          0.02319772105664014
+        ],
+        "minimum_command_wall_interval_s": 0.010599714005365968,
+        "state_position_rmse_m": [
+          0.022763002789627708,
+          0.021032282741697956,
+          0.024101414944966152
+        ],
+        "state_attitude_rmse_rad": 0.034396752386895275,
+        "truth_tracking_rmse_m": [
+          0.11565558272346596,
+          0.05747219717862364,
+          0.03256389193978034
+        ],
+        "truth_tracking_max_norm_m": 0.34277869595742283,
+        "truth_yaw_tracking_rmse_rad": 0.0371973658197578,
+        "truth_yaw_tracking_max_abs_rad": 0.06854961480761235,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 7.682801813714225e-07,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "PWM",
+        "braking_response": {
+          "valid": true,
+          "certified_deceleration_bound": false,
+          "stop_speed_threshold_m_s": 0.08,
+          "hold_seconds": 0.35,
+          "reference_sensor_stamp": 1792484476.310444,
+          "initial_speed_m_s": 0.5699541704812034,
+          "stop_time_s": 2.040043354034424,
+          "forward_excursion_m": 0.2505994386247554,
+          "effective_average_deceleration_m_s2": 0.6358785321505678,
+          "peak_speed_after_reference_m_s": 0.5699541704812034,
+          "lateral_excursion_m": 0.20715691131377723,
+          "note": "Includes controller/sensing lag; effective average is not an instantaneous lower bound."
+        }
+      },
+      "physics_residual": {
+        "matched_intervals": 985,
+        "candidate_intervals": 985,
+        "evaluation_only": true,
+        "cause_identified": false,
+        "motor_model_status": "official_parameters_with_provisional_rps_units_supported_by_local_response",
+        "actuation_latency_verified": false,
+        "official_result": "UNKNOWN",
+        "angular_residual_p50_p95_p99_max_Nm": [
+          0.0024049647020623227,
+          0.005975414142647272,
+          0.008173830765075224,
+          0.013870169896007794
+        ],
+        "largest_angular_discrepancies": [
+          {
+            "stamp": 1792484472.4223611,
+            "interval_s": 0.009000301361083984,
+            "angular_residual_Nm": [
+              -0.002802499860208812,
+              0.013177952412989805,
+              -0.0032968435932914128
+            ],
+            "angular_norm_Nm": 0.013870169896007794,
+            "specific_force_residual_m_s2": [
+              -0.014820914715528488,
+              -0.002569839358329773,
+              0.133577701016506
+            ],
+            "mean_feedback_wrench": [
+              8.314593776968932,
+              -0.0026254554150731413,
+              0.0030303154733737903,
+              0.0003564154062561803
+            ],
+            "omega_body_rad_s": [
+              -0.014450440183281898,
+              -0.0032775241415947676,
+              0.0177933182567358
+            ]
+          },
+          {
+            "stamp": 1792484476.3494449,
+            "interval_s": 0.021000385284423828,
+            "angular_residual_Nm": [
+              0.0009158910180163658,
+              0.012350716894331001,
+              0.00035392417229273084
+            ],
+            "angular_norm_Nm": 0.012389686294677899,
+            "specific_force_residual_m_s2": [
+              -0.015874812379479408,
+              0.011556682409718633,
+              0.15635931699990735
+            ],
+            "mean_feedback_wrench": [
+              9.058146109070059,
+              -0.0007250909055422361,
+              0.0001123554431733953,
+              -4.9775413453238826e-05
+            ],
+            "omega_body_rad_s": [
+              0.0018599886680021882,
+              0.08004635572433472,
+              0.13003195822238922
+            ]
+          },
+          {
+            "stamp": 1792484476.3584452,
+            "interval_s": 0.009000301361083984,
+            "angular_residual_Nm": [
+              0.0015904930204671357,
+              0.0119520269739516,
+              -6.518023805398502e-05
+            ],
+            "angular_norm_Nm": 0.012057564650361783,
+            "specific_force_residual_m_s2": [
+              0.00502422172576189,
+              0.00964951072819531,
+              0.12639391630410657
+            ],
+            "mean_feedback_wrench": [
+              9.058146109070059,
+              -0.0007250909055422361,
+              0.0001123554431733953,
+              -4.9775413453238826e-05
+            ],
+            "omega_body_rad_s": [
+              0.003444539848715067,
+              0.0957147628068924,
+              0.1299322247505188
+            ]
+          },
+          {
+            "stamp": 1792484471.4233398,
+            "interval_s": 0.003000020980834961,
+            "angular_residual_Nm": [
+              -0.001528007823239746,
+              -0.002065442312570948,
+              -0.011344572308887434
+            ],
+            "angular_norm_Nm": 0.011631860587456154,
+            "specific_force_residual_m_s2": [
+              -0.0405730064958334,
+              -0.005856340518221259,
+              0.20940263843399265
+            ],
+            "mean_feedback_wrench": [
+              9.471966288469988,
+              -0.0011185370775523285,
+              0.005742064624590092,
+              0.000524406495281203
+            ],
+            "omega_body_rad_s": [
+              -0.010960313491523266,
+              -0.15605582296848297,
+              0.010012177750468254
+            ]
+          },
+          {
+            "stamp": 1792484472.3923604,
+            "interval_s": 0.009000301361083984,
+            "angular_residual_Nm": [
+              -0.0006251432660945083,
+              0.011348990688423473,
+              -0.002323363790687511
+            ],
+            "angular_norm_Nm": 0.011601224635914256,
+            "specific_force_residual_m_s2": [
+              -0.04085056483745575,
+              -0.0308877844363451,
+              0.09331309454067593
+            ],
+            "mean_feedback_wrench": [
+              8.314593776968932,
+              -0.0026254554150731413,
+              0.0030303154733737903,
+              0.0003564154062561803
+            ],
+            "omega_body_rad_s": [
+              0.020395176485180855,
+              -0.049140870571136475,
+              0.018579980358481407
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "conclusion": "seed2024 reproduced an actual angular impulse in PWM takeoff; same-seed independent VEL completed; seed1016 combined repeat completed. No collision/event API exists among advertised topics. Retain ground/physics/actuation mismatch hypotheses without attributing a confirmed cause.",
+  "upstream_physics_reference": "https://github.com/microsoft/AirSim/blob/main/AirLib/include/physics/FastPhysicsEngine.hpp",
+  "reference_limit": "Upstream ground contact logic motivates inspection only; this is not evidence that the local official binary uses identical physics."
+}
