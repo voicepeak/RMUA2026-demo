@@ -23,7 +23,7 @@ def decode(row):
     except (KeyError,TypeError):return None
 
 
-def packed(values):return struct.pack('<4f',*values)
+def packed(values):return struct.pack('<4d',*values)
 
 
 def evaluate(telemetry,wire,debug):
@@ -32,7 +32,7 @@ def evaluate(telemetry,wire,debug):
     expected={r['command']['sequence']:r['command'] for r in telemetry}
     # rospy assigns Header.seq during serialization; it is distinct from the
     # sender's logical guard counter. Infer a single offset only from matching
-    # measurement stamps AND bit-exact float32 payloads, then audit every row.
+    # measurement stamps AND bit-exact official float64 payloads, then audit every row.
     offsets=Counter(remote['sequence']-seq for remote in decoded if remote is not None
         for seq,command in expected.items() if abs(remote['stamp']-command['stamp'])<=1e-6
         and packed(remote['values'])==packed(command['values']))
@@ -76,7 +76,10 @@ def evaluate(telemetry,wire,debug):
         candidates=[r for r in debug_rows if command['stamp']-1e-6<=r['stamp']<=end+.08]
         pulses.append({'sequence':command['sequence'],'stamp':command['stamp'],'values':command['values'],
             'next_command_after_sensor_s':end-command['stamp'],'debug_samples_in_window':len(candidates),
-            'debug_samples_matching_pulse':sum(packed(r['values'])==packed(command['values']) for r in candidates)})
+            # Debug values may be float32 internally before their float64 wire
+            # serialization. Do not confuse quantization with a missed pulse.
+            'debug_samples_matching_pulse':int(sum(np.max(np.abs(np.array(r['values'])-command['values']))<=1e-6
+                                              for r in candidates))})
     result['experiment_pulses']=pulses
     return result
 

@@ -47,7 +47,7 @@
             "debug_samples_matching_pulse": 0
           }
         ],
-        "analysis_code_sha256": "59e7ec2876d0732ef95e19b31dd0e842cc78ad356bee9982e270d5aa32233738",
+        "analysis_code_sha256": "078f200379ba3522b3cf8c200edd334a97d5d1de75528f104aa4346c4267aca7",
         "analysis_matches_run_source_snapshot": false
       },
       "runtime_input_audit": {
@@ -102,7 +102,7 @@
           0.06840143203735352
         ],
         "experiment_pulses": [],
-        "analysis_code_sha256": "59e7ec2876d0732ef95e19b31dd0e842cc78ad356bee9982e270d5aa32233738",
+        "analysis_code_sha256": "078f200379ba3522b3cf8c200edd334a97d5d1de75528f104aa4346c4267aca7",
         "analysis_matches_run_source_snapshot": false
       },
       "runtime_input_audit": {
@@ -167,7 +167,7 @@
             "debug_samples_matching_pulse": 5
           }
         ],
-        "analysis_code_sha256": "59e7ec2876d0732ef95e19b31dd0e842cc78ad356bee9982e270d5aa32233738",
+        "analysis_code_sha256": "078f200379ba3522b3cf8c200edd334a97d5d1de75528f104aa4346c4267aca7",
         "analysis_matches_run_source_snapshot": false
       },
       "runtime_input_audit": {
@@ -236,7 +236,7 @@
             "debug_samples_matching_pulse": 0
           }
         ],
-        "analysis_code_sha256": "59e7ec2876d0732ef95e19b31dd0e842cc78ad356bee9982e270d5aa32233738",
+        "analysis_code_sha256": "078f200379ba3522b3cf8c200edd334a97d5d1de75528f104aa4346c4267aca7",
         "analysis_matches_run_source_snapshot": false
       },
       "runtime_input_audit": {
@@ -305,8 +305,8 @@
             "debug_samples_matching_pulse": 0
           }
         ],
-        "analysis_code_sha256": "59e7ec2876d0732ef95e19b31dd0e842cc78ad356bee9982e270d5aa32233738",
-        "analysis_matches_run_source_snapshot": true
+        "analysis_code_sha256": "078f200379ba3522b3cf8c200edd334a97d5d1de75528f104aa4346c4267aca7",
+        "analysis_matches_run_source_snapshot": false
       },
       "runtime_input_audit": {
         "node": "/rmua_next_pwm_identification_47841_1792487373831",
@@ -338,12 +338,13 @@
     "source_unchanged": true,
     "wire_recorder_enabled": false
   },
-  "conclusion": "Header.seq is reassigned by rospy. After aligning its one constant offset from matching stamps and exact float32 payloads, every recorded ROS command matches the sender log. Debug values change at about 20Hz despite about 100Hz message stamps, and can miss or extend a single-command pulse. They are not verified instantaneous applied motor inputs.",
+  "conclusion": "Header.seq is reassigned by rospy. After aligning its one constant offset from matching stamps and exact float64 payloads, every recorded ROS command matches the sender log. Debug values change at about 20Hz despite about 100Hz message stamps, and can miss or extend a single-command pulse. They are not verified instantaneous applied motor inputs.",
   "withdrawn_inference": "Earlier debug-based torque residuals and claims of steady actual actuator output cannot exclude changes in applied PWM. Original observations are preserved.",
   "wire_record_does_not_prove_actuator_consumption": true,
   "full_range_steady_state_curve_verified": false,
   "normal_pwm_ceiling_unchanged": 0.6,
   "physical_impulse_root_cause_resolved": false,
   "stage_acceptance": false,
-  "offline_reanalysis_note": "The first trace analyzer incorrectly equated the logical sender sequence with rospy Header.seq. Raw flight data were not modified. Corrected analysis code hashes and source-snapshot agreement are included per case."
+  "offline_reanalysis_note": "The first trace analyzer incorrectly equated the logical sender sequence with rospy Header.seq. Raw flight data were not modified. Corrected analysis code hashes and source-snapshot agreement are included per case. Official RotorPWM wire fields are float64; corrected comparison uses four IEEE float64 values. Debug pulse comparison permits its observed internal quantization.",
+  "official_pwm_scalar_type": "float64"
 }
