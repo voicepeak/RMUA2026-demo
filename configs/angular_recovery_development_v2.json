@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "seeds": [2030, 2041],
+  "mode": "PWM",
+  "hover_seconds": 14,
+  "braking": false,
+  "yaw_motion": false,
+  "snapshot": false,
+  "angular_recovery": true,
+  "angular_recovery_profile": "fast",
+  "angular_pulse_moments": [0.5, 0.8],
+  "purpose": "Development-only graduated one-command pitch pulses. Stop at first failed case; original simulator, no native instrumentation, unchanged 2.5rad/s and 0.35rad hard bounds."
+}

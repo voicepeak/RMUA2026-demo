@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "seeds": [2030, 2041],
+  "mode": "PWM",
+  "hover_seconds": 14,
+  "braking": false,
+  "yaw_motion": false,
+  "snapshot": false,
+  "stationary_bootstrap": true,
+  "angular_recovery": true,
+  "angular_recovery_profile": "fast",
+  "angular_pulse_moments": [0.5, 0.8],
+  "purpose": "Development-only graduated pitch pulses after resting initialization. Keep v2 failed evidence. Stop at first failed case; uninstrumented original simulator and unchanged 2.5rad/s/0.35rad hard bounds."
+}

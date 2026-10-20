@@ -30,7 +30,9 @@ def main():
     parser.add_argument('--scene-trace',action='store_true',help='isolated, bounded camera/LiDAR recording')
     parser.add_argument('--stationary-bootstrap',action='store_true',help='experimental resting initialization before PWM')
     parser.add_argument('--angular-recovery',action='store_true')
+    parser.add_argument('--angular-recovery-profile',choices=('standard','fast'),default='standard')
     parser.add_argument('--angular-pulse',action='store_true')
+    parser.add_argument('--angular-pulse-moment',type=float)
     parser.add_argument('--isolated-reference',action='store_true')
     parser.add_argument('--reference-stall-seconds',type=float,default=0.)
     parser.add_argument('--collective-pulse-pwm',type=float)
@@ -47,8 +49,12 @@ def main():
         parser.error('stationary bootstrap requires bounded PWM hover')
     if args.angular_recovery and (args.mode!='PWM' or args.hover_seconds<10 or args.gps_bridge or args.sensor_fault):
         parser.error('angular recovery requires >=10s healthy-state PWM hover without GPS/fault modes')
+    if args.angular_recovery_profile!='standard' and not args.angular_recovery:
+        parser.error('fast recovery profile requires angular-recovery')
     if args.angular_pulse and (not args.angular_recovery or args.step or args.braking or args.yaw_motion):
         parser.error('angular pulse requires isolated angular-recovery hover')
+    if args.angular_pulse_moment is not None and (not args.angular_pulse or not 0<args.angular_pulse_moment<=.8):
+        parser.error('angular-pulse-moment requires angular-pulse, moment (0,.8] Nm')
     if args.isolated_reference and (args.mode!='PWM' or args.hover_seconds<10 or args.angular_recovery
                                    or args.gps_bridge or args.sensor_fault):
         parser.error('isolated reference requires >=10s healthy-state PWM hover without other fault modes')
@@ -101,6 +107,8 @@ def main():
                             'contract_audit_only':args.contract_audit_only,
                             'stationary_bootstrap':args.stationary_bootstrap,
                             'angular_recovery':args.angular_recovery,'angular_pulse':args.angular_pulse,
+                            'angular_recovery_profile':args.angular_recovery_profile,
+                            'angular_pulse_moment':args.angular_pulse_moment if args.angular_pulse_moment is not None else (.5 if args.angular_pulse else None),
                             'isolated_reference':args.isolated_reference,
                             'reference_stall_seconds':args.reference_stall_seconds,
                             'collective_pulse_pwm':args.collective_pulse_pwm,
@@ -219,7 +227,10 @@ def main():
                 command.append('--braking')
             if args.stationary_bootstrap:command.append('--stationary-bootstrap')
             if args.angular_recovery:command.append('--angular-recovery')
+            if args.angular_recovery_profile!='standard':
+                command.extend(['--angular-recovery-profile',args.angular_recovery_profile])
             if args.angular_pulse:command.append('--angular-pulse')
+            if args.angular_pulse_moment is not None:command.extend(['--angular-pulse-moment',str(args.angular_pulse_moment)])
             if args.isolated_reference:command.append('--isolated-reference')
             if args.reference_stall_seconds:command.extend(['--reference-stall-seconds',str(args.reference_stall_seconds)])
             if args.collective_pulse_pwm is not None:command.extend(['--collective-pulse-pwm',str(args.collective_pulse_pwm)])

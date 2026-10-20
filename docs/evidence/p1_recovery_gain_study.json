@@ -1,0 +1,386 @@
+{
+  "stage_acceptance": false,
+  "recovery_2_5rad_s_hard_bound_unchanged": true,
+  "fast_profile_default": false,
+  "candidate_validated_for_flight": false,
+  "model_study": {
+    "path": "runs/recovery_model_candidate_20261020/repository_tool_report.json",
+    "sha256": "d315ce9f055f67fdec3525d7afab916d1ff8414fdf5bd486824518debd23a121",
+    "simulation_source_sha256": "4b1a0418c744c72d359eff9d6a463d81fd289a7d5f2d8505b041ae45188059aa",
+    "source_unchanged": true,
+    "assumptions": "Instant 4.2rad/s angular impulse, healthy exact position/orientation sensors delayed 0/20ms, including pre-impulse zero-rate history; provisional mixer, no wind/contact/GPS bias, inertia +-20%, actuator first-order lag20/40ms. Not a certified uncertainty envelope.",
+    "safety_supervisor_exercised": false,
+    "by_gains": [
+      {
+        "attitude_gain_scale": 1.0,
+        "rate_gain_scale": 2.0,
+        "cases": 32,
+        "settled_at_4s": 18,
+        "guard_boundary_failures": 14,
+        "peak_tilt_rad": 0.3549767932131184,
+        "peak_drift_m": 0.8022069826218942
+      },
+      {
+        "attitude_gain_scale": 4.0,
+        "rate_gain_scale": 2.0,
+        "cases": 32,
+        "settled_at_4s": 29,
+        "guard_boundary_failures": 3,
+        "peak_tilt_rad": 0.35288199152531946,
+        "peak_drift_m": 0.21665943624230768
+      },
+      {
+        "attitude_gain_scale": 4.0,
+        "rate_gain_scale": 3.0,
+        "cases": 32,
+        "settled_at_4s": 32,
+        "guard_boundary_failures": 0,
+        "peak_tilt_rad": 0.33969876800307003,
+        "peak_drift_m": 0.22776512304474747
+      },
+      {
+        "attitude_gain_scale": 6.0,
+        "rate_gain_scale": 3.0,
+        "cases": 32,
+        "settled_at_4s": 29,
+        "guard_boundary_failures": 0,
+        "peak_tilt_rad": 0.3321757755324399,
+        "peak_drift_m": 0.15270647025680803
+      }
+    ]
+  },
+  "production_state_machine_model_tests": {
+    "impulse_rad_s": 2.3,
+    "uncertainty_cases": 24,
+    "inertia_scales": [
+      0.8,
+      1.2
+    ],
+    "sensor_delays_s": [
+      0,
+      0.02
+    ],
+    "motor_lags_s": [
+      0.02,
+      0.04
+    ],
+    "directions": [
+      "roll",
+      "pitch",
+      "coupled_roll_pitch"
+    ],
+    "nominal_cases": 6,
+    "interpretation": "Model assumptions, not a certified measured physical envelope."
+  },
+  "failed_staged_batches": [
+    {
+      "directory": "runs/batches/20261020T133416Z_699b7938b4634a9e894c7c4fe3cfe372",
+      "planned_cases": 4,
+      "executed_cases": 1,
+      "stopped_on_first_failure": true,
+      "source_unchanged": true,
+      "all_cases_completed": false,
+      "cases": [
+        {
+          "run_directory": "runs/20261020T133417Z_e25cfc0947634a5c8db0bec5c97a4c79",
+          "profile_effective_from_archived_source": "fast (attitude 4, rate 3)",
+          "profile_label_recorded_at_runtime": null,
+          "fault": "ANGULAR_EXCITATION_NOT_SENT",
+          "pulse_sent": false,
+          "pulse_moment_Nm": 0.5,
+          "wire_trace_valid": false,
+          "missing_sequences": [
+            153
+          ],
+          "final_phase": "RECOVERY_HOLD",
+          "transitions": [
+            {
+              "stamp": 1792503269.6233091,
+              "from": "NORMAL",
+              "to": "ANGULAR_RECOVERY",
+              "rate_rad_s": 0.35194046542388807,
+              "tilt_rad": 0.03526457163217626
+            },
+            {
+              "stamp": 1792503270.60433,
+              "from": "ANGULAR_RECOVERY",
+              "to": "RECOVERY_HOLD",
+              "rate_rad_s": 0.08881119670197539,
+              "tilt_rad": 0.06600565106744587
+            }
+          ],
+          "source_archive": {
+            "path": "source_snapshot.tar.gz",
+            "sha256": "0806ef7ed91ca8a1d61958fc16430a2d0a348c9000253d48ebd44f14ba9a0bc9",
+            "files": 213,
+            "uncompressed_bytes": 683820,
+            "scope": "workspace_sources_not_container_or_simulator_binaries"
+          },
+          "fault_raw_imu": {
+            "stamp": 1792503281.0895536,
+            "acceleration_body": [
+              0.042178209871053696,
+              0.04567168653011322,
+              -9.675675392150879
+            ],
+            "omega_body": [
+              -0.020023953169584274,
+              0.013510992750525475,
+              0.009997394867241383
+            ],
+            "imu_orientation_wxyz": [
+              0.9999607801437378,
+              0.0039685615338385105,
+              -0.00770251639187336,
+              0.0018608540995046496
+            ],
+            "last_gps_stamp": 1792503281.0625532,
+            "gyro_bias_body": [
+              0.0002917961706177131,
+              0.00036402134656296926,
+              -0.00014713191132332073
+            ],
+            "accel_bias_body": [
+              0.017553306748576167,
+              0.013991120920419639,
+              0.002972648579986548
+            ]
+          },
+          "largest_unverified_model_discrepancy": {
+            "stamp": 1792503269.6353092,
+            "interval_s": 0.003000020980834961,
+            "angular_residual_Nm": [
+              0.006007300179194541,
+              -0.036820410701305546,
+              0.008263263453269429
+            ],
+            "angular_norm_Nm": 0.03821140958606349,
+            "specific_force_residual_m_s2": [
+              0.006895104423165321,
+              0.043664807453751564,
+              -1.3008064451988623
+            ],
+            "mean_recorded_pwm_model_wrench": [
+              7.989854405238383,
+              -0.0007877274485968422,
+              0.03725574158209016,
+              -0.004279543921582488
+            ],
+            "omega_body_rad_s": [
+              -0.35600411891937256,
+              -0.03073275461792946,
+              0.04492412507534027
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "directory": "runs/batches/20261020T133650Z_39ebb7112d874a06b51fad8d0b4f5fdd",
+      "planned_cases": 4,
+      "executed_cases": 1,
+      "stopped_on_first_failure": true,
+      "source_unchanged": true,
+      "all_cases_completed": false,
+      "cases": [
+        {
+          "run_directory": "runs/20261020T133650Z_2310cdb270044c7d8c0029bc0114d8f2",
+          "profile_effective_from_archived_source": "fast (attitude 4, rate 3)",
+          "profile_label_recorded_at_runtime": null,
+          "fault": "ANGULAR_RECOVERY_HARD_BOUND",
+          "pulse_sent": true,
+          "pulse_moment_Nm": 0.5,
+          "wire_trace_valid": true,
+          "missing_sequences": [],
+          "final_phase": "ANGULAR_RECOVERY",
+          "transitions": [
+            {
+              "stamp": 1792503428.1136866,
+              "from": "NORMAL",
+              "to": "ANGULAR_RECOVERY",
+              "rate_rad_s": 1.151871812750404,
+              "tilt_rad": 0.0362225605641764
+            }
+          ],
+          "source_archive": {
+            "path": "source_snapshot.tar.gz",
+            "sha256": "de37eeef8be5692f73d24b31404a863b29529d613a2cc7dac77e8105daad8012",
+            "files": 215,
+            "uncompressed_bytes": 689486,
+            "scope": "workspace_sources_not_container_or_simulator_binaries"
+          },
+          "fault_raw_imu": {
+            "stamp": 1792503428.2846901,
+            "acceleration_body": [
+              0.06819142401218414,
+              0.006979180965572596,
+              -14.21384334564209
+            ],
+            "omega_body": [
+              -3.4717057133093476e-05,
+              2.862081289291382,
+              0.013868838548660278
+            ],
+            "imu_orientation_wxyz": [
+              0.9992091059684753,
+              -0.002344059059396386,
+              0.03898261487483978,
+              0.007489202544093132
+            ],
+            "last_gps_stamp": 1792503428.233689,
+            "gyro_bias_body": [
+              -0.00034080530310496616,
+              -0.0004192713090605154,
+              0.008631433490004595
+            ],
+            "accel_bias_body": [
+              -0.005011669434157681,
+              0.004524005732126795,
+              0.0016568574996819914
+            ]
+          },
+          "largest_unverified_model_discrepancy": {
+            "stamp": 1792503428.2846901,
+            "interval_s": 0.009000062942504883,
+            "angular_residual_Nm": [
+              -0.0018308101516938727,
+              1.992224131953877,
+              0.0018050443546064174
+            ],
+            "angular_norm_Nm": 1.9922257909158572,
+            "specific_force_residual_m_s2": [
+              0.012813292443752289,
+              -0.04810188780538738,
+              -8.583876967418371
+            ],
+            "mean_recorded_pwm_model_wrench": [
+              8.65751677752598,
+              0.004298412428382359,
+              -0.12012975692585104,
+              -0.0024118363646720292
+            ],
+            "omega_body_rad_s": [
+              -3.4717057133093476e-05,
+              2.862081289291382,
+              0.013868838548660278
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "official_result": "UNKNOWN",
+  "standard_profile_recheck": {
+    "run_directory": "runs/20261020T133948Z_6a4f1e8cf3444141848f2fb8df36b82b",
+    "state": "EVALUATED",
+    "summary": {
+      "commands": 960,
+      "fault": null,
+      "levels": [
+        0.1,
+        0.15,
+        0.2,
+        0.25,
+        0.3,
+        0.35,
+        0.4
+      ],
+      "motor_pulses": false,
+      "hover_seconds": 14.0,
+      "step": false,
+      "reference_clock": "IMU",
+      "gps_rejections": {
+        "NOT_INITIALIZED": 1
+      },
+      "injection": null,
+      "graph_monitor": {
+        "successful_checks": 136,
+        "fault": null,
+        "max_rpc_wall_s": 0.016130514908581972,
+        "stale_after_wall_s": 0.3
+      },
+      "gps_bridge_enabled": false,
+      "recovery_transitions": [],
+      "yaw_motion": false,
+      "braking": false,
+      "angular_recovery_enabled": true,
+      "angular_recovery_phase": "RECOVERY_HOLD",
+      "angular_recovery_profile": "standard",
+      "angular_recovery_transitions": [
+        {
+          "stamp": 1792503606.385139,
+          "from": "NORMAL",
+          "to": "ANGULAR_RECOVERY",
+          "rate_rad_s": 1.1595678346332692,
+          "tilt_rad": 0.030359614047619284
+        },
+        {
+          "stamp": 1792503606.8441486,
+          "from": "ANGULAR_RECOVERY",
+          "to": "RECOVERY_HOLD",
+          "rate_rad_s": 0.14177800167141824,
+          "tilt_rad": 0.05372910827358827
+        }
+      ],
+      "angular_pulse_sent": true,
+      "angular_pulse_moment_Nm": 0.5,
+      "reference_worker": null,
+      "reference_hold_transitions": [],
+      "collective_excitation": null,
+      "pulse_seconds": 0.3,
+      "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+      "official_result": "UNKNOWN",
+      "host_scene_stop_required": true
+    },
+    "wire_trace_valid": true,
+    "source_archive": {
+      "path": "source_snapshot.tar.gz",
+      "sha256": "9e70fa357f527a55e689ef27f7a5588b786c51cfbacf8ca4fb09ad930120f814",
+      "files": 215,
+      "uncompressed_bytes": 691692,
+      "scope": "workspace_sources_not_container_or_simulator_binaries"
+    },
+    "pulse_commands": 1,
+    "recovery_time_to_hold_s": 0.45900964736938477,
+    "peak_raw_rate_rad_s": 1.1739976102415437,
+    "truth_peak_tilt_trigger_to_hold_plus_half_second_rad": 0.0934418005367277,
+    "truth_peak_displacement_from_trigger_m": 0.11017029017636348,
+    "metrics": {
+      "matched_commands": 960,
+      "commands": 960,
+      "match_fraction": 1.0,
+      "settled_after_wall_s": 4.0,
+      "settled_samples": 689,
+      "command_timing_measurement": "after_publish",
+      "official_result": "UNKNOWN",
+      "truth_use": "offline_evaluation_only",
+      "command_wall_interval_p50_p95_p99_s": [
+        0.012596059939824045,
+        0.021626974130049346,
+        0.025159060242585827
+      ],
+      "minimum_command_wall_interval_s": 0.010596067062579095,
+      "state_position_rmse_m": [
+        0.01804793137991985,
+        0.020815404441850045,
+        0.016351670960865816
+      ],
+      "state_attitude_rmse_rad": 0.014234480063216343,
+      "truth_tracking_rmse_m": [
+        0.05167983781972297,
+        0.047271519374941666,
+        0.040189679876019
+      ],
+      "truth_tracking_max_norm_m": 0.1428750898171235,
+      "truth_yaw_tracking_rmse_rad": 0.013239771955377353,
+      "truth_yaw_tracking_max_abs_rad": 0.030977125976581643,
+      "imu_orientation_unit_valid_fraction": 1.0,
+      "imu_orientation_truth_rmse_rad": 5.886943449424381e-07,
+      "imu_orientation_fused_in_estimator": false,
+      "evaluation_valid": true,
+      "control_mode": "PWM"
+    }
+  },
+  "independently_rehashed_archives": 5,
+  "conclusion": "The fast profile improved the selected idealized model cases but failed graduated physical testing; 0.8Nm cases were never attempted. It remains explicit and experimental; standard gains and all hard limits are retained. The standard 0.5Nm recheck completed and held. Neither one standard success nor the fast failure establishes universal recovery or identifies the native bridge as the cause."
+}

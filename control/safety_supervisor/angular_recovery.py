@@ -16,10 +16,13 @@ class AngularDecision:
     hold_position: tuple
     hold_yaw: float
     rate_gain_scale: float
+    attitude_gain_scale: float
 
 
 class AngularRecovery:
-    def __init__(self):
+    def __init__(self,profile='standard'):
+        if profile not in ('standard','fast'):raise ValueError('unknown angular recovery profile')
+        self.profile=profile
         self.phase='NORMAL'
         self.position=None
         self.yaw=0.
@@ -69,4 +72,5 @@ class AngularRecovery:
             self.transitions.append({'stamp':stamp,'from':previous,'to':self.phase,
                 'rate_rad_s':rate,'tilt_rad':tilt})
         return AngularDecision(self.phase,self.position or state.position_ned,self.yaw,
-                               2. if self.phase=='ANGULAR_RECOVERY' else 1.)
+                               (3. if self.profile=='fast' else 2.) if self.phase=='ANGULAR_RECOVERY' else 1.,
+                               4. if self.phase=='ANGULAR_RECOVERY' and self.profile=='fast' else 1.)

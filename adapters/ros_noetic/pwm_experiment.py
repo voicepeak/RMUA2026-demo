@@ -42,7 +42,8 @@ def motor_pattern():
 def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0, step=False,
                    sensor_fault=None, fault_seconds=.15, gps_bridge=False, yaw_motion=False,braking=False,
                    stationary_bootstrap=False,angular_recovery=False,angular_pulse=False,
-                   isolated_reference=False,reference_stall_seconds=0.,collective_pulse_pwm=None):
+                   isolated_reference=False,reference_stall_seconds=0.,collective_pulse_pwm=None,
+                   angular_pulse_moment=.5,angular_recovery_profile='standard'):
     import rospy
     import rosgraph
     from airsim_ros.msg import RotorPWM
@@ -64,7 +65,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
         publisher = None
         monitor = None
         recovery = HoverRecovery()
-        angular_supervisor=AngularRecovery()
+        angular_supervisor=AngularRecovery(angular_recovery_profile)
         pulse_sent=False
         reference_worker=None
         reference_hold=ReferenceHold()
@@ -167,6 +168,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     allow_integral = not previous_saturated
                     phase = 'NORMAL'
                     rate_gain_scale=1.
+                    attitude_gain_scale=1.
                     if reference_worker is not None:
                         reference_worker.submit(state.metadata.stamp,state.metadata.epoch,sim_elapsed)
                         packet,reason=reference_worker.snapshot(state.metadata.stamp,state.metadata.epoch)
@@ -189,6 +191,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                         velocity=acceleration=(0.,0.,0.)
                         yaw_command,yaw_rate=angular_decision.hold_yaw,0.
                         rate_gain_scale=angular_decision.rate_gain_scale
+                        attitude_gain_scale=angular_decision.attitude_gain_scale
                         allow_integral=False
                         phase=angular_decision.phase
                     dt = state.metadata.stamp-previous_control_stamp
@@ -199,11 +202,11 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                         raise RuntimeError('CONTROL_STATE_GAP')
                     wrench = controller.step(state, reference, velocity, acceleration,
                                              yaw_command, dt, allow_integral,yaw_rate=yaw_rate,
-                                             rate_gain_scale=rate_gain_scale)
+                                             rate_gain_scale=rate_gain_scale,attitude_gain_scale=attitude_gain_scale)
                     moment=np.array(wrench.moment)
                     pulse_this_tick=(angular_pulse and not pulse_sent and sim_elapsed>=5.
                                      and phase=='NORMAL')
-                    if pulse_this_tick:moment[1]+=.5
+                    if pulse_this_tick:moment[1]+=angular_pulse_moment
                     allocation = allocator.allocate(wrench.thrust, moment)
                     collective_values=collective_pulse.request(state,sim_elapsed) if collective_pulse else None
                     if collective_values is not None:
@@ -217,6 +220,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                                'yaw_reference':yaw_command,'yaw_rate_reference':yaw_rate}
                     details['angular_pulse_applied']=pulse_this_tick
                     details['rate_gain_scale']=rate_gain_scale
+                    details['attitude_gain_scale']=attitude_gain_scale
                     details['moment_requested_including_experiment_pulse']=moment.tolist()
                     details['collective_pulse_applied']=collective_values is not None
                 else:
@@ -251,6 +255,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
             if collective_pulse is not None and not collective_pulse.sent:
                 raise RuntimeError('COLLECTIVE_EXCITATION_NOT_SENT')
             if angular_pulse and not pulse_sent:raise RuntimeError('ANGULAR_EXCITATION_NOT_SENT')
+            if angular_pulse and angular_supervisor.phase!='RECOVERY_HOLD':
+                raise RuntimeError('ANGULAR_RECOVERY_NOT_SETTLED')
         except Exception as error:
             fault = str(error)
             failed_wall=time.monotonic()
@@ -280,8 +286,11 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
               'yaw_motion':yaw_motion,
               'braking':braking,
               'angular_recovery_enabled':angular_recovery,
+              'angular_recovery_phase':angular_supervisor.phase,
+              'angular_recovery_profile':angular_recovery_profile,
               'angular_recovery_transitions':angular_supervisor.transitions,
               'angular_pulse_sent':pulse_sent,
+              'angular_pulse_moment_Nm':angular_pulse_moment if angular_pulse else None,
               'reference_worker':reference_worker.summary() if reference_worker else None,
               'reference_hold_transitions':reference_hold.transitions,
               'collective_excitation':None if collective_pulse is None else vars(collective_pulse),
@@ -308,7 +317,9 @@ def main():
     parser.add_argument('--braking',action='store_true')
     parser.add_argument('--stationary-bootstrap',action='store_true')
     parser.add_argument('--angular-recovery',action='store_true')
+    parser.add_argument('--angular-recovery-profile',choices=('standard','fast'),default='standard')
     parser.add_argument('--angular-pulse',action='store_true',help='single bounded pitch moment pulse at 5s')
+    parser.add_argument('--angular-pulse-moment',type=float)
     parser.add_argument('--isolated-reference',action='store_true')
     parser.add_argument('--reference-stall-seconds',type=float,default=0.)
     parser.add_argument('--collective-pulse-pwm',type=float)
@@ -328,8 +339,12 @@ def main():
         parser.error('local sensor injection requires >=8s hover and duration (0,1]')
     if args.angular_recovery and (args.hover_seconds<10 or args.gps_bridge or args.sensor_fault):
         parser.error('angular recovery requires >=10s healthy-state hover without GPS/fault modes')
+    if args.angular_recovery_profile!='standard' and not args.angular_recovery:
+        parser.error('fast recovery profile requires angular-recovery')
     if args.angular_pulse and (not args.angular_recovery or args.step or args.braking or args.yaw_motion):
         parser.error('angular pulse requires isolated angular-recovery hover')
+    if args.angular_pulse_moment is not None and (not args.angular_pulse or not 0<args.angular_pulse_moment<=.8):
+        parser.error('angular-pulse-moment requires angular-pulse, moment (0,.8] Nm')
     if args.isolated_reference and (args.hover_seconds<10 or args.angular_recovery or args.gps_bridge or args.sensor_fault):
         parser.error('isolated reference requires >=10s healthy-state hover without other fault modes')
     if args.reference_stall_seconds and (not args.isolated_reference or not .1<=args.reference_stall_seconds<=1.):
@@ -341,7 +356,9 @@ def main():
     return run_experiment(args.run_dir, levels, args.pulse_seconds, args.motor_pulses, args.hover_seconds, args.step,
                           args.sensor_fault,args.fault_seconds,args.gps_bridge,args.yaw_motion,args.braking,
                           args.stationary_bootstrap,args.angular_recovery,args.angular_pulse,
-                          args.isolated_reference,args.reference_stall_seconds,args.collective_pulse_pwm)
+                          args.isolated_reference,args.reference_stall_seconds,args.collective_pulse_pwm,
+                          .5 if args.angular_pulse_moment is None else args.angular_pulse_moment,
+                          args.angular_recovery_profile)
 
 
 if __name__ == '__main__':
