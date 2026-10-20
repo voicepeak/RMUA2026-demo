@@ -1,0 +1,24 @@
+{
+  "run_directory": "runs/20261020T102856Z_fabdf8e003aa46089f4dfcbd6e08e765",
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "bd20ac77e525cbeaa21f158f4acfea1298e1ace21cd1b7a51088323e048ab654",
+    "files": 201,
+    "uncompressed_bytes": 592382,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "archived_files_independently_rehashed": 201,
+  "archive_matches_source_sha256_before": true,
+  "source_unchanged": true,
+  "run_state": "AUDIT_COMPLETE",
+  "service_request_sent": false,
+  "flight_control_started": false,
+  "archive_scope": "Workspace source/config files, including uncommitted and untracked nonignored files. Simulator, container and ignored model/dataset bytes are not archived; their recorded hashes/digests remain separate.",
+  "tests": {
+    "host_unit_tests_passed": 66,
+    "container_unit_tests_passed": 63,
+    "container_host_only_tests_skipped": 3,
+    "skip_reason": "The ROS runtime container has no git; source provenance is collected on the host."
+  },
+  "stage_acceptance": false
+}
