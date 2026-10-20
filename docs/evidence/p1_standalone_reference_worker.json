@@ -1,0 +1,326 @@
+{
+  "image_tag": "rmua-next:e14b265",
+  "image_digest": "sha256:49757b89b0bf146db60cd5a02c7635cb47b1a6ae895c52d8c723e76ba7432342",
+  "image_size_bytes": 1163233889,
+  "revision": "e14b2650d14a79a3182ae5eb16dc5885a94db4ac",
+  "packaged_unit_tests_passed": 60,
+  "meter_report_md5": "40e1aa17dd96ff6a8c88396581d6a491",
+  "default_observer_smoke": {
+    "image": "sha256:49757b89b0bf146db60cd5a02c7635cb47b1a6ae895c52d8c723e76ba7432342",
+    "observed_seconds": 3,
+    "running": true,
+    "network_mode": "none",
+    "mounts": [],
+    "command": [
+      "python3",
+      "-m",
+      "adapters.ros_noetic.runtime_observer"
+    ],
+    "logs_tail": "RMUA development observer: competition acceptance pending; no control published.\nUnable to register with master node [http://localhost:11311]: master may not be running yet. Will keep trying.\n",
+    "competition_launch_verified": false
+  },
+  "flight_cases": [
+    {
+      "seed": 2033,
+      "run_directory": "runs/20261020T085112Z_fe73e3a2664b44a9b33235316026607c",
+      "source_unchanged": true,
+      "controller_source_kind": "immutable_docker_image",
+      "controller_command": [
+        "docker",
+        "run",
+        "--rm",
+        "--name",
+        "rmua-next-flight-20261020T085112Z_fe73e3a2664b44a9b33235316026607c",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "-e",
+        "ROS_HOME=/rmua-run/ros_home",
+        "--mount",
+        "type=bind,source=/home/tianbot/RUMA-by-helinjun/main/runs/20261020T085112Z_fe73e3a2664b44a9b33235316026607c,target=/rmua-run",
+        "sha256:49757b89b0bf146db60cd5a02c7635cb47b1a6ae895c52d8c723e76ba7432342",
+        "python3",
+        "-m",
+        "adapters.ros_noetic.pwm_experiment",
+        "--run-dir",
+        "/rmua-run",
+        "--levels",
+        ".10,.15,.20,.25,.30,.35,.40",
+        "--pulse-seconds",
+        "0.3",
+        "--hover-seconds",
+        "14.0",
+        "--step",
+        "--stationary-bootstrap",
+        "--isolated-reference",
+        "--reference-stall-seconds",
+        "0.5"
+      ],
+      "controller_git_revision": "e14b2650d14a79a3182ae5eb16dc5885a94db4ac",
+      "image_digest": "sha256:49757b89b0bf146db60cd5a02c7635cb47b1a6ae895c52d8c723e76ba7432342",
+      "summary": {
+        "commands": 539,
+        "fault": "ANGULAR_RATE_LIMIT",
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 14.0,
+        "step": true,
+        "reference_clock": "IMU",
+        "gps_rejections": {},
+        "injection": null,
+        "graph_monitor": {
+          "successful_checks": 80,
+          "fault": null,
+          "max_rpc_wall_s": 0.014877446927130222,
+          "stale_after_wall_s": 0.3
+        },
+        "gps_bridge_enabled": false,
+        "recovery_transitions": [],
+        "yaw_motion": false,
+        "braking": false,
+        "angular_recovery_enabled": false,
+        "angular_recovery_transitions": [],
+        "angular_pulse_sent": false,
+        "reference_worker": {
+          "pid": 59,
+          "submitted": 710,
+          "requests_dropped": 6,
+          "received": 616,
+          "stale_observations": 34,
+          "max_compute_wall_s": 0.5011094480287284,
+          "stall_observed": true,
+          "fault": null,
+          "sensor_ttl_s": 0.08,
+          "wall_ttl_s": 0.15,
+          "alive_after_close": false
+        },
+        "reference_hold_transitions": [
+          {
+            "stamp": 1792486291.2143495,
+            "from": "NORMAL",
+            "to": "REFERENCE_HOLD",
+            "reason": "REFERENCE_STALE"
+          }
+        ],
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 539,
+        "commands": 539,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 263,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.012910269026178867,
+          0.02194988441769965,
+          0.02600099801667966
+        ],
+        "minimum_command_wall_interval_s": 0.010639711050316691,
+        "state_position_rmse_m": [
+          0.021203159948955948,
+          0.014039132714890037,
+          0.014689942565554712
+        ],
+        "state_attitude_rmse_rad": 0.023515012333196077,
+        "truth_tracking_rmse_m": [
+          0.24942958904161208,
+          0.08314799296143834,
+          0.034441914901890844
+        ],
+        "truth_tracking_max_norm_m": 0.48940973879606464,
+        "truth_yaw_tracking_rmse_rad": 0.02324869829677948,
+        "truth_yaw_tracking_max_abs_rad": 0.033421425032730934,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 2.3088436651991957e-07,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      },
+      "fault_observation": {
+        "reason": "ANGULAR_RATE_LIMIT",
+        "wall_elapsed_at_last_read": 8.025069706025533,
+        "raw": {
+          "stamp": 1792486292.1443694,
+          "acceleration_body": [
+            0.11731801182031631,
+            -0.0449114553630352,
+            -13.426521301269531
+          ],
+          "omega_body": [
+            -0.008200141601264477,
+            2.2098286151885986,
+            0.007481338921934366
+          ],
+          "imu_orientation_wxyz": [
+            0.9998140931129456,
+            0.002705950755625963,
+            0.009846029803156853,
+            0.01635856367647648
+          ],
+          "last_gps_stamp": 1792486292.1353693,
+          "gyro_bias_body": [
+            -0.00044230081550366857,
+            -0.0002571949818296953,
+            0.008031738793237628
+          ],
+          "accel_bias_body": [
+            -0.005515000837762402,
+            -0.01573724139064639,
+            0.0031506933940243353
+          ]
+        }
+      }
+    },
+    {
+      "seed": 2034,
+      "run_directory": "runs/20261020T085313Z_54d9cec5ce904b1aa47e47559f75d4dc",
+      "source_unchanged": true,
+      "controller_source_kind": "immutable_docker_image",
+      "controller_command": [
+        "docker",
+        "run",
+        "--rm",
+        "--name",
+        "rmua-next-flight-20261020T085313Z_54d9cec5ce904b1aa47e47559f75d4dc",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "-e",
+        "ROS_HOME=/rmua-run/ros_home",
+        "--mount",
+        "type=bind,source=/home/tianbot/RUMA-by-helinjun/main/runs/20261020T085313Z_54d9cec5ce904b1aa47e47559f75d4dc,target=/rmua-run",
+        "sha256:49757b89b0bf146db60cd5a02c7635cb47b1a6ae895c52d8c723e76ba7432342",
+        "python3",
+        "-m",
+        "adapters.ros_noetic.pwm_experiment",
+        "--run-dir",
+        "/rmua-run",
+        "--levels",
+        ".10,.15,.20,.25,.30,.35,.40",
+        "--pulse-seconds",
+        "0.3",
+        "--hover-seconds",
+        "14.0",
+        "--step",
+        "--stationary-bootstrap",
+        "--isolated-reference",
+        "--reference-stall-seconds",
+        "0.5"
+      ],
+      "controller_git_revision": "e14b2650d14a79a3182ae5eb16dc5885a94db4ac",
+      "image_digest": "sha256:49757b89b0bf146db60cd5a02c7635cb47b1a6ae895c52d8c723e76ba7432342",
+      "summary": {
+        "commands": 956,
+        "fault": null,
+        "levels": [
+          0.1,
+          0.15,
+          0.2,
+          0.25,
+          0.3,
+          0.35,
+          0.4
+        ],
+        "motor_pulses": false,
+        "hover_seconds": 14.0,
+        "step": true,
+        "reference_clock": "IMU",
+        "gps_rejections": {},
+        "injection": null,
+        "graph_monitor": {
+          "successful_checks": 138,
+          "fault": null,
+          "max_rpc_wall_s": 0.01365629502106458,
+          "stale_after_wall_s": 0.3
+        },
+        "gps_bridge_enabled": false,
+        "recovery_transitions": [],
+        "yaw_motion": false,
+        "braking": false,
+        "angular_recovery_enabled": false,
+        "angular_recovery_transitions": [],
+        "angular_pulse_sent": false,
+        "reference_worker": {
+          "pid": 59,
+          "submitted": 1216,
+          "requests_dropped": 3,
+          "received": 1128,
+          "stale_observations": 35,
+          "max_compute_wall_s": 0.5006855450337753,
+          "stall_observed": true,
+          "fault": null,
+          "sensor_ttl_s": 0.08,
+          "wall_ttl_s": 0.15,
+          "alive_after_close": false
+        },
+        "reference_hold_transitions": [
+          {
+            "stamp": 1792486411.6748958,
+            "from": "NORMAL",
+            "to": "REFERENCE_HOLD",
+            "reason": "REFERENCE_STALE"
+          }
+        ],
+        "pulse_seconds": 0.3,
+        "stage": "LOCAL_PWM_CLOSED_LOOP_HOVER",
+        "official_result": "UNKNOWN",
+        "host_scene_stop_required": true
+      },
+      "metrics": {
+        "matched_commands": 956,
+        "commands": 956,
+        "match_fraction": 1.0,
+        "settled_after_wall_s": 4.0,
+        "settled_samples": 675,
+        "command_timing_measurement": "after_publish",
+        "official_result": "UNKNOWN",
+        "truth_use": "offline_evaluation_only",
+        "command_wall_interval_p50_p95_p99_s": [
+          0.0126663229893893,
+          0.0219599544419907,
+          0.02612604631343857
+        ],
+        "minimum_command_wall_interval_s": 0.010560838039964437,
+        "state_position_rmse_m": [
+          0.015840345922884067,
+          0.021561021865093847,
+          0.018410136222108395
+        ],
+        "state_attitude_rmse_rad": 0.01273456083857721,
+        "truth_tracking_rmse_m": [
+          0.1432516620953264,
+          0.03710073354402781,
+          0.04074680619055917
+        ],
+        "truth_tracking_max_norm_m": 0.40750152939843515,
+        "truth_yaw_tracking_rmse_rad": 0.013071137909837889,
+        "truth_yaw_tracking_max_abs_rad": 0.02108523449853328,
+        "imu_orientation_unit_valid_fraction": 1.0,
+        "imu_orientation_truth_rmse_rad": 2.524289350653845e-06,
+        "imu_orientation_fused_in_estimator": false,
+        "evaluation_valid": true,
+        "control_mode": "PWM"
+      }
+    }
+  ],
+  "stage_acceptance": false,
+  "competition_ready": false,
+  "physical_transient_resolved": false,
+  "conclusion": "Standalone worker stall detection and local hold executed in both cases. Seed2033 subsequently hit the preserved unmodeled angular fault around 8.03s; seed2034 completed 14s. No host source or beta was mounted in either controller container."
+}

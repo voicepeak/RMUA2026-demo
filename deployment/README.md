@@ -22,3 +22,5 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --se
 ```
 
 宿主负责新建和关闭本地模拟器，镜像默认入口仍是未验收的只读观察器；该测试不构成比赛部署与 30s 出发验收。
+
+2026-10-20：`bash tools/build_image.sh` 现在自动检查镜像大小并执行打包后的单元测试。干净提交 e14b265 的独立镜像内 60 项测试通过，约 1.163GB；独立参考工作进程及 500ms 卡顿保持已在只挂载本轮输出目录的容器内运行。seed2033 保持后再次出现未解释角速度冲击，seed2034 完成，因此仍不是参赛就绪版本。证据见 docs/evidence/p1_standalone_reference_worker.json。
