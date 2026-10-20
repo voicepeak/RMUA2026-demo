@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import subprocess
 import time
-from evaluation.seed_runner.manifest import prepare_run, source_hashes
+from evaluation.seed_runner.manifest import prepare_run, source_hashes,file_hash
 from evaluation.seed_runner.simulator_preflight import verify_local_simulator
 from evaluation.seed_runner.controller_cleanup import stop_bound_controller
 
@@ -35,6 +35,7 @@ def main():
     parser.add_argument('--reference-stall-seconds',type=float,default=0.)
     parser.add_argument('--collective-pulse-pwm',type=float)
     parser.add_argument('--record-pwm-commands',action='store_true',help='opt in for a new observer-compatible standalone image')
+    parser.add_argument('--bridge-probe',choices=('observe','serialize'),help='instrumented simulator, never acceptance eligible')
     parser.add_argument('--controller-image',help='locally built immutable standalone image; no beta bind mount')
     parser.add_argument('--contract-audit-only',action='store_true',help='read-only service handshake; no controller')
     args = parser.parse_args()
@@ -59,6 +60,10 @@ def main():
         parser.error('collective pulse requires isolated >=10s healthy-state PWM hover, input in [0,1]')
     if args.record_pwm_commands and (not args.evaluate_truth or args.mode!='PWM'):
         parser.error('record-pwm-commands requires evaluated PWM experiment')
+    if args.bridge_probe and (args.mode!='PWM' or not args.evaluate_truth or args.hover_seconds<10
+            or args.controller_image or args.sensor_fault or args.gps_bridge or args.angular_recovery
+            or args.angular_pulse or args.isolated_reference or args.collective_pulse_pwm is not None):
+        parser.error('bridge probe requires evaluated healthy-state workspace PWM hover without other fault modes')
     if args.gps_bridge and (args.mode != 'PWM' or args.hover_seconds < 3):
         parser.error('GPS bridge is only available in bounded PWM hover')
     if (args.braking or args.yaw_motion or args.step) and args.hover_seconds < 10:
@@ -69,7 +74,7 @@ def main():
             or args.step or args.sensor_fault or args.gps_bridge or args.yaw_motion or args.braking
             or args.evaluate_truth or args.snapshot or args.scene_trace or args.stationary_bootstrap
             or args.angular_recovery or args.angular_pulse or args.isolated_reference or args.reference_stall_seconds
-            or args.collective_pulse_pwm is not None or args.record_pwm_commands):
+            or args.collective_pulse_pwm is not None or args.record_pwm_commands or args.bridge_probe):
         parser.error('contract-audit-only cannot be combined with flight/recording modes')
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
     simulator_digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'], text=True).strip()
@@ -79,6 +84,11 @@ def main():
     digest=image_info['Id'] if image_info else simulator_digest
     record_commands=args.mode=='PWM' and (not image_info or args.record_pwm_commands)
     simulator_evidence=verify_local_simulator(root)
+    probe_path=None
+    if args.bridge_probe:
+        probe_path=Path(subprocess.check_output(['bash',str(root/'tools/build_bridge_probe.sh')],cwd=root,text=True).strip()).resolve()
+        if not probe_path.is_file() or root/'runs/probe_builds' not in probe_path.parents:
+            raise ValueError('invalid owned probe build path')
     config = json.loads((root/'configs/official_baseline.yaml').read_text())
     config['control_mode'] = args.mode
     config['experiment'] = {'levels': args.levels, 'pulse_seconds': args.pulse_seconds,
@@ -93,10 +103,17 @@ def main():
                             'isolated_reference':args.isolated_reference,
                             'reference_stall_seconds':args.reference_stall_seconds,
                             'collective_pulse_pwm':args.collective_pulse_pwm,
-                            'record_pwm_commands':record_commands if args.evaluate_truth else False}
+                            'record_pwm_commands':record_commands if args.evaluate_truth else False,
+                            'bridge_probe':args.bridge_probe}
     run, manifest = prepare_run(root, root/'runs', args.seed, digest, config)
     manifest['stage'] = ('P1_PWM_CLOSED_LOOP' if args.hover_seconds else 'P0_PWM_IDENTIFICATION') if args.mode == 'PWM' else 'P1_VEL_BENCHMARK'
     if args.contract_audit_only:manifest['stage']='P0_READ_ONLY_SERVICE_CONTRACT'
+    if probe_path:
+        manifest['stage']='P0_INSTRUMENTED_BRIDGE_DIAGNOSIS'
+        manifest['acceptance_eligible']=False
+        manifest['simulator_runtime_instrumentation']={'mode':args.bridge_probe,
+            'source_sha256':file_hash(root/'tools/diagnostics/bridge_probe.cpp'),
+            'binary_sha256':file_hash(probe_path),'original_simulator_files_modified':False}
     manifest['simulator_preflight']=simulator_evidence
     manifest['simulator_container_image_digest']=simulator_digest
     manifest['controller_source_kind']='immutable_docker_image' if image_info else 'workspace_bind_mount'
@@ -116,8 +133,14 @@ def main():
     if args.contract_audit_only:module='adapters.ros_noetic.service_contract_audit'
     readiness_marker='rmua_next_sensor_readiness'
     container_run='/workspace/main/'+str(run.relative_to(root))
+    simulator_command=[str(root/'tools/run_sim.sh'),str(args.seed),'offscreen']
+    simulator_environment=os.environ.copy()
+    if probe_path:
+        simulator_command.append('diagnostic-bridge-probe')
+        simulator_environment.update({'RMUA_BRIDGE_PROBE_SO':'/workspace/main/'+str(probe_path.relative_to(root)),
+            'RMUA_BRIDGE_PROBE_MODE':args.bridge_probe,'RMUA_BRIDGE_PROBE_OUTPUT':container_run+'/bridge_probe.jsonl'})
     with (run/'simulator.log').open('x') as output:
-        simulator = subprocess.Popen([str(root/'tools/run_sim.sh'), str(args.seed), 'offscreen'],
+        simulator = subprocess.Popen(simulator_command,env=simulator_environment,
                                      stdout=output, stderr=subprocess.STDOUT)
         try:
             # Wait for live official inputs, never a fixed blind startup delay.
@@ -247,6 +270,22 @@ def main():
                 except subprocess.TimeoutExpired:
                     simulator.terminate()
             manifest['source_sha256_after'] = source_hashes(root)
+            if probe_path:
+                try:
+                    after=verify_local_simulator(root)
+                    manifest['original_simulator_files_unchanged']=after==simulator_evidence
+                    probe_file=run/'bridge_probe.jsonl'
+                    observations=[json.loads(line) for line in probe_file.read_text().splitlines()]
+                    manifest['bridge_probe_summary']={key:max(r[key] for r in observations)
+                        for key in ('pwm_calls','bridge_calls','overlap_entries','write_errors')}
+                    manifest['bridge_probe_summary']['complete_exit_record']=any(r['event']=='exit' for r in observations)
+                    if (not manifest['original_simulator_files_unchanged'] or
+                            min(manifest['bridge_probe_summary'][key] for key in ('pwm_calls','bridge_calls'))==0
+                            or manifest['bridge_probe_summary']['write_errors']
+                            or any(r['mode']!=args.bridge_probe for r in observations)):
+                        raise RuntimeError('probe inactive or original simulator files changed')
+                except Exception as error:
+                    manifest['bridge_probe_error']=str(error);code=2
             manifest['source_unchanged'] = manifest['source_sha256_before'] == manifest['source_sha256_after']
             manifest['observer_exit_code'] = code
             manifest['run_state']=('AUDIT_COMPLETE' if args.contract_audit_only else 'CONTROL_COMPLETE') if code==0 else 'FAILED'

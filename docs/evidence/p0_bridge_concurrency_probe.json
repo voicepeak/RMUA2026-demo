@@ -1,0 +1,144 @@
+{
+  "cases": [
+    {
+      "mode": "observe",
+      "run_directory": "runs/20261020T093009Z_f90f496080f147119d97cf2d49c17323",
+      "controller_fault": null,
+      "run_state": "FAILED",
+      "wire_trace_audit": {
+        "sender_commands": 966,
+        "wire_records": 965,
+        "matched_commands": 965,
+        "wire_match_fraction": 0.9989648033126294,
+        "missing_sequences": [
+          347
+        ],
+        "mismatched_sequences": [],
+        "unexpected_sequences": [],
+        "invalid_records": 0,
+        "duplicate_sequences": 0,
+        "actuator_consumption_verified": false,
+        "debug_pwm_is_verified_actual_motor_output": false,
+        "official_result": "UNKNOWN",
+        "ros_header_sequence_offset": 1,
+        "wire_trace_valid": false,
+        "debug_message_stamp_interval_median_s": 0.009000301361083984,
+        "observed_debug_value_change_interval_p10_p50_p90_s": [
+          0.04800081253051758,
+          0.05100107192993164,
+          0.060001373291015625
+        ],
+        "experiment_pulses": [],
+        "analysis_code_sha256": "078f200379ba3522b3cf8c200edd334a97d5d1de75528f104aa4346c4267aca7",
+        "analysis_matches_run_source_snapshot": true
+      },
+      "instrumentation": {
+        "mode": "observe",
+        "source_sha256": "9ce48df52d36e938646218fd43534ec12711ff8c7572e96928e83e08591a2e61",
+        "binary_sha256": "536a7b64355f13062d3b971a887d7ffbcad75c7b423afc0bfc7638d59e47e230",
+        "original_simulator_files_modified": false
+      },
+      "original_simulator_files_unchanged": true,
+      "source_unchanged": true,
+      "probe_summary": {
+        "pwm_calls": 966,
+        "bridge_calls": 3712,
+        "overlap_entries": 27,
+        "write_errors": 0
+      },
+      "observed_thread_ids": {
+        "pwm": [
+          49655
+        ],
+        "bridge": [
+          49665
+        ]
+      },
+      "recorded_overlap_events": 27
+    },
+    {
+      "mode": "serialize",
+      "run_directory": "runs/20261020T093421Z_2049c247d9a1487fb6744fe7b2df1ea6",
+      "controller_fault": null,
+      "run_state": "EVALUATED",
+      "wire_trace_audit": {
+        "sender_commands": 975,
+        "wire_records": 975,
+        "matched_commands": 975,
+        "wire_match_fraction": 1.0,
+        "missing_sequences": [],
+        "mismatched_sequences": [],
+        "unexpected_sequences": [],
+        "invalid_records": 0,
+        "duplicate_sequences": 0,
+        "actuator_consumption_verified": false,
+        "debug_pwm_is_verified_actual_motor_output": false,
+        "official_result": "UNKNOWN",
+        "ros_header_sequence_offset": 1,
+        "wire_trace_valid": true,
+        "debug_message_stamp_interval_median_s": 0.009000301361083984,
+        "observed_debug_value_change_interval_p10_p50_p90_s": [
+          0.04500102996826172,
+          0.05100107192993164,
+          0.06300115585327148
+        ],
+        "experiment_pulses": [],
+        "analysis_code_sha256": "078f200379ba3522b3cf8c200edd334a97d5d1de75528f104aa4346c4267aca7",
+        "analysis_matches_run_source_snapshot": true
+      },
+      "instrumentation": {
+        "mode": "serialize",
+        "source_sha256": "e0648fae3c719cb82714b205aa1f5b128b88cf002716ab5f60431740b80bac89",
+        "binary_sha256": "aa04ecf2c4537885a71712595015a840a29e155ee44e88a4ed65814398c4d209",
+        "original_simulator_files_modified": false
+      },
+      "original_simulator_files_unchanged": true,
+      "source_unchanged": true,
+      "probe_summary": {
+        "pwm_calls": 975,
+        "bridge_calls": 3712,
+        "overlap_entries": 0,
+        "write_errors": 0,
+        "complete_exit_record": false
+      },
+      "observed_thread_ids": {
+        "pwm": [
+          50750
+        ],
+        "bridge": [
+          50760
+        ]
+      },
+      "recorded_overlap_events": 0
+    }
+  ],
+  "default_launch_audit": {
+    "run_directory": "runs/20261020T093852Z_a4dec86624834e318d3e4bafd11c0530",
+    "source_unchanged": true,
+    "state": "AUDIT_COMPLETE",
+    "service_contract": {
+      "service": "/airsim_node/meter_report",
+      "type": "airsim_ros/MeterReport",
+      "server_md5": "40e1aa17dd96ff6a8c88396581d6a491",
+      "local_md5": "40e1aa17dd96ff6a8c88396581d6a491",
+      "headers": {
+        "callerid": "/airsim_node",
+        "md5sum": "40e1aa17dd96ff6a8c88396581d6a491",
+        "request_type": "airsim_ros/MeterReportRequest",
+        "response_type": "airsim_ros/MeterReportResponse",
+        "type": "airsim_ros/MeterReport"
+      },
+      "service_request_sent": false,
+      "business_success_semantics_verified": false,
+      "formal_server_permissions_verified": false,
+      "compatible": true
+    },
+    "runtime_instrumentation_present": false
+  },
+  "mock_native_forwarding_and_mutual_exclusion_test_passed": true,
+  "all_cases_acceptance_eligible": false,
+  "physical_impulse_root_cause_proven": false,
+  "conclusion": "Concurrent entries in the two ROS bridge functions were observed. Serialization eliminated recorded overlap in its run; both control runs finished without physical guards. The observer run lost one command record and therefore failed its strict wire audit. These instrumented runs do not identify the cause of earlier impulses or validate competition behavior. Counter totals without a final exit record are lower bounds.",
+  "paired_frozen_comparison": false,
+  "probe_build_difference": "Second build adds cross-thread identification, first-call records and a recursive mutex. These initial runs are not a controlled physical failure-rate comparison."
+}
