@@ -30,6 +30,8 @@ class TensorRTStereo:
                 or tuple(self.engine.get_tensor_shape('disparity'))!=(1,1,384,480)
                 or self.engine.get_tensor_dtype('disparity')!=trt.float32):raise ValueError('unexpected TensorRT output contract')
         self.context=self.engine.create_execution_context()
+        if self.context is None:
+            raise RuntimeError('TensorRT context creation failed; check build/runtime environment and GPU memory')
         self.output=torch.empty((1,1,384,480),device='cuda',dtype=torch.float32)
         self.mean=torch.tensor([.485,.456,.406],device='cuda',dtype=torch.float32).view(1,3,1,1)
         self.std=torch.tensor([.229,.224,.225],device='cuda',dtype=torch.float32).view(1,3,1,1)

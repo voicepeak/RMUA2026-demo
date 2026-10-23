@@ -15,7 +15,7 @@ def load_exporter(vendor):
     return module
 
 
-def export(run,vendor,checkpoint,sample):
+def export(run,vendor,checkpoint,sample,freeze_fourier=False,reference_run=None):
     os.environ['TORCH_COMPILE_DISABLE']='1';os.environ['TORCHDYNAMO_DISABLE']='1'
     import numpy as np
     import torch
@@ -37,7 +37,32 @@ def export(run,vendor,checkpoint,sample):
     normalize=core.normalize_image
     start=time.monotonic()
     with torch.inference_mode():
-        original=model.forward(left,right,iters=4,test_mode=True,optimize_build_volume='pytorch1').float()
+        if freeze_fourier:
+            from evaluation.metrics.fourier_freeze import freeze_fourier_inputs
+            original,fourier_records=freeze_fourier_inputs(model,left,right)
+            original=original.float()
+            if reference_run is None:raise ValueError('freezing Fourier inputs requires complete FP32 reference')
+            reference_manifest=json.loads((reference_run/'manifest.json').read_text())
+            source=Path(__file__).resolve().parents[2]/reference_manifest['config']['precision_reference']['source_run']
+            rows=json.loads((source/'inputs/index.json').read_text());checks=[];backend.mixed_precision=False
+            from perception.stereo_depth.learned import filter_learned_disparity
+            for row in rows:
+                image_path=source/'inputs'/(row['key']+'.npz')
+                if file_hash(image_path)!=row['image_sha256']:raise ValueError('Fourier parity image changed')
+                with np.load(image_path,allow_pickle=False) as saved:
+                    f,r,_=backend.predict(saved['left'],saved['right'])
+                    _,valid,_=filter_learned_disparity(f,r,cv2.cvtColor(saved['left'],cv2.COLOR_RGB2GRAY),cv2.cvtColor(saved['right'],cv2.COLOR_RGB2GRAY))
+                with np.load(reference_run/'fp32_predictions'/(row['key']+'.npz'),allow_pickle=False) as baseline:
+                    maximum=max(float(np.abs(f-baseline['forward']).max()),float(np.abs(r-baseline['reverse']).max()))
+                    same_mask=bool(np.array_equal(valid,baseline['valid']))
+                checks.append({'key':row['key'],'max_raw_absolute_original_px':maximum,'valid_mask_identical':same_mask,
+                    'passed':maximum<=.0001 and same_mask})
+            freeze_report={'modules':fourier_records,'packets':checks,'max_raw_gate_original_px':.0001,
+                'source_fp32_reference':str(reference_run),'passed':bool(checks) and all(c['passed'] for c in checks)}
+            (run/'fourier_parity.json').write_text(json.dumps(freeze_report,indent=2,allow_nan=False)+'\n')
+            if not freeze_report['passed']:raise RuntimeError('shape-only Fourier freezing changes FP32 reference')
+        else:
+            original=model.forward(left,right,iters=4,test_mode=True,optimize_build_volume='pytorch1').float()
         normalized_left,normalized_right=normalize(left),normalize(right)
         core.normalize_image=lambda image:image
         core.build_gwc_volume_optimized_pytorch1=official._build_gwc_volume_onnx
@@ -63,6 +88,7 @@ def export(run,vendor,checkpoint,sample):
         'sample_sha256':file_hash(sample),'exporter_sha256':file_hash(vendor/'scripts/make_single_onnx.py'),
         'export_s':time.monotonic()-start,'torch':torch.__version__,'onnx':onnx.__version__,
         'normalization_compatibility_default_applied':backend.normalization_compatibility_default_applied,
+        'fourier_inputs_frozen':freeze_fourier,
         'source_weights_sha256':profile['checkpoint']['sha256'],'acceptance_eligible':False}
     (run/'export.json').write_text(json.dumps(report,indent=2)+'\n')
 
@@ -83,7 +109,8 @@ def build(run,precision):
     if serialized is None:raise RuntimeError('TensorRT engine construction failed')
     engine_path=run/('stereo_'+precision+'.engine');engine_path.write_bytes(bytes(serialized))
     report={'engine_sha256':file_hash(engine_path),'engine_file':engine_path.name,'onnx_sha256':file_hash(run/'stereo.onnx'),
-        'tensorrt':trt.__version__,'precision':precision,'tf32_enabled':False,'max_aux_streams':0,
+        'tensorrt':trt.__version__,'precision':precision,'tf32_enabled':False,
+        'global_tf32_override':os.environ.get('NVIDIA_TF32_OVERRIDE'),'max_aux_streams':0,
         'workspace_limit_bytes':512*1024*1024,'build_s':time.monotonic()-start,
         'gpu':torch.cuda.get_device_name(0),'compute_capability':list(torch.cuda.get_device_capability(0)),
         'cuda_runtime':torch.version.cuda,'acceptance_eligible':False,'current_control_eligible':False}
@@ -94,10 +121,12 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--run-dir',type=Path,required=True)
     parser.add_argument('--stage',choices=('export','build'),required=True)
     parser.add_argument('--vendor',type=Path);parser.add_argument('--checkpoint',type=Path);parser.add_argument('--sample',type=Path)
-    parser.add_argument('--precision',choices=('fp16','fp32'),default='fp16');args=parser.parse_args()
+    parser.add_argument('--precision',choices=('fp16','fp32'),default='fp16')
+    parser.add_argument('--freeze-fourier-inputs',action='store_true');parser.add_argument('--fp32-reference-run',type=Path)
+    args=parser.parse_args()
     if args.stage=='export':
         if any(x is None for x in (args.vendor,args.checkpoint,args.sample)):parser.error('export requires vendor, checkpoint and sample')
-        export(args.run_dir,args.vendor,args.checkpoint,args.sample)
+        export(args.run_dir,args.vendor,args.checkpoint,args.sample,args.freeze_fourier_inputs,args.fp32_reference_run)
     else:build(args.run_dir,args.precision)
 
 

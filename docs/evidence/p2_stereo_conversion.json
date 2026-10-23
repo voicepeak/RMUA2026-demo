@@ -1,0 +1,2506 @@
+{
+  "iteration": 37,
+  "recorded_on": "2026-10-23",
+  "stage": "P2_FOURIER_EXPORT_CONVERSION_DIAGNOSIS",
+  "acceptance_eligible": false,
+  "current_control_eligible": false,
+  "control_published": false,
+  "simulator_started": false,
+  "official_rules": "Existing official baseline rechecked; legal retained RGB and synthetic operator inputs only. No game-object/ground-truth/debug/seed lookup used by model.",
+  "source_run": "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d",
+  "development_seeds": [
+    2110,
+    2111
+  ],
+  "inputs_independently_rehashed": 39,
+  "archive_audit": [
+    {
+      "run": "runs/20261023T105912Z_1b9dffa5feaf424e95a8e75654476b1c",
+      "run_state": "FAILED",
+      "exit_code": 1,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "d0766ae76d9b88fd63617647a5d65da89cb983e3ec119eb455e88969bca20ea0",
+        "files": 298,
+        "uncompressed_bytes": 1402258,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "archive_files_verified": 298,
+      "current_source_differences": [
+        "evaluation/metrics/onnx_stereo_probe.py",
+        "evaluation/metrics/trt_stereo_build.py",
+        "evaluation/seed_runner/onnx_stereo_probe.py",
+        "evaluation/seed_runner/trt_stereo.py",
+        "perception/stereo_depth/tensorrt_backend.py"
+      ],
+      "source_unchanged": true,
+      "input_unchanged": true
+    },
+    {
+      "run": "runs/20261023T110018Z_c91753144a6a4bd48f73620f496265c4",
+      "run_state": "COMPUTED",
+      "exit_code": 0,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "10206c55007c1bf00e9499ed69573b33e32b29a54228efc664dd07ffae8a896a",
+        "files": 298,
+        "uncompressed_bytes": 1402609,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "archive_files_verified": 298,
+      "current_source_differences": [
+        "evaluation/metrics/onnx_stereo_probe.py",
+        "evaluation/metrics/trt_stereo_build.py",
+        "evaluation/seed_runner/onnx_stereo_probe.py",
+        "evaluation/seed_runner/trt_stereo.py",
+        "perception/stereo_depth/tensorrt_backend.py"
+      ],
+      "source_unchanged": true,
+      "input_unchanged": true
+    },
+    {
+      "run": "runs/20261023T110142Z_1211a846605a4092bffa220360448ec2",
+      "run_state": "COMPUTED",
+      "exit_code": 0,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "10206c55007c1bf00e9499ed69573b33e32b29a54228efc664dd07ffae8a896a",
+        "files": 298,
+        "uncompressed_bytes": 1402609,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "archive_files_verified": 298,
+      "current_source_differences": [
+        "evaluation/metrics/onnx_stereo_probe.py",
+        "evaluation/metrics/trt_stereo_build.py",
+        "evaluation/seed_runner/onnx_stereo_probe.py",
+        "evaluation/seed_runner/trt_stereo.py",
+        "perception/stereo_depth/tensorrt_backend.py"
+      ],
+      "source_unchanged": true,
+      "input_unchanged": true
+    },
+    {
+      "run": "runs/20261023T110749Z_f290ac61f3f7433f8359ea405e6a8a18",
+      "run_state": "FAILED",
+      "exit_code": 2,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "5ca8aef04bd29e918aa97ead44a403b46f7881298c0952b85192d0e8ed41558b",
+        "files": 298,
+        "uncompressed_bytes": 1403055,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "archive_files_verified": 298,
+      "current_source_differences": [
+        "evaluation/metrics/onnx_stereo_probe.py",
+        "evaluation/metrics/trt_stereo_build.py",
+        "evaluation/seed_runner/onnx_stereo_probe.py",
+        "evaluation/seed_runner/trt_stereo.py"
+      ],
+      "source_unchanged": true,
+      "input_unchanged": true,
+      "vendor_unchanged": true,
+      "checkpoint_unchanged": true,
+      "failed_stage": "evaluate",
+      "error": "evaluate returned 2",
+      "onnx_reused_from": "runs/20261023T101913Z_3188020d49db42a191bf0ff0c269a2b8"
+    },
+    {
+      "run": "runs/20261023T111308Z_2c7c8bef1b0a45cfa883d7e469fec272",
+      "run_state": "COMPUTED",
+      "exit_code": 0,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "2064a4e878c2e294c64a79cef3ba720acc9913631f1aaab1aff63cc4e0731df6",
+        "files": 300,
+        "uncompressed_bytes": 1411491,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "archive_files_verified": 300,
+      "current_source_differences": [
+        "evaluation/metrics/onnx_stereo_probe.py",
+        "evaluation/metrics/stereo_sampler_probe.py",
+        "evaluation/metrics/trt_stereo_build.py",
+        "evaluation/seed_runner/onnx_stereo_probe.py",
+        "evaluation/seed_runner/trt_stereo.py"
+      ],
+      "source_unchanged": true
+    },
+    {
+      "run": "runs/20261023T111557Z_1c594385b67d447b94001398761b0011",
+      "run_state": "FAILED",
+      "exit_code": 1,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "2b314e5654ef6ee94407595be0e06c136d248b6e898d114f6deb8102ef994686",
+        "files": 301,
+        "uncompressed_bytes": 1416964,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "archive_files_verified": 301,
+      "current_source_differences": [
+        "evaluation/metrics/onnx_layer_probe.py",
+        "evaluation/metrics/stereo_sampler_probe.py",
+        "evaluation/metrics/trt_stereo_build.py",
+        "evaluation/seed_runner/onnx_stereo_probe.py",
+        "evaluation/seed_runner/trt_stereo.py"
+      ],
+      "source_unchanged": true,
+      "input_unchanged": true
+    },
+    {
+      "run": "runs/20261023T112150Z_57948878d1c7478e813ded098093bb0d",
+      "run_state": "COMPUTED",
+      "exit_code": 0,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "7932ab7f308dfa278d5fa42ade9f29e700272452297b4e9e4e2d3e4f2b7a68e2",
+        "files": 301,
+        "uncompressed_bytes": 1418452,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "archive_files_verified": 301,
+      "current_source_differences": [
+        "evaluation/metrics/onnx_layer_probe.py",
+        "evaluation/metrics/stereo_sampler_probe.py",
+        "evaluation/metrics/trt_stereo_build.py",
+        "evaluation/seed_runner/trt_stereo.py"
+      ],
+      "source_unchanged": true,
+      "input_unchanged": true
+    },
+    {
+      "run": "runs/20261023T112528Z_c871020b7ac8467ba22455f0547cceeb",
+      "run_state": "COMPUTED",
+      "exit_code": 0,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "9939e6ff90eb83210bfcac1f7092131b2d23ca9a1c346190f9a1d1c4dfb29fd1",
+        "files": 302,
+        "uncompressed_bytes": 1420635,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "archive_files_verified": 302,
+      "current_source_differences": [
+        "evaluation/metrics/trt_stereo_build.py",
+        "evaluation/seed_runner/trt_stereo.py"
+      ],
+      "source_unchanged": true,
+      "input_unchanged": true
+    },
+    {
+      "run": "runs/20261023T112816Z_211601887d544d6aa568cab24abd9020",
+      "run_state": "COMPUTED",
+      "exit_code": 0,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "9939e6ff90eb83210bfcac1f7092131b2d23ca9a1c346190f9a1d1c4dfb29fd1",
+        "files": 302,
+        "uncompressed_bytes": 1420635,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "archive_files_verified": 302,
+      "current_source_differences": [
+        "evaluation/metrics/trt_stereo_build.py",
+        "evaluation/seed_runner/trt_stereo.py"
+      ],
+      "source_unchanged": true,
+      "input_unchanged": true
+    },
+    {
+      "run": "runs/20261023T113606Z_75b171efede644539586bc3d0a0b0c28",
+      "run_state": "FAILED",
+      "exit_code": 2,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "57607784286abc9fe67ce8647db4f263c4cd95e4845b0532b83c7ce5df0a45df",
+        "files": 303,
+        "uncompressed_bytes": 1427013,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "archive_files_verified": 303,
+      "current_source_differences": [
+        "evaluation/seed_runner/trt_stereo.py"
+      ],
+      "source_unchanged": true,
+      "input_unchanged": true,
+      "vendor_unchanged": true,
+      "checkpoint_unchanged": true,
+      "fp32_reference_unchanged": true,
+      "failed_stage": "evaluate",
+      "error": "evaluate returned 2"
+    },
+    {
+      "run": "runs/20261023T114324Z_2d68cb7f5aa44ac8a4163bb736141546",
+      "run_state": "COMPUTED",
+      "exit_code": 0,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "a6bba20435fcfbe8131ec4ef9628fc2fb9d0995329c69e1d616200b793d00d7b",
+        "files": 303,
+        "uncompressed_bytes": 1427712,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "archive_files_verified": 303,
+      "current_source_differences": [],
+      "source_unchanged": true
+    }
+  ],
+  "archive_comparison_scope": "Differences computed before this iteration documentation was added; earlier snapshots may also lack later new files. Final sampler snapshot has all final executable code. FP32 optimized snapshot differs only in host launcher reference-provenance checks.",
+  "original_onnx_ort": {
+    "run": "runs/20261023T110142Z_1211a846605a4092bffa220360448ec2",
+    "runtime": "1.20.2",
+    "onnx_sha256": "4efab5f9739c608a346e105aa57e488fbc47653dab2548ee2fca594f99502159",
+    "graph_optimization": "disabled",
+    "provider_event_counts": {
+      "CUDAExecutionProvider": 69168,
+      "CPUExecutionProvider": 1848
+    },
+    "vs_original_pytorch_fp32": {
+      "packets": 12,
+      "compatible": 12,
+      "mask_iou_min": 0.9999358159715537,
+      "common_error_p99_max_px": 0.00067138671875
+    },
+    "packets": [
+      {
+        "key": "0000",
+        "image_sha256": "dafbd4313a6b76187c70275e45c9e1064601b6adfdc567edb38f68e0f1af3b6d",
+        "normalized_input_sha256": "cbb1c49846bb60c2d05b96f7c36ea5a7ba80db134f49224e8c5d2ce0a2486f70",
+        "comparisons": {
+          "pytorch_fp32": {
+            "common_pixels": 155792,
+            "mask_iou": 0.9999358159715537,
+            "absolute_median_px": 2.592802047729492e-06,
+            "absolute_p99_px": 0.000274658203125,
+            "absolute_max_px": 0.018016815185546875,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 0.00209808349609375,
+            "forward_raw_max_px": 0.018016815185546875
+          },
+          "pytorch_amp": {
+            "common_pixels": 147954,
+            "mask_iou": 0.8976592930555387,
+            "absolute_median_px": 0.0016479939222335815,
+            "absolute_p99_px": 0.9073486328125,
+            "absolute_max_px": 3.7681121826171875,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": false,
+            "forward_raw_p99_px": 4.960017108917237,
+            "forward_raw_max_px": 27.719785690307617
+          },
+          "fp16_run": {
+            "common_pixels": 136386,
+            "mask_iou": 0.794771683643738,
+            "absolute_median_px": 0.01223871111869812,
+            "absolute_p99_px": 2.7645263671875,
+            "absolute_max_px": 6.774223327636719,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": false,
+            "forward_raw_p99_px": 8.01278789520265,
+            "forward_raw_max_px": 39.508277893066406
+          },
+          "fp32_run": {
+            "common_pixels": 138203,
+            "mask_iou": 0.8201325713743154,
+            "absolute_median_px": 0.021909058094024658,
+            "absolute_p99_px": 2.527069091796875,
+            "absolute_max_px": 33.114803314208984,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": false,
+            "forward_raw_p99_px": 20.18355651855472,
+            "forward_raw_max_px": 113.60209655761719
+          }
+        },
+        "elapsed_including_comparisons_s": 1.015091337962076,
+        "output_sha256": "f96556475f1a2181509ffeb74a1a449b289df9c5df040be72f43b87920ba24f0",
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738505.8738494,
+            "valid_until": 1792738506.0738494,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738505.8738494,
+            "valid_until": 1792738506.0738494,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        }
+      },
+      {
+        "key": "0001",
+        "image_sha256": "7f0a0d9008de51ffb3ceb89dc193012ed0142c735376979820cf785a28237192",
+        "normalized_input_sha256": "27c811b7f0409cf2fd0510c78b0bba041ec10c83d7b7a7df1216dc579ffe49f5",
+        "comparisons": {
+          "pytorch_fp32": {
+            "common_pixels": 169772,
+            "mask_iou": 0.9999882196331594,
+            "absolute_median_px": 2.8014183044433594e-06,
+            "absolute_p99_px": 3.647804260253906e-05,
+            "absolute_max_px": 0.004817962646484375,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 0.0006561279296875,
+            "forward_raw_max_px": 0.00783538818359375
+          },
+          "pytorch_amp": {
+            "common_pixels": 169293,
+            "mask_iou": 0.987643733482682,
+            "absolute_median_px": 0.0025212764739990234,
+            "absolute_p99_px": 0.09212005138397217,
+            "absolute_max_px": 1.2006466388702393,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 1.5561698150634786,
+            "forward_raw_max_px": 47.380157470703125
+          },
+          "fp16_run": {
+            "common_pixels": 167693,
+            "mask_iou": 0.9738721891841665,
+            "absolute_median_px": 0.013384819030761719,
+            "absolute_p99_px": 0.14168148994445326,
+            "absolute_max_px": 1.3732752799987793,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 3.1525726318359375,
+            "forward_raw_max_px": 66.6845703125
+          },
+          "fp32_run": {
+            "common_pixels": 165358,
+            "mask_iou": 0.9202096874721752,
+            "absolute_median_px": 0.015333294868469238,
+            "absolute_p99_px": 1.410158634185791,
+            "absolute_max_px": 2.238750457763672,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": false,
+            "forward_raw_p99_px": 13.200169181823732,
+            "forward_raw_max_px": 104.43546295166016
+          }
+        },
+        "elapsed_including_comparisons_s": 0.7287007230333984,
+        "output_sha256": "9c18965a87793106e2d1da1384ed1a986513aa48ba13bed96aae759ec4282d4a",
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738507.4668834,
+            "valid_until": 1792738507.6668835,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738507.4668834,
+            "valid_until": 1792738507.6668835,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        }
+      },
+      {
+        "key": "0002",
+        "image_sha256": "5bdf1616f3c025e8e5a26acf7b40e80ce6ac0f427ad72d37761db9c9b9e8dd7f",
+        "normalized_input_sha256": "ea3a3acb92d06e1e93c5a872df08983fb191dfba9c36b767baf3ab00e3340ea3",
+        "comparisons": {
+          "pytorch_fp32": {
+            "common_pixels": 180946,
+            "mask_iou": 0.9999889471008245,
+            "absolute_median_px": 3.069639205932617e-06,
+            "absolute_p99_px": 7.176399230957031e-05,
+            "absolute_max_px": 0.0046176910400390625,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 0.003814697265625,
+            "forward_raw_max_px": 0.009365081787109375
+          },
+          "pytorch_amp": {
+            "common_pixels": 178516,
+            "mask_iou": 0.9812992667025803,
+            "absolute_median_px": 0.0023352354764938354,
+            "absolute_p99_px": 0.08565473556518555,
+            "absolute_max_px": 7.5972900390625,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 19.079104690551766,
+            "forward_raw_max_px": 36.021785736083984
+          },
+          "fp16_run": {
+            "common_pixels": 177050,
+            "mask_iou": 0.9708391823126864,
+            "absolute_median_px": 0.01345682144165039,
+            "absolute_p99_px": 0.1717519760131836,
+            "absolute_max_px": 12.303695678710938,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 18.663061828613287,
+            "forward_raw_max_px": 57.17636489868164
+          },
+          "fp32_run": {
+            "common_pixels": 177706,
+            "mask_iou": 0.9311535539312007,
+            "absolute_median_px": 0.014669075608253479,
+            "absolute_p99_px": 0.6996017694473267,
+            "absolute_max_px": 31.802085876464844,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 113.04602447509765,
+            "forward_raw_max_px": 152.81674194335938
+          }
+        },
+        "elapsed_including_comparisons_s": 0.7246082238852978,
+        "output_sha256": "63f6359181e842a9ae739213abc821bf48c52e46aab29aea7f3df41387a7b61e",
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738509.0659175,
+            "valid_until": 1792738509.2659175,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738509.0659175,
+            "valid_until": 1792738509.2659175,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        }
+      },
+      {
+        "key": "0003",
+        "image_sha256": "e0163bcc6f201bebc0e254cfc80b7138df5c86462af9fb1f5c6b4a82ecfbb2d5",
+        "normalized_input_sha256": "fe3e3494f72e6cdce5c3af6931375c189d23632caaf8cf99fa3eae9de61b4b4a",
+        "comparisons": {
+          "pytorch_fp32": {
+            "common_pixels": 209694,
+            "mask_iou": 1.0,
+            "absolute_median_px": 3.0994415283203125e-06,
+            "absolute_p99_px": 4.81772422790544e-05,
+            "absolute_max_px": 0.002727508544921875,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 0.004787483215332067,
+            "forward_raw_max_px": 0.03429412841796875
+          },
+          "pytorch_amp": {
+            "common_pixels": 209032,
+            "mask_iou": 0.9937862212903932,
+            "absolute_median_px": 0.0028362274169921875,
+            "absolute_p99_px": 0.10790646076202393,
+            "absolute_max_px": 1.849924087524414,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 10.625552215576203,
+            "forward_raw_max_px": 36.095458984375
+          },
+          "fp16_run": {
+            "common_pixels": 208354,
+            "mask_iou": 0.990172130290559,
+            "absolute_median_px": 0.01557159423828125,
+            "absolute_p99_px": 0.17747712135314941,
+            "absolute_max_px": 1.5129356384277344,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 7.430974884033208,
+            "forward_raw_max_px": 46.39067077636719
+          },
+          "fp32_run": {
+            "common_pixels": 205674,
+            "mask_iou": 0.9654152702284057,
+            "absolute_median_px": 0.018490314483642578,
+            "absolute_p99_px": 0.5930127286910979,
+            "absolute_max_px": 5.8194169998168945,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 79.48521186828614,
+            "forward_raw_max_px": 118.8138198852539
+          }
+        },
+        "elapsed_including_comparisons_s": 0.733263191068545,
+        "output_sha256": "0f0e58a9e360b602b3b876813d61af8685df5c1f7ee51900b1fba40676572f19",
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738510.8509555,
+            "valid_until": 1792738511.0509555,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738510.8509555,
+            "valid_until": 1792738511.0509555,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        }
+      },
+      {
+        "key": "0004",
+        "image_sha256": "c61f864c22aea16e57af96b40fb70260d423a1f10695b67a6d2754e732ac7aca",
+        "normalized_input_sha256": "84717221cb6676657818dafae06ccbaaca54e53b26e7392ebe7f7bda323f3f6d",
+        "comparisons": {
+          "pytorch_fp32": {
+            "common_pixels": 209593,
+            "mask_iou": 1.0,
+            "absolute_median_px": 3.337860107421875e-06,
+            "absolute_p99_px": 6.103515625e-05,
+            "absolute_max_px": 0.0017547607421875,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 0.0041656494140625,
+            "forward_raw_max_px": 0.030836105346679688
+          },
+          "pytorch_amp": {
+            "common_pixels": 208671,
+            "mask_iou": 0.9927968218474201,
+            "absolute_median_px": 0.002810955047607422,
+            "absolute_p99_px": 0.1209714263677597,
+            "absolute_max_px": 0.7654962539672852,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 9.968632507324223,
+            "forward_raw_max_px": 70.60955810546875
+          },
+          "fp16_run": {
+            "common_pixels": 207310,
+            "mask_iou": 0.9851170393742694,
+            "absolute_median_px": 0.015395581722259521,
+            "absolute_p99_px": 0.2629837989807129,
+            "absolute_max_px": 1.2701218128204346,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 11.046891937255861,
+            "forward_raw_max_px": 88.48448181152344
+          },
+          "fp32_run": {
+            "common_pixels": 206469,
+            "mask_iou": 0.9705911387942179,
+            "absolute_median_px": 0.0183563232421875,
+            "absolute_p99_px": 0.4197876548767106,
+            "absolute_max_px": 1.6798486709594727,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 77.09411277770997,
+            "forward_raw_max_px": 99.21984100341797
+          }
+        },
+        "elapsed_including_comparisons_s": 0.7277109860442579,
+        "output_sha256": "cc90ffa368e6e3a9ef694e0f102d726e84cdda5c45a0f9763ec8ea83010fd30d",
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738512.749996,
+            "valid_until": 1792738512.949996,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738512.749996,
+            "valid_until": 1792738512.949996,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        }
+      },
+      {
+        "key": "0005",
+        "image_sha256": "d2d6b4cb049e62f28c6e47452fabaf91107656abeba9e54b1ff656379c0b3553",
+        "normalized_input_sha256": "1a795af4d0a02a315c194169f5fe77bd91df7b007956b571dfa29147c7867605",
+        "comparisons": {
+          "pytorch_fp32": {
+            "common_pixels": 200268,
+            "mask_iou": 1.0,
+            "absolute_median_px": 2.86102294921875e-06,
+            "absolute_p99_px": 6.437301635742188e-05,
+            "absolute_max_px": 0.00818634033203125,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 0.00527191162109375,
+            "forward_raw_max_px": 0.01513671875
+          },
+          "pytorch_amp": {
+            "common_pixels": 197862,
+            "mask_iou": 0.9826818111835668,
+            "absolute_median_px": 0.002499103546142578,
+            "absolute_p99_px": 0.2043458080291712,
+            "absolute_max_px": 3.1899166107177734,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 20.583199615478552,
+            "forward_raw_max_px": 49.670169830322266
+          },
+          "fp16_run": {
+            "common_pixels": 198320,
+            "mask_iou": 0.9767485384725253,
+            "absolute_median_px": 0.01276254653930664,
+            "absolute_p99_px": 0.20370960235595703,
+            "absolute_max_px": 2.9635567665100098,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 15.62679378509522,
+            "forward_raw_max_px": 56.70257568359375
+          },
+          "fp32_run": {
+            "common_pixels": 197652,
+            "mask_iou": 0.8545192000069174,
+            "absolute_median_px": 0.014219582080841064,
+            "absolute_p99_px": 0.5585049080848647,
+            "absolute_max_px": 4.467256546020508,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": false,
+            "forward_raw_p99_px": 70.38184486389162,
+            "forward_raw_max_px": 120.36522674560547
+          }
+        },
+        "elapsed_including_comparisons_s": 0.7232776831369847,
+        "output_sha256": "38a667ff1ad0276120b313af3201ab388a1c37ae1d0a2556479051e0a49096cd",
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738514.3670306,
+            "valid_until": 1792738514.5670307,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738514.3670306,
+            "valid_until": 1792738514.5670307,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        }
+      },
+      {
+        "key": "0006",
+        "image_sha256": "57ac5922e30ca101b88b68cf01849a5eb14668a8b6d1425ee2259a7e8bbadf29",
+        "normalized_input_sha256": "e587eaa8f6c573f15d629633c70ee3365b9206c89d6da1b8ff911c5efc5c17dd",
+        "comparisons": {
+          "pytorch_fp32": {
+            "common_pixels": 134572,
+            "mask_iou": 1.0,
+            "absolute_median_px": 2.7120113372802734e-06,
+            "absolute_p99_px": 5.054473876953125e-05,
+            "absolute_max_px": 0.02478790283203125,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 0.00124359130859375,
+            "forward_raw_max_px": 0.03220367431640625
+          },
+          "pytorch_amp": {
+            "common_pixels": 133547,
+            "mask_iou": 0.9814652859946057,
+            "absolute_median_px": 0.0014643073081970215,
+            "absolute_p99_px": 0.06077778339385986,
+            "absolute_max_px": 21.81922149658203,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 3.039475288391114,
+            "forward_raw_max_px": 68.75359344482422
+          },
+          "fp16_run": {
+            "common_pixels": 127424,
+            "mask_iou": 0.9364935876235623,
+            "absolute_median_px": 0.01233913004398346,
+            "absolute_p99_px": 0.10502451658248901,
+            "absolute_max_px": 5.014678955078125,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 3.8981171035766637,
+            "forward_raw_max_px": 71.91084289550781
+          },
+          "fp32_run": {
+            "common_pixels": 130766,
+            "mask_iou": 0.9443293013179275,
+            "absolute_median_px": 0.017299070954322815,
+            "absolute_p99_px": 0.4947073459625244,
+            "absolute_max_px": 6.0462799072265625,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 14.34084003448487,
+            "forward_raw_max_px": 129.2515411376953
+          }
+        },
+        "elapsed_including_comparisons_s": 0.731215544976294,
+        "output_sha256": "1a67562bbf125c8cecbdbb2637eda30bb052efa666d44fc4107ff61ef8142481",
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738723.2472508,
+            "valid_until": 1792738723.4472508,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738723.2472508,
+            "valid_until": 1792738723.4472508,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        }
+      },
+      {
+        "key": "0007",
+        "image_sha256": "2da76af764b1533eb67f01c82195afa5e8699474b9f77deeb2bbc199a17619ff",
+        "normalized_input_sha256": "f04047036414a7dcbd4a1616cc60267f4f5669c76054d9bb13f1d601d28c88c4",
+        "comparisons": {
+          "pytorch_fp32": {
+            "common_pixels": 173059,
+            "mask_iou": 0.9999884433812355,
+            "absolute_median_px": 2.86102294921875e-06,
+            "absolute_p99_px": 0.00067138671875,
+            "absolute_max_px": 0.004740715026855469,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 0.0015869140625,
+            "forward_raw_max_px": 0.012279510498046875
+          },
+          "pytorch_amp": {
+            "common_pixels": 168379,
+            "mask_iou": 0.9309702317763624,
+            "absolute_median_px": 0.0021915435791015625,
+            "absolute_p99_px": 0.2600899934768677,
+            "absolute_max_px": 11.188243865966797,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 11.233679161071791,
+            "forward_raw_max_px": 32.39185333251953
+          },
+          "fp16_run": {
+            "common_pixels": 166219,
+            "mask_iou": 0.9303389024151345,
+            "absolute_median_px": 0.012837648391723633,
+            "absolute_p99_px": 0.29435861110687256,
+            "absolute_max_px": 10.299270629882812,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 26.648819351196295,
+            "forward_raw_max_px": 51.428916931152344
+          },
+          "fp32_run": {
+            "common_pixels": 157308,
+            "mask_iou": 0.8652376945035725,
+            "absolute_median_px": 0.01730009913444519,
+            "absolute_p99_px": 0.45754267930984455,
+            "absolute_max_px": 36.95247268676758,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": false,
+            "forward_raw_p99_px": 42.56088462829592,
+            "forward_raw_max_px": 86.95113372802734
+          }
+        },
+        "elapsed_including_comparisons_s": 0.7276260268408805,
+        "output_sha256": "49ff1fcbfe6d85763b3edef826f77dece6a7260b8b4ff79b87060326028f59ac",
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738724.8402846,
+            "valid_until": 1792738725.0402846,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738724.8402846,
+            "valid_until": 1792738725.0402846,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        }
+      },
+      {
+        "key": "0008",
+        "image_sha256": "1d9e4f461e5a58550a85ddba195ae4414cfb00f99a390c34d9e70b0d00bcfc87",
+        "normalized_input_sha256": "b2895bec5c721fee674aa6f5cd02c108af858f674fd610df411326de300b5e9a",
+        "comparisons": {
+          "pytorch_fp32": {
+            "common_pixels": 178618,
+            "mask_iou": 0.9999832046623858,
+            "absolute_median_px": 3.0994415283203125e-06,
+            "absolute_p99_px": 3.719329833984375e-05,
+            "absolute_max_px": 0.006229400634765625,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 0.002716064453125,
+            "forward_raw_max_px": 0.025035858154296875
+          },
+          "pytorch_amp": {
+            "common_pixels": 177971,
+            "mask_iou": 0.9870716908298299,
+            "absolute_median_px": 0.002819538116455078,
+            "absolute_p99_px": 0.13819458484649272,
+            "absolute_max_px": 1.470067024230957,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 14.714095420837413,
+            "forward_raw_max_px": 86.67356872558594
+          },
+          "fp16_run": {
+            "common_pixels": 175177,
+            "mask_iou": 0.9741093125288462,
+            "absolute_median_px": 0.013809040188789368,
+            "absolute_p99_px": 0.18352842330932617,
+            "absolute_max_px": 4.1083831787109375,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 18.965502929687517,
+            "forward_raw_max_px": 50.276241302490234
+          },
+          "fp32_run": {
+            "common_pixels": 172637,
+            "mask_iou": 0.8779075089246666,
+            "absolute_median_px": 0.0180661678314209,
+            "absolute_p99_px": 0.5977869033813477,
+            "absolute_max_px": 4.267927646636963,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": false,
+            "forward_raw_p99_px": 82.30154037475587,
+            "forward_raw_max_px": 108.35423278808594
+          }
+        },
+        "elapsed_including_comparisons_s": 0.7187146740034223,
+        "output_sha256": "e9f05df57cf433702b91cf593d7e0ae385d27a4dff875109d94629cd9e190cd3",
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738726.4663193,
+            "valid_until": 1792738726.6663194,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738726.4663193,
+            "valid_until": 1792738726.6663194,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        }
+      },
+      {
+        "key": "0009",
+        "image_sha256": "dc8ad137886d40752a6e1acca7a06884b025ae653007aa4253cf86e2bc9fefec",
+        "normalized_input_sha256": "7a915c5a9313a880fac4fc261c9ef1225ce798f9684e7c0f4058bbe073ec32d4",
+        "comparisons": {
+          "pytorch_fp32": {
+            "common_pixels": 215769,
+            "mask_iou": 0.9999907309137929,
+            "absolute_median_px": 3.814697265625e-06,
+            "absolute_p99_px": 5.888938903808594e-05,
+            "absolute_max_px": 0.00418853759765625,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 0.00263214111328125,
+            "forward_raw_max_px": 0.0179595947265625
+          },
+          "pytorch_amp": {
+            "common_pixels": 212438,
+            "mask_iou": 0.9733967485933176,
+            "absolute_median_px": 0.004103899002075195,
+            "absolute_p99_px": 0.2585735321044922,
+            "absolute_max_px": 7.019618988037109,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 11.970746154785182,
+            "forward_raw_max_px": 46.376556396484375
+          },
+          "fp16_run": {
+            "common_pixels": 207115,
+            "mask_iou": 0.9342676837162306,
+            "absolute_median_px": 0.015232563018798828,
+            "absolute_p99_px": 0.34689376354217527,
+            "absolute_max_px": 6.701805114746094,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 17.89994125366213,
+            "forward_raw_max_px": 79.24822235107422
+          },
+          "fp32_run": {
+            "common_pixels": 210130,
+            "mask_iou": 0.9046097947375672,
+            "absolute_median_px": 0.020762354135513306,
+            "absolute_p99_px": 0.9274978637695312,
+            "absolute_max_px": 4.298766613006592,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 80.54412033081056,
+            "forward_raw_max_px": 105.17892456054688
+          }
+        },
+        "elapsed_including_comparisons_s": 0.7322903291787952,
+        "output_sha256": "ee0c6d9242a1821d202a7af2da15eb5e4f250a5e63e6abc3b95811386ca0a3f6",
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738728.0203526,
+            "valid_until": 1792738728.2203526,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738728.0203526,
+            "valid_until": 1792738728.2203526,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        }
+      },
+      {
+        "key": "0010",
+        "image_sha256": "c67f573eb597b9c39bc3713eb08a288762aad4b32df3e40537fdea91fb261864",
+        "normalized_input_sha256": "12ad078d4d94faab2723cb47fc5fc2f220d5074949268d8209d59de187b079a9",
+        "comparisons": {
+          "pytorch_fp32": {
+            "common_pixels": 211182,
+            "mask_iou": 1.0,
+            "absolute_median_px": 3.039836883544922e-06,
+            "absolute_p99_px": 7.05718994140625e-05,
+            "absolute_max_px": 0.02050018310546875,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 0.00478363037109375,
+            "forward_raw_max_px": 0.03487396240234375
+          },
+          "pytorch_amp": {
+            "common_pixels": 210660,
+            "mask_iou": 0.9929345443747378,
+            "absolute_median_px": 0.0024776458740234375,
+            "absolute_p99_px": 0.13955199718475342,
+            "absolute_max_px": 0.8035778999328613,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 6.165712966918948,
+            "forward_raw_max_px": 55.22623062133789
+          },
+          "fp16_run": {
+            "common_pixels": 209930,
+            "mask_iou": 0.9887992915952296,
+            "absolute_median_px": 0.01737356185913086,
+            "absolute_p99_px": 0.19484710693359375,
+            "absolute_max_px": 1.2235326766967773,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 10.742560882568366,
+            "forward_raw_max_px": 65.2896728515625
+          },
+          "fp32_run": {
+            "common_pixels": 208426,
+            "mask_iou": 0.9776445645239972,
+            "absolute_median_px": 0.018711328506469727,
+            "absolute_p99_px": 0.3998558521270752,
+            "absolute_max_px": 4.883687973022461,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 59.46378105163576,
+            "forward_raw_max_px": 101.9925765991211
+          }
+        },
+        "elapsed_including_comparisons_s": 0.7296398989856243,
+        "output_sha256": "0b622ec17d07526e52e40b03d6ce9eaa279711088b8f2c42c13a364b8f8e4a52",
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738729.6133864,
+            "valid_until": 1792738729.8133864,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738729.6133864,
+            "valid_until": 1792738729.8133864,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        }
+      },
+      {
+        "key": "0011",
+        "image_sha256": "941b214e53160608372653c0df32a4ad27806fc9fe1ecc17ec69909764e55316",
+        "normalized_input_sha256": "f8a430b5d7e369af8345f709238069fd9fdce275f619aa90a09b862e72e42c63",
+        "comparisons": {
+          "pytorch_fp32": {
+            "common_pixels": 212052,
+            "mask_iou": 0.9999905684401144,
+            "absolute_median_px": 3.337860107421875e-06,
+            "absolute_p99_px": 9.34600830078125e-05,
+            "absolute_max_px": 0.0050640106201171875,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 0.0019989013671875,
+            "forward_raw_max_px": 0.012844085693359375
+          },
+          "pytorch_amp": {
+            "common_pixels": 209013,
+            "mask_iou": 0.9730949011136355,
+            "absolute_median_px": 0.0027713775634765625,
+            "absolute_p99_px": 0.14537906646728516,
+            "absolute_max_px": 2.7688446044921875,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 5.3862377262115615,
+            "forward_raw_max_px": 14.959665298461914
+          },
+          "fp16_run": {
+            "common_pixels": 207853,
+            "mask_iou": 0.9388333069852526,
+            "absolute_median_px": 0.013889551162719727,
+            "absolute_p99_px": 0.2753483057022095,
+            "absolute_max_px": 3.855072021484375,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": true,
+            "forward_raw_p99_px": 7.536297874450688,
+            "forward_raw_max_px": 26.985336303710938
+          },
+          "fp32_run": {
+            "common_pixels": 207633,
+            "mask_iou": 0.8471151257007172,
+            "absolute_median_px": 0.01746208965778351,
+            "absolute_p99_px": 0.5599879360198918,
+            "absolute_max_px": 12.28935718536377,
+            "min_iou_gate": 0.9,
+            "p99_error_gate_original_px": 1.0,
+            "compatible": false,
+            "forward_raw_p99_px": 19.949822521209732,
+            "forward_raw_max_px": 43.92530059814453
+          }
+        },
+        "elapsed_including_comparisons_s": 0.732849040068686,
+        "output_sha256": "bf068aaedbc12a0a46d3bed0e237bb8ace41ba43b510a92f359007e826cbd0d4",
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738731.230421,
+            "valid_until": 1792738731.430421,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738731.230421,
+            "valid_until": 1792738731.430421,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        }
+      }
+    ]
+  },
+  "layer_probes": [
+    {
+      "run": "runs/20261023T112150Z_57948878d1c7478e813ded098093bb0d",
+      "report": {
+        "results": [
+          {
+            "key": "0000",
+            "normalized_input_sha256": "cbb1c49846bb60c2d05b96f7c36ea5a7ba80db134f49224e8c5d2ce0a2486f70",
+            "layers": [
+              {
+                "tensor": "/stem_2/stem_2.0/conv/Conv_output_0",
+                "shape": [
+                  1,
+                  12,
+                  192,
+                  240
+                ],
+                "difference": {
+                  "mean_abs": 0.0,
+                  "p99_abs": 0.0,
+                  "max_abs": 0.0,
+                  "reference_abs_max": 2.1833252906799316,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/stem_2/stem_2.0/IN/InstanceNormalization_output_0",
+                "shape": [
+                  1,
+                  12,
+                  192,
+                  240
+                ],
+                "difference": {
+                  "mean_abs": 2.2612566679824507e-08,
+                  "p99_abs": 4.76837158203125e-07,
+                  "max_abs": 1.9073486328125e-06,
+                  "reference_abs_max": 19.992881774902344,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/conv4/Conv_output_0",
+                "shape": [
+                  2,
+                  224,
+                  96,
+                  120
+                ],
+                "difference": {
+                  "mean_abs": 0.019839743007576512,
+                  "p99_abs": 0.080168429017067,
+                  "max_abs": 0.4247417449951172,
+                  "reference_abs_max": 24.46047019958496,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/classifier/layers.0/Conv_output_0",
+                "shape": [
+                  1,
+                  1,
+                  48,
+                  96,
+                  120
+                ],
+                "difference": {
+                  "mean_abs": 0.45237474136843553,
+                  "p99_abs": 2.2515952110290547,
+                  "max_abs": 12.341581344604492,
+                  "reference_abs_max": 38.94871139526367,
+                  "finite": true
+                }
+              }
+            ]
+          }
+        ],
+        "build_s": 0.04331959504634142,
+        "subgraph_sha256": "1f42d40450b3677b117f0f5ac59d0c3f6328db15218f71332b302f420514308c",
+        "engine_sha256": "66363c3ec1243e67c914897fc76e889300c1316ed9cf84d65122b3e5015ccc25",
+        "ort": "1.20.2",
+        "tensorrt": "10.13.3.9",
+        "global_tf32_override": "0",
+        "marking_outputs_changes_optimization": true,
+        "control_published": false,
+        "current_control_eligible": false,
+        "acceptance_eligible": false
+      }
+    },
+    {
+      "run": "runs/20261023T112528Z_c871020b7ac8467ba22455f0547cceeb",
+      "report": {
+        "results": [
+          {
+            "key": "0000",
+            "normalized_input_sha256": "cbb1c49846bb60c2d05b96f7c36ea5a7ba80db134f49224e8c5d2ce0a2486f70",
+            "layers": [
+              {
+                "tensor": "/feature/stem/stem.0/Conv_output_0",
+                "shape": [
+                  2,
+                  48,
+                  96,
+                  120
+                ],
+                "difference": {
+                  "mean_abs": 0.0,
+                  "p99_abs": 0.0,
+                  "max_abs": 0.0,
+                  "reference_abs_max": 7.178133487701416,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stem/stem.1/LayerNormalization_output_0",
+                "shape": [
+                  2,
+                  96,
+                  120,
+                  48
+                ],
+                "difference": {
+                  "mean_abs": 3.752597064097236e-08,
+                  "p99_abs": 4.76837158203125e-07,
+                  "max_abs": 1.430511474609375e-06,
+                  "reference_abs_max": 3.806401014328003,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.0/blocks/blocks.0/conv_dw/Conv_output_0",
+                "shape": [
+                  2,
+                  48,
+                  96,
+                  120
+                ],
+                "difference": {
+                  "mean_abs": 1.8053320510952524e-08,
+                  "p99_abs": 1.4901161193847656e-07,
+                  "max_abs": 5.662441253662109e-07,
+                  "reference_abs_max": 2.024336338043213,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.0/blocks/blocks.0/norm/LayerNormalization_output_0",
+                "shape": [
+                  2,
+                  96,
+                  120,
+                  48
+                ],
+                "difference": {
+                  "mean_abs": 3.2112449671616594e-07,
+                  "p99_abs": 2.682209014892578e-06,
+                  "max_abs": 1.1444091796875e-05,
+                  "reference_abs_max": 11.99406623840332,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.0/blocks/blocks.2/Add_output_0",
+                "shape": [
+                  2,
+                  48,
+                  96,
+                  120
+                ],
+                "difference": {
+                  "mean_abs": 1.5150549329981492e-06,
+                  "p99_abs": 8.58306884765625e-06,
+                  "max_abs": 3.8743019104003906e-05,
+                  "reference_abs_max": 14.321598052978516,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/Add_3_output_0",
+                "shape": [
+                  2,
+                  96,
+                  48,
+                  60
+                ],
+                "difference": {
+                  "mean_abs": 0.09756338183131205,
+                  "p99_abs": 0.5674382781982446,
+                  "max_abs": 4.5335693359375,
+                  "reference_abs_max": 116.85904693603516,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.2/blocks/blocks.8/Add_3_output_0",
+                "shape": [
+                  2,
+                  160,
+                  24,
+                  30
+                ],
+                "difference": {
+                  "mean_abs": 0.18721893774581358,
+                  "p99_abs": 0.967411098480228,
+                  "max_abs": 15.908950805664062,
+                  "reference_abs_max": 297.044189453125,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.3/blocks/blocks.2/Add_4_output_0",
+                "shape": [
+                  2,
+                  304,
+                  12,
+                  15
+                ],
+                "difference": {
+                  "mean_abs": 0.1636004802156519,
+                  "p99_abs": 0.6844975444674491,
+                  "max_abs": 2.868710994720459,
+                  "reference_abs_max": 16.219606399536133,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/conv4/Conv_output_0",
+                "shape": [
+                  2,
+                  224,
+                  96,
+                  120
+                ],
+                "difference": {
+                  "mean_abs": 0.019839746444146416,
+                  "p99_abs": 0.08016861081123361,
+                  "max_abs": 0.42474365234375,
+                  "reference_abs_max": 24.460466384887695,
+                  "finite": true
+                }
+              }
+            ]
+          }
+        ],
+        "build_s": 25.4878817088902,
+        "reused_from": null,
+        "subgraph_sha256": "89ddec3424293e9820907059e729e3d72848996d7d21aac7f9414010d286439b",
+        "engine_sha256": "d0172e2f05f2d2eceef889a66d5b99887294610e21a330c658a9935ffb8e0708",
+        "ort": "1.20.2",
+        "tensorrt": "10.13.3.9",
+        "global_tf32_override": "0",
+        "marking_outputs_changes_optimization": true,
+        "control_published": false,
+        "current_control_eligible": false,
+        "acceptance_eligible": false
+      }
+    },
+    {
+      "run": "runs/20261023T112816Z_211601887d544d6aa568cab24abd9020",
+      "report": {
+        "results": [
+          {
+            "key": "0000",
+            "normalized_input_sha256": "cbb1c49846bb60c2d05b96f7c36ea5a7ba80db134f49224e8c5d2ce0a2486f70",
+            "layers": [
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/pos_embd/token_projection/Conv_output_0",
+                "shape": [
+                  2,
+                  96,
+                  48,
+                  60
+                ],
+                "difference": {
+                  "mean_abs": 0.11256634540160906,
+                  "p99_abs": 0.5516460919380188,
+                  "max_abs": 1.8222904205322266,
+                  "reference_abs_max": 6.211393356323242,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/norm_xca/LayerNormalization_output_0",
+                "shape": [
+                  2,
+                  2880,
+                  96
+                ],
+                "difference": {
+                  "mean_abs": 0.06793724671400794,
+                  "p99_abs": 0.3272910689376297,
+                  "max_abs": 0.8253051042556763,
+                  "reference_abs_max": 8.29505729675293,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/xca/qkv/Add_output_0",
+                "shape": [
+                  2,
+                  2880,
+                  288
+                ],
+                "difference": {
+                  "mean_abs": 0.1027516549883651,
+                  "p99_abs": 0.496185176372528,
+                  "max_abs": 1.4971418380737305,
+                  "reference_abs_max": 13.069316864013672,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/xca/ReduceL2_output_0",
+                "shape": [
+                  2,
+                  8,
+                  12,
+                  1
+                ],
+                "difference": {
+                  "mean_abs": 3.580013950665792,
+                  "p99_abs": 12.21664733886719,
+                  "max_abs": 12.944259643554688,
+                  "reference_abs_max": 200.0084991455078,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/xca/ReduceL2_1_output_0",
+                "shape": [
+                  2,
+                  8,
+                  12,
+                  1
+                ],
+                "difference": {
+                  "mean_abs": 4.677602847417195,
+                  "p99_abs": 15.421723403930695,
+                  "max_abs": 23.993324279785156,
+                  "reference_abs_max": 205.7195281982422,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/xca/Div_output_0",
+                "shape": [
+                  2,
+                  8,
+                  12,
+                  2880
+                ],
+                "difference": {
+                  "mean_abs": 0.0010160827598997056,
+                  "p99_abs": 0.00491762894904242,
+                  "max_abs": 0.013314887881278992,
+                  "reference_abs_max": 0.11802659928798676,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/xca/Div_1_output_0",
+                "shape": [
+                  2,
+                  8,
+                  12,
+                  2880
+                ],
+                "difference": {
+                  "mean_abs": 0.0009724100861888926,
+                  "p99_abs": 0.0053557403944432735,
+                  "max_abs": 0.012748878449201584,
+                  "reference_abs_max": 0.1186419129371643,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/xca/MatMul_output_0",
+                "shape": [
+                  2,
+                  8,
+                  12,
+                  12
+                ],
+                "difference": {
+                  "mean_abs": 0.033436018268023164,
+                  "p99_abs": 0.13754114344716056,
+                  "max_abs": 0.1928340643644333,
+                  "reference_abs_max": 0.9228634238243103,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/xca/Softmax_output_0",
+                "shape": [
+                  2,
+                  8,
+                  12,
+                  12
+                ],
+                "difference": {
+                  "mean_abs": 0.003123771429980277,
+                  "p99_abs": 0.015367633998393995,
+                  "max_abs": 0.03024701029062271,
+                  "reference_abs_max": 0.43407154083251953,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/xca/MatMul_1_output_0",
+                "shape": [
+                  2,
+                  8,
+                  12,
+                  2880
+                ],
+                "difference": {
+                  "mean_abs": 0.04703271592405932,
+                  "p99_abs": 0.16583834171295175,
+                  "max_abs": 0.30360573530197144,
+                  "reference_abs_max": 3.209686517715454,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/xca/proj/Add_output_0",
+                "shape": [
+                  2,
+                  2880,
+                  96
+                ],
+                "difference": {
+                  "mean_abs": 0.061843517284066354,
+                  "p99_abs": 0.22676548659801532,
+                  "max_abs": 0.5734896659851074,
+                  "reference_abs_max": 3.812856912612915,
+                  "finite": true
+                }
+              },
+              {
+                "tensor": "/feature/stages.1/blocks/blocks.2/Add_3_output_0",
+                "shape": [
+                  2,
+                  96,
+                  48,
+                  60
+                ],
+                "difference": {
+                  "mean_abs": 0.09756337359833321,
+                  "p99_abs": 0.5674380826950096,
+                  "max_abs": 4.5335693359375,
+                  "reference_abs_max": 116.85904693603516,
+                  "finite": true
+                }
+              }
+            ]
+          }
+        ],
+        "build_s": 9.788094576913863,
+        "reused_from": null,
+        "subgraph_sha256": "149daf0c2d62104e33e3cd7ac0a0357e02dfbdd9f441dfc5b5fee666ea64117d",
+        "engine_sha256": "f3fa941518f5d0a140266fc76de483951a9fbd085ef0b420ff8547be3783d3b0",
+        "ort": "1.20.2",
+        "tensorrt": "10.13.3.9",
+        "global_tf32_override": "0",
+        "marking_outputs_changes_optimization": true,
+        "control_published": false,
+        "current_control_eligible": false,
+        "acceptance_eligible": false
+      }
+    }
+  ],
+  "reuse_timing_correction": "112150Z reuses subgraph and engine from failed 111557Z; build_s in that archived report is preparation time, not rebuild time. Later code reports reuse and build separately.",
+  "shape_only_freezing": {
+    "modules": [
+      {
+        "module": "feature.stages.1.blocks.2.pos_embd",
+        "shape": [
+          2,
+          48,
+          60
+        ],
+        "input_shape": [
+          2,
+          64,
+          48,
+          60
+        ],
+        "input_stride": [
+          184320,
+          1,
+          3840,
+          64
+        ],
+        "input_dtype": "torch.float32",
+        "input_sha256": "64d84a8d4c35d2a9f7a8f3bcd981db8e1594949d34f93726c377abc49383efb7",
+        "original_projection_preserved": true,
+        "shape_mismatch_rejected": true
+      }
+    ],
+    "packets": [
+      {
+        "key": "0000",
+        "max_raw_absolute_original_px": 0.0,
+        "valid_mask_identical": true,
+        "passed": true
+      },
+      {
+        "key": "0001",
+        "max_raw_absolute_original_px": 0.0,
+        "valid_mask_identical": true,
+        "passed": true
+      },
+      {
+        "key": "0002",
+        "max_raw_absolute_original_px": 0.0,
+        "valid_mask_identical": true,
+        "passed": true
+      },
+      {
+        "key": "0003",
+        "max_raw_absolute_original_px": 0.0,
+        "valid_mask_identical": true,
+        "passed": true
+      },
+      {
+        "key": "0004",
+        "max_raw_absolute_original_px": 0.0,
+        "valid_mask_identical": true,
+        "passed": true
+      },
+      {
+        "key": "0005",
+        "max_raw_absolute_original_px": 0.0,
+        "valid_mask_identical": true,
+        "passed": true
+      },
+      {
+        "key": "0006",
+        "max_raw_absolute_original_px": 0.0,
+        "valid_mask_identical": true,
+        "passed": true
+      },
+      {
+        "key": "0007",
+        "max_raw_absolute_original_px": 0.0,
+        "valid_mask_identical": true,
+        "passed": true
+      },
+      {
+        "key": "0008",
+        "max_raw_absolute_original_px": 0.0,
+        "valid_mask_identical": true,
+        "passed": true
+      },
+      {
+        "key": "0009",
+        "max_raw_absolute_original_px": 0.0,
+        "valid_mask_identical": true,
+        "passed": true
+      },
+      {
+        "key": "0010",
+        "max_raw_absolute_original_px": 0.0,
+        "valid_mask_identical": true,
+        "passed": true
+      },
+      {
+        "key": "0011",
+        "max_raw_absolute_original_px": 0.0,
+        "valid_mask_identical": true,
+        "passed": true
+      }
+    ],
+    "max_raw_gate_original_px": 0.0001,
+    "source_fp32_reference": "/workspace/main/runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122",
+    "passed": true
+  },
+  "export": {
+    "onnx_sha256": "c599bf9152d352b7a2ac1eab491113002a9ac49a19529df0b8ef90cbbdf49fed",
+    "opset": 17,
+    "image_shape": [
+      1,
+      3,
+      384,
+      480
+    ],
+    "external_imagenet_normalization": true,
+    "volume_normalize": true,
+    "mixed_precision_at_export": false,
+    "valid_iters": 4,
+    "max_disp": 192,
+    "sample_sha256": "dafbd4313a6b76187c70275e45c9e1064601b6adfdc567edb38f68e0f1af3b6d",
+    "exporter_sha256": "f9cc3c47266ad9c5d2c6649f3aab904f3df9edfe26cd17faa3b7557b4c07e169",
+    "export_s": 21.856169746024534,
+    "torch": "2.6.0+cu124",
+    "onnx": "1.17.0",
+    "normalization_compatibility_default_applied": true,
+    "fourier_inputs_frozen": true,
+    "source_weights_sha256": "7aee85948373da62b0503c2542507129a3e7cab9d97d10e6790d89512a7db214",
+    "acceptance_eligible": false
+  },
+  "build": {
+    "engine_sha256": "5aafcf0ef07fa18b42c20019a4a91dd5f05d9039256a760a30b07cd7419eabd1",
+    "engine_file": "stereo_fp32.engine",
+    "onnx_sha256": "c599bf9152d352b7a2ac1eab491113002a9ac49a19529df0b8ef90cbbdf49fed",
+    "tensorrt": "10.13.3.9",
+    "precision": "fp32",
+    "tf32_enabled": false,
+    "global_tf32_override": "0",
+    "max_aux_streams": 0,
+    "workspace_limit_bytes": 536870912,
+    "build_s": 164.01218725694343,
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "compute_capability": [
+      8,
+      6
+    ],
+    "cuda_runtime": "12.4",
+    "acceptance_eligible": false,
+    "current_control_eligible": false
+  },
+  "optimized_fp32": {
+    "run": "runs/20261023T113606Z_75b171efede644539586bc3d0a0b0c28",
+    "vs_original_pytorch_fp32": {
+      "packets": 12,
+      "compatible": 12,
+      "mask_iou_min": 0.9999306634925954,
+      "common_error_p99_max_px": 0.0010528564453125
+    },
+    "independent_raw_npz_recheck": [
+      {
+        "key": "0000",
+        "mask_iou": 0.9999614885942053,
+        "p99_common_px": 0.00029754638671875,
+        "max_raw_both_directions_px": 0.0460968017578125
+      },
+      {
+        "key": "0001",
+        "mask_iou": 0.9999882196331594,
+        "p99_common_px": 5.555152893066406e-05,
+        "max_raw_both_directions_px": 0.02057647705078125
+      },
+      {
+        "key": "0002",
+        "mask_iou": 0.9999889471008245,
+        "p99_common_px": 0.00010013580322265625,
+        "max_raw_both_directions_px": 0.013885498046875
+      },
+      {
+        "key": "0003",
+        "mask_iou": 1.0,
+        "p99_common_px": 5.4836273193359375e-05,
+        "max_raw_both_directions_px": 0.037021636962890625
+      },
+      {
+        "key": "0004",
+        "mask_iou": 1.0,
+        "p99_common_px": 5.4836273193359375e-05,
+        "max_raw_both_directions_px": 0.051975250244140625
+      },
+      {
+        "key": "0005",
+        "mask_iou": 1.0,
+        "p99_common_px": 0.0001220703125,
+        "max_raw_both_directions_px": 0.022876739501953125
+      },
+      {
+        "key": "0006",
+        "mask_iou": 0.9999554155272857,
+        "p99_common_px": 5.435943603515625e-05,
+        "max_raw_both_directions_px": 0.054351806640625
+      },
+      {
+        "key": "0007",
+        "mask_iou": 0.9999306634925954,
+        "p99_common_px": 0.0010528564453125,
+        "max_raw_both_directions_px": 0.019750595092773438
+      },
+      {
+        "key": "0008",
+        "mask_iou": 0.9999944015541286,
+        "p99_common_px": 4.3392181396484375e-05,
+        "max_raw_both_directions_px": 0.01532745361328125
+      },
+      {
+        "key": "0009",
+        "mask_iou": 0.999990730999708,
+        "p99_common_px": 9.059906005859375e-05,
+        "max_raw_both_directions_px": 0.0124664306640625
+      },
+      {
+        "key": "0010",
+        "mask_iou": 0.9999905294958851,
+        "p99_common_px": 6.389617919921875e-05,
+        "max_raw_both_directions_px": 0.058990478515625
+      },
+      {
+        "key": "0011",
+        "mask_iou": 0.9999905684401144,
+        "p99_common_px": 0.00012040138244628906,
+        "max_raw_both_directions_px": 0.010776519775390625
+      }
+    ],
+    "vs_original_onnx_ort": {
+      "packets": 12,
+      "compatible": 12,
+      "mask_iou_min": 0.999919107408028,
+      "common_error_p99_max_px": 0.00109100341796875
+    },
+    "original_amp_gate": {
+      "passed": false,
+      "packets_passed": 11,
+      "first_packet": {
+        "common_pixels": 147954,
+        "mask_iou": 0.8976810785229768,
+        "absolute_median_px": 0.0016469955444335938,
+        "absolute_p99_px": 0.9071807861328125,
+        "absolute_max_px": 3.7657623291015625,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": false
+      },
+      "run_state": "FAILED",
+      "failed_stage": "evaluate",
+      "exit_code": 2
+    },
+    "runtime_ms_median": {
+      "bidirectional_resize_transfer_s": 237.02231654897332,
+      "with_gray_and_mask_s": 262.4278934672475
+    },
+    "first_pair_repeat_identical": true,
+    "engine_and_onnx_digests_independently_verified": true
+  },
+  "isolated_sampler": {
+    "run": "runs/20261023T114324Z_2d68cb7f5aa44ac8a4163bb736141546",
+    "all_eight_shapes_passed": true,
+    "report": {
+      "results": [
+        {
+          "key": "n1_c28_w48",
+          "shape": [
+            1,
+            28,
+            1,
+            48
+          ],
+          "torch": {
+            "mean_abs": 4.676871714210931e-07,
+            "p99_abs": 3.6808664896526085e-06,
+            "max_abs": 4.447921117645137e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "onnxruntime": {
+            "mean_abs": 4.6249204344249166e-07,
+            "p99_abs": 3.6808664896526085e-06,
+            "max_abs": 4.447921117645137e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt": {
+            "mean_abs": 4.6249204344249166e-07,
+            "p99_abs": 3.6808664896526085e-06,
+            "max_abs": 4.447921117645137e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt_vs_torch": {
+            "mean_abs": 5.7875045708247595e-09,
+            "p99_abs": 1.484155654907232e-07,
+            "max_abs": 1.7881393432617188e-07,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "elapsed_s": 3.1709238381590694
+        },
+        {
+          "key": "n1_c28_w24",
+          "shape": [
+            1,
+            28,
+            1,
+            24
+          ],
+          "torch": {
+            "mean_abs": 2.7518805213779986e-07,
+            "p99_abs": 2.1240624605667386e-06,
+            "max_abs": 2.6307781766377047e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "onnxruntime": {
+            "mean_abs": 2.7518805213779986e-07,
+            "p99_abs": 2.1240624605667386e-06,
+            "max_abs": 2.6307781766377047e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt": {
+            "mean_abs": 2.7518805213779986e-07,
+            "p99_abs": 2.1240624605667386e-06,
+            "max_abs": 2.6307781766377047e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt_vs_torch": {
+            "mean_abs": 0.0,
+            "p99_abs": 0.0,
+            "max_abs": 0.0,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "elapsed_s": 0.9678226299583912
+        },
+        {
+          "key": "n1_c1_w120",
+          "shape": [
+            1,
+            1,
+            1,
+            120
+          ],
+          "torch": {
+            "mean_abs": 3.5867427341764983e-07,
+            "p99_abs": 1.3500857710369018e-06,
+            "max_abs": 1.4196384867659617e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "onnxruntime": {
+            "mean_abs": 3.5867427341764983e-07,
+            "p99_abs": 1.3500857710369018e-06,
+            "max_abs": 1.4196384867659617e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt": {
+            "mean_abs": 3.5867427341764983e-07,
+            "p99_abs": 1.3500857710369018e-06,
+            "max_abs": 1.4196384867659617e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt_vs_torch": {
+            "mean_abs": 0.0,
+            "p99_abs": 0.0,
+            "max_abs": 0.0,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "elapsed_s": 0.9920233129523695
+        },
+        {
+          "key": "n1_c1_w60",
+          "shape": [
+            1,
+            1,
+            1,
+            60
+          ],
+          "torch": {
+            "mean_abs": 3.121084197199586e-07,
+            "p99_abs": 1.0117771711115609e-06,
+            "max_abs": 1.0543288309072807e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "onnxruntime": {
+            "mean_abs": 3.121084197199586e-07,
+            "p99_abs": 1.0117771711115609e-06,
+            "max_abs": 1.0543288309072807e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt": {
+            "mean_abs": 3.121084197199586e-07,
+            "p99_abs": 1.0117771711115609e-06,
+            "max_abs": 1.0543288309072807e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt_vs_torch": {
+            "mean_abs": 0.0,
+            "p99_abs": 0.0,
+            "max_abs": 0.0,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "elapsed_s": 1.0054841248784214
+        },
+        {
+          "key": "n11520_c28_w48",
+          "shape": [
+            11520,
+            28,
+            1,
+            48
+          ],
+          "torch": {
+            "mean_abs": 5.456626479913326e-07,
+            "p99_abs": 4.996452817636052e-06,
+            "max_abs": 1.8917366396919988e-05,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "onnxruntime": {
+            "mean_abs": 5.453521198165557e-07,
+            "p99_abs": 4.996452817636052e-06,
+            "max_abs": 1.8917366396919988e-05,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt": {
+            "mean_abs": 5.453521198165557e-07,
+            "p99_abs": 4.996452817636052e-06,
+            "max_abs": 1.8917366396919988e-05,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt_vs_torch": {
+            "mean_abs": 4.160849134178086e-10,
+            "p99_abs": 0.0,
+            "max_abs": 2.384185791015625e-07,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "elapsed_s": 1.445294430013746
+        },
+        {
+          "key": "n11520_c28_w24",
+          "shape": [
+            11520,
+            28,
+            1,
+            24
+          ],
+          "torch": {
+            "mean_abs": 2.8047408446131274e-07,
+            "p99_abs": 2.520429045347325e-06,
+            "max_abs": 9.430816774624873e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "onnxruntime": {
+            "mean_abs": 2.798487234521916e-07,
+            "p99_abs": 2.520429045347325e-06,
+            "max_abs": 9.430816774624873e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt": {
+            "mean_abs": 2.798487234521916e-07,
+            "p99_abs": 2.520429045347325e-06,
+            "max_abs": 9.430816774624873e-06,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt_vs_torch": {
+            "mean_abs": 8.37480126948247e-10,
+            "p99_abs": 2.9802322387695312e-08,
+            "max_abs": 3.5762786865234375e-07,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "elapsed_s": 1.2448419099673629
+        },
+        {
+          "key": "n11520_c1_w120",
+          "shape": [
+            11520,
+            1,
+            1,
+            120
+          ],
+          "torch": {
+            "mean_abs": 1.2995347979256665e-06,
+            "p99_abs": 1.2171327585956932e-05,
+            "max_abs": 3.4294302505344376e-05,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "onnxruntime": {
+            "mean_abs": 1.2994093632945531e-06,
+            "p99_abs": 1.2171327585956932e-05,
+            "max_abs": 3.4294302505344376e-05,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt": {
+            "mean_abs": 1.2994093632945531e-06,
+            "p99_abs": 1.2171327585956932e-05,
+            "max_abs": 3.4294302505344376e-05,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt_vs_torch": {
+            "mean_abs": 1.75097414756709e-10,
+            "p99_abs": 0.0,
+            "max_abs": 2.384185791015625e-07,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "elapsed_s": 0.9768863660283387
+        },
+        {
+          "key": "n11520_c1_w60",
+          "shape": [
+            11520,
+            1,
+            1,
+            60
+          ],
+          "torch": {
+            "mean_abs": 6.510554288431155e-07,
+            "p99_abs": 5.969246640686874e-06,
+            "max_abs": 1.9427617594658386e-05,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "onnxruntime": {
+            "mean_abs": 6.508144571209064e-07,
+            "p99_abs": 5.969246640686874e-06,
+            "max_abs": 1.9427617594658386e-05,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt": {
+            "mean_abs": 6.508144571209064e-07,
+            "p99_abs": 5.969246640686874e-06,
+            "max_abs": 1.9427617594658386e-05,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "tensorrt_vs_torch": {
+            "mean_abs": 3.261344138508444e-10,
+            "p99_abs": 0.0,
+            "max_abs": 2.384185791015625e-07,
+            "finite": true,
+            "absolute_gate": 0.0005,
+            "passed": true
+          },
+          "elapsed_s": 0.9646803541108966
+        }
+      ],
+      "torch": "2.6.0+cu124",
+      "onnxruntime": "1.20.2",
+      "tensorrt": "10.13.3.9",
+      "seed": 4097,
+      "control_published": false,
+      "acceptance_eligible": false,
+      "current_control_eligible": false
+    },
+    "synthetic_seed_is_not_simulator_seed": true
+  },
+  "runtime_lock": {
+    "path": "configs/fast_foundation_stereo_ort_runtime.lock.txt",
+    "sha256": "f439153e84a878d5a715daafbc711172a5c98d6feb3d48213698413dfed2d1f9",
+    "packages": 55
+  },
+  "verification": {
+    "host_tests_passed": 146,
+    "noetic_tests_passed": 143,
+    "noetic_tests_skipped": 3,
+    "logs": {
+      "runs/ffs_runtime/iteration37_host_tests.log": "132376287dd4a2c9db68997a3651953bd3c778489296b4c09acae434d6a36b47",
+      "runs/ffs_runtime/iteration37_noetic_tests.log": "515b671f312b6e8fa3d97967524f7445acd7046455f3a2cf3123aa0723e997cd",
+      "runs/ffs_runtime/iteration37_independent_audit.json": "3bd2834da8ab149a7725aea0941271df50c30586b544f31363dd483a2613d5e1"
+    }
+  },
+  "artifact_json_sha256": {
+    "runs/20261023T105912Z_1b9dffa5feaf424e95a8e75654476b1c": {
+      "ort_profile_2026-10-23_10-59-14.json": "9885bd9e0962c9d47b09cf14551d92d478ac82c95df2ced109d9104b45ce7fbe"
+    },
+    "runs/20261023T110018Z_c91753144a6a4bd48f73620f496265c4": {
+      "onnx_probe.json": "6152872b3286f26d316595d07bd9d24a577b5b503375cc84d1c37c8966ba1d52",
+      "ort_profile_2026-10-23_11-00-19.json": "aa55459ce6b5f23d540f3d1e3c4a2fa83569534b9701961fb0ef32f044c05c32"
+    },
+    "runs/20261023T110142Z_1211a846605a4092bffa220360448ec2": {
+      "onnx_probe.json": "e1f23072739b6e629f4602dfa37c12607d82b90b7244bc01270a10871568dc7a",
+      "ort_profile_2026-10-23_11-01-43.json": "14972b4021d3b1744ff04998607b8393e4f2b6d8cfa8f21a80634f1f934f1f7d"
+    },
+    "runs/20261023T110749Z_f290ac61f3f7433f8359ea405e6a8a18": {
+      "build_fp32.json": "effe018d29b5f05d7a3f999904bb0bb3613016d6612511368dc79f001af7bcbb",
+      "comparison_with_ort.json": "762def999dd90ca00bab07e07731105b8f8fdd040d99da606dfb52c2edea894c",
+      "export.json": "fc320e178df5f82e751a97fbc4e537a736d6360c8f4f3d2770dab801db17b0a7",
+      "export_parity.json": "a5a1cf499766e31878a064e203159a14dfc9f1fcc29cf486e7ef63421173626b",
+      "profile.json": "d730f8a3ae540c0eaf23e5c5d87526ed8bb7d987ff38f655c3f26808c2a9f90c",
+      "trt_comparison.json": "a2e7f96d7bbefb5832682d5d94447bc7407dc1e9cdcefb7371c5bd0b34995372",
+      "trt_runtime.json": "c8b844ad19f2d70b66a05ff9451ce1382b379897ad8f3518f3dbff6755b38f5b"
+    },
+    "runs/20261023T111308Z_2c7c8bef1b0a45cfa883d7e469fec272": {
+      "sampler_probe.json": "9d057b2b825bccc564c385e53c7779f177724cf07d2adaaf59529ee5c6e6105c"
+    },
+    "runs/20261023T111557Z_1c594385b67d447b94001398761b0011": {
+      "engine_inspector.json": "5da38dd316807b925b843a320266387a3ac8b8d4c1c865a7437644c3d11bb71b"
+    },
+    "runs/20261023T112150Z_57948878d1c7478e813ded098093bb0d": {
+      "engine_inspector.json": "5da38dd316807b925b843a320266387a3ac8b8d4c1c865a7437644c3d11bb71b",
+      "layer_probe.json": "2f05dffb428f3b5f6453e82f94c5b354ef2e798d531dfc5d081722b2a0119e3d"
+    },
+    "runs/20261023T112528Z_c871020b7ac8467ba22455f0547cceeb": {
+      "engine_inspector.json": "f03c0871d8b1053e1d5f42bdba4af46eac85b2dd667b4d4191a05a81f65a2a05",
+      "layer_probe.json": "6160fa4540f24423be3523eee04c72133e2a56cb09541fbae3103f96f3e906fe"
+    },
+    "runs/20261023T112816Z_211601887d544d6aa568cab24abd9020": {
+      "engine_inspector.json": "9e6a8efafa3ac366cd21437251ac74b69fc430318000ac5c41c58b0020224a14",
+      "layer_probe.json": "c655378038ad680352aa7cdfa136932895b0a56685ebb64255db0bc67f13daa9"
+    },
+    "runs/20261023T113606Z_75b171efede644539586bc3d0a0b0c28": {
+      "build_fp32.json": "be0dff3724d82f73e129f59c72ffbbe15cadd92dcffcbb62294f989f60de482d",
+      "comparison_with_ort.json": "3f7045bdbd1f58617fc19de6b4cbfd546e99a93522b406ee1223678bda1d9df1",
+      "comparison_with_pytorch_fp32.json": "90dc0ad9bdfa97261ec00a1d2f43245b2f3a611a2d1862479c14065f1c0d618e",
+      "export.json": "a6434b70c39c1e477f5d3d2e9f23db99f62bf405990c089b0a3034796cfd7908",
+      "export_parity.json": "a5a1cf499766e31878a064e203159a14dfc9f1fcc29cf486e7ef63421173626b",
+      "fourier_parity.json": "8d82409b92493c2a53aadbf4cc054e0dccc730fba265b842586ec9898bf3a169",
+      "profile.json": "d730f8a3ae540c0eaf23e5c5d87526ed8bb7d987ff38f655c3f26808c2a9f90c",
+      "trt_comparison.json": "99f99774bed0f6573420c9b2fb4e1daf6e9dd58872dbf2613362281bff91f18f",
+      "trt_runtime.json": "364607f52975007de8844e6cc7d16e0c4816ce8b7e7112c219071e335951fbcb"
+    },
+    "runs/20261023T114324Z_2d68cb7f5aa44ac8a4163bb736141546": {
+      "sampler_probe.json": "3af2f7ec65105dafc98affb2c31a6bf0dbe2aed61335bd32016ba886db382136"
+    }
+  },
+  "limits": [
+    "No precise TensorRT operator/constant-folding kernel cause proven.",
+    "Marked intermediate outputs change graph optimization.",
+    "AMP compatibility gate still failed and was not relaxed.",
+    "FP16 optimized graph not yet tested.",
+    "Metric calibration, exposure timing, VIO, free space and online latency unverified.",
+    "P1/P2 remain unaccepted; no control/default-budget change."
+  ],
+  "first_pair_input_lifetime_probe": {
+    "path": "runs/ffs_runtime/trt_input_lifetime_probe.json",
+    "sha256": "6bd62c215243e9233df242706bff253b14f4af39ea205ae40d635839c5d3d9f9",
+    "report": {
+      "padding_normalization_max_diff": [
+        0.0,
+        0.0
+      ],
+      "held_inputs_synchronized_vs_backend_max_px": 0.0,
+      "held_inputs_synchronized_vs_backend_exact": true,
+      "fresh_backend_vs_cached_exact": true,
+      "direct_output_sha256": "96ac1a6e237b77f3b0e98a53bdeb2e0ac249b996846a324f302894dce49b1fe6"
+    }
+  },
+  "global_tf32_override_only_vs_ort": {
+    "path": "runs/20261023T110749Z_f290ac61f3f7433f8359ea405e6a8a18/comparison_with_ort.json",
+    "sha256": "762def999dd90ca00bab07e07731105b8f8fdd040d99da606dfb52c2edea894c",
+    "report": [
+      {
+        "common_pixels": 138203,
+        "mask_iou": 0.820113104315885,
+        "absolute_median_px": 0.02190941572189331,
+        "absolute_p99_px": 2.5270538330078125,
+        "absolute_max_px": 33.116004943847656,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": false,
+        "key": "0000",
+        "raw_max_px": 113.60258483886719
+      },
+      {
+        "common_pixels": 165356,
+        "mask_iou": 0.9201985575638857,
+        "absolute_median_px": 0.015329301357269287,
+        "absolute_p99_px": 1.4101715087890625,
+        "absolute_max_px": 2.238701343536377,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": false,
+        "key": "0001",
+        "raw_max_px": 104.435791015625
+      },
+      {
+        "common_pixels": 177705,
+        "mask_iou": 0.9311580723421871,
+        "absolute_median_px": 0.014667510986328125,
+        "absolute_p99_px": 0.6995865106582642,
+        "absolute_max_px": 31.80225372314453,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": true,
+        "key": "0002",
+        "raw_max_px": 152.816650390625
+      },
+      {
+        "common_pixels": 205672,
+        "mask_iou": 0.9654058824081636,
+        "absolute_median_px": 0.018491744995117188,
+        "absolute_p99_px": 0.59301452636719,
+        "absolute_max_px": 5.819424629211426,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": true,
+        "key": "0003",
+        "raw_max_px": 118.81369018554688
+      },
+      {
+        "common_pixels": 206469,
+        "mask_iou": 0.9705911387942179,
+        "absolute_median_px": 0.018352627754211426,
+        "absolute_p99_px": 0.4198032379150406,
+        "absolute_max_px": 1.679884910583496,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": true,
+        "key": "0004",
+        "raw_max_px": 99.21675109863281
+      },
+      {
+        "common_pixels": 197652,
+        "mask_iou": 0.854526588845655,
+        "absolute_median_px": 0.014217138290405273,
+        "absolute_p99_px": 0.558524501323695,
+        "absolute_max_px": 4.467111587524414,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": false,
+        "key": "0005",
+        "raw_max_px": 120.36469268798828
+      },
+      {
+        "common_pixels": 130766,
+        "mask_iou": 0.9443293013179275,
+        "absolute_median_px": 0.017297513782978058,
+        "absolute_p99_px": 0.4947056770324707,
+        "absolute_max_px": 6.046142578125,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": true,
+        "key": "0006",
+        "raw_max_px": 129.25149536132812
+      },
+      {
+        "common_pixels": 157308,
+        "mask_iou": 0.8652376945035725,
+        "absolute_median_px": 0.017299219965934753,
+        "absolute_p99_px": 0.457559945583343,
+        "absolute_max_px": 36.952293395996094,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": false,
+        "key": "0007",
+        "raw_max_px": 86.951171875
+      },
+      {
+        "common_pixels": 172637,
+        "mask_iou": 0.8779075089246666,
+        "absolute_median_px": 0.0180666446685791,
+        "absolute_p99_px": 0.5977859497070312,
+        "absolute_max_px": 4.268167972564697,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": false,
+        "key": "0008",
+        "raw_max_px": 108.35397338867188
+      },
+      {
+        "common_pixels": 210130,
+        "mask_iou": 0.9046020061130483,
+        "absolute_median_px": 0.020763203501701355,
+        "absolute_p99_px": 0.9274988174438477,
+        "absolute_max_px": 4.298867702484131,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": true,
+        "key": "0009",
+        "raw_max_px": 105.17901611328125
+      },
+      {
+        "common_pixels": 208426,
+        "mask_iou": 0.9776445645239972,
+        "absolute_median_px": 0.018710851669311523,
+        "absolute_p99_px": 0.39986181259155273,
+        "absolute_max_px": 4.883360862731934,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": true,
+        "key": "0010",
+        "raw_max_px": 101.99270629882812
+      },
+      {
+        "common_pixels": 207633,
+        "mask_iou": 0.8471151257007172,
+        "absolute_median_px": 0.01746314764022827,
+        "absolute_p99_px": 0.5599968624114934,
+        "absolute_max_px": 12.28929615020752,
+        "min_iou_gate": 0.9,
+        "p99_error_gate_original_px": 1.0,
+        "compatible": false,
+        "key": "0011",
+        "raw_max_px": 43.9251823425293
+      }
+    ]
+  },
+  "final_snapshot_differences_after_documentation": {
+    "modified": [
+      "README.md",
+      "docs/implementation_status.md"
+    ],
+    "added": [
+      "docs/stereo_conversion_diagnosis.md",
+      "docs/evidence/p2_stereo_conversion.json"
+    ],
+    "executable_code_unchanged": true
+  }
+}
