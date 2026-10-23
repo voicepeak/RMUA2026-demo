@@ -234,6 +234,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     msg.header.stamp = rospy.Time.from_sec(command.stamp)
                     msg.header.seq = sequence
                     msg.rotorPWM0, msg.rotorPWM1, msg.rotorPWM2, msg.rotorPWM3 = command.values
+                    publish_begin_wall=time.monotonic()
                     publisher.publish(msg)
                     published_wall = time.monotonic()
                     last_published_wall=published_wall
@@ -241,6 +242,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     rows.append({'wall_elapsed': now-start, 'command': asdict(command),
                                  'guard_accept_wall_elapsed': accepted_wall-start,
                                  'publish_wall_elapsed': published_wall-start,
+                                 'publish_begin_wall_monotonic':publish_begin_wall,
+                                 'publish_end_wall_monotonic':published_wall,
                                  'raw': raw, 'state': {k:v for k,v in asdict(state).items() if k != 'metadata'},
                                  **details})
                     sequence += 1
@@ -261,10 +264,12 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
             fault = str(error)
             failed_wall=time.monotonic()
             fault_observation={'reason':fault,'fresh_read_in_fault_iteration':fresh_read,
+                'failure_wall_monotonic':failed_wall,
                 'wall_elapsed_at_last_read':latest_elapsed,
                 'wall_since_last_publication_s':None if last_published_wall is None else failed_wall-last_published_wall,
                 'state':asdict(latest_state) if latest_state else None,'raw':latest_raw}
         finally:
+            control_end_wall=time.monotonic()
             if monitor:
                 monitor.close()
             if publisher:
@@ -275,6 +280,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
     if fault_observation is not None:
         (run/'fault_observation.json').write_text(json.dumps(fault_observation,indent=2)+'\n')
     result = {'commands': len(rows), 'fault': fault, 'levels': levels,
+              'control_end_wall_monotonic':control_end_wall,
               'motor_pulses': motor_pulses,
               'hover_seconds': hover_seconds,
               'step': step,

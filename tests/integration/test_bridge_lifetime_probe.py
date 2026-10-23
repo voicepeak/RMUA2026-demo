@@ -12,12 +12,18 @@ MOCK = DECLARATIONS + r'''
 #include <atomic>
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 #include <thread>
 struct Owner {void* pointer;};
 struct Command {const char* type;void* parameter;};
-Owner owner{new int(1234)};
+struct Pwm {float values[4]{.1f,.2f,.3f,.4f};};
+Owner owner{std::getenv("MOCK_BAD_POINTER")?reinterpret_cast<void*>(1):static_cast<void*>(new Pwm)};
 std::atomic<int> phase{},gets{},frees{},constructs{},handoffs{};
+using NativeCallback=void(*)(void*,void*);
+NativeCallback native_callback=nullptr;
+std::atomic<int> init_calls{},native_calls{};
 bool safe(){return std::getenv("MOCK_SAFE")!=nullptr;}
+bool free_in_native(){return std::getenv("MOCK_FREE_IN_NATIVE")!=nullptr;}
 extern "C" void* get_parameter(const void*) asm("_ZNKSt12__shared_ptrIN10airsim_ros16ROTOR_PWM_ParamsELN9__gnu_cxx12_Lock_policyE2EE3getEv");
 extern "C" void* get_command(const void*) asm("_ZNKSt12__shared_ptrIN10airsim_ros7CommandELN9__gnu_cxx12_Lock_policyE2EE3getEv");
 extern "C" void* parameter_from_owner(const void*) asm("_ZNSt23_Sp_counted_ptr_inplaceIN10airsim_ros16ROTOR_PWM_ParamsESaIS1_ELN9__gnu_cxx12_Lock_policyE2EE6_M_ptrEv");
@@ -27,12 +33,12 @@ extern "C" void construct2(void*,const char*,void*) asm("_ZN10airsim_ros7Command
 extern "C" void* get_parameter(const void* value){++gets;return static_cast<const Owner*>(value)->pointer;}
 extern "C" void* get_command(const void* value){++handoffs;return static_cast<const Owner*>(value)->pointer;}
 extern "C" void* parameter_from_owner(const void* value){return static_cast<const Owner*>(value)->pointer;}
-extern "C" void free_parameter(void* value){auto p=static_cast<Owner*>(value);delete static_cast<int*>(p->pointer);p->pointer=nullptr;++frees;}
+extern "C" void free_parameter(void* value){auto p=static_cast<Owner*>(value);if(p->pointer!=reinterpret_cast<void*>(1))delete static_cast<Pwm*>(p->pointer);p->pointer=nullptr;++frees;}
 void construct_impl(void* self,const char* type,void* parameter){++constructs;auto c=static_cast<Command*>(self);c->type=type;c->parameter=parameter;}
 extern "C" void construct1(void* self,const char* type,void* p){construct_impl(self,type,p);}
 extern "C" void construct2(void* self,const char* type,void* p){construct_impl(self,type,p);}
 void airsim_ros::commands_impl::ROTOR_PWM_Callback(const boost::shared_ptr<const RotorPWM_<std::allocator<void>>>&){
-  while(phase.load()<(safe()?2:1))std::this_thread::yield();
+  while(phase.load()<(free_in_native()?4:(safe()?2:1)))std::this_thread::yield();
   free_parameter(&owner);phase=3;
 }
 void airsim_ros::PublishAsyncCommands(const ros::TimerEvent&){
@@ -42,11 +48,27 @@ void airsim_ros::PublishAsyncCommands(const ros::TimerEvent&){
   if(std::getenv("MOCK_CTOR2"))construct2(&command,"PWM",parameter);
   else construct1(&command,"PWM",parameter);
   Owner c{&command};
-  if(get_command(&c)!=&command || command.parameter!=parameter)std::abort();
+  void* delivered=get_command(&c);
+  if(delivered!=&command || command.parameter!=parameter)std::abort();
+  if(native_callback){int result=77;native_callback(delivered,&result);if(result!=78)std::abort();}
   // Deliberately DO NOT dereference parameter: the vulnerable order freed it.
   if(safe())phase=2;
 }
 extern "C" int mock_peak(){std::printf("%d %d %d %d\n",gets.load(),frees.load(),constructs.load(),handoffs.load());return 0;}
+extern "C" void mock_init(int,char**,NativeCallback,bool,bool,int,const char*,const char*,const char*,int)
+  asm("_ZN10airsim_ros13InitAirSimROSEiPPcPFvPvS2_EbbNS_17AirSimROSGameTypeEPKcS7_S7_i");
+extern "C" void mock_init(int argc,char** argv,NativeCallback cb,bool a,bool b,int game,
+                         const char* c,const char* d,const char* e,int f){
+  if(argc!=7 || std::strcmp(argv[0],"argv") || !a || b || game!=17 || std::strcmp(c,"c")
+      || std::strcmp(d,"d") || std::strcmp(e,"e") || f!=101)std::abort();
+  native_callback=cb;++init_calls;
+}
+extern "C" void owned_native_handler(void* cmd,void* result){
+  if(!cmd || !result || std::strcmp(static_cast<Command*>(cmd)->type,"PWM") || *static_cast<int*>(result)!=77)std::abort();
+  if(free_in_native()){phase=4;while(phase.load()!=3)std::this_thread::yield();}
+  *static_cast<int*>(result)=78;++native_calls;
+}
+extern "C" void mock_native_counts(){std::printf("%d %d\n",init_calls.load(),native_calls.load());}
 '''
 
 DRIVER = DECLARATIONS + r'''

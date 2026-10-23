@@ -3,9 +3,10 @@
 set -euo pipefail
 root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 variant=${1:-concurrency}
-[[ "$variant" == concurrency || "$variant" == lifetime ]] || { echo 'Variant: concurrency|lifetime' >&2; exit 2; }
+[[ "$variant" == concurrency || "$variant" == lifetime || "$variant" == native-input ]] || { echo 'Variant: concurrency|lifetime|native-input' >&2; exit 2; }
 compile_flags=()
 if [[ "$variant" == lifetime ]]; then compile_flags=(-DRMUA_LIFETIME_PROBE); fi
+if [[ "$variant" == native-input ]]; then compile_flags=(-DRMUA_LIFETIME_PROBE -DRMUA_NATIVE_INPUT_PROBE); fi
 source_hash=$(sha256sum "$root/tools/diagnostics/bridge_probe.cpp" | cut -d' ' -f1)
 output="$root/runs/probe_builds/$source_hash/$variant"
 mkdir -p "$output"

@@ -64,11 +64,12 @@ def main():
             if len(wind)<10000:wind.append({'stamp':msg.header.stamp.to_sec(),
                 'frame_id':msg.header.frame_id,'wind_world_m_s':(v.x,v.y,v.z)})
     def receive_imu(msg):
+        arrival=time.monotonic()
         a,w,q=msg.linear_acceleration,msg.angular_velocity,msg.orientation
         with lock:
             if len(imu)<30000:imu.append({'stamp':msg.header.stamp.to_sec(),
                 'acceleration_body':(a.x,a.y,a.z),'omega_body':(w.x,w.y,w.z),
-                'imu_orientation_wxyz':(q.w,q.x,q.y,q.z)})
+                'imu_orientation_wxyz':(q.w,q.x,q.y,q.z),'arrival_wall_monotonic':arrival})
     def receive_log(msg):
         with lock:
             if len(logs)<10000:logs.append({'stamp':msg.header.stamp.to_sec(),
