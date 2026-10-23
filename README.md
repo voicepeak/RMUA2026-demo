@@ -26,7 +26,7 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.state_observation --see
 
 状态链包含 IMU/GPS ESKF、零 GPS 拒绝和 reset epoch；噪声参数尚未标定，不能据此宣称 P2 已验收。
 
-学习双目已完成 [C-Fast-FoundationStereo / SGBM 离线对照](docs/learned_stereo_comparison.md)，有独立 GPU 环境、版本锁与原始输入追踪；尚未接入在线深度或控制。
+学习双目已完成 [C-Fast-FoundationStereo / SGBM 离线对照](docs/learned_stereo_comparison.md) 和 [只读在线时效实验](docs/learned_stereo_live_latency.md)，有独立 GPU 环境、版本锁与原始输入追踪；在线结果全部过期，尚未接入深度融合或控制。
 
 有界 PWM 辨识入口（自动启动新场次，结束时关闭模拟器；须先停止已有场次）：
 

@@ -1,0 +1,709 @@
+{
+  "iteration": 35,
+  "recorded_on": "2026-10-23",
+  "stage": "P2_READ_ONLY_LEARNED_STEREO_LATENCY",
+  "runs": [
+    {
+      "run": "runs/20261023T100146Z_6e9ed7546ea545b7971641b90a71a9c5",
+      "seed": 2114,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "0fef22811cbcf234fba28e2829d8ac722288af7932874517acf6fee641e7d76a",
+        "files": 282,
+        "uncompressed_bytes": 1187970,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_archive_independently_verified": true,
+      "vendor": {
+        "commit": "476f4249561f7c79ca707326954f9255643412a6",
+        "source_archive_sha256": "5fab9ab4c76611e7cf894ab8cf0a98687471133b5251d2bd1de48697c7c6012a",
+        "license_sha256": "045b564ebafefaa863beec07c5acdcfa8d99cefbbd060c22865bc4613318ddd6"
+      },
+      "vendor_files_independently_verified": 57,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "checkpoint_unchanged": true,
+      "vendor_unchanged": true,
+      "runtime_matches_lock": true,
+      "runtime_provenance": {
+        "packages": "antlr4-python3-runtime==4.9.3\nanyio==4.15.1\nclick==8.5.0\neinops==0.8.1\nfilelock==3.32.3\nfsspec==2026.7.0\nh11==0.16.0\nhf-xet==1.7.0\nhttpcore2==2.16.0\nhttpx2==2.16.0\nhuggingface-hub==2.2.0\nidna==3.20\nimageio==2.37.0\njinja2==3.1.6\nmarkupsafe==3.0.3\nmpmath==1.3.0\nnetworkx==3.6.1\nnumpy==1.26.4\nnvidia-cublas-cu12==12.4.5.8\nnvidia-cuda-cupti-cu12==12.4.127\nnvidia-cuda-nvrtc-cu12==12.4.127\nnvidia-cuda-runtime-cu12==12.4.127\nnvidia-cudnn-cu12==9.1.0.70\nnvidia-cufft-cu12==11.2.1.3\nnvidia-curand-cu12==10.3.5.147\nnvidia-cusolver-cu12==11.6.1.9\nnvidia-cusparse-cu12==12.3.1.170\nnvidia-cusparselt-cu12==0.6.2\nnvidia-nccl-cu12==2.21.5\nnvidia-nvjitlink-cu12==12.4.127\nnvidia-nvtx-cu12==12.4.127\nomegaconf==2.3.0\nopencv-python-headless==4.10.0.84\npackaging==26.3\npillow==12.3.0\npyyaml==6.0.2\nsafetensors==0.8.0\nsetuptools==78.1.0\nsympy==1.13.1\ntimm==1.0.20\ntorch==2.6.0+cu124\ntorchvision==0.21.0+cu124\ntqdm==4.70.1\ntriton==3.2.0\ntruststore==0.10.5\ntyping-extensions==4.16.0\n",
+        "driver": {
+          "python": "3.12.11 (main, Sep 18 2025, 19:47:19) [Clang 20.1.4 ]",
+          "libcuda_path": "/opt/rmua-driver/usr/lib/x86_64-linux-gnu/libcuda.so.595.91.07",
+          "libcuda_sha256": "4839b5da17cd8f58a8e9c57e97c9b61f3c41be7934479f48afc983416b2492c3"
+        },
+        "portable_python_sha256": "ded1e061bd924b3ef162a3201b2a3c94ec62b5fa924eec0f5d9d8a9e77181ac5",
+        "runtime_lock_sha256": "417d0aecb9883ea69dc60e134633a14f69a74bad6b616047add5944382d265ce"
+      },
+      "simulator_preflight": {
+        "strict_rules_verified": true,
+        "game_config": {
+          "IgnoreAllHitCollision": false,
+          "IgnoreOverTime": false
+        },
+        "game_config_sha256": "4173ab7ae90fa031fb32a9e77d2810376c6f325b8274f4f8fd07be3c9adb6d39",
+        "binary_sha256": "5231addfa25ddaa9e4473ea9ac40c9c0bc685174e69cd14bb49159f443b97800",
+        "ros_plugin_sha256": "69d5ea3302bdd5f20b842ec3d3e84bafcb50ef3649ada42c4d346c9bcd389885",
+        "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17"
+      },
+      "gpu_processes_during_scene": "Fri Oct 23 10:02:01 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 595.91.07              Driver Version: 595.91.07      CUDA Version: 13.2     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GeForce RTX 3060 ...    Off |   00000000:01:00.0 Off |                  N/A |\n| N/A   48C    P0             43W /   80W |    1789MiB /   6144MiB |     35%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|    0   N/A  N/A           95004      C   ...s/ffs_runtime/venv/bin/python        704MiB |\n|    0   N/A  N/A           95208    C+G   ...ies/Linux/RMUA-Linux-Shipping        988MiB |\n+-----------------------------------------------------------------------------------------+\n",
+      "artifact_sha256": {
+        "audit.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "first_online/left.bin.gz": "4b97de7683c249b4ac99cfaa5f40eb7af00669dfd2daa092ee0429975aea9937",
+        "first_online/left.json": "0b225f57ed2442788d084538ad1687d013fefb7a6f6b05609186d1d20a502052",
+        "first_online/prediction.npz": "fccd9d86294cef3e398ad893ec996828c5ba7e7393bc15e7646d4cd5bfb3d70c",
+        "first_online/request.json": "6d9ae32d6387b8f5268c1a3209f8e7b50e3192ba20e88c87f46d5f15f23216c4",
+        "first_online/rgb_inputs.npz": "34839f6f8930d2bf534ee129e59c0c0f523a338c7000c8380b07bd238f3d2ed0",
+        "first_online/right.bin.gz": "4c61f450f3b20c7502456a971397cac76759470ee8c4120bce65d92b6cb241f7",
+        "first_online/right.json": "af1cea6f49ad1aa08026012abe99cb4211399dfd9a48e3abc4a364e1ca0c6974",
+        "gpu_jobs.jsonl": "12087fd6f09c38488e15b5e51157902ee21cba8e48c4075fc711da16aec32652",
+        "gpu_ready.json": "87329d6ea297490c7d09ee0d8c177b8928e6fdffcbadd314b83a4808b81a7504",
+        "gpu_summary.json": "2c4dda563dd8fc74b54836b83e44c8ddaaf97ebf21ccb4e2b155244f19ef3cdf",
+        "gpu_system_usage.jsonl": "fe9efb6a016bce9f816559ad03d4ade9f1e98f0ee42a344a0494323d32b20b12",
+        "gpu_worker.log": "a62e39798d1cce2c10ba031ad5aaf4acbd3205230fb9ab32f5a305aa7e36c06e",
+        "manifest.json": "bad0a4a05513d806977dc28214597960b80a0f744111c96a3d0d99a025aee91c",
+        "observer.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "online_audit.json": "746613bb9000390db67f95787b508e0acfbb2251205aa91974600c765e5e8367",
+        "online_imu_clock.jsonl": "1aed5af363d5a170226d30a2310b1602358abbde0f3e6c330d4a5b4a3e606bad",
+        "online_results.jsonl": "ad06048a3698ffff3aade6612b27a26f8eed27f2c6fc21cd89af1c556b0528e2",
+        "online_summary.json": "9bd78c3405c02b0848688c75bb2dd672ecd9bcacb98394e5fbc7a894898b49f7",
+        "profile.json": "d730f8a3ae540c0eaf23e5c5d87526ed8bb7d987ff38f655c3f26808c2a9f90c",
+        "simulator.log": "1f81927d561b34a245135ae99594dbe3f1fdedc4a047cd0de7825d67832027c4",
+        "usage_monitor.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "summary": {
+        "faults": [],
+        "pairs": 56,
+        "results": 28,
+        "received": {
+          "left": 111,
+          "imu": 1000,
+          "right": 111
+        },
+        "selection_started_wall": 1120202.123344965,
+        "selection_ended_wall": 1120212.123421322,
+        "result_drain_ended_wall": 1120212.132460335,
+        "raw_pending_overwritten": {},
+        "pairing_events": {
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0,
+          "SENSOR_EXPIRED_left": 55,
+          "SENSOR_EXPIRED_right": 55
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 56,
+          "superseded": 0,
+          "taken": 56,
+          "discarded_on_close": 0
+        },
+        "admission_rejections": {
+          "SOURCE_LEASE_NOT_CURRENT": 28
+        },
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.2,
+        "clock_records": 1000,
+        "max_rss_kib": 138068,
+        "timing_current_results": 0,
+        "control_published": false,
+        "current_control_eligible": false,
+        "acceptance_eligible": false,
+        "exposure_sync_verified": false,
+        "metric_calibration_verified": false,
+        "raw_recording_is_lossy": true,
+        "processing_queue_capacity": 1,
+        "in_flight_limit": 1
+      },
+      "audit": {
+        "audit_valid": true,
+        "result_count": 28,
+        "per_result": [
+          {
+            "request_id": 0,
+            "audit_valid": true
+          },
+          {
+            "request_id": 2,
+            "audit_valid": true
+          },
+          {
+            "request_id": 4,
+            "audit_valid": true
+          },
+          {
+            "request_id": 6,
+            "audit_valid": true
+          },
+          {
+            "request_id": 8,
+            "audit_valid": true
+          },
+          {
+            "request_id": 10,
+            "audit_valid": true
+          },
+          {
+            "request_id": 12,
+            "audit_valid": true
+          },
+          {
+            "request_id": 14,
+            "audit_valid": true
+          },
+          {
+            "request_id": 16,
+            "audit_valid": true
+          },
+          {
+            "request_id": 18,
+            "audit_valid": true
+          },
+          {
+            "request_id": 20,
+            "audit_valid": true
+          },
+          {
+            "request_id": 22,
+            "audit_valid": true
+          },
+          {
+            "request_id": 24,
+            "audit_valid": true
+          },
+          {
+            "request_id": 26,
+            "audit_valid": true
+          },
+          {
+            "request_id": 28,
+            "audit_valid": true
+          },
+          {
+            "request_id": 30,
+            "audit_valid": true
+          },
+          {
+            "request_id": 32,
+            "audit_valid": true
+          },
+          {
+            "request_id": 34,
+            "audit_valid": true
+          },
+          {
+            "request_id": 36,
+            "audit_valid": true
+          },
+          {
+            "request_id": 38,
+            "audit_valid": true
+          },
+          {
+            "request_id": 40,
+            "audit_valid": true
+          },
+          {
+            "request_id": 42,
+            "audit_valid": true
+          },
+          {
+            "request_id": 44,
+            "audit_valid": true
+          },
+          {
+            "request_id": 46,
+            "audit_valid": true
+          },
+          {
+            "request_id": 48,
+            "audit_valid": true
+          },
+          {
+            "request_id": 50,
+            "audit_valid": true
+          },
+          {
+            "request_id": 52,
+            "audit_valid": true
+          },
+          {
+            "request_id": 54,
+            "audit_valid": true
+          }
+        ],
+        "first_payload_matches_independent_ros_decoder_and_output_digest": true,
+        "timing_current_results": 0,
+        "result_timing_rejections": {
+          "SOURCE_LEASE_NOT_CURRENT": 28
+        },
+        "sensor_header_age_at_result_s": {
+          "samples": 28,
+          "min": 0.3540074825286865,
+          "p50": 0.37500786781311035,
+          "sample_p95": 0.3870083451271057,
+          "sample_p99": 0.39576848983764645,
+          "max": 0.39900851249694824
+        },
+        "callback_to_checked_result_s": {
+          "samples": 28,
+          "min": 0.20716405613347888,
+          "p50": 0.23019649484194815,
+          "sample_p95": 0.24796578817768022,
+          "sample_p99": 0.2604154492774978,
+          "max": 0.26450574304908514
+        },
+        "rpc_round_trip_s": {
+          "samples": 28,
+          "min": 0.18263164814561605,
+          "p50": 0.2020569215528667,
+          "sample_p95": 0.21005340033443645,
+          "sample_p99": 0.21717651921324432,
+          "max": 0.21948092710226774
+        },
+        "gpu_receive_to_encoded_result_s": {
+          "samples": 28,
+          "min": 0.18028064910322428,
+          "p50": 0.1996020635124296,
+          "sample_p95": 0.20533218613127246,
+          "sample_p99": 0.20766404046677053,
+          "max": 0.2085236171260476
+        },
+        "bidirectional_model_s": {
+          "samples": 28,
+          "min": 0.1487570849712938,
+          "p50": 0.16108466405421495,
+          "sample_p95": 0.16632217697333546,
+          "sample_p99": 0.16738593129906804,
+          "max": 0.16764957387931645
+        },
+        "imu_callback_interval_s": {
+          "samples": 999,
+          "min": 0.006212424021214247,
+          "p50": 0.009997354820370674,
+          "sample_p95": 0.010249557602219283,
+          "sample_p99": 0.011181856119073925,
+          "max": 0.01409212895669043
+        },
+        "gpu_utilization_percent": {
+          "samples": 23,
+          "min": 35.0,
+          "p50": 66.0,
+          "sample_p95": 100.0,
+          "sample_p99": 100.0,
+          "max": 100.0
+        },
+        "gpu_memory_used_mib": {
+          "samples": 23,
+          "min": 1438.0,
+          "p50": 2163.0,
+          "sample_p95": 2180.0,
+          "sample_p99": 2247.08,
+          "max": 2266.0
+        },
+        "system_cpu_busy_percent_all_cores": {
+          "samples": 22,
+          "min": 15.332690453230473,
+          "p50": 16.435741926765175,
+          "sample_p95": 24.755849663644337,
+          "sample_p99": 27.337965434466025,
+          "max": 27.9847182425979
+        },
+        "usage_sampling_period_s": 0.5,
+        "graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 56,
+          "superseded": 0,
+          "taken": 56,
+          "discarded_on_close": 0
+        },
+        "image_age_budget_s": 0.2,
+        "all_outputs_diagnostic_only": true,
+        "true_exposure_latency_measured": false,
+        "actuation_latency_measured": false,
+        "cold_start_departure_verified": false,
+        "geometry_accuracy_verified": false,
+        "current_control_eligible": false,
+        "acceptance_eligible": false,
+        "interpretation": "Image-header/IMU and callback/monotonic ages measure this diagnostic pipeline, not exposure-to-actuation. No source lease is refreshed. Late results remain rejected; timely ones are still uncalibrated. Samples are development observations and not statistical real-time guarantees."
+      },
+      "gpu_summary": {
+        "started_wall": 1120189.043694621,
+        "loaded_wall": 1120192.024892832,
+        "ready_wall": 1120193.076057697,
+        "synthetic_zero_image_warmup": true,
+        "compilation_cache_may_be_warm": true,
+        "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+        "torch": "2.6.0+cu124",
+        "cuda_runtime": "12.4",
+        "numpy": "1.26.4",
+        "opencv": "4.10.0",
+        "normalization_compatibility_default_applied": true,
+        "volume_normalize": true,
+        "profile": {
+          "scale": 0.5,
+          "iterations": 4,
+          "max_disparity_model_pixels": 192,
+          "input_order": "RGB",
+          "input_range": [
+            0,
+            255
+          ],
+          "normalization": "inside_upstream_pytorch_model",
+          "missing_volume_normalize_checkpoint_arg_default": true,
+          "padding_multiple": 32,
+          "amp_dtype": "float16",
+          "reverse_method": "swap_images_and_flip_both_horizontally_then_unflip_output",
+          "upsample_method": "nearest_then_divide_disparity_by_scale",
+          "consistency_full_resolution_px": 1.0,
+          "common_texture_std": 2.0
+        },
+        "jobs": 28,
+        "peak_cuda_allocated_bytes": 469507584,
+        "peak_cuda_reserved_bytes": 580911104,
+        "max_rss_kib": 1857720,
+        "acceptance_eligible": false,
+        "current_control_eligible": false
+      },
+      "budget_passed": false,
+      "timing_contract_audit_passed": true,
+      "control_published": false,
+      "acceptance_eligible": false
+    },
+    {
+      "run": "runs/20261023T100300Z_89a78599ce6144b18a71a5473afbb796",
+      "seed": 2115,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "0fef22811cbcf234fba28e2829d8ac722288af7932874517acf6fee641e7d76a",
+        "files": 282,
+        "uncompressed_bytes": 1187970,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_archive_independently_verified": true,
+      "vendor": {
+        "commit": "476f4249561f7c79ca707326954f9255643412a6",
+        "source_archive_sha256": "5fab9ab4c76611e7cf894ab8cf0a98687471133b5251d2bd1de48697c7c6012a",
+        "license_sha256": "045b564ebafefaa863beec07c5acdcfa8d99cefbbd060c22865bc4613318ddd6"
+      },
+      "vendor_files_independently_verified": 57,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "checkpoint_unchanged": true,
+      "vendor_unchanged": true,
+      "runtime_matches_lock": true,
+      "runtime_provenance": {
+        "packages": "antlr4-python3-runtime==4.9.3\nanyio==4.15.1\nclick==8.5.0\neinops==0.8.1\nfilelock==3.32.3\nfsspec==2026.7.0\nh11==0.16.0\nhf-xet==1.7.0\nhttpcore2==2.16.0\nhttpx2==2.16.0\nhuggingface-hub==2.2.0\nidna==3.20\nimageio==2.37.0\njinja2==3.1.6\nmarkupsafe==3.0.3\nmpmath==1.3.0\nnetworkx==3.6.1\nnumpy==1.26.4\nnvidia-cublas-cu12==12.4.5.8\nnvidia-cuda-cupti-cu12==12.4.127\nnvidia-cuda-nvrtc-cu12==12.4.127\nnvidia-cuda-runtime-cu12==12.4.127\nnvidia-cudnn-cu12==9.1.0.70\nnvidia-cufft-cu12==11.2.1.3\nnvidia-curand-cu12==10.3.5.147\nnvidia-cusolver-cu12==11.6.1.9\nnvidia-cusparse-cu12==12.3.1.170\nnvidia-cusparselt-cu12==0.6.2\nnvidia-nccl-cu12==2.21.5\nnvidia-nvjitlink-cu12==12.4.127\nnvidia-nvtx-cu12==12.4.127\nomegaconf==2.3.0\nopencv-python-headless==4.10.0.84\npackaging==26.3\npillow==12.3.0\npyyaml==6.0.2\nsafetensors==0.8.0\nsetuptools==78.1.0\nsympy==1.13.1\ntimm==1.0.20\ntorch==2.6.0+cu124\ntorchvision==0.21.0+cu124\ntqdm==4.70.1\ntriton==3.2.0\ntruststore==0.10.5\ntyping-extensions==4.16.0\n",
+        "driver": {
+          "python": "3.12.11 (main, Sep 18 2025, 19:47:19) [Clang 20.1.4 ]",
+          "libcuda_path": "/opt/rmua-driver/usr/lib/x86_64-linux-gnu/libcuda.so.595.91.07",
+          "libcuda_sha256": "4839b5da17cd8f58a8e9c57e97c9b61f3c41be7934479f48afc983416b2492c3"
+        },
+        "portable_python_sha256": "ded1e061bd924b3ef162a3201b2a3c94ec62b5fa924eec0f5d9d8a9e77181ac5",
+        "runtime_lock_sha256": "417d0aecb9883ea69dc60e134633a14f69a74bad6b616047add5944382d265ce"
+      },
+      "simulator_preflight": {
+        "strict_rules_verified": true,
+        "game_config": {
+          "IgnoreAllHitCollision": false,
+          "IgnoreOverTime": false
+        },
+        "game_config_sha256": "4173ab7ae90fa031fb32a9e77d2810376c6f325b8274f4f8fd07be3c9adb6d39",
+        "binary_sha256": "5231addfa25ddaa9e4473ea9ac40c9c0bc685174e69cd14bb49159f443b97800",
+        "ros_plugin_sha256": "69d5ea3302bdd5f20b842ec3d3e84bafcb50ef3649ada42c4d346c9bcd389885",
+        "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17"
+      },
+      "gpu_processes_during_scene": "Fri Oct 23 10:03:14 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 595.91.07              Driver Version: 595.91.07      CUDA Version: 13.2     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GeForce RTX 3060 ...    Off |   00000000:01:00.0 Off |                  N/A |\n| N/A   48C    P0             42W /   80W |    1789MiB /   6144MiB |     61%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|    0   N/A  N/A           95793      C   ...s/ffs_runtime/venv/bin/python        704MiB |\n|    0   N/A  N/A           95997    C+G   ...ies/Linux/RMUA-Linux-Shipping        988MiB |\n+-----------------------------------------------------------------------------------------+\n",
+      "artifact_sha256": {
+        "audit.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "first_online/left.bin.gz": "97cc63083cf3efc04b4836a7f1bdddf9f8a215bae606749b781a1f3de653ca4a",
+        "first_online/left.json": "e3d2c8d92a2161f314eb801639f372651ff994ca6262c613f7a978fa5e1975fc",
+        "first_online/prediction.npz": "368f7e90efc73761208a6560fa37932a13c35661129d2fb610d0c63d83505759",
+        "first_online/request.json": "b8b52a7f434575043a5a7bef0318cc0923f1c75666ace9b91df4d9e5c30e1a29",
+        "first_online/rgb_inputs.npz": "29f6bf041e25e45fdd93e62fdac065c292ed9a8ed2fb7ea3f4ed1f7c4a7cd41d",
+        "first_online/right.bin.gz": "c9e881fa9f2d7a55785e1e1209abda44d84370b6d43f5b64284e5b9ebe634225",
+        "first_online/right.json": "3c8c952173f3980c1d701534a3a93f8caf732fc7d6e56aabac29e7b68b3e9e63",
+        "gpu_jobs.jsonl": "7b9de21d5e0e765d351b33b7b2b432ebbedd12c1ee1ee23edc3b7583b8b5b8cc",
+        "gpu_ready.json": "24c6b8550cfe5cd27eaf9ca080af8c9245d9cf2b43fcba944636dcc0cb597b01",
+        "gpu_summary.json": "bfc4643b40d4c928d4228b077534e02ff9526f55a279cdd2f707d9f623a28bb5",
+        "gpu_system_usage.jsonl": "a40abd2d952c0910d851c34e7ee81530978acb50a191eb6b92b7fd8c0ffd0c2b",
+        "gpu_worker.log": "a62e39798d1cce2c10ba031ad5aaf4acbd3205230fb9ab32f5a305aa7e36c06e",
+        "manifest.json": "ed0e57301052cce1f97a471f2f9eaae8d4ccc9bed5049d85642d5ee07009a07f",
+        "observer.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "online_audit.json": "142765da4a117c77940e3f6d196197683369c412903bff84eedaab011f50d4d6",
+        "online_imu_clock.jsonl": "3c46d76b5044ef3abf97fe7f99c75dc9c11cbbb7201a3749999c45f6954c9b13",
+        "online_results.jsonl": "e335e35dea620acbf32d8c121e8854ad5f1d918faaab635986368cbf420aea08",
+        "online_summary.json": "2e7eb45207e37eea2f1eaf05cf2c0ce93979799f0cf7ddd7b494f6dded66800a",
+        "profile.json": "d730f8a3ae540c0eaf23e5c5d87526ed8bb7d987ff38f655c3f26808c2a9f90c",
+        "simulator.log": "d98f699924e653781a3c5374f39f9d33349240dadebdc2c0f7bc88ab5cbe187f",
+        "usage_monitor.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "summary": {
+        "faults": [],
+        "pairs": 20,
+        "results": 1,
+        "received": {
+          "imu": 999,
+          "right": 181,
+          "left": 180
+        },
+        "selection_started_wall": 1120275.69763097,
+        "selection_ended_wall": 1120285.699332517,
+        "result_drain_ended_wall": 1120285.720480543,
+        "raw_pending_overwritten": {},
+        "pairing_events": {
+          "SENSOR_EXPIRED_right": 161,
+          "SENSOR_EXPIRED_left": 160,
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 20,
+          "superseded": 0,
+          "taken": 20,
+          "discarded_on_close": 0
+        },
+        "admission_rejections": {
+          "SOURCE_LEASE_NOT_CURRENT": 7,
+          "AFTER_BUILD_SOURCE_LEASE_NOT_CURRENT": 12
+        },
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.15,
+        "clock_records": 999,
+        "max_rss_kib": 135776,
+        "timing_current_results": 0,
+        "control_published": false,
+        "current_control_eligible": false,
+        "acceptance_eligible": false,
+        "exposure_sync_verified": false,
+        "metric_calibration_verified": false,
+        "raw_recording_is_lossy": true,
+        "processing_queue_capacity": 1,
+        "in_flight_limit": 1
+      },
+      "audit": {
+        "audit_valid": true,
+        "result_count": 1,
+        "per_result": [
+          {
+            "request_id": 7,
+            "audit_valid": true
+          }
+        ],
+        "first_payload_matches_independent_ros_decoder_and_output_digest": true,
+        "timing_current_results": 0,
+        "result_timing_rejections": {
+          "SOURCE_LEASE_NOT_CURRENT": 1
+        },
+        "sensor_header_age_at_result_s": {
+          "samples": 1,
+          "min": 0.30600643157958984,
+          "p50": 0.30600643157958984,
+          "sample_p95": 0.30600643157958984,
+          "sample_p99": 0.30600643157958984,
+          "max": 0.30600643157958984
+        },
+        "callback_to_checked_result_s": {
+          "samples": 1,
+          "min": 0.22657439205795527,
+          "p50": 0.22657439205795527,
+          "sample_p95": 0.22657439205795527,
+          "sample_p99": 0.22657439205795527,
+          "max": 0.22657439205795527
+        },
+        "rpc_round_trip_s": {
+          "samples": 1,
+          "min": 0.19607678218744695,
+          "p50": 0.19607678218744695,
+          "sample_p95": 0.19607678218744695,
+          "sample_p99": 0.19607678218744695,
+          "max": 0.19607678218744695
+        },
+        "gpu_receive_to_encoded_result_s": {
+          "samples": 1,
+          "min": 0.19161625881679356,
+          "p50": 0.19161625881679356,
+          "sample_p95": 0.19161625881679356,
+          "sample_p99": 0.19161625881679356,
+          "max": 0.19161625881679356
+        },
+        "bidirectional_model_s": {
+          "samples": 1,
+          "min": 0.14953444991260767,
+          "p50": 0.14953444991260767,
+          "sample_p95": 0.14953444991260767,
+          "sample_p99": 0.14953444991260767,
+          "max": 0.14953444991260767
+        },
+        "imu_callback_interval_s": {
+          "samples": 998,
+          "min": 0.004980657948181033,
+          "p50": 0.009999506059102714,
+          "sample_p95": 0.010412896727211773,
+          "sample_p99": 0.011308079077862203,
+          "max": 0.014970676973462105
+        },
+        "gpu_utilization_percent": {
+          "samples": 23,
+          "min": 47.0,
+          "p50": 62.0,
+          "sample_p95": 66.0,
+          "sample_p99": 68.34,
+          "max": 69.0
+        },
+        "gpu_memory_used_mib": {
+          "samples": 23,
+          "min": 1430.0,
+          "p50": 2139.0,
+          "sample_p95": 2180.0,
+          "sample_p99": 2247.08,
+          "max": 2266.0
+        },
+        "system_cpu_busy_percent_all_cores": {
+          "samples": 22,
+          "min": 16.923076923076923,
+          "p50": 17.797843335477744,
+          "sample_p95": 26.493893470752937,
+          "sample_p99": 26.785708164850174,
+          "max": 26.822429906542055
+        },
+        "usage_sampling_period_s": 0.5,
+        "graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 20,
+          "superseded": 0,
+          "taken": 20,
+          "discarded_on_close": 0
+        },
+        "image_age_budget_s": 0.15,
+        "all_outputs_diagnostic_only": true,
+        "true_exposure_latency_measured": false,
+        "actuation_latency_measured": false,
+        "cold_start_departure_verified": false,
+        "geometry_accuracy_verified": false,
+        "current_control_eligible": false,
+        "acceptance_eligible": false,
+        "interpretation": "Image-header/IMU and callback/monotonic ages measure this diagnostic pipeline, not exposure-to-actuation. No source lease is refreshed. Late results remain rejected; timely ones are still uncalibrated. Samples are development observations and not statistical real-time guarantees."
+      },
+      "gpu_summary": {
+        "started_wall": 1120262.649653298,
+        "loaded_wall": 1120265.631653618,
+        "ready_wall": 1120266.693319307,
+        "synthetic_zero_image_warmup": true,
+        "compilation_cache_may_be_warm": true,
+        "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+        "torch": "2.6.0+cu124",
+        "cuda_runtime": "12.4",
+        "numpy": "1.26.4",
+        "opencv": "4.10.0",
+        "normalization_compatibility_default_applied": true,
+        "volume_normalize": true,
+        "profile": {
+          "scale": 0.5,
+          "iterations": 4,
+          "max_disparity_model_pixels": 192,
+          "input_order": "RGB",
+          "input_range": [
+            0,
+            255
+          ],
+          "normalization": "inside_upstream_pytorch_model",
+          "missing_volume_normalize_checkpoint_arg_default": true,
+          "padding_multiple": 32,
+          "amp_dtype": "float16",
+          "reverse_method": "swap_images_and_flip_both_horizontally_then_unflip_output",
+          "upsample_method": "nearest_then_divide_disparity_by_scale",
+          "consistency_full_resolution_px": 1.0,
+          "common_texture_std": 2.0
+        },
+        "jobs": 1,
+        "peak_cuda_allocated_bytes": 469507584,
+        "peak_cuda_reserved_bytes": 580911104,
+        "max_rss_kib": 1843440,
+        "acceptance_eligible": false,
+        "current_control_eligible": false
+      },
+      "budget_passed": false,
+      "timing_contract_audit_passed": true,
+      "control_published": false,
+      "acceptance_eligible": false
+    }
+  ],
+  "tests": {
+    "host": {
+      "passed": 139,
+      "log_sha256": "e5cf8204561b5710244d39f0ba884b87b9296acbc98ac687ff54003409241599"
+    },
+    "noetic": {
+      "passed": 136,
+      "skipped": 3,
+      "log_sha256": "3145a7229df0b3aa0229e1791ab6239d2980e9052fa57195101e812cd945f91c"
+    }
+  },
+  "failed_pilot_retained": {
+    "run": "runs/20261023T080947Z_f72715db2574438e8cff8c44d01e04fd",
+    "reason": "Sampling completed; first offline auditor had a syntax error. Corrected and new frozen scenes rerun.",
+    "original_manifest_sha256": "008c16f449b00073bf0c451b5b555009d9541eb0e16f8b75da18778f62f9828c",
+    "original_audit_log_sha256": "0f1fdd7869b6392d8bb3f49a44d90c5d7aadb297cc449fc207a3dfa963615fc6",
+    "reanalysis_audit_sha256": "4046758556fc8f30a6183f50d30376edd797c7f7e931b5b0215fb3e57ed05ed6",
+    "reanalysis_source_sha256": "45af520ed9b8ee17b006bf3457f0de75b6bcf97038bb8042b20f9fe99c0fc6aa",
+    "original_failure_manifest_preserved": true
+  },
+  "other_pilot_retained": "runs/20261023T100009Z_a5c19a38b2e24eb2b02f9e162efbc83d",
+  "pipeline_timing_contract_verified_on_development_runs": true,
+  "default_150ms_or_experimental_200ms_latency_passed": false,
+  "source_lease_refreshed": false,
+  "control_published": false,
+  "true_exposure_latency_measured": false,
+  "actuation_latency_measured": false,
+  "competition_control_scheduling_verified": false,
+  "cold_start_departure_verified": false,
+  "metric_calibration_verified": false,
+  "current_control_eligible": false,
+  "acceptance_eligible": false,
+  "p1_accepted": false,
+  "p2_accepted": false,
+  "scope_note": "Only README, implementation status and new explanation/evidence were added after the two authoritative runs; executed code and runtime lock retain their archived bytes."
+}
