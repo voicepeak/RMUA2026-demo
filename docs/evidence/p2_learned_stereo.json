@@ -1,0 +1,1381 @@
+{
+  "iteration": 34,
+  "recorded_on": "2026-10-23",
+  "stage": "P2_OFFLINE_LEARNED_STEREO_COMPARISON",
+  "run": "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d",
+  "manifest_sha256": "54dc0cf224a11fb74e9c043615b8997ae30d227dc19ec3ae642f633ae4d6c575",
+  "report_sha256": "8e25c4583f5d6e8ced591bc51d65fafcf3f73d33826c8f374729c242759387e0",
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "f11b7b313bcf614b29646f731f168e035248e822bdd40be6174188b97c3e5b7a",
+    "files": 273,
+    "uncompressed_bytes": 1085268,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_archive_independently_verified": true,
+  "vendor": {
+    "commit": "476f4249561f7c79ca707326954f9255643412a6",
+    "dirty": "",
+    "source_archive_sha256": "5fab9ab4c76611e7cf894ab8cf0a98687471133b5251d2bd1de48697c7c6012a",
+    "license_sha256": "045b564ebafefaa863beec07c5acdcfa8d99cefbbd060c22865bc4613318ddd6"
+  },
+  "vendor_archive_files_independently_verified": 57,
+  "source_unchanged": true,
+  "input_unchanged": true,
+  "vendor_unchanged": true,
+  "checkpoint_unchanged": true,
+  "profile_sha256": "d730f8a3ae540c0eaf23e5c5d87526ed8bb7d987ff38f655c3f26808c2a9f90c",
+  "runtime_lock_sha256": "417d0aecb9883ea69dc60e134633a14f69a74bad6b616047add5944382d265ce",
+  "checkpoint": {
+    "repository": "nvidia/c-fast-foundationstereo",
+    "revision": "53a84e28a368f37e699776250215fcb450d6a109",
+    "filename": "model_best_bp2_serialize.pth",
+    "sha256": "7aee85948373da62b0503c2542507129a3e7cab9d97d10e6790d89512a7db214",
+    "bytes": 71105659,
+    "license_url": "https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-agreement/"
+  },
+  "runtime_provenance": {
+    "portable_python_sha256": "ded1e061bd924b3ef162a3201b2a3c94ec62b5fa924eec0f5d9d8a9e77181ac5",
+    "uv_sha256": "a261804d9493a96e7eebf13bcffc1b7ecc87dbd7da9a2800af94c20182d1a70d",
+    "uv_source": {
+      "package": "uv",
+      "version": "0.8.22",
+      "wheel": "uv-0.8.22-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "url": "https://files.pythonhosted.org/packages/3a/a9/a83cee9b8cf63e57ce64ba27c77777cc66410e144fd178368f55af1fa18d/uv-0.8.22-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "sha256": "8efec4ef5acddc35f0867998c44e0b15fc4dace1e4c26d01443871a2fbb04bf6"
+    },
+    "checkpoint_source": {
+      "repository": "nvidia/c-fast-foundationstereo",
+      "revision": "53a84e28a368f37e699776250215fcb450d6a109",
+      "weight": {
+        "type": "file",
+        "oid": "777e5d4daf23b2cca3d1f8d57e96ec94e56b9f03",
+        "size": 71105659,
+        "lfs": {
+          "oid": "7aee85948373da62b0503c2542507129a3e7cab9d97d10e6790d89512a7db214",
+          "size": 71105659,
+          "pointerSize": 133
+        },
+        "xetHash": "91af7736f336dccb60df911aee189f8fe448f954aab71df90a58f1c953853e40",
+        "path": "model_best_bp2_serialize.pth"
+      },
+      "urls": {
+        "model_best_bp2_serialize.pth": "https://huggingface.co/nvidia/c-fast-foundationstereo/resolve/53a84e28a368f37e699776250215fcb450d6a109/model_best_bp2_serialize.pth",
+        "cfg.yaml": "https://huggingface.co/nvidia/c-fast-foundationstereo/resolve/53a84e28a368f37e699776250215fcb450d6a109/cfg.yaml",
+        "README.md": "https://huggingface.co/nvidia/c-fast-foundationstereo/resolve/53a84e28a368f37e699776250215fcb450d6a109/README.md"
+      }
+    },
+    "packages": "antlr4-python3-runtime==4.9.3\nanyio==4.15.1\nclick==8.5.0\neinops==0.8.1\nfilelock==3.32.3\nfsspec==2026.7.0\nh11==0.16.0\nhf-xet==1.7.0\nhttpcore2==2.16.0\nhttpx2==2.16.0\nhuggingface-hub==2.2.0\nidna==3.20\nimageio==2.37.0\njinja2==3.1.6\nmarkupsafe==3.0.3\nmpmath==1.3.0\nnetworkx==3.6.1\nnumpy==1.26.4\nnvidia-cublas-cu12==12.4.5.8\nnvidia-cuda-cupti-cu12==12.4.127\nnvidia-cuda-nvrtc-cu12==12.4.127\nnvidia-cuda-runtime-cu12==12.4.127\nnvidia-cudnn-cu12==9.1.0.70\nnvidia-cufft-cu12==11.2.1.3\nnvidia-curand-cu12==10.3.5.147\nnvidia-cusolver-cu12==11.6.1.9\nnvidia-cusparse-cu12==12.3.1.170\nnvidia-cusparselt-cu12==0.6.2\nnvidia-nccl-cu12==2.21.5\nnvidia-nvjitlink-cu12==12.4.127\nnvidia-nvtx-cu12==12.4.127\nomegaconf==2.3.0\nopencv-python-headless==4.10.0.84\npackaging==26.3\npillow==12.3.0\npyyaml==6.0.2\nsafetensors==0.8.0\nsetuptools==78.1.0\nsympy==1.13.1\ntimm==1.0.20\ntorch==2.6.0+cu124\ntorchvision==0.21.0+cu124\ntqdm==4.70.1\ntriton==3.2.0\ntruststore==0.10.5\ntyping-extensions==4.16.0\n",
+    "driver": {
+      "python": "3.12.11 (main, Sep 18 2025, 19:47:19) [Clang 20.1.4 ]",
+      "libcuda_path": "/opt/rmua-driver/usr/lib/x86_64-linux-gnu/libcuda.so.595.91.07",
+      "libcuda_sha256": "4839b5da17cd8f58a8e9c57e97c9b61f3c41be7934479f48afc983416b2492c3"
+    },
+    "nvidia_smi": "Fri Oct 23 07:53:03 2026       \n+-----------------------------------------------------------------------------------------+\n| NVIDIA-SMI 595.91.07              Driver Version: 595.91.07      CUDA Version: 13.2     |\n+-----------------------------------------+------------------------+----------------------+\n| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |\n| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |\n|                                         |                        |               MIG M. |\n|=========================================+========================+======================|\n|   0  NVIDIA GeForce RTX 3060 ...    Off |   00000000:01:00.0 Off |                  N/A |\n| N/A   40C    P0            752W /   80W |      14MiB /   6144MiB |      8%      Default |\n|                                         |                        |                  N/A |\n+-----------------------------------------+------------------------+----------------------+\n\n+-----------------------------------------------------------------------------------------+\n| Processes:                                                                              |\n|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |\n|        ID   ID                                                               Usage      |\n|=========================================================================================|\n|  No running processes found                                                             |\n+-----------------------------------------------------------------------------------------+\n"
+  },
+  "index": [
+    {
+      "key": "0000",
+      "source_run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "packet_directory": "joint/0000",
+      "seed": 2110,
+      "left_metadata": {
+        "stamp": 1792738505.8738494,
+        "valid_until": 1792738506.0738494,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_left/Scene",
+        "frame_id": "front_left_image",
+        "covariance_or_bounds": []
+      },
+      "right_metadata": {
+        "stamp": 1792738505.8738494,
+        "valid_until": 1792738506.0738494,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_right/Scene",
+        "frame_id": "front_right_image",
+        "covariance_or_bounds": []
+      },
+      "epoch": 0,
+      "image_sha256": "dafbd4313a6b76187c70275e45c9e1064601b6adfdc567edb38f68e0f1af3b6d",
+      "reference_sha256": "d50673ae8468562c3d6f0cd6a660932ca4ba19d86adbc02ae8eeb36a588d19d4"
+    },
+    {
+      "key": "0001",
+      "source_run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "packet_directory": "joint/0001",
+      "seed": 2110,
+      "left_metadata": {
+        "stamp": 1792738507.4668834,
+        "valid_until": 1792738507.6668835,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_left/Scene",
+        "frame_id": "front_left_image",
+        "covariance_or_bounds": []
+      },
+      "right_metadata": {
+        "stamp": 1792738507.4668834,
+        "valid_until": 1792738507.6668835,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_right/Scene",
+        "frame_id": "front_right_image",
+        "covariance_or_bounds": []
+      },
+      "epoch": 0,
+      "image_sha256": "7f0a0d9008de51ffb3ceb89dc193012ed0142c735376979820cf785a28237192",
+      "reference_sha256": "e5c9524523c3a93a0ca6883b0e6fa3c2c834879d0956998ac309e7491e163c62"
+    },
+    {
+      "key": "0002",
+      "source_run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "packet_directory": "joint/0002",
+      "seed": 2110,
+      "left_metadata": {
+        "stamp": 1792738509.0659175,
+        "valid_until": 1792738509.2659175,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_left/Scene",
+        "frame_id": "front_left_image",
+        "covariance_or_bounds": []
+      },
+      "right_metadata": {
+        "stamp": 1792738509.0659175,
+        "valid_until": 1792738509.2659175,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_right/Scene",
+        "frame_id": "front_right_image",
+        "covariance_or_bounds": []
+      },
+      "epoch": 0,
+      "image_sha256": "5bdf1616f3c025e8e5a26acf7b40e80ce6ac0f427ad72d37761db9c9b9e8dd7f",
+      "reference_sha256": "08a6a1e392bd2a99fa6a035c8e17ff4e8728b1b33693b80af04d9bb54a65950f"
+    },
+    {
+      "key": "0003",
+      "source_run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "packet_directory": "joint/0003",
+      "seed": 2110,
+      "left_metadata": {
+        "stamp": 1792738510.8509555,
+        "valid_until": 1792738511.0509555,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_left/Scene",
+        "frame_id": "front_left_image",
+        "covariance_or_bounds": []
+      },
+      "right_metadata": {
+        "stamp": 1792738510.8509555,
+        "valid_until": 1792738511.0509555,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_right/Scene",
+        "frame_id": "front_right_image",
+        "covariance_or_bounds": []
+      },
+      "epoch": 0,
+      "image_sha256": "e0163bcc6f201bebc0e254cfc80b7138df5c86462af9fb1f5c6b4a82ecfbb2d5",
+      "reference_sha256": "dd7b9e90e57c76c9e0898a14bc5b6438dbbbe58df80d1eb4d24192f021d72423"
+    },
+    {
+      "key": "0004",
+      "source_run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "packet_directory": "joint/0004",
+      "seed": 2110,
+      "left_metadata": {
+        "stamp": 1792738512.749996,
+        "valid_until": 1792738512.949996,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_left/Scene",
+        "frame_id": "front_left_image",
+        "covariance_or_bounds": []
+      },
+      "right_metadata": {
+        "stamp": 1792738512.749996,
+        "valid_until": 1792738512.949996,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_right/Scene",
+        "frame_id": "front_right_image",
+        "covariance_or_bounds": []
+      },
+      "epoch": 0,
+      "image_sha256": "c61f864c22aea16e57af96b40fb70260d423a1f10695b67a6d2754e732ac7aca",
+      "reference_sha256": "f447c51d604ec908ec938359773422b3d7c02eede01d3e3369877749771c1747"
+    },
+    {
+      "key": "0005",
+      "source_run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "packet_directory": "joint/0005",
+      "seed": 2110,
+      "left_metadata": {
+        "stamp": 1792738514.3670306,
+        "valid_until": 1792738514.5670307,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_left/Scene",
+        "frame_id": "front_left_image",
+        "covariance_or_bounds": []
+      },
+      "right_metadata": {
+        "stamp": 1792738514.3670306,
+        "valid_until": 1792738514.5670307,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_right/Scene",
+        "frame_id": "front_right_image",
+        "covariance_or_bounds": []
+      },
+      "epoch": 0,
+      "image_sha256": "d2d6b4cb049e62f28c6e47452fabaf91107656abeba9e54b1ff656379c0b3553",
+      "reference_sha256": "a7f8dc87fa7946a5208131a7a2bab2251bff2866df89aca2cc945168c9da0eff"
+    },
+    {
+      "key": "0006",
+      "source_run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "packet_directory": "joint/0000",
+      "seed": 2111,
+      "left_metadata": {
+        "stamp": 1792738723.2472508,
+        "valid_until": 1792738723.4472508,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_left/Scene",
+        "frame_id": "front_left_image",
+        "covariance_or_bounds": []
+      },
+      "right_metadata": {
+        "stamp": 1792738723.2472508,
+        "valid_until": 1792738723.4472508,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_right/Scene",
+        "frame_id": "front_right_image",
+        "covariance_or_bounds": []
+      },
+      "epoch": 0,
+      "image_sha256": "57ac5922e30ca101b88b68cf01849a5eb14668a8b6d1425ee2259a7e8bbadf29",
+      "reference_sha256": "6e262c821ffa52b23bc34b5dd2e4436690418687fb3a25e5e73fd3d6eb0ea24c"
+    },
+    {
+      "key": "0007",
+      "source_run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "packet_directory": "joint/0001",
+      "seed": 2111,
+      "left_metadata": {
+        "stamp": 1792738724.8402846,
+        "valid_until": 1792738725.0402846,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_left/Scene",
+        "frame_id": "front_left_image",
+        "covariance_or_bounds": []
+      },
+      "right_metadata": {
+        "stamp": 1792738724.8402846,
+        "valid_until": 1792738725.0402846,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_right/Scene",
+        "frame_id": "front_right_image",
+        "covariance_or_bounds": []
+      },
+      "epoch": 0,
+      "image_sha256": "2da76af764b1533eb67f01c82195afa5e8699474b9f77deeb2bbc199a17619ff",
+      "reference_sha256": "4008a787145311233d5b10f0b4fb26f1ecb6ee90aa256aef98aae1cdc1e57a02"
+    },
+    {
+      "key": "0008",
+      "source_run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "packet_directory": "joint/0002",
+      "seed": 2111,
+      "left_metadata": {
+        "stamp": 1792738726.4663193,
+        "valid_until": 1792738726.6663194,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_left/Scene",
+        "frame_id": "front_left_image",
+        "covariance_or_bounds": []
+      },
+      "right_metadata": {
+        "stamp": 1792738726.4663193,
+        "valid_until": 1792738726.6663194,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_right/Scene",
+        "frame_id": "front_right_image",
+        "covariance_or_bounds": []
+      },
+      "epoch": 0,
+      "image_sha256": "1d9e4f461e5a58550a85ddba195ae4414cfb00f99a390c34d9e70b0d00bcfc87",
+      "reference_sha256": "06b4c4541d5b68e773e1f26b03d7ae072e113bfc51314af1081412b5bc6ded30"
+    },
+    {
+      "key": "0009",
+      "source_run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "packet_directory": "joint/0003",
+      "seed": 2111,
+      "left_metadata": {
+        "stamp": 1792738728.0203526,
+        "valid_until": 1792738728.2203526,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_left/Scene",
+        "frame_id": "front_left_image",
+        "covariance_or_bounds": []
+      },
+      "right_metadata": {
+        "stamp": 1792738728.0203526,
+        "valid_until": 1792738728.2203526,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_right/Scene",
+        "frame_id": "front_right_image",
+        "covariance_or_bounds": []
+      },
+      "epoch": 0,
+      "image_sha256": "dc8ad137886d40752a6e1acca7a06884b025ae653007aa4253cf86e2bc9fefec",
+      "reference_sha256": "ebd76d42948a9f4b7e6a1586fb19bcf19b2886c1b221dde8d11ee5601fc5fe14"
+    },
+    {
+      "key": "0010",
+      "source_run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "packet_directory": "joint/0004",
+      "seed": 2111,
+      "left_metadata": {
+        "stamp": 1792738729.6133864,
+        "valid_until": 1792738729.8133864,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_left/Scene",
+        "frame_id": "front_left_image",
+        "covariance_or_bounds": []
+      },
+      "right_metadata": {
+        "stamp": 1792738729.6133864,
+        "valid_until": 1792738729.8133864,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_right/Scene",
+        "frame_id": "front_right_image",
+        "covariance_or_bounds": []
+      },
+      "epoch": 0,
+      "image_sha256": "c67f573eb597b9c39bc3713eb08a288762aad4b32df3e40537fdea91fb261864",
+      "reference_sha256": "318c1934e234ec27c14e35ec0f86eccce2a8ec73c80429d7a3cf7f0c1fbda8b6"
+    },
+    {
+      "key": "0011",
+      "source_run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "packet_directory": "joint/0005",
+      "seed": 2111,
+      "left_metadata": {
+        "stamp": 1792738731.230421,
+        "valid_until": 1792738731.430421,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_left/Scene",
+        "frame_id": "front_left_image",
+        "covariance_or_bounds": []
+      },
+      "right_metadata": {
+        "stamp": 1792738731.230421,
+        "valid_until": 1792738731.430421,
+        "epoch": 0,
+        "source": "/airsim_node/drone_1/front_right/Scene",
+        "frame_id": "front_right_image",
+        "covariance_or_bounds": []
+      },
+      "epoch": 0,
+      "image_sha256": "941b214e53160608372653c0df32a4ad27806fc9fe1ecc17ec69909764e55316",
+      "reference_sha256": "30d26093250dd90750a474beda8660cfec1b0d743c1eeaf46ac81dcb17114f85"
+    }
+  ],
+  "files_sha256": {
+    "inputs/0000.npz": "dafbd4313a6b76187c70275e45c9e1064601b6adfdc567edb38f68e0f1af3b6d",
+    "inputs/0001.npz": "7f0a0d9008de51ffb3ceb89dc193012ed0142c735376979820cf785a28237192",
+    "inputs/0002.npz": "5bdf1616f3c025e8e5a26acf7b40e80ce6ac0f427ad72d37761db9c9b9e8dd7f",
+    "inputs/0003.npz": "e0163bcc6f201bebc0e254cfc80b7138df5c86462af9fb1f5c6b4a82ecfbb2d5",
+    "inputs/0004.npz": "c61f864c22aea16e57af96b40fb70260d423a1f10695b67a6d2754e732ac7aca",
+    "inputs/0005.npz": "d2d6b4cb049e62f28c6e47452fabaf91107656abeba9e54b1ff656379c0b3553",
+    "inputs/0006.npz": "57ac5922e30ca101b88b68cf01849a5eb14668a8b6d1425ee2259a7e8bbadf29",
+    "inputs/0007.npz": "2da76af764b1533eb67f01c82195afa5e8699474b9f77deeb2bbc199a17619ff",
+    "inputs/0008.npz": "1d9e4f461e5a58550a85ddba195ae4414cfb00f99a390c34d9e70b0d00bcfc87",
+    "inputs/0009.npz": "dc8ad137886d40752a6e1acca7a06884b025ae653007aa4253cf86e2bc9fefec",
+    "inputs/0010.npz": "c67f573eb597b9c39bc3713eb08a288762aad4b32df3e40537fdea91fb261864",
+    "inputs/0011.npz": "941b214e53160608372653c0df32a4ad27806fc9fe1ecc17ec69909764e55316",
+    "inputs/index.json": "13d0d6fe51dba9429ef7f9d1d30aa67118447f4d7beee1ae652427d9a638ec55",
+    "references/0000.npz": "d50673ae8468562c3d6f0cd6a660932ca4ba19d86adbc02ae8eeb36a588d19d4",
+    "references/0001.npz": "e5c9524523c3a93a0ca6883b0e6fa3c2c834879d0956998ac309e7491e163c62",
+    "references/0002.npz": "08a6a1e392bd2a99fa6a035c8e17ff4e8728b1b33693b80af04d9bb54a65950f",
+    "references/0003.npz": "dd7b9e90e57c76c9e0898a14bc5b6438dbbbe58df80d1eb4d24192f021d72423",
+    "references/0004.npz": "f447c51d604ec908ec938359773422b3d7c02eede01d3e3369877749771c1747",
+    "references/0005.npz": "a7f8dc87fa7946a5208131a7a2bab2251bff2866df89aca2cc945168c9da0eff",
+    "references/0006.npz": "6e262c821ffa52b23bc34b5dd2e4436690418687fb3a25e5e73fd3d6eb0ea24c",
+    "references/0007.npz": "4008a787145311233d5b10f0b4fb26f1ecb6ee90aa256aef98aae1cdc1e57a02",
+    "references/0008.npz": "06b4c4541d5b68e773e1f26b03d7ae072e113bfc51314af1081412b5bc6ded30",
+    "references/0009.npz": "ebd76d42948a9f4b7e6a1586fb19bcf19b2886c1b221dde8d11ee5601fc5fe14",
+    "references/0010.npz": "318c1934e234ec27c14e35ec0f86eccce2a8ec73c80429d7a3cf7f0c1fbda8b6",
+    "references/0011.npz": "30d26093250dd90750a474beda8660cfec1b0d743c1eeaf46ac81dcb17114f85",
+    "predictions/0000.npz": "86aad6acf9e026235efe5c06768dcf557c0546e8ca203d3382e5eebd4021ecd0",
+    "predictions/0001.npz": "21d7514857d010edbce9b8c47e4e872218cb1e7ba1da900e2feb68d3913ad080",
+    "predictions/0002.npz": "e853fb277d1194b9d5d690006f6deaa8fa144e3b079c16bee25ed19e3605684f",
+    "predictions/0003.npz": "4235abe19e335e9b1ec17618df27180e297cfa749897696606be07746b157f70",
+    "predictions/0004.npz": "46ea44df7c377f73f53d318d3697467469fd3b36ee20a8e334b063b4a08d9f81",
+    "predictions/0005.npz": "0516dd4ef77b25418ce4f3a4fef33d2e29d9e8839d42aed591032bccbff50598",
+    "predictions/0006.npz": "f3884e91399d32b4f97f18ac01d98e8a576e2c22a865061d597b1a97c58a3ed4",
+    "predictions/0007.npz": "ead54842af826dc0e97795eb50f7f4dd25c1d273227882797fc0505838148ef8",
+    "predictions/0008.npz": "b51abb2edc9d3546787953c8af12b44aeebb3fc3dde12eed51a9b3890a903e2d",
+    "predictions/0009.npz": "0f339f6d3e4c623e712982a75b95cd3d8a49b9d5579f587a756134a340457d27",
+    "predictions/0010.npz": "2b312bf2a56c5b88c9b0d106e6d568036b39cc52bcc8499975d122e9506cf877",
+    "predictions/0011.npz": "233715ef47f17640857c2ce3d151ff197b2d0c13851161c30d45027ba544bb0b",
+    "predictions/runtime.json": "8a122868be8741b4f6be14140c72c6dd4f1ad42589b433fe0b6ce8ef11f14378"
+  },
+  "runtime": {
+    "model_load_s": 1.5051013708580285,
+    "warmup_bidirectional_s": 1.1479544541798532,
+    "warmup_runs": 1,
+    "first_pair_repeat_identical": true,
+    "first_pair_raw_sha256": [
+      "cf7bb60db261696fc88751af463bbc2d69c4b87f25493cff8ab419158b598572",
+      "cf7bb60db261696fc88751af463bbc2d69c4b87f25493cff8ab419158b598572"
+    ],
+    "repeat_inference_s": 0.130706894909963,
+    "compilation_cache_may_be_warm": true,
+    "cold_process_startup_measured": false,
+    "normalization_compatibility_default_applied": true,
+    "volume_normalize": true,
+    "measurements": [
+      {
+        "key": "0000",
+        "ffs_bidirectional_resize_transfer_s": 0.14423189801163971,
+        "ffs_with_gray_and_mask_s": 0.17476241011172533,
+        "sgbm_gray_bidirectional_mask_s": 0.2860267860814929
+      },
+      {
+        "key": "0001",
+        "ffs_bidirectional_resize_transfer_s": 0.12918187002651393,
+        "ffs_with_gray_and_mask_s": 0.15824354509823024,
+        "sgbm_gray_bidirectional_mask_s": 0.2821400340180844
+      },
+      {
+        "key": "0002",
+        "ffs_bidirectional_resize_transfer_s": 0.12953989882953465,
+        "ffs_with_gray_and_mask_s": 0.15322443516924977,
+        "sgbm_gray_bidirectional_mask_s": 0.2825616030022502
+      },
+      {
+        "key": "0003",
+        "ffs_bidirectional_resize_transfer_s": 0.1300103438552469,
+        "ffs_with_gray_and_mask_s": 0.15322928107343614,
+        "sgbm_gray_bidirectional_mask_s": 0.28442661208100617
+      },
+      {
+        "key": "0004",
+        "ffs_bidirectional_resize_transfer_s": 0.1291380829643458,
+        "ffs_with_gray_and_mask_s": 0.15445082006044686,
+        "sgbm_gray_bidirectional_mask_s": 0.2796335171442479
+      },
+      {
+        "key": "0005",
+        "ffs_bidirectional_resize_transfer_s": 0.13011942291632295,
+        "ffs_with_gray_and_mask_s": 0.15790318395011127,
+        "sgbm_gray_bidirectional_mask_s": 0.27919022599235177
+      },
+      {
+        "key": "0006",
+        "ffs_bidirectional_resize_transfer_s": 0.12970304396003485,
+        "ffs_with_gray_and_mask_s": 0.15293067996390164,
+        "sgbm_gray_bidirectional_mask_s": 0.27868519397452474
+      },
+      {
+        "key": "0007",
+        "ffs_bidirectional_resize_transfer_s": 0.13019747589714825,
+        "ffs_with_gray_and_mask_s": 0.15338821103796363,
+        "sgbm_gray_bidirectional_mask_s": 0.2791919820010662
+      },
+      {
+        "key": "0008",
+        "ffs_bidirectional_resize_transfer_s": 0.1300047030672431,
+        "ffs_with_gray_and_mask_s": 0.15311686811037362,
+        "sgbm_gray_bidirectional_mask_s": 0.2807653669733554
+      },
+      {
+        "key": "0009",
+        "ffs_bidirectional_resize_transfer_s": 0.1295243341010064,
+        "ffs_with_gray_and_mask_s": 0.1535138669423759,
+        "sgbm_gray_bidirectional_mask_s": 0.2857041140086949
+      },
+      {
+        "key": "0010",
+        "ffs_bidirectional_resize_transfer_s": 0.13019896484911442,
+        "ffs_with_gray_and_mask_s": 0.1547127920202911,
+        "sgbm_gray_bidirectional_mask_s": 0.28360307589173317
+      },
+      {
+        "key": "0011",
+        "ffs_bidirectional_resize_transfer_s": 0.12965792207978666,
+        "ffs_with_gray_and_mask_s": 0.15281724696978927,
+        "sgbm_gray_bidirectional_mask_s": 0.28361099818721414
+      }
+    ],
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "torch": "2.6.0+cu124",
+    "cuda_runtime": "12.4",
+    "numpy": "1.26.4",
+    "opencv": "4.10.0",
+    "opencv_threads": 1,
+    "torch_cpu_threads": 1,
+    "peak_cuda_allocated_bytes": 469507584,
+    "peak_cuda_reserved_bytes": 580911104,
+    "sgbm_config": {
+      "num_disparities": 128,
+      "block_size": 5,
+      "uniqueness_ratio": 10,
+      "consistency_px": 1.0,
+      "min_texture_std": 2.0
+    },
+    "profile": {
+      "scale": 0.5,
+      "iterations": 4,
+      "max_disparity_model_pixels": 192,
+      "input_order": "RGB",
+      "input_range": [
+        0,
+        255
+      ],
+      "normalization": "inside_upstream_pytorch_model",
+      "missing_volume_normalize_checkpoint_arg_default": true,
+      "padding_multiple": 32,
+      "amp_dtype": "float16",
+      "reverse_method": "swap_images_and_flip_both_horizontally_then_unflip_output",
+      "upsample_method": "nearest_then_divide_disparity_by_scale",
+      "consistency_full_resolution_px": 1.0,
+      "common_texture_std": 2.0
+    },
+    "timing_excludes": "image loading, archive I/O, ROS transport, simulator contention, planning",
+    "same_search_range": false,
+    "sgbm_search_max_px": 128,
+    "ffs_search_max_original_px": 384,
+    "online_latency_verified": false
+  },
+  "timing_descriptive_summary_s": {
+    "ffs_bidirectional_resize_transfer_s": {
+      "min": 0.1291380829643458,
+      "median": 0.12985387351363897,
+      "sample_p95": 0.1365137847722508,
+      "max": 0.14423189801163971,
+      "samples": 12
+    },
+    "ffs_with_gray_and_mask_s": {
+      "min": 0.15281724696978927,
+      "median": 0.15345103899016976,
+      "sample_p95": 0.16567703435430303,
+      "max": 0.17476241011172533,
+      "samples": 12
+    },
+    "sgbm_gray_bidirectional_mask_s": {
+      "min": 0.27868519397452474,
+      "median": 0.2823508185101673,
+      "sample_p95": 0.285849316441454,
+      "max": 0.2860267860814929,
+      "samples": 12
+    }
+  },
+  "reference_candidates": 6305,
+  "own_reference_count": {
+    "sgbm": 1684,
+    "ffs": 2230
+  },
+  "pooled_shared_residuals": {
+    "sgbm": {
+      "count": 1412,
+      "absolute_median_px": 0.29722153047613187,
+      "absolute_p90_px": 0.5580978206510352,
+      "signed_median_px": 0.1689163546829615
+    },
+    "ffs": {
+      "count": 1412,
+      "absolute_median_px": 0.2333172776062824,
+      "absolute_p90_px": 0.6062429722757466,
+      "signed_median_px": -0.1562882743411329
+    }
+  },
+  "packets": [
+    {
+      "reference_candidates": 629,
+      "methods": {
+        "sgbm": {
+          "own_support": {
+            "count": 156,
+            "absolute_median_px": 0.347772367375331,
+            "absolute_p90_px": 0.5817543332507054,
+            "signed_median_px": 0.25738106343762546
+          },
+          "shared_support": {
+            "count": 111,
+            "absolute_median_px": 0.32323247198496574,
+            "absolute_p90_px": 0.5752806270845863,
+            "signed_median_px": 0.27360051249756623
+          }
+        },
+        "ffs": {
+          "own_support": {
+            "count": 150,
+            "absolute_median_px": 0.29613468384911634,
+            "absolute_p90_px": 10.879210971285854,
+            "signed_median_px": -0.0723031823438518
+          },
+          "shared_support": {
+            "count": 111,
+            "absolute_median_px": 0.17091120292699635,
+            "absolute_p90_px": 2.19877404785778,
+            "signed_median_px": -0.0521924895239998
+          }
+        }
+      },
+      "key": "0000",
+      "seed": 2110,
+      "source_run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "packet_directory": "joint/0000",
+      "source_metadata": {
+        "left": {
+          "stamp": 1792738505.8738494,
+          "valid_until": 1792738506.0738494,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_left/Scene",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "right": {
+          "stamp": 1792738505.8738494,
+          "valid_until": 1792738506.0738494,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_right/Scene",
+          "frame_id": "front_right_image",
+          "covariance_or_bounds": []
+        }
+      },
+      "prediction_sha256": "86aad6acf9e026235efe5c06768dcf557c0546e8ca203d3382e5eebd4021ecd0",
+      "coverage": {
+        "sgbm": 0.08913773148148148,
+        "ffs": 0.2271064814814815
+      },
+      "raw_ffs_positive_fraction": 0.9867476851851852,
+      "ffs_lr_only_fraction": 0.3759519675925926
+    },
+    {
+      "reference_candidates": 677,
+      "methods": {
+        "sgbm": {
+          "own_support": {
+            "count": 187,
+            "absolute_median_px": 0.2821621733406019,
+            "absolute_p90_px": 0.5562770174207771,
+            "signed_median_px": 0.05212172400863402
+          },
+          "shared_support": {
+            "count": 161,
+            "absolute_median_px": 0.2804591309956095,
+            "absolute_p90_px": 0.5019015035688881,
+            "signed_median_px": 0.12642349820301746
+          }
+        },
+        "ffs": {
+          "own_support": {
+            "count": 214,
+            "absolute_median_px": 0.249255338052909,
+            "absolute_p90_px": 4.685116721762969,
+            "signed_median_px": -0.10816338142684057
+          },
+          "shared_support": {
+            "count": 161,
+            "absolute_median_px": 0.1437024794259969,
+            "absolute_p90_px": 0.5815024025934399,
+            "signed_median_px": -0.10566218716496678
+          }
+        }
+      },
+      "key": "0001",
+      "seed": 2110,
+      "source_run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "packet_directory": "joint/0001",
+      "source_metadata": {
+        "left": {
+          "stamp": 1792738507.4668834,
+          "valid_until": 1792738507.6668835,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_left/Scene",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "right": {
+          "stamp": 1792738507.4668834,
+          "valid_until": 1792738507.6668835,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_right/Scene",
+          "frame_id": "front_right_image",
+          "covariance_or_bounds": []
+        }
+      },
+      "prediction_sha256": "21d7514857d010edbce9b8c47e4e872218cb1e7ba1da900e2feb68d3913ad080",
+      "coverage": {
+        "sgbm": 0.13261863425925927,
+        "ffs": 0.2472974537037037
+      },
+      "raw_ffs_positive_fraction": 0.9997916666666666,
+      "ffs_lr_only_fraction": 0.3602228009259259
+    },
+    {
+      "reference_candidates": 479,
+      "methods": {
+        "sgbm": {
+          "own_support": {
+            "count": 136,
+            "absolute_median_px": 0.3046588156304644,
+            "absolute_p90_px": 0.6113995227740929,
+            "signed_median_px": 0.2111639323013499
+          },
+          "shared_support": {
+            "count": 121,
+            "absolute_median_px": 0.304262787353764,
+            "absolute_p90_px": 0.5829107687144912,
+            "signed_median_px": 0.22768409093636777
+          }
+        },
+        "ffs": {
+          "own_support": {
+            "count": 181,
+            "absolute_median_px": 0.27631779300161163,
+            "absolute_p90_px": 2.373952470459699,
+            "signed_median_px": -0.1683324420603185
+          },
+          "shared_support": {
+            "count": 121,
+            "absolute_median_px": 0.27164643233127705,
+            "absolute_p90_px": 0.6199357968947989,
+            "signed_median_px": -0.19507962934394918
+          }
+        }
+      },
+      "key": "0002",
+      "seed": 2110,
+      "source_run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "packet_directory": "joint/0002",
+      "source_metadata": {
+        "left": {
+          "stamp": 1792738509.0659175,
+          "valid_until": 1792738509.2659175,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_left/Scene",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "right": {
+          "stamp": 1792738509.0659175,
+          "valid_until": 1792738509.2659175,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_right/Scene",
+          "frame_id": "front_right_image",
+          "covariance_or_bounds": []
+        }
+      },
+      "prediction_sha256": "e853fb277d1194b9d5d690006f6deaa8fa144e3b079c16bee25ed19e3605684f",
+      "coverage": {
+        "sgbm": 0.1678660300925926,
+        "ffs": 0.2596759259259259
+      },
+      "raw_ffs_positive_fraction": 0.9966666666666667,
+      "ffs_lr_only_fraction": 0.3580439814814815
+    },
+    {
+      "reference_candidates": 352,
+      "methods": {
+        "sgbm": {
+          "own_support": {
+            "count": 72,
+            "absolute_median_px": 0.30491832945693176,
+            "absolute_p90_px": 0.6726867961819577,
+            "signed_median_px": 0.07976199242096893
+          },
+          "shared_support": {
+            "count": 65,
+            "absolute_median_px": 0.2801124924898559,
+            "absolute_p90_px": 0.6123218269815376,
+            "signed_median_px": 0.07086934578302362
+          }
+        },
+        "ffs": {
+          "own_support": {
+            "count": 128,
+            "absolute_median_px": 0.36565897836657335,
+            "absolute_p90_px": 4.7890480774724224,
+            "signed_median_px": -0.26884070454337383
+          },
+          "shared_support": {
+            "count": 65,
+            "absolute_median_px": 0.3235159860184229,
+            "absolute_p90_px": 0.6029160946312462,
+            "signed_median_px": -0.30232983672963165
+          }
+        }
+      },
+      "key": "0003",
+      "seed": 2110,
+      "source_run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "packet_directory": "joint/0003",
+      "source_metadata": {
+        "left": {
+          "stamp": 1792738510.8509555,
+          "valid_until": 1792738511.0509555,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_left/Scene",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "right": {
+          "stamp": 1792738510.8509555,
+          "valid_until": 1792738511.0509555,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_right/Scene",
+          "frame_id": "front_right_image",
+          "covariance_or_bounds": []
+        }
+      },
+      "prediction_sha256": "4235abe19e335e9b1ec17618df27180e297cfa749897696606be07746b157f70",
+      "coverage": {
+        "sgbm": 0.17476996527777777,
+        "ffs": 0.3033521412037037
+      },
+      "raw_ffs_positive_fraction": 0.9998032407407408,
+      "ffs_lr_only_fraction": 0.41852430555555553
+    },
+    {
+      "reference_candidates": 694,
+      "methods": {
+        "sgbm": {
+          "own_support": {
+            "count": 200,
+            "absolute_median_px": 0.28878940816834664,
+            "absolute_p90_px": 0.5881708333981219,
+            "signed_median_px": 0.13885302019630164
+          },
+          "shared_support": {
+            "count": 175,
+            "absolute_median_px": 0.28944569496699657,
+            "absolute_p90_px": 0.5573527363440838,
+            "signed_median_px": 0.14239362715739823
+          }
+        },
+        "ffs": {
+          "own_support": {
+            "count": 309,
+            "absolute_median_px": 0.30038765203983075,
+            "absolute_p90_px": 4.7894202386066205,
+            "signed_median_px": -0.22693297414480185
+          },
+          "shared_support": {
+            "count": 175,
+            "absolute_median_px": 0.24299018860643784,
+            "absolute_p90_px": 0.5688802459465676,
+            "signed_median_px": -0.182871523689073
+          }
+        }
+      },
+      "key": "0004",
+      "seed": 2110,
+      "source_run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "packet_directory": "joint/0004",
+      "source_metadata": {
+        "left": {
+          "stamp": 1792738512.749996,
+          "valid_until": 1792738512.949996,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_left/Scene",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "right": {
+          "stamp": 1792738512.749996,
+          "valid_until": 1792738512.949996,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_right/Scene",
+          "frame_id": "front_right_image",
+          "covariance_or_bounds": []
+        }
+      },
+      "prediction_sha256": "46ea44df7c377f73f53d318d3697467469fd3b36ee20a8e334b063b4a08d9f81",
+      "coverage": {
+        "sgbm": 0.17769097222222222,
+        "ffs": 0.3027531828703704
+      },
+      "raw_ffs_positive_fraction": 0.9993287037037037,
+      "ffs_lr_only_fraction": 0.41109375
+    },
+    {
+      "reference_candidates": 475,
+      "methods": {
+        "sgbm": {
+          "own_support": {
+            "count": 140,
+            "absolute_median_px": 0.3186314124782257,
+            "absolute_p90_px": 0.6235995784720747,
+            "signed_median_px": 0.13821845863062254
+          },
+          "shared_support": {
+            "count": 122,
+            "absolute_median_px": 0.3215005845632515,
+            "absolute_p90_px": 0.6003490033810424,
+            "signed_median_px": 0.18585295282501946
+          }
+        },
+        "ffs": {
+          "own_support": {
+            "count": 186,
+            "absolute_median_px": 0.31587539791938823,
+            "absolute_p90_px": 3.595780882265331,
+            "signed_median_px": -0.20246758854455837
+          },
+          "shared_support": {
+            "count": 122,
+            "absolute_median_px": 0.2334861427626258,
+            "absolute_p90_px": 0.5732784079585457,
+            "signed_median_px": -0.1862127683434336
+          }
+        }
+      },
+      "key": "0005",
+      "seed": 2110,
+      "source_run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "packet_directory": "joint/0005",
+      "source_metadata": {
+        "left": {
+          "stamp": 1792738514.3670306,
+          "valid_until": 1792738514.5670307,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_left/Scene",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "right": {
+          "stamp": 1792738514.3670306,
+          "valid_until": 1792738514.5670307,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_right/Scene",
+          "frame_id": "front_right_image",
+          "covariance_or_bounds": []
+        }
+      },
+      "prediction_sha256": "0516dd4ef77b25418ce4f3a4fef33d2e29d9e8839d42aed591032bccbff50598",
+      "coverage": {
+        "sgbm": 0.17858940972222223,
+        "ffs": 0.28782262731481484
+      },
+      "raw_ffs_positive_fraction": 0.9996875,
+      "ffs_lr_only_fraction": 0.38568576388888887
+    },
+    {
+      "reference_candidates": 621,
+      "methods": {
+        "sgbm": {
+          "own_support": {
+            "count": 156,
+            "absolute_median_px": 0.32255197030633553,
+            "absolute_p90_px": 0.5922398653398462,
+            "signed_median_px": 0.2068215242043605
+          },
+          "shared_support": {
+            "count": 109,
+            "absolute_median_px": 0.3197460692943288,
+            "absolute_p90_px": 0.5922178597325072,
+            "signed_median_px": 0.2236982580792528
+          }
+        },
+        "ffs": {
+          "own_support": {
+            "count": 130,
+            "absolute_median_px": 0.250874423672343,
+            "absolute_p90_px": 5.094217631072246,
+            "signed_median_px": -0.11287450453523995
+          },
+          "shared_support": {
+            "count": 109,
+            "absolute_median_px": 0.23200951861029573,
+            "absolute_p90_px": 0.7114699079155309,
+            "signed_median_px": -0.11140204139830878
+          }
+        }
+      },
+      "key": "0006",
+      "seed": 2111,
+      "source_run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "packet_directory": "joint/0000",
+      "source_metadata": {
+        "left": {
+          "stamp": 1792738723.2472508,
+          "valid_until": 1792738723.4472508,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_left/Scene",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "right": {
+          "stamp": 1792738723.2472508,
+          "valid_until": 1792738723.4472508,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_right/Scene",
+          "frame_id": "front_right_image",
+          "covariance_or_bounds": []
+        }
+      },
+      "prediction_sha256": "f3884e91399d32b4f97f18ac01d98e8a576e2c22a865061d597b1a97c58a3ed4",
+      "coverage": {
+        "sgbm": 0.08880497685185185,
+        "ffs": 0.1953761574074074
+      },
+      "raw_ffs_positive_fraction": 0.9863946759259259,
+      "ffs_lr_only_fraction": 0.30983217592592593
+    },
+    {
+      "reference_candidates": 451,
+      "methods": {
+        "sgbm": {
+          "own_support": {
+            "count": 104,
+            "absolute_median_px": 0.30768576777677215,
+            "absolute_p90_px": 0.6498849448719343,
+            "signed_median_px": 0.13430572170188793
+          },
+          "shared_support": {
+            "count": 90,
+            "absolute_median_px": 0.2959663535098622,
+            "absolute_p90_px": 0.555098659385602,
+            "signed_median_px": 0.1789902412017783
+          }
+        },
+        "ffs": {
+          "own_support": {
+            "count": 145,
+            "absolute_median_px": 0.2474238047702464,
+            "absolute_p90_px": 5.26720561750836,
+            "signed_median_px": -0.12834192708558412
+          },
+          "shared_support": {
+            "count": 90,
+            "absolute_median_px": 0.15436019644248145,
+            "absolute_p90_px": 0.4640449588212696,
+            "signed_median_px": -0.10901875806698413
+          }
+        }
+      },
+      "key": "0007",
+      "seed": 2111,
+      "source_run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "packet_directory": "joint/0001",
+      "source_metadata": {
+        "left": {
+          "stamp": 1792738724.8402846,
+          "valid_until": 1792738725.0402846,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_left/Scene",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "right": {
+          "stamp": 1792738724.8402846,
+          "valid_until": 1792738725.0402846,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_right/Scene",
+          "frame_id": "front_right_image",
+          "covariance_or_bounds": []
+        }
+      },
+      "prediction_sha256": "ead54842af826dc0e97795eb50f7f4dd25c1d273227882797fc0505838148ef8",
+      "coverage": {
+        "sgbm": 0.1328269675925926,
+        "ffs": 0.2548958333333333
+      },
+      "raw_ffs_positive_fraction": 0.9897337962962963,
+      "ffs_lr_only_fraction": 0.36983217592592593
+    },
+    {
+      "reference_candidates": 482,
+      "methods": {
+        "sgbm": {
+          "own_support": {
+            "count": 128,
+            "absolute_median_px": 0.3041323765451125,
+            "absolute_p90_px": 0.5340008479028381,
+            "signed_median_px": 0.16255682947696481
+          },
+          "shared_support": {
+            "count": 110,
+            "absolute_median_px": 0.29112090631793297,
+            "absolute_p90_px": 0.5037401281348513,
+            "signed_median_px": 0.18715936769041797
+          }
+        },
+        "ffs": {
+          "own_support": {
+            "count": 190,
+            "absolute_median_px": 0.3253284311576117,
+            "absolute_p90_px": 3.315588991403349,
+            "signed_median_px": -0.16279222488880318
+          },
+          "shared_support": {
+            "count": 110,
+            "absolute_median_px": 0.28318461410267126,
+            "absolute_p90_px": 0.5379767446882525,
+            "signed_median_px": -0.2210833761562716
+          }
+        }
+      },
+      "key": "0008",
+      "seed": 2111,
+      "source_run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "packet_directory": "joint/0002",
+      "source_metadata": {
+        "left": {
+          "stamp": 1792738726.4663193,
+          "valid_until": 1792738726.6663194,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_left/Scene",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "right": {
+          "stamp": 1792738726.4663193,
+          "valid_until": 1792738726.6663194,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_right/Scene",
+          "frame_id": "front_right_image",
+          "covariance_or_bounds": []
+        }
+      },
+      "prediction_sha256": "b51abb2edc9d3546787953c8af12b44aeebb3fc3dde12eed51a9b3890a903e2d",
+      "coverage": {
+        "sgbm": 0.16883680555555555,
+        "ffs": 0.25991608796296295
+      },
+      "raw_ffs_positive_fraction": 0.9996354166666667,
+      "ffs_lr_only_fraction": 0.3600607638888889
+    },
+    {
+      "reference_candidates": 481,
+      "methods": {
+        "sgbm": {
+          "own_support": {
+            "count": 136,
+            "absolute_median_px": 0.29913264688119146,
+            "absolute_p90_px": 0.6181724288921018,
+            "signed_median_px": 0.14189538094291976
+          },
+          "shared_support": {
+            "count": 116,
+            "absolute_median_px": 0.2815474595688041,
+            "absolute_p90_px": 0.543470747102238,
+            "signed_median_px": 0.15374653217985657
+          }
+        },
+        "ffs": {
+          "own_support": {
+            "count": 197,
+            "absolute_median_px": 0.41326002257716965,
+            "absolute_p90_px": 5.299318657043109,
+            "signed_median_px": -0.32522656146715434
+          },
+          "shared_support": {
+            "count": 116,
+            "absolute_median_px": 0.2531163466671167,
+            "absolute_p90_px": 0.5937993949594285,
+            "signed_median_px": -0.2466270591628552
+          }
+        }
+      },
+      "key": "0009",
+      "seed": 2111,
+      "source_run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "packet_directory": "joint/0003",
+      "source_metadata": {
+        "left": {
+          "stamp": 1792738728.0203526,
+          "valid_until": 1792738728.2203526,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_left/Scene",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "right": {
+          "stamp": 1792738728.0203526,
+          "valid_until": 1792738728.2203526,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_right/Scene",
+          "frame_id": "front_right_image",
+          "covariance_or_bounds": []
+        }
+      },
+      "prediction_sha256": "0f339f6d3e4c623e712982a75b95cd3d8a49b9d5579f587a756134a340457d27",
+      "coverage": {
+        "sgbm": 0.17653501157407409,
+        "ffs": 0.31092737268518517
+      },
+      "raw_ffs_positive_fraction": 0.9986226851851852,
+      "ffs_lr_only_fraction": 0.4364380787037037
+    },
+    {
+      "reference_candidates": 481,
+      "methods": {
+        "sgbm": {
+          "own_support": {
+            "count": 134,
+            "absolute_median_px": 0.28328546105594654,
+            "absolute_p90_px": 0.536759173423168,
+            "signed_median_px": 0.10064575448913704
+          },
+          "shared_support": {
+            "count": 116,
+            "absolute_median_px": 0.28760563366624936,
+            "absolute_p90_px": 0.5044480638245048,
+            "signed_median_px": 0.12262070511793155
+          }
+        },
+        "ffs": {
+          "own_support": {
+            "count": 203,
+            "absolute_median_px": 0.3860422007383377,
+            "absolute_p90_px": 3.978485052591425,
+            "signed_median_px": -0.28065079069000376
+          },
+          "shared_support": {
+            "count": 116,
+            "absolute_median_px": 0.26562312097725993,
+            "absolute_p90_px": 0.5319006714090069,
+            "signed_median_px": -0.21949476604271378
+          }
+        }
+      },
+      "key": "0010",
+      "seed": 2111,
+      "source_run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "packet_directory": "joint/0004",
+      "source_metadata": {
+        "left": {
+          "stamp": 1792738729.6133864,
+          "valid_until": 1792738729.8133864,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_left/Scene",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "right": {
+          "stamp": 1792738729.6133864,
+          "valid_until": 1792738729.8133864,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_right/Scene",
+          "frame_id": "front_right_image",
+          "covariance_or_bounds": []
+        }
+      },
+      "prediction_sha256": "2b312bf2a56c5b88c9b0d106e6d568036b39cc52bcc8499975d122e9506cf877",
+      "coverage": {
+        "sgbm": 0.1793532986111111,
+        "ffs": 0.30618778935185187
+      },
+      "raw_ffs_positive_fraction": 0.9999189814814815,
+      "ffs_lr_only_fraction": 0.42008969907407406
+    },
+    {
+      "reference_candidates": 483,
+      "methods": {
+        "sgbm": {
+          "own_support": {
+            "count": 135,
+            "absolute_median_px": 0.28567767017977985,
+            "absolute_p90_px": 0.6036322539376218,
+            "signed_median_px": 0.13050275702289582
+          },
+          "shared_support": {
+            "count": 116,
+            "absolute_median_px": 0.2852337807805725,
+            "absolute_p90_px": 0.5310677195302258,
+            "signed_median_px": 0.14454576890937432
+          }
+        },
+        "ffs": {
+          "own_support": {
+            "count": 197,
+            "absolute_median_px": 0.3969393434754398,
+            "absolute_p90_px": 4.777963807873853,
+            "signed_median_px": -0.21098473921021466
+          },
+          "shared_support": {
+            "count": 116,
+            "absolute_median_px": 0.2578876270642967,
+            "absolute_p90_px": 0.6636939371701809,
+            "signed_median_px": -0.170917904964071
+          }
+        }
+      },
+      "key": "0011",
+      "seed": 2111,
+      "source_run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "packet_directory": "joint/0005",
+      "source_metadata": {
+        "left": {
+          "stamp": 1792738731.230421,
+          "valid_until": 1792738731.430421,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_left/Scene",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "right": {
+          "stamp": 1792738731.230421,
+          "valid_until": 1792738731.430421,
+          "epoch": 0,
+          "source": "/airsim_node/drone_1/front_right/Scene",
+          "frame_id": "front_right_image",
+          "covariance_or_bounds": []
+        }
+      },
+      "prediction_sha256": "233715ef47f17640857c2ce3d151ff197b2d0c13851161c30d45027ba544bb0b",
+      "coverage": {
+        "sgbm": 0.17836516203703703,
+        "ffs": 0.30635561342592593
+      },
+      "raw_ffs_positive_fraction": 0.9962673611111111,
+      "ffs_lr_only_fraction": 0.4267563657407407
+    }
+  ],
+  "tests": {
+    "host": {
+      "passed": 133,
+      "log_sha256": "20255e1676710bd5f95a64f3f1f22ac78f69df6e7f665bd8308ef5f55c6ff042"
+    },
+    "noetic": {
+      "passed": 130,
+      "skipped": 3,
+      "log_sha256": "f3ebb0693551889db12491b9cd760cdf4d3b7e46cfeff546c9e425366a4aca7e"
+    },
+    "compatibility_failure_corrected": "Old NumPy raised on NaN comparison; finite-index comparisons fixed and full suites rerun."
+  },
+  "failed_attempts_retained": [
+    {
+      "run": "runs/20261023T074543Z_8579017500534ab29a8fea2d6a90d850",
+      "reason": "uv cache default permission denied; no worker started",
+      "manifest_sha256": "a91d07bd0e015b92fda3f8b3028f7bb8f84327b2beb87eb152ffe561b79a4bb2"
+    },
+    {
+      "run": "runs/20261023T074605Z_de7a1469197c4c5092295164fafc3459",
+      "reason": "Triton compiled against empty system libcuda placeholder",
+      "manifest_sha256": "e72651247013fac3a4d4a9833802c8bec3e9eff6812bd027d81d185d623760b8"
+    },
+    {
+      "run": "runs/20261023T074706Z_97b3afc6472b4cdea1a7fa19c2899a29",
+      "reason": "official bp2 checkpoint missing normalize config field",
+      "manifest_sha256": "1fa94dfd2670a371027d79e57625a8f261a19454f6eacaad9c799c47a8227058"
+    }
+  ],
+  "successful_pilots_retained": [
+    "runs/20261023T074811Z_c9404e54b0a348468645ed7d9c4a482d",
+    "runs/20261023T075051Z_99a2f621b6c14cbf89b110515cbc8281"
+  ],
+  "reference_type": "nominal_lidar_after_estimated_header_pose_alignment",
+  "development_samples_not_heldout": true,
+  "control_published": false,
+  "confidence_calibrated": false,
+  "exposure_sync_verified": false,
+  "per_point_motion_compensation_applied": false,
+  "metric_calibration_verified": false,
+  "real_scene_accuracy_verified": false,
+  "online_latency_verified": false,
+  "current_control_eligible": false,
+  "acceptance_eligible": false,
+  "p1_accepted": false,
+  "p2_accepted": false,
+  "scope_note": "After execution only evidence, README and implementation-status documentation were added; algorithm and runtime lock match archived bytes."
+}

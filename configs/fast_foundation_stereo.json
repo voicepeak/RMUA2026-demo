@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "role": "offline_research_candidate_only",
+  "vendor": {
+    "url": "https://github.com/NVlabs/Fast-FoundationStereo.git",
+    "commit": "476f4249561f7c79ca707326954f9255643412a6",
+    "license_file": "LICENSE.txt"
+  },
+  "checkpoint": {
+    "repository": "nvidia/c-fast-foundationstereo",
+    "revision": "53a84e28a368f37e699776250215fcb450d6a109",
+    "filename": "model_best_bp2_serialize.pth",
+    "sha256": "7aee85948373da62b0503c2542507129a3e7cab9d97d10e6790d89512a7db214",
+    "bytes": 71105659,
+    "license_url": "https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-agreement/"
+  },
+  "profile": {
+    "scale": 0.5,
+    "iterations": 4,
+    "max_disparity_model_pixels": 192,
+    "input_order": "RGB",
+    "input_range": [0, 255],
+    "normalization": "inside_upstream_pytorch_model",
+    "missing_volume_normalize_checkpoint_arg_default": true,
+    "padding_multiple": 32,
+    "amp_dtype": "float16",
+    "reverse_method": "swap_images_and_flip_both_horizontally_then_unflip_output",
+    "upsample_method": "nearest_then_divide_disparity_by_scale",
+    "consistency_full_resolution_px": 1.0,
+    "common_texture_std": 2.0
+  },
+  "runtime": {
+    "python": "3.12.11",
+    "torch": "2.6.0+cu124",
+    "torchvision": "0.21.0+cu124",
+    "numpy": "1.26.4",
+    "timm": "1.0.20",
+    "einops": "0.8.1",
+    "omegaconf": "2.3.0",
+    "opencv_python_headless": "4.10.0.84",
+    "imageio": "2.37.0",
+    "pyyaml": "6.0.2"
+  },
+  "rectification_verified": false,
+  "metric_depth_verified": false,
+  "confidence_calibrated": false,
+  "current_control_eligible": false,
+  "acceptance_eligible": false
+}
