@@ -1,0 +1,705 @@
+{
+  "iteration": 29,
+  "recorded_on": "2026-10-23",
+  "stage": "P2_READ_ONLY_STEREO_PAIRING",
+  "acceptance_eligible": false,
+  "default_image_age_budget_s": 0.15,
+  "experimental_image_age_budget_s": 0.2,
+  "max_stereo_header_skew_s": 0.005,
+  "comparison_frozen": false,
+  "runs": [
+    {
+      "run": "runs/20261023T052931Z_f186bfd448e7434487b1e641c2f525e2",
+      "seed": 2104,
+      "kind": "stereo",
+      "run_state": "OBSERVER_FAILED",
+      "observer_exit_code": 2,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "7358ee4777ae86f79d5b87314d3293283ad69712d1346703cdc0d550d18c1e57",
+        "files": 236,
+        "uncompressed_bytes": 811899,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 236,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "pairs": 1,
+        "decoded_frames": {
+          "left": 72,
+          "right": 72
+        },
+        "received_frames": {
+          "imu": 403,
+          "left": 72,
+          "right": 72
+        },
+        "events": {
+          "EXPIRED_left": 71,
+          "EXPIRED_right": 71,
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0
+        },
+        "fault": "STALE_STEREO_PAIRS",
+        "node_graph": null,
+        "source_headers": {
+          "left": {
+            "stamp": 1792733381.6206684,
+            "frame_id": "",
+            "encoding": "bgr8",
+            "width": 960,
+            "height": 720,
+            "step": 2880,
+            "is_bigendian": 0
+          },
+          "right": {
+            "stamp": 1792733381.6206684,
+            "frame_id": "",
+            "encoding": "bgr8",
+            "width": 960,
+            "height": 720,
+            "step": 2880,
+            "is_bigendian": 0
+          }
+        },
+        "max_skew_s": 0.005,
+        "queue_capacity_per_side": 4,
+        "clock_source": "/airsim_node/drone_1/imu/imu",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "exposure_sync_verified": false,
+        "calibrated_rectification_verified": false,
+        "metric_depth_verified": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": false,
+        "pairs": 1,
+        "cv_bridge_first_images_match": {
+          "left": true,
+          "right": true
+        },
+        "input_records_valid": false,
+        "pair_records_valid": true,
+        "source_fault": "STALE_STEREO_PAIRS",
+        "image_timing_records": 0,
+        "header_skew_p50_p95_p99_max_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "pair_age_on_imu_clock_p50_p95_p99_max_s": [
+          0.147003173828125,
+          0.147003173828125,
+          0.147003173828125,
+          0.147003173828125
+        ],
+        "pair_processing_p50_p95_p99_max_s": [
+          0.007955946959555149,
+          0.007955946959555149,
+          0.007955946959555149,
+          0.007955946959555149
+        ],
+        "image_header_age_at_callback_p50_p95_p99_max_s": null,
+        "image_header_age_at_processing_p50_p95_p99_max_s": null,
+        "image_pending_wall_age_p50_p95_p99_max_s": null,
+        "image_shapes": [
+          [
+            720,
+            960,
+            3
+          ]
+        ],
+        "exposure_sync_verified": false,
+        "metric_depth_verified": false,
+        "acceptance_eligible": false,
+        "analysis_source_sha256": "e92772d7b243716082a6ce31144b0cd689bf4dd86752fd210df91abfc0edde20"
+      },
+      "analysis_matches_run_source_snapshot": false,
+      "artifact_sha256": {
+        "manifest.json": "4d49aae5a9873796f68522b4ced3ed68f9f6a3e7dd0303358388a1ed57002070",
+        "stereo_first_left.bin": "ca548a496b19220c983a8cdd583a8aa1451f620c2103705ff2ef6d64bbb0d769",
+        "stereo_first_left.json": "94bb6bc186f26474ca22123e4f6bf3bf945cfe4ad24877a17d24a990837fdaee",
+        "stereo_first_pair.npz": "04a859b0825f3d5a6b53c26f85e7e3dc330a5c4ea4a372731775853db4a94317",
+        "stereo_first_right.bin": "01b06f54a91e28fd0ee36a343ccde9369a72ccbd529b6d40ed29140244bbcaf6",
+        "stereo_first_right.json": "94bb6bc186f26474ca22123e4f6bf3bf945cfe4ad24877a17d24a990837fdaee",
+        "stereo_pairing_audit.json": "c4f709922b6eaa2280b481ba7e1321cb0a20b174a193348035828f2275e0dfd9",
+        "stereo_pairs.jsonl": "ba71fdbf78dbde121adad2ddd72da724295f2b9fbf805a8230599f56604b14e0",
+        "stereo_summary.json": "52cab4d2d3042adbe5b354b0789c150aba47ba3bf92fc18df52a99bf77113df4"
+      }
+    },
+    {
+      "run": "runs/20261023T053351Z_4299f402d61846fb80714b2beb66fad3",
+      "seed": 2105,
+      "kind": "stereo",
+      "run_state": "OBSERVER_FAILED",
+      "observer_exit_code": 2,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "13f2386ef287746f849ce270e40d45e18ba76760f19b741b61f5fb7e07e08ccc",
+        "files": 236,
+        "uncompressed_bytes": 814952,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 236,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "pairs": 1,
+        "decoded_frames": {
+          "right": 14,
+          "left": 13
+        },
+        "received_frames": {
+          "imu": 76,
+          "right": 14,
+          "left": 13
+        },
+        "events": {
+          "SENSOR_EXPIRED_right": 13,
+          "SENSOR_EXPIRED_left": 12,
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0
+        },
+        "fault": "STALE_STEREO_PAIRS",
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "source_headers": {
+          "right": {
+            "stamp": 1792733642.2451746,
+            "frame_id": "",
+            "encoding": "bgr8",
+            "width": 960,
+            "height": 720,
+            "step": 2880,
+            "is_bigendian": 0
+          },
+          "left": {
+            "stamp": 1792733642.3051758,
+            "frame_id": "",
+            "encoding": "bgr8",
+            "width": 960,
+            "height": 720,
+            "step": 2880,
+            "is_bigendian": 0
+          }
+        },
+        "max_skew_s": 0.005,
+        "queue_capacity_per_side": 4,
+        "clock_source": "/airsim_node/drone_1/imu/imu",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "exposure_sync_verified": false,
+        "calibrated_rectification_verified": false,
+        "metric_depth_verified": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": false,
+        "pairs": 1,
+        "cv_bridge_first_images_match": {
+          "left": true,
+          "right": true
+        },
+        "input_records_valid": true,
+        "pair_records_valid": true,
+        "source_fault": "STALE_STEREO_PAIRS",
+        "image_timing_records": 27,
+        "header_skew_p50_p95_p99_max_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "pair_age_on_imu_clock_p50_p95_p99_max_s": [
+          0.147003173828125,
+          0.147003173828125,
+          0.147003173828125,
+          0.147003173828125
+        ],
+        "pair_processing_p50_p95_p99_max_s": [
+          0.010372701101005077,
+          0.010372701101005077,
+          0.010372701101005077,
+          0.010372701101005077
+        ],
+        "image_header_age_at_callback_p50_p95_p99_max_s": [
+          0.15300321578979492,
+          0.16410353183746337,
+          0.16500353813171387,
+          0.16500353813171387
+        ],
+        "image_header_age_at_processing_p50_p95_p99_max_s": [
+          0.15300321578979492,
+          0.16500353813171387,
+          0.1694435691833496,
+          0.1710035800933838
+        ],
+        "image_pending_wall_age_p50_p95_p99_max_s": [
+          0.00013585900887846947,
+          0.0015484185656532644,
+          0.001654865485616028,
+          0.0016755089163780212
+        ],
+        "image_shapes": [
+          [
+            720,
+            960,
+            3
+          ]
+        ],
+        "exposure_sync_verified": false,
+        "metric_depth_verified": false,
+        "acceptance_eligible": false,
+        "analysis_source_sha256": "e92772d7b243716082a6ce31144b0cd689bf4dd86752fd210df91abfc0edde20"
+      },
+      "analysis_matches_run_source_snapshot": true,
+      "artifact_sha256": {
+        "manifest.json": "3945400cf4f9e92af9d331c3b2548e5212a27165e80e4e7387dcb03e9f8dc4d8",
+        "stereo_first_left.bin": "2e8224b7ec69ea16d66c7bdb3443393d42802a3f47e0367698ddc1e06958a0ce",
+        "stereo_first_left.json": "a1830086fbef7ea79abf90b4591fc99cb08a2d1391d6015afdf5638e814995a1",
+        "stereo_first_pair.npz": "324d1a55b2b2e769d77f0cbdb87277959c6e588d92bab4135ea9f191e2f9a560",
+        "stereo_first_right.bin": "fe0e906c35925132632d2f2d351c4230790c8e691824038a852866078816886d",
+        "stereo_first_right.json": "fae2dce17c24ec6906f8005466ae2ab7dbebfd5eadd1d18e88d53420a4420a81",
+        "stereo_image_timing.jsonl": "94f8309ad26625089fc1d333e765a60bf4ca7302126e6a170bd68b18365f78cd",
+        "stereo_pairing_audit.json": "443f870e8676c8fb17b7c69cf555a0cbb3f9c7f6a0fbc34511f5a3a78acb76af",
+        "stereo_pairs.jsonl": "c1adbd1180ac955105778caa5ad5579b91e3274a5a5bc7cac3461aeeb8097e04",
+        "stereo_summary.json": "ba215c729b76877669754844eb10424f5063d4574e5a8e452c6c72a9789cc240"
+      }
+    },
+    {
+      "run": "runs/20261023T053533Z_a98296d2effb4c81946ab6c75d32e5b5",
+      "seed": 2105,
+      "kind": "stereo",
+      "run_state": "OBSERVED",
+      "observer_exit_code": 0,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "0463b857afbdcedcd88e05a1b348a97c58384c2ac8175913109f2adbd801f7f6",
+        "files": 236,
+        "uncompressed_bytes": 816189,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 236,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "pairs": 182,
+        "decoded_frames": {
+          "left": 182,
+          "right": 182
+        },
+        "received_frames": {
+          "imu": 999,
+          "left": 182,
+          "right": 182
+        },
+        "events": {
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0
+        },
+        "fault": null,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "source_headers": {
+          "left": {
+            "stamp": 1792733743.3014345,
+            "frame_id": "",
+            "encoding": "bgr8",
+            "width": 960,
+            "height": 720,
+            "step": 2880,
+            "is_bigendian": 0
+          },
+          "right": {
+            "stamp": 1792733743.3014345,
+            "frame_id": "",
+            "encoding": "bgr8",
+            "width": 960,
+            "height": 720,
+            "step": 2880,
+            "is_bigendian": 0
+          }
+        },
+        "max_skew_s": 0.005,
+        "queue_capacity_per_side": 4,
+        "clock_source": "/airsim_node/drone_1/imu/imu",
+        "image_age_budget_s": 0.2,
+        "experimental_age_budget": true,
+        "control_published": false,
+        "debug_inputs_used": false,
+        "exposure_sync_verified": false,
+        "calibrated_rectification_verified": false,
+        "metric_depth_verified": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "pairs": 182,
+        "cv_bridge_first_images_match": {
+          "left": true,
+          "right": true
+        },
+        "input_records_valid": true,
+        "pair_records_valid": true,
+        "image_age_budget_s": 0.2,
+        "default_150ms_pipeline_passed": false,
+        "source_fault": null,
+        "image_timing_records": 364,
+        "header_skew_p50_p95_p99_max_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "pair_age_on_imu_clock_p50_p95_p99_max_s": [
+          0.15600347518920898,
+          0.17400360107421875,
+          0.18114388942718504,
+          0.18900418281555176
+        ],
+        "pair_processing_p50_p95_p99_max_s": [
+          0.0003769374452531338,
+          0.0006268710829317569,
+          0.0008173800515942273,
+          0.009150295052677393
+        ],
+        "image_header_age_at_callback_p50_p95_p99_max_s": [
+          0.15000319480895996,
+          0.16500353813171387,
+          0.1770038604736328,
+          0.18900418281555176
+        ],
+        "image_header_age_at_processing_p50_p95_p99_max_s": [
+          0.15000319480895996,
+          0.16800355911254883,
+          0.1781137800216675,
+          0.18900418281555176
+        ],
+        "image_pending_wall_age_p50_p95_p99_max_s": [
+          0.0002623070031404495,
+          0.0015442161122336982,
+          0.0016320194466970862,
+          0.0016852659173309803
+        ],
+        "image_shapes": [
+          [
+            720,
+            960,
+            3
+          ]
+        ],
+        "exposure_sync_verified": false,
+        "metric_depth_verified": false,
+        "acceptance_eligible": false,
+        "analysis_source_sha256": "49c6f0d00fe138ebf8fb61068843ae7f4bf061cfce676cd3d74fcce0788bbbf0"
+      },
+      "analysis_matches_run_source_snapshot": true,
+      "artifact_sha256": {
+        "manifest.json": "be6899f5ae58d6adf9e6248484bb784654ddccde92bd84cee9c3fc60a0cc41cc",
+        "stereo_first_left.bin": "7aa23696d77903534de60008fd8100c6d992fab7760be503a6546e387ff4e203",
+        "stereo_first_left.json": "7424fb9a500b9ddb25d5c788c47c407cf7a2828b7b9642b9dda7a65b04bac152",
+        "stereo_first_pair.npz": "995346f3edb70236d6c3e602f8e81bc4a205e3f173ee4c730816e87587337b30",
+        "stereo_first_right.bin": "730d262dfa29e34c20b1532ed6ee706cd23a2a960ee1cc629017d62790f512e3",
+        "stereo_first_right.json": "7424fb9a500b9ddb25d5c788c47c407cf7a2828b7b9642b9dda7a65b04bac152",
+        "stereo_image_timing.jsonl": "4639afbca530a0e40deb3220da1f312e40a56fdc04e27e485c5f777896613fd6",
+        "stereo_pairing_audit.json": "19396f1b0bd727b5e8eaab217326cf8dc85bf0f645cbf91218f6a6541c2bdac6",
+        "stereo_pairs.jsonl": "8ac1ec3d2c63d2b7d32ca4794380b76a6c54c370fb93a032769b9c5e23ad95f0",
+        "stereo_summary.json": "c1ba0b7550b7ac9b5e32f335946c93175113a201379898c9b3e5ec0b3e4d3f10"
+      }
+    },
+    {
+      "run": "runs/20261023T053653Z_58ccb0439090433bb3c4e23fbb637c84",
+      "seed": 2106,
+      "kind": "stereo",
+      "run_state": "OBSERVED",
+      "observer_exit_code": 0,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "9ee504d86bafd07b0e6b75b8e6cd016ace8248c4cc1bf53d544004dd7fdf40e7",
+        "files": 236,
+        "uncompressed_bytes": 816496,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 236,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "pairs": 181,
+        "decoded_frames": {
+          "left": 182,
+          "right": 181
+        },
+        "received_frames": {
+          "imu": 998,
+          "left": 182,
+          "right": 181
+        },
+        "events": {
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0
+        },
+        "fault": null,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "source_headers": {
+          "left": {
+            "stamp": 1792733823.594143,
+            "frame_id": "",
+            "encoding": "bgr8",
+            "width": 960,
+            "height": 720,
+            "step": 2880,
+            "is_bigendian": 0
+          },
+          "right": {
+            "stamp": 1792733823.594143,
+            "frame_id": "",
+            "encoding": "bgr8",
+            "width": 960,
+            "height": 720,
+            "step": 2880,
+            "is_bigendian": 0
+          }
+        },
+        "max_skew_s": 0.005,
+        "queue_capacity_per_side": 4,
+        "clock_source": "/airsim_node/drone_1/imu/imu",
+        "image_age_budget_s": 0.2,
+        "experimental_age_budget": true,
+        "control_published": false,
+        "debug_inputs_used": false,
+        "exposure_sync_verified": false,
+        "calibrated_rectification_verified": false,
+        "metric_depth_verified": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "pairs": 181,
+        "cv_bridge_first_images_match": {
+          "left": true,
+          "right": true
+        },
+        "input_records_valid": true,
+        "pair_records_valid": true,
+        "image_age_budget_s": 0.2,
+        "default_150ms_pipeline_passed": false,
+        "source_fault": null,
+        "image_timing_records": 363,
+        "header_skew_p50_p95_p99_max_s": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "pair_age_on_imu_clock_p50_p95_p99_max_s": [
+          0.15900325775146484,
+          0.17400383949279785,
+          0.1836039066314697,
+          0.19200420379638672
+        ],
+        "pair_processing_p50_p95_p99_max_s": [
+          0.00038440292701125145,
+          0.000618145102635026,
+          0.0007043637800961707,
+          0.020989648066461086
+        ],
+        "pair_processing_interval_scope": "Emission loop only; images may have been decoded in earlier loops. Not end-to-end latency.",
+        "image_decode_p50_p95_p99_max_s": [
+          0.0002587779890745878,
+          0.0004709069617092607,
+          0.0005543475784361362,
+          0.008268999867141247
+        ],
+        "image_header_age_at_callback_p50_p95_p99_max_s": [
+          0.15000319480895996,
+          0.16800355911254883,
+          0.18300390243530273,
+          0.19200420379638672
+        ],
+        "image_header_age_at_processing_p50_p95_p99_max_s": [
+          0.15300321578979492,
+          0.16800355911254883,
+          0.18300390243530273,
+          0.19200420379638672
+        ],
+        "image_pending_wall_age_p50_p95_p99_max_s": [
+          0.00023257499560713768,
+          0.0013806408969685433,
+          0.001604986591264605,
+          0.0017497860826551914
+        ],
+        "image_shapes": [
+          [
+            720,
+            960,
+            3
+          ]
+        ],
+        "exposure_sync_verified": false,
+        "metric_depth_verified": false,
+        "acceptance_eligible": false,
+        "analysis_source_sha256": "7565171a242d546268273bc125833e6c02780993324eaf864d449db514bb7b6e"
+      },
+      "analysis_matches_run_source_snapshot": true,
+      "artifact_sha256": {
+        "manifest.json": "87aea112771cdcf0070f41064ec3bba185910a2ee34167b6525228d6c58487e5",
+        "stereo_first_left.bin": "777ecff7176fc3568b61fee8d8ae2fdc98995c737570df64721f1f408a153e89",
+        "stereo_first_left.json": "e5b634cae5c66651709182f65fd9afb9df992384098c42b23f44540c1ce346ec",
+        "stereo_first_pair.npz": "55be29b2090f5d9fc99691bc6070360f64e4a447497d4af58f9ee530e6e580a6",
+        "stereo_first_right.bin": "a5474389448b295780c67f41a1571f95350f9bc6293028512b98e92724695ec2",
+        "stereo_first_right.json": "e5b634cae5c66651709182f65fd9afb9df992384098c42b23f44540c1ce346ec",
+        "stereo_image_timing.jsonl": "bb2360c4782956b48d3b407a23185fd5a2a24b35792729591e0825dc0d3ee55e",
+        "stereo_pairing_audit.json": "089676b54dbaa496b9db8f422961768f73d08e6443e2f3ffb5a96ae54a22e068",
+        "stereo_pairs.jsonl": "e070a734feec902842e17043bff81dc999e43302e2f8d367ab691208b42b6b91",
+        "stereo_summary.json": "fd0e33765df92782132d30746299718fd57da0e00cf5790e872ee1b0956618e3"
+      }
+    },
+    {
+      "run": "runs/20261023T053748Z_1c4cbdf1b9044ad2b7c86be2965fc5ba",
+      "seed": 2107,
+      "kind": "lidar",
+      "run_state": "OBSERVED",
+      "observer_exit_code": 0,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "9ee504d86bafd07b0e6b75b8e6cd016ace8248c4cc1bf53d544004dd7fdf40e7",
+        "files": 236,
+        "uncompressed_bytes": 816496,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 236,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "processed_frames": 29,
+        "received_frames": 29,
+        "events": {},
+        "fault": null,
+        "schemas": [
+          {
+            "frame_id": "lidar",
+            "point_step": 12,
+            "is_bigendian": false,
+            "fields": [
+              {
+                "name": "x",
+                "offset": 0,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "y",
+                "offset": 4,
+                "datatype": 7,
+                "count": 1
+              },
+              {
+                "name": "z",
+                "offset": 8,
+                "datatype": 7,
+                "count": 1
+              }
+            ]
+          }
+        ],
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/lidar"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "control_published": false,
+        "debug_inputs_used": false,
+        "frame_semantics": "frozen_sensor_frame_at_scan_stamp",
+        "motion_compensated": false,
+        "free_space_certified": false,
+        "flight_clearance_eligible": false,
+        "official_result": "UNKNOWN"
+      },
+      "audit": {
+        "audit_valid": true,
+        "processed_frames": 29,
+        "first_cloud_matches_ros_reference_decoder": true,
+        "first_cloud_finite_points": 15169,
+        "first_cloud_reference_endpoint_voxels": 4206,
+        "last_cloud_endpoint_voxels": 4574,
+        "processing_p50_p95_p99_max_s": [
+          0.02102395403198898,
+          0.03672487214207648,
+          0.042255344353616234,
+          0.04371801903471351
+        ],
+        "processed_arrival_span_s": 2.879987881053239,
+        "observed_processed_frequency_hz": 9.722263133190731,
+        "sensor_frame": "lidar",
+        "world_transform_verified": false,
+        "motion_compensated": false,
+        "free_space_certified": false,
+        "flight_clearance_eligible": false,
+        "acceptance_eligible": false,
+        "header_stamp_to_arrival_latency_calibrated": false,
+        "analysis_source_sha256": "d001fa791fe99fd5be56b10353808b32837de189511e15ad3f6acab31abe4ca1"
+      },
+      "analysis_matches_run_source_snapshot": true,
+      "artifact_sha256": {
+        "lidar_audit.json": "fefccfc94648616c0118496d54f1aec907b6afb105361243e674842e6a254641",
+        "lidar_endpoint_snapshot.json": "d9c350fe15a95d198cb72ff8174ef1c1ee8098b4ae35abd9d6096dfbeb8da1aa",
+        "lidar_first_message.bin": "3aedc5cd3a5fe8ac7ada53d22ff8d1736306b6a86e99925f40916674b946d840",
+        "lidar_first_message.json": "dcaa20e239a4f0bf44dfa3b4b9cf69632e61fd14f6c8d4966221d28b43bea3df",
+        "lidar_frames.jsonl": "491fd98fe6f61fd44c5a57d01ac15d72502a6b5dc75eaf25d4faa1d26e63366b",
+        "lidar_summary.json": "ffcf706be8ff5640225cb6e744d9c625a103faf3707b404643d801489608b4e5",
+        "manifest.json": "0aa2ff3e39f4c4f4182112af89cd82a39887d9586aff9d53c9cd81ae3e480e28"
+      }
+    }
+  ],
+  "verification": {
+    "host_unit_tests_passed": 91,
+    "noetic_unit_tests_passed": 88,
+    "noetic_host_git_tests_skipped": 3
+  },
+  "limitations": [
+    "The default 150ms image-age pipeline failed in both exploratory scenes; retained failures are not replaced by 200ms experiments.",
+    "200ms is an explicit read-only experiment, not a change to the default or an accepted flight budget.",
+    "Equal header stamps do not prove synchronized exposures, rectification, extrinsics or metric depth.",
+    "Header age relative to the latest IMU is not a calibrated exposure-to-output latency measurement.",
+    "Pair processing duration covers the emission loop only; decoding can happen in earlier loops.",
+    "The first run lacks raw timing and node-graph records; its post-hoc audit cannot certify those inputs.",
+    "Scene source revisions differ; archives are authoritative and no frozen causal or reliability comparison is claimed.",
+    "No LiDAR/stereo joint synchronization, motion compensation, SGBM or VIO acceptance is claimed."
+  ]
+}
