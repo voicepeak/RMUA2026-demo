@@ -1,0 +1,184 @@
+{
+  "iteration": 28,
+  "recorded_on": "2026-10-23",
+  "stage": "P2_READ_ONLY_LIDAR_ENDPOINTS",
+  "acceptance_eligible": false,
+  "runs": [
+    {
+      "run": "runs/20261023T051404Z_f02e55bf87014436a4f25f18589b18d9",
+      "seed": 2101,
+      "run_state": "OBSERVED",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "1924683ffc6e89b0612c2c793d22f5ab477b038e4de8241dc59ced64618ac501",
+        "files": 227,
+        "uncompressed_bytes": 769709,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 227,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "audit": {
+        "audit_valid": true,
+        "processed_frames": 96,
+        "first_cloud_matches_ros_reference_decoder": true,
+        "first_cloud_finite_points": 15745,
+        "first_cloud_reference_endpoint_voxels": 4529,
+        "last_cloud_endpoint_voxels": 4666,
+        "processing_p50_p95_p99_max_s": [
+          0.019951766938902438,
+          0.03648793854517862,
+          0.041763773141428824,
+          0.04284098092466593
+        ],
+        "processed_arrival_span_s": 9.919281771872193,
+        "observed_processed_frequency_hz": 9.577306319635825,
+        "sensor_frame": "lidar",
+        "world_transform_verified": false,
+        "motion_compensated": false,
+        "free_space_certified": false,
+        "flight_clearance_eligible": false,
+        "acceptance_eligible": false,
+        "header_stamp_to_arrival_latency_calibrated": false,
+        "analysis_source_sha256": "d001fa791fe99fd5be56b10353808b32837de189511e15ad3f6acab31abe4ca1"
+      },
+      "analysis_matches_run_source_snapshot": false,
+      "node_graph": {
+        "subscriptions": [
+          "/airsim_node/drone_1/lidar"
+        ],
+        "publishers": [
+          "/rosout"
+        ]
+      },
+      "artifact_sha256": {
+        "manifest.json": "2198e05036d5aff953670397b4d6623d7db297e0b6c8c21a2f6572588595109a",
+        "lidar_summary.json": "497066c85a0a23c9e219ff45dc071a87325ad03014aaf8ff421fdba8f9e22e34",
+        "lidar_audit.json": "52ce6212ad33e7dc58c6ec498c4da36bbcc9de3cf674e48273f7e10ef441a8ac",
+        "lidar_frames.jsonl": "3313e7348550df5ad39ee4a8fd85b65c596aba0bf461c61d3f7427c56e168d20",
+        "lidar_first_message.bin": "341189916c2ad3bcef42255974492e1e2adc9055f5a43f013d18c28dcc5b6678",
+        "lidar_first_message.json": "ba22b7669a4abff2f0d47b96c5af65a471139117735baf74f7e7bb4e0e488fa0",
+        "lidar_endpoint_snapshot.json": "27dd5536dbcddddd8bca0b042b3f9305bf717d69588f8971a25159f4e3a5c2ac"
+      }
+    },
+    {
+      "run": "runs/20261023T051637Z_4536f79c9853460a917f7edddd6f1c66",
+      "seed": 2102,
+      "run_state": "OBSERVED",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "f73a6e4381a335ee70fe450fa4da9e4dd11fa4d35e2ccb2347f203169eef3750",
+        "files": 228,
+        "uncompressed_bytes": 775700,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 228,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "audit": {
+        "audit_valid": true,
+        "processed_frames": 98,
+        "first_cloud_matches_ros_reference_decoder": true,
+        "first_cloud_finite_points": 15881,
+        "first_cloud_reference_endpoint_voxels": 4638,
+        "last_cloud_endpoint_voxels": 4629,
+        "processing_p50_p95_p99_max_s": [
+          0.018180596991442144,
+          0.03011349282460287,
+          0.0341940511087887,
+          0.03946358314715326
+        ],
+        "processed_arrival_span_s": 9.853771365014836,
+        "observed_processed_frequency_hz": 9.843946688715763,
+        "sensor_frame": "lidar",
+        "world_transform_verified": false,
+        "motion_compensated": false,
+        "free_space_certified": false,
+        "flight_clearance_eligible": false,
+        "acceptance_eligible": false,
+        "header_stamp_to_arrival_latency_calibrated": false,
+        "analysis_source_sha256": "d001fa791fe99fd5be56b10353808b32837de189511e15ad3f6acab31abe4ca1"
+      },
+      "analysis_matches_run_source_snapshot": true,
+      "node_graph": {
+        "subscriptions": [
+          "/airsim_node/drone_1/lidar"
+        ],
+        "publishers": [
+          "/rosout"
+        ]
+      },
+      "artifact_sha256": {
+        "manifest.json": "fdd1726575cee1bc125a9c71b10a367f85e3bd6e2ddb4e18eb05bfd8d58a98b6",
+        "lidar_summary.json": "25eecea5cfc637c6ec97b3657f9d56f0603c99346fd63e52902154a59913d262",
+        "lidar_audit.json": "5717d73b7642989618c6f9fdd388252eff680a5fb2c18877b6d9431c17b05bf0",
+        "lidar_frames.jsonl": "415969e9e1ee473ca69cc98d67230303bb3f00e8a646ec1958443d235d875518",
+        "lidar_first_message.bin": "995ec2be1b3fc758c2ca853af27f91eecaba570cda42ac994055f4d26480161b",
+        "lidar_first_message.json": "8f681eab11640080f63ee50801e1d8256c3743218e9a0a9d0e384e5e02d1a293",
+        "lidar_endpoint_snapshot.json": "7e1ca7d3fc62d5f16ea7b89fa4199e7755f79373002ad03fee890c2a1ee503f8"
+      }
+    }
+  ],
+  "verification": {
+    "host_unit_tests_passed": 85,
+    "noetic_unit_tests_passed": 82,
+    "noetic_host_git_tests_skipped": 3,
+    "initial_noetic_failure": "NumPy 1.17 unique(axis=0) rejected an empty (0,3) cloud; fixed with explicit empty handling; both full suites rerun successfully."
+  },
+  "limitations": [
+    "Only endpoint occupancy in each scan sensor frame, no cross-scan fusion.",
+    "No ray carving or FREE evidence, no-return and nonfinite samples stay UNKNOWN.",
+    "Frame transform, per-point timing, motion compensation and end-to-end latency are uncalibrated.",
+    "Observer runs separately, no control publishers or debug subscriptions; P1 and P2 remain unaccepted.",
+    "First scene predates empty-cloud fix and offline audit implementation; second scene archives those revisions. Scenes are exploratory, not a frozen comparison."
+  ],
+  "final_smoke": {
+    "run": "runs/20261023T051931Z_721f7d98713e4921b1ae1b9a54929587",
+    "seed": 2103,
+    "duration_s": 4,
+    "audit": {
+      "audit_valid": true,
+      "processed_frames": 39,
+      "first_cloud_matches_ros_reference_decoder": true,
+      "first_cloud_finite_points": 15881,
+      "first_cloud_reference_endpoint_voxels": 4638,
+      "last_cloud_endpoint_voxels": 4651,
+      "processing_p50_p95_p99_max_s": [
+        0.01852793898433447,
+        0.030604050331749025,
+        0.036185898832045475,
+        0.03900336707010865
+      ],
+      "processed_arrival_span_s": 3.8995836479589343,
+      "observed_processed_frequency_hz": 9.744630050413056,
+      "sensor_frame": "lidar",
+      "world_transform_verified": false,
+      "motion_compensated": false,
+      "free_space_certified": false,
+      "flight_clearance_eligible": false,
+      "acceptance_eligible": false,
+      "header_stamp_to_arrival_latency_calibrated": false,
+      "analysis_source_sha256": "d001fa791fe99fd5be56b10353808b32837de189511e15ad3f6acab31abe4ca1"
+    },
+    "source_archive": {
+      "path": "source_snapshot.tar.gz",
+      "sha256": "8c1abbdbb2637127b5c19782b3982ac2bb983e9a53c390bbe8788ce9aae2b70d",
+      "files": 230,
+      "uncompressed_bytes": 787414,
+      "scope": "workspace_sources_not_container_or_simulator_binaries"
+    },
+    "independently_rehashed_source_files": 230,
+    "source_unchanged": true,
+    "original_simulator_files_unchanged": true,
+    "cleanup_errors": [],
+    "artifact_sha256": {
+      "manifest.json": "d811b77539ad217c9afe50cfa459c9f9a5ff345850816494f924b71a2d0ecac9",
+      "lidar_audit.json": "c3f15418e84c900f81d9cc0baf83b1b81f1f083d7f37655d5608b1c2088ed4e6",
+      "lidar_summary.json": "1c7c5a05859581ae035b1441380072a9b09cd934bab8117c39a5ccfbd0c49b13",
+      "lidar_first_message.bin": "a022d80d83d84e9c23e66a054cda925b1cc6c9f5b327a6d357b8ba891a9f04f4",
+      "lidar_first_message.json": "647db4eb430dc7ee1a051720ce9da3161413b8d7e37ea324af00ca7db702e755",
+      "lidar_frames.jsonl": "e3fd31862ae739ad9da73c650894c60dc575adda2b19004e61704cc2aefab3bb",
+      "lidar_endpoint_snapshot.json": "726efd2433d7acffae00642317e24fd9712f47a18497c6ff7ec9b02af8f80c88"
+    }
+  }
+}
