@@ -10,4 +10,6 @@ sgbm.py 新增离线诊断像素视差，使用两方向 SGBM、双线性反向�
 
 geometry.py 从原设置构造带 SHA256 的不可变名义相机/LiDAR 模型，明确 sensor/body FRD 与光学轴转换、前后双目左右顺序；仅在平行且内参相同的配置下支持名义三角化，无效点保持 NaN。其米制标定和控制资格标记始终为 false。epipolar.py 的互相确认 ORB/基础矩阵诊断不按垂直残差预过滤，避免循环验证；不能把稀疏极线支持当作全图标定或安全距离。正式输入结果及限制见 docs/stereo_geometry_baseline.md。
 
+lidar_projection.py 支持按估计头位姿进行 LiDAR/相机相对坐标变换、每视图稀疏 z-buffer 以及仅对四邻点有效的视差采样。它没有逐点扫描时间或完整遮挡证明，不生成世界占据或控制资格。同场原始载荷、时间窗关联与独立解码/历史重放见 docs/joint_sensor_capture.md。
+
 运行和失败证据见 docs/stereo_pairing_observation.md，整体验收状态见 docs/implementation_status.md。

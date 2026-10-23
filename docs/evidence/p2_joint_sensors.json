@@ -1,0 +1,692 @@
+{
+  "iteration": 33,
+  "recorded_on": "2026-10-23",
+  "stage": "P2_READ_ONLY_JOINT_SENSORS",
+  "acceptance_eligible": false,
+  "same_frozen_sources_for_both_scenes": true,
+  "verification": {
+    "host_unit_tests_passed": 124,
+    "noetic_unit_tests_passed": 121,
+    "noetic_host_git_tests_skipped": 3,
+    "additional_nonfinite_tests_added_after_capture_without_runtime_code_changes": true
+  },
+  "runs": [
+    {
+      "run": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "seed": 2110,
+      "dataset_role": "development_calibration_not_held_out",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "1e643173ffb26d5f5602ca2a1fc200a8f9370dbc090e893e7cc270456d6920b4",
+        "files": 263,
+        "uncompressed_bytes": 1005873,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 263,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "captures": [
+          {
+            "directory": "joint/0000",
+            "packet_sha256": "9a51da958f71ac6a544a527a0dfc63ee110c97b4973ea440611d01df6a698922"
+          },
+          {
+            "directory": "joint/0001",
+            "packet_sha256": "614132d1d2168695dd43bd6fb69496130c3e119663c842a8e61eb9e7f0d4143a"
+          },
+          {
+            "directory": "joint/0002",
+            "packet_sha256": "6dde3a7ed8eefcbbdc5045fe841bbff3a2ed535ed549fd4785d6e5afdedb16cf"
+          },
+          {
+            "directory": "joint/0003",
+            "packet_sha256": "76b791ac7c93d30e96672f5471db7efa29992d95e008cfd2bb80141dae6cab53"
+          },
+          {
+            "directory": "joint/0004",
+            "packet_sha256": "6bb719b40f863ab6a1e26b1e9192881d11dd50234f8a5712ec94779dc47c9a19"
+          },
+          {
+            "directory": "joint/0005",
+            "packet_sha256": "c8f5f8895fa329f320e20f8b7253a7e8fc8b4eb4e3cf895ae9b26b412463c9f5"
+          }
+        ],
+        "stereo_pairs": 180,
+        "received": {
+          "imu": 999,
+          "left": 182,
+          "right": 182,
+          "gps": 100,
+          "lidar": 98
+        },
+        "source_states": 997,
+        "raw_sensor_records": 1099,
+        "raw_queue_drops": 0,
+        "rejections": {
+          "NO_LIDAR_ASSOCIATION": 17
+        },
+        "stereo_events": {
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0
+        },
+        "lidar_events": {
+          "NO_LIDAR_WITHIN_WINDOW": 17,
+          "CAPACITY": 68
+        },
+        "fault": null,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/gps",
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/drone_1/lidar",
+            "/airsim_node/initial_pose"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.2,
+        "max_stereo_skew_s": 0.005,
+        "max_lidar_skew_s": 0.02,
+        "raw_recording_is_lossy": true,
+        "payloads_retained_exactly_for_selected_captures": true,
+        "control_published": false,
+        "debug_inputs_used": false,
+        "per_point_motion_compensation_applied": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "input_audit_valid": true,
+        "captures": 6,
+        "packets": [
+          {
+            "directory": "joint/0000",
+            "input_records_valid": true,
+            "images_match_cv_bridge": true,
+            "cloud_matches_ros_decoder": true,
+            "poses_match_source_replay": true,
+            "metadata_matches_sources": true,
+            "header_timing_valid": true,
+            "left_lidar_header_skew_s": 0.012000322341918945,
+            "right_lidar_header_skew_s": 0.012000322341918945,
+            "lidar_points": 16326,
+            "points_in_both_views": 630,
+            "sparse_visible_points": 629,
+            "comparison_points": 156,
+            "disparity_residual_p10_p50_p90_px": [
+              -0.47551433617025474,
+              0.25738106343762546,
+              0.47585804695953904
+            ],
+            "absolute_disparity_residual_median_px": 0.347772367375331,
+            "estimated_header_pose_alignment_applied": true,
+            "per_point_motion_compensation_applied": false,
+            "metric_calibration_verified": false,
+            "visibility_verified": false,
+            "real_scene_accuracy_verified": false
+          },
+          {
+            "directory": "joint/0001",
+            "input_records_valid": true,
+            "images_match_cv_bridge": true,
+            "cloud_matches_ros_decoder": true,
+            "poses_match_source_replay": true,
+            "metadata_matches_sources": true,
+            "header_timing_valid": true,
+            "left_lidar_header_skew_s": 0.0060002803802490234,
+            "right_lidar_header_skew_s": 0.0060002803802490234,
+            "lidar_points": 16490,
+            "points_in_both_views": 677,
+            "sparse_visible_points": 677,
+            "comparison_points": 187,
+            "disparity_residual_p10_p50_p90_px": [
+              -0.4967498835749474,
+              0.05212172400863402,
+              0.4392203959136296
+            ],
+            "absolute_disparity_residual_median_px": 0.2821621733406019,
+            "estimated_header_pose_alignment_applied": true,
+            "per_point_motion_compensation_applied": false,
+            "metric_calibration_verified": false,
+            "visibility_verified": false,
+            "real_scene_accuracy_verified": false
+          },
+          {
+            "directory": "joint/0002",
+            "input_records_valid": true,
+            "images_match_cv_bridge": true,
+            "cloud_matches_ros_decoder": true,
+            "poses_match_source_replay": true,
+            "metadata_matches_sources": true,
+            "header_timing_valid": true,
+            "left_lidar_header_skew_s": 0.006000041961669922,
+            "right_lidar_header_skew_s": 0.006000041961669922,
+            "lidar_points": 15746,
+            "points_in_both_views": 479,
+            "sparse_visible_points": 479,
+            "comparison_points": 136,
+            "disparity_residual_p10_p50_p90_px": [
+              -0.46291878147120613,
+              0.2111639323013499,
+              0.48938568136340166
+            ],
+            "absolute_disparity_residual_median_px": 0.3046588156304644,
+            "estimated_header_pose_alignment_applied": true,
+            "per_point_motion_compensation_applied": false,
+            "metric_calibration_verified": false,
+            "visibility_verified": false,
+            "real_scene_accuracy_verified": false
+          },
+          {
+            "directory": "joint/0003",
+            "input_records_valid": true,
+            "images_match_cv_bridge": true,
+            "cloud_matches_ros_decoder": true,
+            "poses_match_source_replay": true,
+            "metadata_matches_sources": true,
+            "header_timing_valid": true,
+            "left_lidar_header_skew_s": 0.009000301361083984,
+            "right_lidar_header_skew_s": 0.009000301361083984,
+            "lidar_points": 15665,
+            "points_in_both_views": 353,
+            "sparse_visible_points": 352,
+            "comparison_points": 72,
+            "disparity_residual_p10_p50_p90_px": [
+              -0.4474062635379276,
+              0.07976199242096893,
+              0.5130149726213811
+            ],
+            "absolute_disparity_residual_median_px": 0.30491832945693176,
+            "estimated_header_pose_alignment_applied": true,
+            "per_point_motion_compensation_applied": false,
+            "metric_calibration_verified": false,
+            "visibility_verified": false,
+            "real_scene_accuracy_verified": false
+          },
+          {
+            "directory": "joint/0004",
+            "input_records_valid": true,
+            "images_match_cv_bridge": true,
+            "cloud_matches_ros_decoder": true,
+            "poses_match_source_replay": true,
+            "metadata_matches_sources": true,
+            "header_timing_valid": true,
+            "left_lidar_header_skew_s": 0.015000343322753906,
+            "right_lidar_header_skew_s": 0.015000343322753906,
+            "lidar_points": 16857,
+            "points_in_both_views": 694,
+            "sparse_visible_points": 694,
+            "comparison_points": 200,
+            "disparity_residual_p10_p50_p90_px": [
+              -0.4928559613966598,
+              0.13885302019630164,
+              0.45318430539021104
+            ],
+            "absolute_disparity_residual_median_px": 0.28878940816834664,
+            "estimated_header_pose_alignment_applied": true,
+            "per_point_motion_compensation_applied": false,
+            "metric_calibration_verified": false,
+            "visibility_verified": false,
+            "real_scene_accuracy_verified": false
+          },
+          {
+            "directory": "joint/0005",
+            "input_records_valid": true,
+            "images_match_cv_bridge": true,
+            "cloud_matches_ros_decoder": true,
+            "poses_match_source_replay": true,
+            "metadata_matches_sources": true,
+            "header_timing_valid": true,
+            "left_lidar_header_skew_s": 0.006000041961669922,
+            "right_lidar_header_skew_s": 0.006000041961669922,
+            "lidar_points": 17537,
+            "points_in_both_views": 477,
+            "sparse_visible_points": 475,
+            "comparison_points": 140,
+            "disparity_residual_p10_p50_p90_px": [
+              -0.5089613441005694,
+              0.13821845863062254,
+              0.45247145618639595
+            ],
+            "absolute_disparity_residual_median_px": 0.3186314124782257,
+            "estimated_header_pose_alignment_applied": true,
+            "per_point_motion_compensation_applied": false,
+            "metric_calibration_verified": false,
+            "visibility_verified": false,
+            "real_scene_accuracy_verified": false
+          }
+        ],
+        "source_states": 997,
+        "raw_sensor_records": {
+          "imu": 999,
+          "gps": 100
+        },
+        "raw_queue_drops": 0,
+        "raw_recording_is_lossy": true,
+        "raw_imu_max_stamp_gap_s": 0.012000322341918945,
+        "raw_imu_nonincreasing_records": 0,
+        "nominal_settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "exposure_sync_verified": false,
+        "per_point_motion_compensation_applied": false,
+        "metric_calibration_verified": false,
+        "sparse_visibility_is_complete_proof": false,
+        "world_projection_verified": false,
+        "current_control_eligible": false,
+        "acceptance_eligible": false,
+        "interpretation": "Payload and history audit is distinct from geometry accuracy. Residuals compare diagnostic SGBM with nominal LiDAR projection after estimated header-pose alignment; sparse z-buffers do not prove visibility. Point timing, exposure and calibration remain unverified.",
+        "analysis_source_sha256": "5c625e26d6802b665f2c8944a738459a696216b88cff075f257863256b843f56"
+      },
+      "analysis_matches_run_source_snapshot": true,
+      "lidar_expired_at_selection_packets": 0,
+      "artifact_sha256": {
+        "manifest.json": "728321144c011235ac1aaa66de85516d4e88d56049e32687960ebed6286debd8",
+        "joint_summary.json": "892653f94ddf1fd2fe1579e12ac84da18be271ba3a954d1fee356cc2a36174fb",
+        "joint_audit.json": "6a7179bc60571f1093961e813845e72f25d17bf59a41da8b37f4a6862226c1d4",
+        "joint_states.jsonl": "38b8054af2d4e9098e538620f74bb6a9e699ad047387325c1a992e3fc16931ed",
+        "joint_raw_sensors.jsonl": "54fcd3500696de5475b35e1433f9401761b34f19f7f987e0bce6d5314c9e1411"
+      },
+      "packet_artifact_sha256": {
+        "joint/0000/left.bin.gz": "fbe9f7de6151bd26e53c5cc9ed90f0cfa640bd096cead3251e7d84a39f4576f8",
+        "joint/0000/left.json": "7b17769e5440c0b374c0b0cda5f449b36a71b074e4027e1277d76a1eeb6a9267",
+        "joint/0000/lidar.bin.gz": "ea321ff57fa6a914b3d0ed38c5b4ccd6141a2ded6a9dcfc3c9fa9bedad9675c3",
+        "joint/0000/lidar.json": "ef2be5c36492b31964ce88dd3db5244dbf8a924f9e8aa5acb682fc3ef0922141",
+        "joint/0000/packet.json": "9a51da958f71ac6a544a527a0dfc63ee110c97b4973ea440611d01df6a698922",
+        "joint/0000/projection_diagnostics.npz": "80410faf7464d32cc11c805a9901b95f389e22b5126781a7bd0c9738f5b6ceb0",
+        "joint/0000/right.bin.gz": "3e05b78c93ac45ba5552f1971eedec00280f87e533183d06bc64b7a5935a0afd",
+        "joint/0000/right.json": "24456e10abe0328a38fbd6e4a1c3a85bd3716e2b2de30be286a8460bc0c99509",
+        "joint/0001/left.bin.gz": "3e89c7ec79ad4186b5eedec77ec3511608ba621d30155f04ab3fcb83e316b8b0",
+        "joint/0001/left.json": "fa4ad0cb3e46ed0309ae6136e60fd79540c7a958dd0678086f7a74b69c033df5",
+        "joint/0001/lidar.bin.gz": "4164c26baffb981ddbb9f091aa8b99a871e545aa9a50cdaaa0b958b4ac9c65e5",
+        "joint/0001/lidar.json": "2e9dbac7cea8cb32025e478651e1c3b5ef1f624cdf435988d5c2e573070ef49c",
+        "joint/0001/packet.json": "614132d1d2168695dd43bd6fb69496130c3e119663c842a8e61eb9e7f0d4143a",
+        "joint/0001/projection_diagnostics.npz": "67ca64f146fbdf05e0c3eaed1a0555e14d19f8c3c05c94c2d7ba69bf406b9315",
+        "joint/0001/right.bin.gz": "cba6ffa42907984b6d4b66beebc91720e74b9f566b9403117787fba32b81c620",
+        "joint/0001/right.json": "a2f0e9b6cba4f20e394f038d754e1f6cfb58ff2dac26331d62d1746345d6da97",
+        "joint/0002/left.bin.gz": "3cbf75ff4aee54a90a20a0cecd09907d6eb761581ca30a8cc17af9990ac8f588",
+        "joint/0002/left.json": "b370a2dbc024c1ae80a4b660094742a91d41e1dbc071dc5ae851a675f6de6bac",
+        "joint/0002/lidar.bin.gz": "57fd26b6e5fb7e4773bac98cc450c4880c7e9c434fef23d17e8addfada2f9941",
+        "joint/0002/lidar.json": "49ad95f4a78b7ac7ae704d46c15add46fa235a0d5c71e40a1b937a38c6f49065",
+        "joint/0002/packet.json": "6dde3a7ed8eefcbbdc5045fe841bbff3a2ed535ed549fd4785d6e5afdedb16cf",
+        "joint/0002/projection_diagnostics.npz": "46142c689feff6fc4f112fcd027895ef15d19ae1a595b71232b20e5717037890",
+        "joint/0002/right.bin.gz": "8978f066678427d303830e9a7330f1e10bcaad499750785063f9f542cb6dd62d",
+        "joint/0002/right.json": "7ac67c0d4ca70afa6728c62c83e50c53be820fd112b8506a0788ce8d0be420e6",
+        "joint/0003/left.bin.gz": "e6b1a4666a9e1fa8825bffef38fc1c84cc2e463f7640bce076b3812f503b042a",
+        "joint/0003/left.json": "a7d99e0b011a589fdd7088334b9c605c221ef4386df5a2089ad10dfe35935745",
+        "joint/0003/lidar.bin.gz": "55bcb685ff17dae62f2c6380771d5d9bfd83462984d66f3081c42dc2f4b51ff9",
+        "joint/0003/lidar.json": "e260db50408e70d1be7c0b500a1a5f7784efa7e2988f6156285fc5d8b90d7dd5",
+        "joint/0003/packet.json": "76b791ac7c93d30e96672f5471db7efa29992d95e008cfd2bb80141dae6cab53",
+        "joint/0003/projection_diagnostics.npz": "f99d382010ddd7106f6d53cd2689d00d5982702008ad38e7ba20b3f980b1e821",
+        "joint/0003/right.bin.gz": "561817ab1112db88a419ed5c8bd1067e193f04f1cfda7b2fbe8e5f9c63ea857b",
+        "joint/0003/right.json": "4d0396e04d7964c33da22195df609611a6b98c53f132c87ba7f6df62b329cdea",
+        "joint/0004/left.bin.gz": "3c84a34519ef97aa8cd0c61cd8d8f0c53284c6e5e81ae8692d8561eae383c320",
+        "joint/0004/left.json": "43ea057d316a3376a112f714bf782fcdc7764f7fc401a345a98dba1253f6d095",
+        "joint/0004/lidar.bin.gz": "753c00f19feff613a2e519a75ae7e825527f001dfd2d8b1e683e789fd2cc6ffd",
+        "joint/0004/lidar.json": "f84b56bca2265a024c5a5dbc67bb1c172e1fa08bd17713e92df19dfeed62f54f",
+        "joint/0004/packet.json": "6bb719b40f863ab6a1e26b1e9192881d11dd50234f8a5712ec94779dc47c9a19",
+        "joint/0004/projection_diagnostics.npz": "faa25dddfb1a066aeade093d231280cf3d31f45d18214f025c9faf4cc87f8983",
+        "joint/0004/right.bin.gz": "8e14117337e46064b7c7a40f06d2356ea590b917c28cc4ea11b7fe3d48f29ec3",
+        "joint/0004/right.json": "e3e6416a66ea97f30b60921234fbd7a5165c99c6603a700f6dab4e41230d6709",
+        "joint/0005/left.bin.gz": "b40279a47c6c775d61b630fc37d35de5317e0e1dfcd32cab5e785c5a330432a8",
+        "joint/0005/left.json": "dca9ba53acb6be908cf1c56cd3e8b9db16966e4f75056967a6c526201d0c88b2",
+        "joint/0005/lidar.bin.gz": "3d4533e654300a9c6d33a46ab7fd7fe1e30c6837da0587a12e37730d03c7655a",
+        "joint/0005/lidar.json": "47845bc1b56f62d421097a42e1d6a56bec02a715a13b80c9b36aba9cde979bd5",
+        "joint/0005/packet.json": "c8f5f8895fa329f320e20f8b7253a7e8fc8b4eb4e3cf895ae9b26b412463c9f5",
+        "joint/0005/projection_diagnostics.npz": "28babf78bb9f58bfa4efe8d8eae6bfdc92c66ed20e2757214f99072f5fe8cd3c",
+        "joint/0005/right.bin.gz": "f909bcadcd9e286e1a5dfe6a539c93cf0cfb7060eb3aee351381ab60247c91ab",
+        "joint/0005/right.json": "9221b61ba1f575fd29515e5b42b9427ac87b8cc32ff3b31591d34799c2c770a1"
+      },
+      "retained_bytes": 15353032
+    },
+    {
+      "run": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "seed": 2111,
+      "dataset_role": "development_calibration_not_held_out",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "1e643173ffb26d5f5602ca2a1fc200a8f9370dbc090e893e7cc270456d6920b4",
+        "files": 263,
+        "uncompressed_bytes": 1005873,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 263,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "captures": [
+          {
+            "directory": "joint/0000",
+            "packet_sha256": "ec61eb298ae9720bbf541b7a7e52153ea994ec967ed77f490640db06a6b10164"
+          },
+          {
+            "directory": "joint/0001",
+            "packet_sha256": "89ddf2e4b95de5fa302f52eaa7b08a9f4553418174e3fc3e69e8a97c46c9d8fa"
+          },
+          {
+            "directory": "joint/0002",
+            "packet_sha256": "4fdbcac942158a1b7f2a6ba16457bd67a8b68cfbc8ddc2f88a8bbe88ba21fc86"
+          },
+          {
+            "directory": "joint/0003",
+            "packet_sha256": "8109462834c0c5046f5ac62869fb3fad1e2ce1bf0808543596edc2db055327f3"
+          },
+          {
+            "directory": "joint/0004",
+            "packet_sha256": "daa56e3397ccf941611f839bd0723ba0622319226b0d2be3184e90740f7fd399"
+          },
+          {
+            "directory": "joint/0005",
+            "packet_sha256": "689292de99c5c8e676b1e396fe40fed1730a43f2fac52c618ffbd6901d17c65d"
+          }
+        ],
+        "stereo_pairs": 179,
+        "received": {
+          "left": 181,
+          "imu": 997,
+          "right": 180,
+          "gps": 99,
+          "lidar": 99
+        },
+        "source_states": 995,
+        "raw_sensor_records": 1096,
+        "raw_queue_drops": 0,
+        "rejections": {
+          "NO_LIDAR_ASSOCIATION": 7
+        },
+        "stereo_events": {
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0,
+          "SENSOR_EXPIRED_left": 1,
+          "SENSOR_EXPIRED_right": 1
+        },
+        "lidar_events": {
+          "NO_LIDAR_WITHIN_WINDOW": 7,
+          "CAPACITY": 74
+        },
+        "fault": null,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/gps",
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/drone_1/lidar",
+            "/airsim_node/initial_pose"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.2,
+        "max_stereo_skew_s": 0.005,
+        "max_lidar_skew_s": 0.02,
+        "raw_recording_is_lossy": true,
+        "payloads_retained_exactly_for_selected_captures": true,
+        "control_published": false,
+        "debug_inputs_used": false,
+        "per_point_motion_compensation_applied": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "input_audit_valid": true,
+        "captures": 6,
+        "packets": [
+          {
+            "directory": "joint/0000",
+            "input_records_valid": true,
+            "images_match_cv_bridge": true,
+            "cloud_matches_ros_decoder": true,
+            "poses_match_source_replay": true,
+            "metadata_matches_sources": true,
+            "header_timing_valid": true,
+            "left_lidar_header_skew_s": 0.018000364303588867,
+            "right_lidar_header_skew_s": 0.018000364303588867,
+            "lidar_points": 16338,
+            "points_in_both_views": 621,
+            "sparse_visible_points": 621,
+            "comparison_points": 156,
+            "disparity_residual_p10_p50_p90_px": [
+              -0.49546679290339224,
+              0.2068215242043605,
+              0.4877042726293377
+            ],
+            "absolute_disparity_residual_median_px": 0.32255197030633553,
+            "estimated_header_pose_alignment_applied": true,
+            "per_point_motion_compensation_applied": false,
+            "metric_calibration_verified": false,
+            "visibility_verified": false,
+            "real_scene_accuracy_verified": false
+          },
+          {
+            "directory": "joint/0001",
+            "input_records_valid": true,
+            "images_match_cv_bridge": true,
+            "cloud_matches_ros_decoder": true,
+            "poses_match_source_replay": true,
+            "metadata_matches_sources": true,
+            "header_timing_valid": true,
+            "left_lidar_header_skew_s": 0.015000343322753906,
+            "right_lidar_header_skew_s": 0.015000343322753906,
+            "lidar_points": 15863,
+            "points_in_both_views": 451,
+            "sparse_visible_points": 451,
+            "comparison_points": 104,
+            "disparity_residual_p10_p50_p90_px": [
+              -0.46148193611266364,
+              0.13430572170188793,
+              0.45413278566131066
+            ],
+            "absolute_disparity_residual_median_px": 0.30768576777677215,
+            "estimated_header_pose_alignment_applied": true,
+            "per_point_motion_compensation_applied": false,
+            "metric_calibration_verified": false,
+            "visibility_verified": false,
+            "real_scene_accuracy_verified": false
+          },
+          {
+            "directory": "joint/0002",
+            "input_records_valid": true,
+            "images_match_cv_bridge": true,
+            "cloud_matches_ros_decoder": true,
+            "poses_match_source_replay": true,
+            "metadata_matches_sources": true,
+            "header_timing_valid": true,
+            "left_lidar_header_skew_s": 0.018000364303588867,
+            "right_lidar_header_skew_s": 0.018000364303588867,
+            "lidar_points": 15753,
+            "points_in_both_views": 482,
+            "sparse_visible_points": 482,
+            "comparison_points": 128,
+            "disparity_residual_p10_p50_p90_px": [
+              -0.47380652213718266,
+              0.16255682947696481,
+              0.40637850873913556
+            ],
+            "absolute_disparity_residual_median_px": 0.3041323765451125,
+            "estimated_header_pose_alignment_applied": true,
+            "per_point_motion_compensation_applied": false,
+            "metric_calibration_verified": false,
+            "visibility_verified": false,
+            "real_scene_accuracy_verified": false
+          },
+          {
+            "directory": "joint/0003",
+            "input_records_valid": true,
+            "images_match_cv_bridge": true,
+            "cloud_matches_ros_decoder": true,
+            "poses_match_source_replay": true,
+            "metadata_matches_sources": true,
+            "header_timing_valid": true,
+            "left_lidar_header_skew_s": 0.015000343322753906,
+            "right_lidar_header_skew_s": 0.015000343322753906,
+            "lidar_points": 15744,
+            "points_in_both_views": 481,
+            "sparse_visible_points": 481,
+            "comparison_points": 136,
+            "disparity_residual_p10_p50_p90_px": [
+              -0.5238366015074174,
+              0.14189538094291976,
+              0.4437071425501813
+            ],
+            "absolute_disparity_residual_median_px": 0.29913264688119146,
+            "estimated_header_pose_alignment_applied": true,
+            "per_point_motion_compensation_applied": false,
+            "metric_calibration_verified": false,
+            "visibility_verified": false,
+            "real_scene_accuracy_verified": false
+          },
+          {
+            "directory": "joint/0004",
+            "input_records_valid": true,
+            "images_match_cv_bridge": true,
+            "cloud_matches_ros_decoder": true,
+            "poses_match_source_replay": true,
+            "metadata_matches_sources": true,
+            "header_timing_valid": true,
+            "left_lidar_header_skew_s": 0.015000343322753906,
+            "right_lidar_header_skew_s": 0.015000343322753906,
+            "lidar_points": 15755,
+            "points_in_both_views": 484,
+            "sparse_visible_points": 481,
+            "comparison_points": 134,
+            "disparity_residual_p10_p50_p90_px": [
+              -0.4907881187003934,
+              0.10064575448913704,
+              0.3819654918963167
+            ],
+            "absolute_disparity_residual_median_px": 0.28328546105594654,
+            "estimated_header_pose_alignment_applied": true,
+            "per_point_motion_compensation_applied": false,
+            "metric_calibration_verified": false,
+            "visibility_verified": false,
+            "real_scene_accuracy_verified": false
+          },
+          {
+            "directory": "joint/0005",
+            "input_records_valid": true,
+            "images_match_cv_bridge": true,
+            "cloud_matches_ros_decoder": true,
+            "poses_match_source_replay": true,
+            "metadata_matches_sources": true,
+            "header_timing_valid": true,
+            "left_lidar_header_skew_s": 0.012000322341918945,
+            "right_lidar_header_skew_s": 0.012000322341918945,
+            "lidar_points": 15840,
+            "points_in_both_views": 483,
+            "sparse_visible_points": 483,
+            "comparison_points": 135,
+            "disparity_residual_p10_p50_p90_px": [
+              -0.4668726872405003,
+              0.13050275702289582,
+              0.41819222048591853
+            ],
+            "absolute_disparity_residual_median_px": 0.28567767017977985,
+            "estimated_header_pose_alignment_applied": true,
+            "per_point_motion_compensation_applied": false,
+            "metric_calibration_verified": false,
+            "visibility_verified": false,
+            "real_scene_accuracy_verified": false
+          }
+        ],
+        "source_states": 995,
+        "raw_sensor_records": {
+          "imu": 997,
+          "gps": 99
+        },
+        "raw_queue_drops": 0,
+        "raw_recording_is_lossy": true,
+        "raw_imu_max_stamp_gap_s": 0.012000322341918945,
+        "raw_imu_nonincreasing_records": 2,
+        "nominal_settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "exposure_sync_verified": false,
+        "per_point_motion_compensation_applied": false,
+        "metric_calibration_verified": false,
+        "sparse_visibility_is_complete_proof": false,
+        "world_projection_verified": false,
+        "current_control_eligible": false,
+        "acceptance_eligible": false,
+        "interpretation": "Payload and history audit is distinct from geometry accuracy. Residuals compare diagnostic SGBM with nominal LiDAR projection after estimated header-pose alignment; sparse z-buffers do not prove visibility. Point timing, exposure and calibration remain unverified.",
+        "analysis_source_sha256": "5c625e26d6802b665f2c8944a738459a696216b88cff075f257863256b843f56"
+      },
+      "analysis_matches_run_source_snapshot": true,
+      "lidar_expired_at_selection_packets": 0,
+      "artifact_sha256": {
+        "manifest.json": "7e90b0275c6e971929fed067d8900617d14e2409aa8ac0eefb452cf011ce4bb6",
+        "joint_summary.json": "6e3733db4a18d08283ccf471b5b5fc482d1571650dd402457c98fcb4c9eaf61b",
+        "joint_audit.json": "3e716d0b992bcec797098cdb61c8d69ecb95a37356045d6f4dbffd070dc4ade9",
+        "joint_states.jsonl": "783da01daaf247a0d9050fe158c7f3f6e353515914a74f69fbf4b1697f644d46",
+        "joint_raw_sensors.jsonl": "92661b10b0d2b0676ff1de181507bb5199780de9c226d5a5c7a992bac7facbec"
+      },
+      "packet_artifact_sha256": {
+        "joint/0000/left.bin.gz": "32d0bc2002d853df343681c923247c8d97be5b4ed3060c577377bf911bb6b533",
+        "joint/0000/left.json": "fc8da599d617af3c62c19439bb68596e91a8d1ddd85c2c6ffac4d578d5b78387",
+        "joint/0000/lidar.bin.gz": "5cd869e01f281da90684dfec63fda39419e6cbc2327bef5a36c4a5cfaefc0f80",
+        "joint/0000/lidar.json": "f079a7e52ec48ba26126b80b4ce4d46c4d178ea989670f76bf061c13b013cebd",
+        "joint/0000/packet.json": "ec61eb298ae9720bbf541b7a7e52153ea994ec967ed77f490640db06a6b10164",
+        "joint/0000/projection_diagnostics.npz": "ff99421a3ddd8c29794ca01854bd57fb1e29842992fab665b05bfa280cebfe49",
+        "joint/0000/right.bin.gz": "f87200d7f23cd80854169619b6176468f04af8e8a1b8f3868c594d5122070576",
+        "joint/0000/right.json": "631837acd313ca229b42f95c36e42009136b6d48758fd6390b521fb6aa0e8f5c",
+        "joint/0001/left.bin.gz": "d71282d320c8a6ec064a3fc4cdccbe4b89e0af631950f4c693efabcb63ac18d6",
+        "joint/0001/left.json": "98d894d5bdbbaed050c59271564fba4a55ad826665799c3812a1b17ac45cf2e9",
+        "joint/0001/lidar.bin.gz": "748ddb888aa3344dc1539521b21230eb8eded13c1a9db36ece03d9451cc10326",
+        "joint/0001/lidar.json": "bbe1123db66ac3cfb1181c396ef2f9b59ade7434297ef9a669b60f0a26e1a7cd",
+        "joint/0001/packet.json": "89ddf2e4b95de5fa302f52eaa7b08a9f4553418174e3fc3e69e8a97c46c9d8fa",
+        "joint/0001/projection_diagnostics.npz": "1822ee832cf3cfc7cd317f64c1303dd7880922da5b59bbc03ddc02a461916e46",
+        "joint/0001/right.bin.gz": "44fde9aa51a18dce0df0c5292dc08be542b3eb2a8a1aa51d584983fc90bd488b",
+        "joint/0001/right.json": "8733d27df7dfc478783a293a095c0402af1d3e1d4f099e9d328ea0355b2817f1",
+        "joint/0002/left.bin.gz": "ae7824b3c61974865aac0ba8946afb7804c3c53ee4adfc5ce27808f643e578ad",
+        "joint/0002/left.json": "58b05eb13aa35ff93f0eaa866a04234155eff9c422062f7912b8704222ab0e92",
+        "joint/0002/lidar.bin.gz": "570122cd7a71dce16dfec3db7348574a2ccd34856982b5b9c5e0ec5fef56a9e4",
+        "joint/0002/lidar.json": "a7a56140b7c544fb093942ffc4572b36de6159e8e6d72dce91bf6c17d7da0847",
+        "joint/0002/packet.json": "4fdbcac942158a1b7f2a6ba16457bd67a8b68cfbc8ddc2f88a8bbe88ba21fc86",
+        "joint/0002/projection_diagnostics.npz": "a09340f0888912747637dbbe62d8c87df239865b9374fd2970e7dc0ad336215a",
+        "joint/0002/right.bin.gz": "a2d4014ef9dcc0dca97556f8e33370bb8c28cbcc41b2ca84e99b006832305b2a",
+        "joint/0002/right.json": "79233ec887489ad9180470f1c57ac8e160841f0dc49c4e8793e0bdd35a8691d6",
+        "joint/0003/left.bin.gz": "91b98ce57adec4132d17a6cefc6d4ae274e775c0f58e52adee3e54a33ab1a763",
+        "joint/0003/left.json": "903b1aea44c0aa96d9514a7b2ab2af50ed980386674bdb7dae841d0984fe21eb",
+        "joint/0003/lidar.bin.gz": "a23e89f4c3ab15b7a3e75c7063ed1c4b11a0acfb3cc40cd853b09001a87589b9",
+        "joint/0003/lidar.json": "e929ca9b7a15f45d53bfc2d4425847bbc06117fa7fbf621b686d4b43ef1562dc",
+        "joint/0003/packet.json": "8109462834c0c5046f5ac62869fb3fad1e2ce1bf0808543596edc2db055327f3",
+        "joint/0003/projection_diagnostics.npz": "03ddc760e4801a68ea8fc54a840ca68f8c88eac9558839bbbe01890d92863ffe",
+        "joint/0003/right.bin.gz": "bcdfe175de0fa388c7e71bb332990cef8f71c735eacf2b450a1beee7cc8a5a4b",
+        "joint/0003/right.json": "14b9fbd5c1ef2073f7c08bd991ddb2e142bba8849ea9e66bff345af95554a845",
+        "joint/0004/left.bin.gz": "f9515526ba2bf4a4ba0b2943db8581bfc66c284a8ae550134198251a92dc5086",
+        "joint/0004/left.json": "57f22bab29e100cb2d52763a9d53632bfb524d9c4503f2a17c1c45903b1dca29",
+        "joint/0004/lidar.bin.gz": "49a8f058438ef6bed988fc4bb593f96bd5ef969587d232a3fc8b394a0db5dfd4",
+        "joint/0004/lidar.json": "fed70c21fca968037fa13846a9d485cc83d9cdae2cc424341a8544cfc5dd796b",
+        "joint/0004/packet.json": "daa56e3397ccf941611f839bd0723ba0622319226b0d2be3184e90740f7fd399",
+        "joint/0004/projection_diagnostics.npz": "1c321f68e6080e078022376dd2351f0170b7fe681bbce1f85c521b0fc65a5554",
+        "joint/0004/right.bin.gz": "1414cc3f1a935ce9728e2992b2cd9ec94125b5efe5effb8efe37b9f5031e2f90",
+        "joint/0004/right.json": "1de745bef958b9e3036510763f94e43b634ea42a7b376801effaaefdadebf6f3",
+        "joint/0005/left.bin.gz": "bab6fd39a31aa1c1f8ff56a183aa3df1841cba5399db63efec36005723fb024d",
+        "joint/0005/left.json": "5a3cc95ac05cf9752ef2597dbf69833c95d6b98bea600dfaaeaaf6361429892a",
+        "joint/0005/lidar.bin.gz": "27ec260b2e798d88b48fbe68feb2c24a4e9f32bd3f2142ba84b989d4db5daaf9",
+        "joint/0005/lidar.json": "4faebad81d75eb305a2d57a832df1cf09d1dda01e2492e3ff69b4f8c800f9459",
+        "joint/0005/packet.json": "689292de99c5c8e676b1e396fe40fed1730a43f2fac52c618ffbd6901d17c65d",
+        "joint/0005/projection_diagnostics.npz": "adef453bcbb21e72e524779ae9a97e0dd47d16651bbf0127311b7c15e90f2944",
+        "joint/0005/right.bin.gz": "f0a3b663b5e8008012a30896705b2b7cea00224820367843a1b9d0a5f5848bbc",
+        "joint/0005/right.json": "8b9dbc1b0554ff156f364ff591d462171e2e07efbf49a319a7691b24681af125"
+      },
+      "retained_bytes": 14887105
+    }
+  ],
+  "preview": {
+    "path": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe/projection_preview.png",
+    "sha256": "06e4d0b6e915284c938dfc0f7a1eedaaec0639917c90bf8229ebc8d4cf79fcda",
+    "interpretation": "Derived inspection overlay only, generated after capture from retained pixels and projection arrays; not an accuracy verifier."
+  },
+  "limitations": [
+    "Both scenes publish no control and do not cover flying motion, pose diversity or dynamic visibility.",
+    "Image age budget 200ms is an explicit local experiment; default 150ms remains unchanged.",
+    "Association windows constrain message headers, not synchronized exposures or per-point LiDAR acquisition times.",
+    "Original input leases are preserved. Retained historical LiDAR association does not renew a live-data lease.",
+    "Disparity residuals are conditional on strict SGBM coverage and sparse projected visibility; no residual threshold is used to select the reported comparison points.",
+    "Sparse z-buffers do not prove camera visibility, and nominal extrinsics/reference range remain uncalibrated.",
+    "The raw logger retains numerical IMU/GPS fields; nonfinite values are explicit nulls. ROS transport/latest-only recording is still lossy even when the local raw queue has no drops.",
+    "No calibrated metric accuracy, free-space certification, world-map fusion, flight control or P1/P2 acceptance."
+  ]
+}
