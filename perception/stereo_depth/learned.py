@@ -84,8 +84,8 @@ def filter_learned_disparity(forward, reverse_positive, left_gray, right_gray,
 
 class FastFoundationStereo:
     """CUDA-only optional backend. No ROS, GUI, reference input or control output."""
-    def __init__(self, vendor_root, checkpoint, checkpoint_sha256, scale=.5, iterations=4, max_disp=192):
-        if scale not in (.5,1.) or iterations not in (4,8) or max_disp != 192:
+    def __init__(self, vendor_root, checkpoint, checkpoint_sha256, scale=.5, iterations=4, max_disp=192, mixed_precision=True):
+        if scale not in (.5,1.) or iterations not in (4,8) or max_disp != 192 or not isinstance(mixed_precision,bool):
             raise ValueError('unsupported frozen learned stereo profile')
         vendor_root, checkpoint = Path(vendor_root).resolve(), Path(checkpoint).resolve()
         if hashlib.sha256(checkpoint.read_bytes()).hexdigest() != checkpoint_sha256:
@@ -109,9 +109,11 @@ class FastFoundationStereo:
             self.model.args.normalize = True
         self.model.args.valid_iters = iterations
         self.model.args.max_disp = max_disp
+        self.model.args.mixed_precision = mixed_precision
         self.model.cuda().eval()
         self.torch, self.padder = torch, InputPadder
         self.scale, self.iterations, self.max_disp = scale, iterations, max_disp
+        self.mixed_precision = mixed_precision
         self.checkpoint_sha256 = checkpoint_sha256
 
     def predict(self, left_rgb, right_rgb):
@@ -137,7 +139,7 @@ class FastFoundationStereo:
             x,y = padder.pad(x,y)
             output = self.model.forward(x,y,iters=self.iterations,test_mode=True,optimize_build_volume='pytorch1')
             return padder.unpad(output.float())
-        with torch.inference_mode(),torch.amp.autocast('cuda',enabled=True,dtype=torch.float16):
+        with torch.inference_mode(),torch.amp.autocast('cuda',enabled=self.mixed_precision,dtype=torch.float16):
             forward = one(a,b)
             reverse = one(torch.flip(b,(-1,)),torch.flip(a,(-1,))).flip(-1)
         forward = forward.cpu().numpy().reshape(size[1],size[0])

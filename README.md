@@ -28,6 +28,8 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.state_observation --see
 
 学习双目已完成 [C-Fast-FoundationStereo / SGBM 离线对照](docs/learned_stereo_comparison.md) 和 [只读在线时效实验](docs/learned_stereo_live_latency.md)，有独立 GPU 环境、版本锁与原始输入追踪；在线结果全部过期，尚未接入深度融合或控制。
 
+[TensorRT 候选](docs/stereo_tensorrt_candidate.md) 已实际构建并对照，仍存在数值偏差，未替换默认后端。
+
 有界 PWM 辨识入口（自动启动新场次，结束时关闭模拟器；须先停止已有场次）：
 
 ```bash
