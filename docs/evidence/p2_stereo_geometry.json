@@ -1,0 +1,496 @@
+{
+  "iteration": 32,
+  "recorded_on": "2026-10-23",
+  "stage": "P2_OFFLINE_STEREO_GEOMETRY",
+  "acceptance_eligible": false,
+  "same_frozen_code_for_all_three_runs": true,
+  "verification": {
+    "host_unit_tests_passed": 113,
+    "noetic_unit_tests_passed": 110,
+    "noetic_host_git_tests_skipped": 3
+  },
+  "runs": [
+    {
+      "run": "runs/20261023T062846Z_417021362398481ebbea51f027e3094a",
+      "kind": "geometry",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "b583c99ff96c259393438cb37a9677ac19611f33288327a9c94d68a699ec023d",
+        "files": 254,
+        "uncompressed_bytes": 941012,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 254,
+      "source_unchanged": true,
+      "input_unchanged": true,
+      "report": {
+        "left_features": 2000,
+        "right_features": 2000,
+        "reciprocal_ratio_matches": 863,
+        "fundamental_inliers": 805,
+        "inlier_spatial_bins_4x3": 6,
+        "vertical_residual_all_p50_p95_p99_max_px": [
+          0.0,
+          1.200011444091797,
+          2.488314666748047,
+          22.936264038085938
+        ],
+        "vertical_residual_inliers_p50_p95_p99_max_px": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "positive_disparity_inliers": 664,
+        "zero_or_negative_disparity_inliers": 141,
+        "vertical_prefilter_applied": false,
+        "rectification_verified": false,
+        "metric_calibration_verified": false,
+        "acceptance_eligible": false,
+        "source_run": "runs/20261023T053533Z_a98296d2effb4c81946ab6c75d32e5b5",
+        "historical_input_only": true,
+        "opencv_version": "4.2.0",
+        "opencv_threads": 1,
+        "rng_seed": 0,
+        "input_sha256": {
+          "stereo_first_pair.npz": "995346f3edb70236d6c3e602f8e81bc4a205e3f173ee4c730816e87587337b30",
+          "stereo_pairs.jsonl": "8ac1ec3d2c63d2b7d32ca4794380b76a6c54c370fb93a032769b9c5e23ad95f0",
+          "stereo_summary.json": "c1ba0b7550b7ac9b5e32f335946c93175113a201379898c9b3e5ec0b3e4d3f10",
+          "manifest.json": "be6899f5ae58d6adf9e6248484bb784654ddccde92bd84cee9c3fc60a0cc41cc"
+        },
+        "input_unchanged": true,
+        "settings_unchanged": true,
+        "nominal_rig": {
+          "left": {
+            "name": "front_left",
+            "width": 960,
+            "height": 720,
+            "fx": 831.3843876330611,
+            "fy": 831.3843876330611,
+            "cx": 480.0,
+            "cy": 360.0,
+            "pose": {
+              "translation_body_frd": [
+                0.175,
+                -0.15,
+                0.0
+              ],
+              "rotation_body_from_sensor_frd": [
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            }
+          },
+          "right": {
+            "name": "front_right",
+            "width": 960,
+            "height": 720,
+            "fx": 831.3843876330611,
+            "fy": 831.3843876330611,
+            "cx": 480.0,
+            "cy": 360.0,
+            "pose": {
+              "translation_body_frd": [
+                0.175,
+                0.15,
+                0.0
+              ],
+              "rotation_body_from_sensor_frd": [
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            }
+          },
+          "lidar_pose": {
+            "translation_body_frd": [
+              0.0,
+              0.0,
+              -0.05
+            ],
+            "rotation_body_from_sensor_frd": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                -0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+          "metric_calibration_verified": false,
+          "current_control_eligible": false
+        },
+        "compute_durations_s": [
+          0.07627101615071297,
+          0.07386240200139582
+        ],
+        "repeat_deterministic": true,
+        "fundamental_matrix": [
+          [
+            0.0001068115234375,
+            -0.0380859375,
+            0.34375
+          ],
+          [
+            0.0380859375,
+            0.00146484375,
+            925339809637224.1
+          ],
+          [
+            -0.078125,
+            -925339809637225.5,
+            1.0
+          ]
+        ],
+        "nominal_local_triangulated_points": 420,
+        "nominal_optical_depth_p10_p50_p90_m": [
+          15.988155045254114,
+          16.7057239305268,
+          17.815379734994167
+        ],
+        "nominal_depth_sensitivity_p10_p50_p90_m_per_px": [
+          1.0248813326842876,
+          1.1189417562415216,
+          1.2725271239281548
+        ],
+        "unknown_nominal_points_are_nan": true,
+        "exposure_sync_verified": false,
+        "real_scene_metric_accuracy_measured": false,
+        "current_control_eligible": false,
+        "world_projection_applied": false,
+        "interpretation": "Sparse feature agreement supports an epipolar investigation, not full rectification or metric calibration. Nominal triangulation uses the public settings model. Depth sensitivity is an analytic derivative, not calibrated uncertainty. No ground-truth, LiDAR comparison, occupancy clearing or control use."
+      },
+      "artifact_sha256": {
+        "manifest.json": "331016dd24be7e5eaf3ee25091d5b0195d7c672be8c3f34b145e35217cfbd361",
+        "stereo_geometry_report.json": "eeb3b2c7007db53d27d7b266ce1415ae416dd9c6a28b152db93c6946b2bfa2d9",
+        "stereo_geometry_points.npz": "20158c763dacf48589d7b01b99fc3cd4a8487b9c50e5e497b96d80546befaed9"
+      }
+    },
+    {
+      "run": "runs/20261023T062930Z_7f0a303ec51e45d1a3342b0e686d9a56",
+      "kind": "geometry",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "b583c99ff96c259393438cb37a9677ac19611f33288327a9c94d68a699ec023d",
+        "files": 254,
+        "uncompressed_bytes": 941012,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 254,
+      "source_unchanged": true,
+      "input_unchanged": true,
+      "report": {
+        "left_features": 2000,
+        "right_features": 2000,
+        "reciprocal_ratio_matches": 852,
+        "fundamental_inliers": 785,
+        "inlier_spatial_bins_4x3": 6,
+        "vertical_residual_all_p50_p95_p99_max_px": [
+          0.0,
+          1.44000244140625,
+          2.9319274139404303,
+          40.639984130859375
+        ],
+        "vertical_residual_inliers_p50_p95_p99_max_px": [
+          0.0,
+          0.0,
+          1.0,
+          1.0
+        ],
+        "positive_disparity_inliers": 651,
+        "zero_or_negative_disparity_inliers": 134,
+        "vertical_prefilter_applied": false,
+        "rectification_verified": false,
+        "metric_calibration_verified": false,
+        "acceptance_eligible": false,
+        "source_run": "runs/20261023T053653Z_58ccb0439090433bb3c4e23fbb637c84",
+        "historical_input_only": true,
+        "opencv_version": "4.2.0",
+        "opencv_threads": 1,
+        "rng_seed": 0,
+        "input_sha256": {
+          "stereo_first_pair.npz": "55be29b2090f5d9fc99691bc6070360f64e4a447497d4af58f9ee530e6e580a6",
+          "stereo_pairs.jsonl": "e070a734feec902842e17043bff81dc999e43302e2f8d367ab691208b42b6b91",
+          "stereo_summary.json": "fd0e33765df92782132d30746299718fd57da0e00cf5790e872ee1b0956618e3",
+          "manifest.json": "87aea112771cdcf0070f41064ec3bba185910a2ee34167b6525228d6c58487e5"
+        },
+        "input_unchanged": true,
+        "settings_unchanged": true,
+        "nominal_rig": {
+          "left": {
+            "name": "front_left",
+            "width": 960,
+            "height": 720,
+            "fx": 831.3843876330611,
+            "fy": 831.3843876330611,
+            "cx": 480.0,
+            "cy": 360.0,
+            "pose": {
+              "translation_body_frd": [
+                0.175,
+                -0.15,
+                0.0
+              ],
+              "rotation_body_from_sensor_frd": [
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            }
+          },
+          "right": {
+            "name": "front_right",
+            "width": 960,
+            "height": 720,
+            "fx": 831.3843876330611,
+            "fy": 831.3843876330611,
+            "cx": 480.0,
+            "cy": 360.0,
+            "pose": {
+              "translation_body_frd": [
+                0.175,
+                0.15,
+                0.0
+              ],
+              "rotation_body_from_sensor_frd": [
+                [
+                  1.0,
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.0,
+                  1.0,
+                  0.0
+                ],
+                [
+                  -0.0,
+                  0.0,
+                  1.0
+                ]
+              ]
+            }
+          },
+          "lidar_pose": {
+            "translation_body_frd": [
+              0.0,
+              0.0,
+              -0.05
+            ],
+            "rotation_body_from_sensor_frd": [
+              [
+                1.0,
+                0.0,
+                0.0
+              ],
+              [
+                0.0,
+                1.0,
+                0.0
+              ],
+              [
+                -0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          },
+          "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+          "metric_calibration_verified": false,
+          "current_control_eligible": false
+        },
+        "compute_durations_s": [
+          0.07552331197075546,
+          0.07333551510237157
+        ],
+        "repeat_deterministic": true,
+        "fundamental_matrix": [
+          [
+            -4.190951585769653e-09,
+            -0.0005669593811035156,
+            0.0265045166015625
+          ],
+          [
+            0.0005574226379394531,
+            5.373358726501465e-05,
+            14916257748894.615
+          ],
+          [
+            -0.0250701904296875,
+            -14916257748894.635,
+            1.0
+          ]
+        ],
+        "nominal_local_triangulated_points": 412,
+        "nominal_optical_depth_p10_p50_p90_m": [
+          15.988162864481975,
+          16.70573246737928,
+          18.042149391345525
+        ],
+        "nominal_depth_sensitivity_p10_p50_p90_m_per_px": [
+          1.0248823351492509,
+          1.1189428998307716,
+          1.3051289692299766
+        ],
+        "unknown_nominal_points_are_nan": true,
+        "exposure_sync_verified": false,
+        "real_scene_metric_accuracy_measured": false,
+        "current_control_eligible": false,
+        "world_projection_applied": false,
+        "interpretation": "Sparse feature agreement supports an epipolar investigation, not full rectification or metric calibration. Nominal triangulation uses the public settings model. Depth sensitivity is an analytic derivative, not calibrated uncertainty. No ground-truth, LiDAR comparison, occupancy clearing or control use."
+      },
+      "artifact_sha256": {
+        "manifest.json": "e4cf7c4a01c2b735aa7407200348aefbe2924f67d8de4dcaa04fc33c5ddd285b",
+        "stereo_geometry_report.json": "5d7bf0e1a69f8574a782904df2703d0812d393de9d0d19765552450f01480d7d",
+        "stereo_geometry_points.npz": "7275c461e61208b0e283150a43bb8eecc8573df79db79cfb00e7ec96ef7b921e"
+      }
+    },
+    {
+      "run": "runs/20261023T063041Z_0f54cf42d0ba4ec4926540f47f00f206",
+      "kind": "disparity",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "b583c99ff96c259393438cb37a9677ac19611f33288327a9c94d68a699ec023d",
+        "files": 254,
+        "uncompressed_bytes": 941012,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 254,
+      "source_unchanged": true,
+      "input_unchanged": true,
+      "report": {
+        "computed": true,
+        "historical_input_only": true,
+        "opencv_version": "4.2.0",
+        "opencv_threads": 1,
+        "settings": {
+          "num_disparities": 128,
+          "block_size": 5,
+          "uniqueness_ratio": 10,
+          "consistency_px": 1.0,
+          "min_texture_std": 2.0
+        },
+        "input_shape": [
+          720,
+          960,
+          3
+        ],
+        "source_run": "runs/20261023T053533Z_a98296d2effb4c81946ab6c75d32e5b5",
+        "input_sha256": {
+          "stereo_first_pair.npz": "995346f3edb70236d6c3e602f8e81bc4a205e3f173ee4c730816e87587337b30",
+          "stereo_pairs.jsonl": "8ac1ec3d2c63d2b7d32ca4794380b76a6c54c370fb93a032769b9c5e23ad95f0",
+          "stereo_summary.json": "c1ba0b7550b7ac9b5e32f335946c93175113a201379898c9b3e5ec0b3e4d3f10",
+          "manifest.json": "be6899f5ae58d6adf9e6248484bb784654ddccde92bd84cee9c3fc60a0cc41cc"
+        },
+        "input_unchanged": true,
+        "warmup_runs": 1,
+        "measured_runs": 3,
+        "compute_durations_s": [
+          0.3459218800999224,
+          0.335399272153154,
+          0.3223023749887943
+        ],
+        "compute_median_s": 0.335399272153154,
+        "compute_max_s": 0.3459218800999224,
+        "output_sha256_per_repeat": [
+          "d035cea8b9b1958054d8293fac37cf4f9216ad4e5a397b7f1ebaeb459ff46e18",
+          "d035cea8b9b1958054d8293fac37cf4f9216ad4e5a397b7f1ebaeb459ff46e18",
+          "d035cea8b9b1958054d8293fac37cf4f9216ad4e5a397b7f1ebaeb459ff46e18"
+        ],
+        "repeat_deterministic": true,
+        "valid_pixels": 61883,
+        "pixels": 691200,
+        "valid_fraction": 0.08952980324074074,
+        "disparity_p10_p50_p90_px": [
+          2.125,
+          11.0,
+          14.875
+        ],
+        "source_metadata": {
+          "stamp": 1792733743.3014345,
+          "valid_until": 1792733743.5014346,
+          "epoch": 0,
+          "source": "opencv_sgbm_diagnostic_pixels",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "left_measurement_stamp": 1792733743.3014345,
+        "right_measurement_stamp": 1792733743.3014345,
+        "unknown_pixels_are_nan": true,
+        "rectification_verified": false,
+        "exposure_sync_verified": false,
+        "metric_depth_verified": false,
+        "real_scene_accuracy_measured": false,
+        "online_latency_verified": false,
+        "acceptance_eligible": false,
+        "interpretation": "Pixel disparity under unverified rectification. Coverage is not accuracy. Compute timing excludes input decoding/transport, simulator contention and GPU inference. Original validity is preserved, not refreshed by offline processing."
+      },
+      "artifact_sha256": {
+        "manifest.json": "d0d52943f4796b09d3df607b952f318fa6714bfb57100a28b992667c0d9977f2",
+        "stereo_disparity_report.json": "f5b382d614395078fc738a5747e323dac64a62e1ea30ce4071cd7c5bb020116a",
+        "diagnostic_disparity.npz": "582cf760bd94c415f863259427b6f411a26d7a28618cf40b1857d2f542a8dc4c"
+      }
+    }
+  ],
+  "limitations": [
+    "Nominal intrinsics use horizontal FOV, square pixels and principal point (width/2,height/2); metric calibration has not been verified.",
+    "Body/sensor FRD to optical right/down/forward transforms are configuration models, not a completed calibration.",
+    "Sparse epipolar statistics use no vertical prefilter; subsequent nominal triangulation has a separate 1px vertical and 30m forward-depth limit.",
+    "Two static front-image pairs do not establish full-image rectification, synchronized exposures, rear-camera geometry accuracy or motion compensation.",
+    "Depth sensitivity is a nominal derivative, not an uncertainty calibration or true-error measurement.",
+    "No simultaneous LiDAR comparison, world projection, FREE evidence, map fusion or control use."
+  ],
+  "default_disparity_regression": {
+    "matches_iteration30_output_exactly": true,
+    "reference_report": "runs/20261023T054645Z_04403454babc467688ab3701dc5bea9c/stereo_disparity_report.json",
+    "reference_report_sha256": "2e9b9463b430d4ffbee3bace43b787d4bceda69a85816d36b6ff83814ba0f658",
+    "output_sha256": "d035cea8b9b1958054d8293fac37cf4f9216ad4e5a397b7f1ebaeb459ff46e18"
+  }
+}

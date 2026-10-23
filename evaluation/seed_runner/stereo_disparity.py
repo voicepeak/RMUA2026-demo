@@ -1,4 +1,4 @@
-"""Archive exact sources and benchmark historical stereo disparity in Noetic."""
+"""Archive exact sources for historical stereo disparity or geometry in Noetic."""
 import argparse
 import json
 import os
@@ -12,6 +12,7 @@ from evaluation.seed_runner.manifest import file_hash, prepare_run, source_hashe
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source-run', type=Path, required=True)
+    parser.add_argument('--analysis', choices=('disparity', 'geometry'), default='disparity')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     source = args.source_run.resolve()
@@ -20,16 +21,20 @@ def main():
     names = ('stereo_first_pair.npz', 'stereo_pairs.jsonl', 'stereo_summary.json', 'manifest.json')
     inputs = {name: file_hash(source / name) for name in names}
     original = json.loads((source / 'manifest.json').read_text())
-    config = {'disparity_experiment': {'source_run': str(source.relative_to(root)),
+    key = 'geometry_experiment' if args.analysis == 'geometry' else 'disparity_experiment'
+    config = {key: {'source_run': str(source.relative_to(root)),
                                      'input_sha256': inputs, 'historical_only': True}}
+    if args.analysis == 'geometry':
+        config[key].update(settings_file='configs/simulator_settings.json',
+                           settings_sha256=file_hash(root / 'configs/simulator_settings.json'))
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
     digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'], text=True).strip()
     run, manifest = prepare_run(root, root / 'runs', original['seed'], digest, config)
-    manifest.update(stage='P2_OFFLINE_DISPARITY_DIAGNOSIS', acceptance_eligible=False,
+    manifest.update(stage='P2_OFFLINE_STEREO_GEOMETRY' if args.analysis == 'geometry' else 'P2_OFFLINE_DISPARITY_DIAGNOSIS', acceptance_eligible=False,
                     control_published=False, run_state='PREPARED')
     (run / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     print(run, flush=True)
-    module = 'evaluation.metrics.stereo_disparity'
+    module = 'evaluation.metrics.stereo_geometry' if args.analysis == 'geometry' else 'evaluation.metrics.stereo_disparity'
     container_run = '/workspace/main/' + str(run.relative_to(root))
     code = 1
     try:
@@ -47,6 +52,8 @@ def main():
         manifest['input_unchanged'] = inputs == {name: file_hash(source / name) for name in names}
         manifest['worker_exit_code'] = code
         manifest['telemetry'] = ['stereo_disparity_report.json', 'diagnostic_disparity.npz']
+        if args.analysis == 'geometry':
+            manifest['telemetry'] = ['stereo_geometry_report.json', 'stereo_geometry_points.npz']
         (run / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     return code if manifest['source_unchanged'] and manifest['input_unchanged'] else 2
 

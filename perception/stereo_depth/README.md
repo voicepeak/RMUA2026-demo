@@ -8,4 +8,6 @@ sgbm.py 新增离线诊断像素视差，使用两方向 SGBM、双线性反向�
 
 两份真实输入的严格有效覆盖约 8.9%，单线程离线中位耗时约 275/328ms，不能支持当前在线深度链路。已跑通 SGBM 诊断基线，不是矫正、真实深度、学习模型、VIO 或运动补偿验收；见 docs/stereo_sgbm_baseline.md。
 
+geometry.py 从原设置构造带 SHA256 的不可变名义相机/LiDAR 模型，明确 sensor/body FRD 与光学轴转换、前后双目左右顺序；仅在平行且内参相同的配置下支持名义三角化，无效点保持 NaN。其米制标定和控制资格标记始终为 false。epipolar.py 的互相确认 ORB/基础矩阵诊断不按垂直残差预过滤，避免循环验证；不能把稀疏极线支持当作全图标定或安全距离。正式输入结果及限制见 docs/stereo_geometry_baseline.md。
+
 运行和失败证据见 docs/stereo_pairing_observation.md，整体验收状态见 docs/implementation_status.md。
