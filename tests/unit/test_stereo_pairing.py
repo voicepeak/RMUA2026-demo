@@ -1,3 +1,4 @@
+from dataclasses import replace
 from types import SimpleNamespace as NS
 import unittest
 
@@ -22,6 +23,10 @@ class StereoPairingTests(unittest.TestCase):
         pair = buffer.pop(10.004, 20.003)
         self.assertAlmostEqual(pair.skew_s, .003)
         self.assertEqual(pair.metadata.valid_until, 10.15)
+        with self.assertRaises(ValueError):
+            replace(pair, metadata=replace(pair.metadata, valid_until=11.))
+        with self.assertRaises(ValueError):
+            replace(pair, metadata=replace(pair.metadata, epoch=1))
         self.assertIsNone(buffer.pop(10.004, 20.004))
         with self.assertRaises(ValueError): pair.left.pixels.setflags(write=True)
 

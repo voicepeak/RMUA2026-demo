@@ -33,6 +33,20 @@ class StereoPair:
     right: ImageFrame
     skew_s: float
 
+    def __post_init__(self):
+        if (self.metadata.frame_id != 'front_stereo'
+                or self.left.metadata.frame_id != 'front_left_image'
+                or self.right.metadata.frame_id != 'front_right_image'
+                or self.left.pixels.shape != self.right.pixels.shape
+                or self.left.encoding != self.right.encoding
+                or self.left.metadata.epoch != self.right.metadata.epoch
+                or self.metadata.epoch != self.left.metadata.epoch
+                or self.metadata.stamp != max(self.left.metadata.stamp, self.right.metadata.stamp)
+                or self.metadata.valid_until != min(self.left.metadata.valid_until, self.right.metadata.valid_until)
+                or not math.isfinite(self.skew_s)
+                or self.skew_s != abs(self.left.metadata.stamp - self.right.metadata.stamp)):
+            raise ValueError('inconsistent immutable stereo pair')
+
 
 class StereoPairBuffer:
     def __init__(self, epoch=0, max_skew_s=.005, capacity=4, wall_ttl_s=.2):

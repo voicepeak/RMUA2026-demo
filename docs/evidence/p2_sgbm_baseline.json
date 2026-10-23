@@ -1,0 +1,207 @@
+{
+  "iteration": 30,
+  "recorded_on": "2026-10-23",
+  "stage": "P2_OFFLINE_DISPARITY_DIAGNOSIS",
+  "acceptance_eligible": false,
+  "same_frozen_code_for_both_benchmarks": true,
+  "verification": {
+    "host_unit_tests_passed": 95,
+    "noetic_unit_tests_passed": 92,
+    "noetic_host_git_tests_skipped": 3,
+    "post_contract_change_targeted_tests_passed_each_environment": 10
+  },
+  "synthetic_checks": {
+    "checks": [
+      {
+        "expected_disparity_px": 8,
+        "interior_valid_fraction": 1.0,
+        "interior_rmse_px": 0.0020879784133285284
+      },
+      {
+        "expected_disparity_px": 16,
+        "interior_valid_fraction": 1.0,
+        "interior_rmse_px": 0.0020879784133285284
+      }
+    ],
+    "metric_depth_verified": false
+  },
+  "runs": [
+    {
+      "run": "runs/20261023T054645Z_04403454babc467688ab3701dc5bea9c",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "60f53598fe6e53bd47439f6fc732232c5800f8b9c12e624f72663210717632b7",
+        "files": 242,
+        "uncompressed_bytes": 865171,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 242,
+      "source_unchanged": true,
+      "input_unchanged": true,
+      "report": {
+        "computed": true,
+        "historical_input_only": true,
+        "opencv_version": "4.2.0",
+        "opencv_threads": 1,
+        "settings": {
+          "num_disparities": 128,
+          "block_size": 5,
+          "uniqueness_ratio": 10,
+          "consistency_px": 1.0,
+          "min_texture_std": 2.0
+        },
+        "input_shape": [
+          720,
+          960,
+          3
+        ],
+        "source_run": "runs/20261023T053533Z_a98296d2effb4c81946ab6c75d32e5b5",
+        "input_sha256": {
+          "stereo_first_pair.npz": "995346f3edb70236d6c3e602f8e81bc4a205e3f173ee4c730816e87587337b30",
+          "stereo_pairs.jsonl": "8ac1ec3d2c63d2b7d32ca4794380b76a6c54c370fb93a032769b9c5e23ad95f0",
+          "stereo_summary.json": "c1ba0b7550b7ac9b5e32f335946c93175113a201379898c9b3e5ec0b3e4d3f10",
+          "manifest.json": "be6899f5ae58d6adf9e6248484bb784654ddccde92bd84cee9c3fc60a0cc41cc"
+        },
+        "input_unchanged": true,
+        "warmup_runs": 1,
+        "measured_runs": 3,
+        "compute_durations_s": [
+          0.2868898611050099,
+          0.2752252861391753,
+          0.2736988721881062
+        ],
+        "compute_median_s": 0.2752252861391753,
+        "compute_max_s": 0.2868898611050099,
+        "output_sha256_per_repeat": [
+          "d035cea8b9b1958054d8293fac37cf4f9216ad4e5a397b7f1ebaeb459ff46e18",
+          "d035cea8b9b1958054d8293fac37cf4f9216ad4e5a397b7f1ebaeb459ff46e18",
+          "d035cea8b9b1958054d8293fac37cf4f9216ad4e5a397b7f1ebaeb459ff46e18"
+        ],
+        "repeat_deterministic": true,
+        "valid_pixels": 61883,
+        "pixels": 691200,
+        "valid_fraction": 0.08952980324074074,
+        "disparity_p10_p50_p90_px": [
+          2.125,
+          11.0,
+          14.875
+        ],
+        "source_metadata": {
+          "stamp": 1792733743.3014345,
+          "valid_until": 1792733743.5014346,
+          "epoch": 0,
+          "source": "opencv_sgbm_diagnostic_pixels",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "left_measurement_stamp": 1792733743.3014345,
+        "right_measurement_stamp": 1792733743.3014345,
+        "unknown_pixels_are_nan": true,
+        "rectification_verified": false,
+        "exposure_sync_verified": false,
+        "metric_depth_verified": false,
+        "real_scene_accuracy_measured": false,
+        "online_latency_verified": false,
+        "acceptance_eligible": false,
+        "interpretation": "Pixel disparity under unverified rectification. Coverage is not accuracy. Compute timing excludes input decoding/transport, simulator contention and GPU inference. Original validity is preserved, not refreshed by offline processing."
+      },
+      "artifact_sha256": {
+        "manifest.json": "70e6b3c125fa582bc775c17f83c291152ecbd7dd06f39e416f9195f17ff6460d",
+        "stereo_disparity_report.json": "2e9b9463b430d4ffbee3bace43b787d4bceda69a85816d36b6ff83814ba0f658",
+        "diagnostic_disparity.npz": "582cf760bd94c415f863259427b6f411a26d7a28618cf40b1857d2f542a8dc4c"
+      }
+    },
+    {
+      "run": "runs/20261023T054657Z_d4005e0034614b7ebc4ab134f0a64e0b",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "60f53598fe6e53bd47439f6fc732232c5800f8b9c12e624f72663210717632b7",
+        "files": 242,
+        "uncompressed_bytes": 865171,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 242,
+      "source_unchanged": true,
+      "input_unchanged": true,
+      "report": {
+        "computed": true,
+        "historical_input_only": true,
+        "opencv_version": "4.2.0",
+        "opencv_threads": 1,
+        "settings": {
+          "num_disparities": 128,
+          "block_size": 5,
+          "uniqueness_ratio": 10,
+          "consistency_px": 1.0,
+          "min_texture_std": 2.0
+        },
+        "input_shape": [
+          720,
+          960,
+          3
+        ],
+        "source_run": "runs/20261023T053653Z_58ccb0439090433bb3c4e23fbb637c84",
+        "input_sha256": {
+          "stereo_first_pair.npz": "55be29b2090f5d9fc99691bc6070360f64e4a447497d4af58f9ee530e6e580a6",
+          "stereo_pairs.jsonl": "e070a734feec902842e17043bff81dc999e43302e2f8d367ab691208b42b6b91",
+          "stereo_summary.json": "fd0e33765df92782132d30746299718fd57da0e00cf5790e872ee1b0956618e3",
+          "manifest.json": "87aea112771cdcf0070f41064ec3bba185910a2ee34167b6525228d6c58487e5"
+        },
+        "input_unchanged": true,
+        "warmup_runs": 1,
+        "measured_runs": 3,
+        "compute_durations_s": [
+          0.3381301611661911,
+          0.3284739700611681,
+          0.32592646521516144
+        ],
+        "compute_median_s": 0.3284739700611681,
+        "compute_max_s": 0.3381301611661911,
+        "output_sha256_per_repeat": [
+          "e2810d781a5698aebf120bb1f33620d1c6c13960ee0afcab99dae614c2b353f9",
+          "e2810d781a5698aebf120bb1f33620d1c6c13960ee0afcab99dae614c2b353f9",
+          "e2810d781a5698aebf120bb1f33620d1c6c13960ee0afcab99dae614c2b353f9"
+        ],
+        "repeat_deterministic": true,
+        "valid_pixels": 61312,
+        "pixels": 691200,
+        "valid_fraction": 0.0887037037037037,
+        "disparity_p10_p50_p90_px": [
+          2.0625,
+          11.0,
+          14.875
+        ],
+        "source_metadata": {
+          "stamp": 1792733823.594143,
+          "valid_until": 1792733823.794143,
+          "epoch": 0,
+          "source": "opencv_sgbm_diagnostic_pixels",
+          "frame_id": "front_left_image",
+          "covariance_or_bounds": []
+        },
+        "left_measurement_stamp": 1792733823.594143,
+        "right_measurement_stamp": 1792733823.594143,
+        "unknown_pixels_are_nan": true,
+        "rectification_verified": false,
+        "exposure_sync_verified": false,
+        "metric_depth_verified": false,
+        "real_scene_accuracy_measured": false,
+        "online_latency_verified": false,
+        "acceptance_eligible": false,
+        "interpretation": "Pixel disparity under unverified rectification. Coverage is not accuracy. Compute timing excludes input decoding/transport, simulator contention and GPU inference. Original validity is preserved, not refreshed by offline processing."
+      },
+      "artifact_sha256": {
+        "manifest.json": "f1d12032c64baeaf24c44da85594c4ea53e03bc02980f6818f7dafcfdcf1029b",
+        "stereo_disparity_report.json": "3b92d1d3f86ea5940da7391ce4fd20313e8f108ae1f205ccf4bc2faf4f255883",
+        "diagnostic_disparity.npz": "deea4ae3ce2262bd93ef2c143fcad56e81d894e41103b84b318b02037a5ee254"
+      }
+    }
+  ],
+  "limitations": [
+    "Only diagnostic pixel disparity under unverified rectification/exposure alignment. No metric depth or real-scene accuracy claim.",
+    "Valid-pixel coverage around 8.9% is not accuracy or free-space evidence.",
+    "Single-thread offline compute timing excludes image generation/transport, simulator contention and inference on GPU.",
+    "Original source validity is preserved; offline computation does not refresh historical input.",
+    "No online depth, historical-pose compensation, VIO, gate or flight-clearance acceptance."
+  ]
+}
