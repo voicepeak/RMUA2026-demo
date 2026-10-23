@@ -9,7 +9,7 @@ from adapters.ros_noetic.state_reader import pose_values
 
 
 class FlightSensors:
-    def __init__(self, subscribe=True):
+    def __init__(self, subscribe=True, pose_history=None):
         self.lock = threading.RLock()
         self.clock = SensorClock()
         self.estimator = ImuGpsEstimator()
@@ -22,6 +22,7 @@ class FlightSensors:
         self.bootstrap_imu=deque(maxlen=180)
         self.bootstrap_gps=deque(maxlen=24)
         self.bootstrap_applied=False
+        self.pose_history=pose_history
         if subscribe:
             import rospy
             from geometry_msgs.msg import PoseStamped
@@ -38,6 +39,7 @@ class FlightSensors:
                 self.initial = pose_values(msg.pose)
 
     def on_imu(self, msg):
+        callback_arrival=time.monotonic()
         with self.lock:
             try:
                 stamp = msg.header.stamp.to_sec()
@@ -48,6 +50,7 @@ class FlightSensors:
                         stamp -= 1.
                 previous = self.clock.stamp
                 if self.clock.observe(stamp, time.monotonic()):
+                    if self.pose_history is not None:self.pose_history.reset(self.clock.epoch)
                     self.fault = 'IMU_CLOCK_RESET'
                     return
                 if previous == stamp:
@@ -71,6 +74,8 @@ class FlightSensors:
                     # Record for calibration only; it does not enter the filter.
                     self.raw['imu_orientation_wxyz']=(attitude.w,attitude.x,attitude.y,attitude.z)
                 if not self.bootstrap_applied:self.bootstrap_imu.append(dict(self.raw))
+                if self.pose_history is not None and self.estimator.initialized:
+                    self.pose_history.append(self.estimator.snapshot(), callback_arrival)
             except (ValueError, ArithmeticError) as error:
                 self.fault = str(error)
 

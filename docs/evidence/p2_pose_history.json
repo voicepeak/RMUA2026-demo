@@ -1,0 +1,192 @@
+{
+  "iteration": 31,
+  "recorded_on": "2026-10-23",
+  "stage": "P2_READ_ONLY_POSE_HISTORY",
+  "acceptance_eligible": false,
+  "verification": {
+    "host_unit_tests_passed": 103,
+    "noetic_unit_tests_passed": 100,
+    "noetic_host_git_tests_skipped": 3,
+    "post_contract_change_targeted_tests_passed_each_environment": 10
+  },
+  "runs": [
+    {
+      "run": "runs/20261023T060213Z_974147f3cc1d4a87a81d2b7b7ebef581",
+      "seed": 2108,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "944c85fdf8cd93e712b8c89db7963373cca0bd135a37cb3a075d8307468b246b",
+        "files": 248,
+        "uncompressed_bytes": 902946,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 248,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "images": 182,
+        "historical_matches": 179,
+        "unavailable_reasons": {
+          "LATEST_STATE_HEALTH": 1,
+          "NO_BRACKET": 2
+        },
+        "source_states": 994,
+        "fault": null,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/gps",
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/initial_pose"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "horizon_s": 1.0,
+        "max_bracket_s": 0.03,
+        "control_published": false,
+        "debug_inputs_used": false,
+        "image_exposure_time_calibrated": false,
+        "world_projection_applied": false,
+        "historical_uncertainty_calibrated": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "source_states": 994,
+        "camera_queries": 182,
+        "replayed_historical_matches": 179,
+        "queries_agreeing_with_replay": 182,
+        "divergent_query_indices": [],
+        "unavailable_reasons": {
+          "LATEST_STATE_HEALTH": 1,
+          "NO_BRACKET": 2
+        },
+        "match_fraction": 0.9835164835164835,
+        "header_age_p50_p95_p99_max_s": [
+          0.14400315284729004,
+          0.161853289604187,
+          0.1685736083984375,
+          0.18900394439697266
+        ],
+        "lookup_elapsed_p50_p95_p99_max_s": [
+          0.0002176434500142932,
+          0.00035351348342373964,
+          0.000482277744449675,
+          0.000710085965692997
+        ],
+        "maximum_interpolation_bracket_s": 0.012000322341918945,
+        "current_control_eligible": false,
+        "historical_uncertainty_calibrated": false,
+        "image_exposure_time_calibrated": false,
+        "world_projection_verified": false,
+        "acceptance_eligible": false,
+        "analysis_source_sha256": "073f1ce22cf01b1c98537fdf4764b8dceaa5f25585ba9d4b3f55c04de287a0cc"
+      },
+      "analysis_matches_run_source_snapshot": true,
+      "artifact_sha256": {
+        "manifest.json": "6fe763027c105280306e72f7bce004d8ec1039b12deb1a38a30b7c125394b77e",
+        "history_states.jsonl": "4310cac5f54460461f20ec89460fbbcb6e0667a203c2a4d859a40de50dce3f3c",
+        "camera_history.jsonl": "0c9fdf32f9b830d0cc84b0480fdc3e9406ee87e6cd6904583df2ce5675a01f1b",
+        "pose_history_summary.json": "22ef24aa6cad718ab9098b9cc825cb4fb921c356be5d64e1efdd0ca87e0269ef",
+        "pose_history_audit.json": "a59c41307286242f62fc822d6b08b8bf6bdd28815689fd9a0860e08d01a50109"
+      }
+    },
+    {
+      "run": "runs/20261023T060449Z_d922d375bd1442cca36be68efd38679a",
+      "seed": 2109,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "3e5f835b58ca20456cb64cfe7b04611190129a42a75949a83bc391f215f89075",
+        "files": 248,
+        "uncompressed_bytes": 904389,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "independently_rehashed_source_files": 248,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "images": 71,
+        "historical_matches": 68,
+        "unavailable_reasons": {
+          "NO_BRACKET": 2,
+          "BRACKET_HEALTH": 1
+        },
+        "source_states": 396,
+        "fault": null,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/gps",
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/initial_pose"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "horizon_s": 1.0,
+        "max_bracket_s": 0.03,
+        "control_published": false,
+        "debug_inputs_used": false,
+        "image_exposure_time_calibrated": false,
+        "world_projection_applied": false,
+        "historical_uncertainty_calibrated": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "source_states": 396,
+        "camera_queries": 71,
+        "replayed_historical_matches": 68,
+        "queries_agreeing_with_replay": 71,
+        "divergent_query_indices": [],
+        "unavailable_reasons": {
+          "NO_BRACKET": 2,
+          "BRACKET_HEALTH": 1
+        },
+        "match_fraction": 0.9577464788732394,
+        "header_age_p50_p95_p99_max_s": [
+          0.14400315284729004,
+          0.1710035800933838,
+          0.1860039234161377,
+          0.1860039234161377
+        ],
+        "lookup_elapsed_p50_p95_p99_max_s": [
+          0.0002442270051687956,
+          0.0004031844437122345,
+          0.000613507884554564,
+          0.0008344929665327072
+        ],
+        "maximum_interpolation_bracket_s": 0.012000322341918945,
+        "current_control_eligible": false,
+        "historical_uncertainty_calibrated": false,
+        "image_exposure_time_calibrated": false,
+        "world_projection_verified": false,
+        "acceptance_eligible": false,
+        "analysis_source_sha256": "073f1ce22cf01b1c98537fdf4764b8dceaa5f25585ba9d4b3f55c04de287a0cc"
+      },
+      "analysis_matches_run_source_snapshot": true,
+      "artifact_sha256": {
+        "manifest.json": "884883485ea3a7530555d0cda63a2c536a3832c6962676482993404695ba804a",
+        "history_states.jsonl": "2e767f2de6f0e945a41c10cd53f4931948eda37a268d7baa348db50f06ef38c8",
+        "camera_history.jsonl": "f62fdde49e1f78231823844dd9bea2366170f4b4f8512afd70db180bac16071e",
+        "pose_history_summary.json": "24b91ef1270691f8dbe96cf2535ac6a648b5ce102215dd8f858f420fa1a253de",
+        "pose_history_audit.json": "75d7f87aa54cc7dc6b7307c68e783abfec26fcb66a138693edf2accf152954aa"
+      }
+    }
+  ],
+  "limitations": [
+    "Only camera-header association with historical formal-input ESKF estimates, not actual exposure time or true pose.",
+    "Replay uses the retained estimate history; agreement is not independent pose-accuracy or interpolation-error calibration.",
+    "Position/rotation correction residual guards are local plausibility checks, not certified error bounds.",
+    "Source covariance diagonals are retained without inventing calibrated interpolated uncertainty.",
+    "HistoricalPose is not a current StateEstimate, carries no refreshed validity and is ineligible for control.",
+    "Default FlightSensors retains no history; camera/stereo validity budgets are unchanged.",
+    "Source revisions differ between the 10s scene and final-contract 4s smoke; archives are authoritative.",
+    "No extrinsic/world projection, online depth, map fusion, VIO or flight acceptance."
+  ]
+}

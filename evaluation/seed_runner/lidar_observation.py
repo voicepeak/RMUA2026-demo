@@ -16,7 +16,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--seed', type=int, required=True)
     parser.add_argument('--duration', type=float, default=10.)
-    parser.add_argument('--kind', choices=('lidar', 'stereo'), default='lidar')
+    parser.add_argument('--kind', choices=('lidar', 'stereo', 'pose-history'), default='lidar')
     parser.add_argument('--image-age-budget-ms', type=int, choices=(150, 200), default=150)
     args = parser.parse_args()
     if args.seed < 0 or not math.isfinite(args.duration) or not 0 < args.duration <= 30:
@@ -33,14 +33,19 @@ def main():
     if args.kind == 'stereo':
         config['experiment']['image_age_budget_ms'] = args.image_age_budget_ms
     run, manifest = prepare_run(root, root / 'runs', args.seed, digest, config)
-    manifest.update(stage='P2_READ_ONLY_STEREO_PAIRING' if args.kind == 'stereo' else 'P2_READ_ONLY_LIDAR_ENDPOINTS', acceptance_eligible=False,
+    stages = {'lidar': 'P2_READ_ONLY_LIDAR_ENDPOINTS', 'stereo': 'P2_READ_ONLY_STEREO_PAIRING',
+              'pose-history': 'P2_READ_ONLY_POSE_HISTORY'}
+    manifest.update(stage=stages[args.kind], acceptance_eligible=False,
                     simulator_preflight=before, run_state='PREPARED')
+    (run / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     container_run = '/workspace/main/' + str(run.relative_to(root))
     module = 'adapters.ros_noetic.' + ('stereo_observer' if args.kind == 'stereo' else 'lidar_observer')
     audit_module = 'evaluation.metrics.' + ('stereo_pairing' if args.kind == 'stereo' else 'lidar_observation')
-    sensor_type = 'Imu' if args.kind == 'stereo' else 'PointCloud2'
-    sensor_topic = '/airsim_node/drone_1/imu/imu' if args.kind == 'stereo' else '/airsim_node/drone_1/lidar'
-    marker = 'rmua_' + args.kind + '_sensor_readiness'
+    if args.kind == 'pose-history':
+        module, audit_module = 'adapters.ros_noetic.pose_history_observer', 'evaluation.metrics.pose_history'
+    sensor_type = 'PointCloud2' if args.kind == 'lidar' else 'Imu'
+    sensor_topic = '/airsim_node/drone_1/lidar' if args.kind == 'lidar' else '/airsim_node/drone_1/imu/imu'
+    marker = 'rmua_' + args.kind.replace('-', '_') + '_sensor_readiness'
     code = 1
     observer_code = None
     print(run, flush=True)
@@ -130,6 +135,9 @@ def main():
                     'stereo_first_left.json', 'stereo_first_left.bin', 'stereo_first_right.json',
                     'stereo_first_right.bin', 'stereo_first_pair.npz', 'stereo_pairing_audit.json',
                     'stereo_image_timing.jsonl']
+            if args.kind == 'pose-history':
+                manifest['telemetry'] = ['history_states.jsonl', 'camera_history.jsonl',
+                                        'pose_history_summary.json', 'pose_history_audit.json']
             (run / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     return code if manifest['source_unchanged'] and manifest['original_simulator_files_unchanged'] else 2
 
