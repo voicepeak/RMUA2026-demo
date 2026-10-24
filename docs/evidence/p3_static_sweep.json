@@ -1,0 +1,155 @@
+{
+  "iteration": 41,
+  "recorded_on": "2026-10-24",
+  "stage": "P3_STATIC_GEOMETRY_SOFTWARE_REPLAY",
+  "acceptance_eligible": false,
+  "current_control_eligible": false,
+  "simulator_started": false,
+  "control_published": false,
+  "run": "runs/20261024T064952Z_a7145cdfb6d4415788af7b459450170a",
+  "run_state": "COMPUTED",
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "b8aabc8fe3e3255a5d076038234790659daad75bab32a810c5eb67a2bc7ba9cb",
+    "files": 317,
+    "uncompressed_bytes": 1927791,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "archive_files_independently_verified": 317,
+  "source_unchanged_during_replay": true,
+  "script_sha256": "c6679a4fcb250bec45165486cff3bd4b37a2f59f5e9e359939eb1ea5629623a4",
+  "replay": {
+    "role": "synthetic_static_geometry_replay_only",
+    "python": "3.8.10",
+    "cases": [
+      {
+        "case": "free_corridor",
+        "expected_clear": true,
+        "result": {
+          "clear": true,
+          "reason": "CLEAR_STATIC_MODEL",
+          "voxel_tests": 108,
+          "intersected_voxels": 26,
+          "segment_index": null,
+          "voxel_key": null,
+          "contact_time": null
+        },
+        "elapsed_s": 0.00032627000473439693
+      },
+      {
+        "case": "wall_between_endpoints",
+        "expected_clear": false,
+        "result": {
+          "clear": false,
+          "reason": "OCCUPIED_SPACE",
+          "voxel_tests": 60,
+          "intersected_voxels": 14,
+          "segment_index": 0,
+          "voxel_key": [
+            15,
+            2,
+            2
+          ],
+          "contact_time": 10.483999999999993
+        },
+        "elapsed_s": 0.0002607959322631359
+      },
+      {
+        "case": "unobserved_voxel",
+        "expected_clear": false,
+        "result": {
+          "clear": false,
+          "reason": "UNKNOWN_SPACE",
+          "voxel_tests": 60,
+          "intersected_voxels": 14,
+          "segment_index": 0,
+          "voxel_key": [
+            15,
+            2,
+            2
+          ],
+          "contact_time": 10.483999999999993
+        },
+        "elapsed_s": 0.0002025060821324587
+      },
+      {
+        "case": "free_expired_before_arrival",
+        "expected_clear": false,
+        "result": {
+          "clear": false,
+          "reason": "CELL_TIME_OR_EPOCH",
+          "voxel_tests": 60,
+          "intersected_voxels": 14,
+          "segment_index": 0,
+          "voxel_key": [
+            15,
+            2,
+            2
+          ],
+          "contact_time": 10.483999999999993
+        },
+        "elapsed_s": 0.00020000687800347805
+      },
+      {
+        "case": "budget_exhausted",
+        "expected_clear": false,
+        "result": {
+          "clear": false,
+          "reason": "VOXEL_BUDGET",
+          "voxel_tests": 0,
+          "intersected_voxels": 0,
+          "segment_index": 0,
+          "voxel_key": null,
+          "contact_time": null
+        },
+        "elapsed_s": 7.857498712837696e-05
+      }
+    ],
+    "repeated_clear_case": {
+      "count": 100,
+      "median_s": 0.00027239706832915545,
+      "max_s": 0.0005210200324654579
+    },
+    "script_sha256": "c6679a4fcb250bec45165486cff3bd4b37a2f59f5e9e359939eb1ea5629623a4",
+    "control_published": false,
+    "simulator_started": false,
+    "real_free_space_or_vehicle_envelope_validated": false
+  },
+  "tests": {
+    "host_passed": 162,
+    "noetic_passed": 159,
+    "noetic_skipped": 3,
+    "new_static_geometry_tests": 12,
+    "logs": {
+      "runs/ffs_runtime/iteration41_host_tests.log": "20e87d7364ae4dd7a5ac08ad2a4b8b11cbeb3add24b26f9ff408ad29f0ceb8d6",
+      "runs/ffs_runtime/iteration41_noetic_tests.log": "2ea10d248937f433fc7e938e99e8ecf502015795bed24b027dba6cbf8a6ba424"
+    }
+  },
+  "official_baseline_verification_reused_from_today": {
+    "path": "runs/ffs_runtime/iteration40_official_verification.json",
+    "sha256": "8ec267ab0020bb2b4932a467b76dc5c873ed95c11de1581270e1a1a5ddbfd474",
+    "rules_and_design_sections_re_read": [
+      "6.1",
+      "11.3",
+      "16"
+    ]
+  },
+  "final_changes_since_replay": {
+    "modified": [
+      "README.md",
+      "docs/implementation_status.md"
+    ],
+    "new": [
+      "docs/static_swept_volume.md",
+      "docs/evidence/p3_static_sweep.json"
+    ],
+    "executable_code_unchanged": true
+  },
+  "limits": [
+    "Synthetic world-axis boxes and known FREE cells; no actual vehicle dimensions or real sensor FREE validated.",
+    "Continuous acceleration and tracking bounds are producer assumptions, not proven by sampled accelerations.",
+    "Static geometry only: no dynamic occupancy, road/forcefield, braking or control authority validation.",
+    "Timing covers one small synthetic input, not worst-case system performance.",
+    "P1/P2 and online gate traversal remain unaccepted."
+  ]
+}

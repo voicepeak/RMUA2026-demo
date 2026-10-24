@@ -74,3 +74,5 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.p1_regression
 [混合精度约束实验](docs/stereo_mixed_precision.md)已验证 92 层 FP32 约束候选，仍有一组有效掩码失败，继续定位几何坐标精度。
 
 [几何采样精度核验](docs/stereo_geometry_precision.md)修正并验证了可见坐标格式，但 12 组数值对照仍有两组失败，候选保持离线用途。
+
+[静态轨迹核验](docs/static_swept_volume.md)已连接轨迹与三态占据契约，检查连续机体扫掠体积、未知空间和体素有效期；仍需可信地图及其余安全约束才能用于自主飞行。
