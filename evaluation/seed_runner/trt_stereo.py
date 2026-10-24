@@ -8,12 +8,13 @@ import subprocess
 
 from evaluation.seed_runner.controller_cleanup import stop_bound_controller
 from evaluation.seed_runner.manifest import file_hash,prepare_run,source_hashes
+from evaluation.metrics.trt_precision_policy import POLICIES
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--source-run',type=Path,required=True)
     parser.add_argument('--precision',choices=('fp16','fp32'),default='fp16')
-    parser.add_argument('--precision-policy',choices=('default','sensitive_fp32'),default='default')
+    parser.add_argument('--precision-policy',choices=POLICIES,default='default')
     parser.add_argument('--reuse-onnx-run',type=Path)
     parser.add_argument('--disable-tf32-globally',action='store_true')
     parser.add_argument('--freeze-fourier-inputs',action='store_true');parser.add_argument('--fp32-reference-run',type=Path)

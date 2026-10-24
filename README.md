@@ -72,3 +72,5 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.p1_regression
 后续 [同图 FP16 对照](docs/stereo_frozen_fp16.md) 记录了 12 组中的两组失败；离线约 122ms 不代表在线默认有效期通过。
 
 [混合精度约束实验](docs/stereo_mixed_precision.md)已验证 92 层 FP32 约束候选，仍有一组有效掩码失败，继续定位几何坐标精度。
+
+[几何采样精度核验](docs/stereo_geometry_precision.md)修正并验证了可见坐标格式，但 12 组数值对照仍有两组失败，候选保持离线用途。

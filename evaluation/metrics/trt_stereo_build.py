@@ -125,7 +125,14 @@ def build(run,precision,precision_policy='default'):
         runtime=trt.Runtime(logger);engine=runtime.deserialize_cuda_engine(serialized)
         if engine is None:raise RuntimeError('built engine cannot be inspected')
         inspector=engine.create_engine_inspector()
-        (run/'engine_inspector.json').write_text(inspector.get_engine_information(trt.LayerInformationFormat.JSON)+'\n')
+        information=inspector.get_engine_information(trt.LayerInformationFormat.JSON)
+        (run/'engine_inspector.json').write_text(information+'\n')
+        if precision_policy=='sensitive_geometry_fp32':
+            from evaluation.metrics.trt_precision_inspection import inspect_geometry_precision
+            inspection=inspect_geometry_precision(json.loads(information),constraints)
+            (run/'geometry_precision_inspection.json').write_text(json.dumps(inspection,indent=2)+'\n')
+            if inspection['non_fp32_coordinates']:
+                raise RuntimeError('visible geometry coordinates still use reduced precision')
 
 
 def main():
@@ -133,7 +140,8 @@ def main():
     parser.add_argument('--stage',choices=('export','build'),required=True)
     parser.add_argument('--vendor',type=Path);parser.add_argument('--checkpoint',type=Path);parser.add_argument('--sample',type=Path)
     parser.add_argument('--precision',choices=('fp16','fp32'),default='fp16')
-    parser.add_argument('--precision-policy',choices=('default','sensitive_fp32'),default='default')
+    from evaluation.metrics.trt_precision_policy import POLICIES
+    parser.add_argument('--precision-policy',choices=POLICIES,default='default')
     parser.add_argument('--freeze-fourier-inputs',action='store_true');parser.add_argument('--fp32-reference-run',type=Path)
     args=parser.parse_args()
     if args.stage=='export':
