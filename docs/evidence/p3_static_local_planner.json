@@ -1,0 +1,502 @@
+{
+  "iteration": 42,
+  "recorded_on": "2026-10-24",
+  "stage": "P3_STATIC_LOCAL_CANDIDATE_SOFTWARE_REPLAY",
+  "acceptance_eligible": false,
+  "current_control_eligible": false,
+  "control_published": false,
+  "simulator_started": false,
+  "run": "runs/20261024T071035Z_e01a6e2e7eaf4d6e9147f804c5bdf662",
+  "run_state": "COMPUTED",
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "eba91785f5e808fc2dc656a2468192644a80ed86b6136ab2f1fc77ed42134441",
+    "files": 322,
+    "uncompressed_bytes": 1958215,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged_during_replay": true,
+  "archive_files_independently_verified": 322,
+  "previous_replay": {
+    "run": "runs/20261024T070833Z_cfceff215037426c8a7d0e1772e3f8b1",
+    "source_archive": {
+      "path": "source_snapshot.tar.gz",
+      "sha256": "dd2cb9541d4897991ddeb254cbd50bc3c6f073a401d9fac7abf2e35df99e5ef8",
+      "files": 322,
+      "uncompressed_bytes": 1957830,
+      "scope": "workspace_sources_not_container_or_simulator_binaries"
+    },
+    "archive_files_independently_verified": 322,
+    "same_model_outputs_as_final": true
+  },
+  "replay": {
+    "role": "synthetic_static_local_planner_replay",
+    "python": "3.8.10",
+    "cases": [
+      {
+        "case": "clear_direct",
+        "reason": "STATIC_CANDIDATE",
+        "pieces": 1,
+        "elapsed_s": 0.024157393956556916,
+        "checks": [
+          {
+            "offset_m": 0.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 1.875000000001875,
+            "acceleration_bound_m_s2": 2.9687500000029687,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 0.0,
+            "segment_duration_s": 4.0,
+            "reason": "CLEAR_STATIC_MODEL",
+            "speed_bound_m_s": 0.937500000001,
+            "acceleration_bound_m_s2": 0.742187500001,
+            "voxel_tests": 352
+          },
+          {
+            "offset_m": 1.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 1.3258252147261025,
+            "acceleration_bound_m_s2": 2.0992232566496623,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 1.0,
+            "segment_duration_s": 4.0,
+            "reason": "CLEAR_STATIC_MODEL",
+            "speed_bound_m_s": 0.6629126073633883,
+            "acceleration_bound_m_s2": 0.5248058141628907,
+            "voxel_tests": 760
+          },
+          {
+            "offset_m": -1.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 1.3258252147261025,
+            "acceleration_bound_m_s2": 2.0992232566496623,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": -1.0,
+            "segment_duration_s": 4.0,
+            "reason": "CLEAR_STATIC_MODEL",
+            "speed_bound_m_s": 0.6629126073633883,
+            "acceleration_bound_m_s2": 0.5248058141628907,
+            "voxel_tests": 760
+          },
+          {
+            "offset_m": 2.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 2.0963137289081493,
+            "acceleration_bound_m_s2": 3.3191634041045694,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 2.0,
+            "segment_duration_s": 4.0,
+            "reason": "CLEAR_STATIC_MODEL",
+            "speed_bound_m_s": 1.0481568644540746,
+            "acceleration_bound_m_s2": 0.8297908510263126,
+            "voxel_tests": 752
+          },
+          {
+            "offset_m": -2.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 2.0963137289081493,
+            "acceleration_bound_m_s2": 3.3191634041045694,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": -2.0,
+            "segment_duration_s": 4.0,
+            "reason": "CLEAR_STATIC_MODEL",
+            "speed_bound_m_s": 1.0481568644540746,
+            "acceleration_bound_m_s2": 0.8297908510263126,
+            "voxel_tests": 752
+          }
+        ],
+        "lease": {
+          "stamp": 10.0,
+          "valid_until": 10.08,
+          "epoch": 0,
+          "source": "static_local_quintic",
+          "frame_id": "world_ned",
+          "covariance_or_bounds": []
+        },
+        "full_reference_end": 14.0,
+        "waypoints": [
+          [
+            2.5,
+            0.5,
+            0.5
+          ]
+        ],
+        "dense_spotcheck_points": 201
+      },
+      {
+        "case": "wall_detour",
+        "reason": "STATIC_CANDIDATE",
+        "pieces": 2,
+        "elapsed_s": 0.01968802511692047,
+        "checks": [
+          {
+            "offset_m": 0.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 1.875000000001875,
+            "acceleration_bound_m_s2": 2.9687500000029687,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 0.0,
+            "segment_duration_s": 4.0,
+            "reason": "OCCUPIED_SPACE",
+            "speed_bound_m_s": 0.937500000001,
+            "acceleration_bound_m_s2": 0.742187500001,
+            "voxel_tests": 108
+          },
+          {
+            "offset_m": 1.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 1.3258252147261025,
+            "acceleration_bound_m_s2": 2.0992232566496623,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 1.0,
+            "segment_duration_s": 4.0,
+            "reason": "OCCUPIED_SPACE",
+            "speed_bound_m_s": 0.6629126073633883,
+            "acceleration_bound_m_s2": 0.5248058141628907,
+            "voxel_tests": 152
+          },
+          {
+            "offset_m": -1.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 1.3258252147261025,
+            "acceleration_bound_m_s2": 2.0992232566496623,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": -1.0,
+            "segment_duration_s": 4.0,
+            "reason": "OCCUPIED_SPACE",
+            "speed_bound_m_s": 0.6629126073633883,
+            "acceleration_bound_m_s2": 0.5248058141628907,
+            "voxel_tests": 154
+          },
+          {
+            "offset_m": 2.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 2.0963137289081493,
+            "acceleration_bound_m_s2": 3.3191634041045694,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 2.0,
+            "segment_duration_s": 4.0,
+            "reason": "CLEAR_STATIC_MODEL",
+            "speed_bound_m_s": 1.0481568644540746,
+            "acceleration_bound_m_s2": 0.8297908510263126,
+            "voxel_tests": 752
+          },
+          {
+            "offset_m": -2.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 2.0963137289081493,
+            "acceleration_bound_m_s2": 3.3191634041045694,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": -2.0,
+            "segment_duration_s": 4.0,
+            "reason": "CLEAR_STATIC_MODEL",
+            "speed_bound_m_s": 1.0481568644540746,
+            "acceleration_bound_m_s2": 0.8297908510263126,
+            "voxel_tests": 752
+          }
+        ],
+        "lease": {
+          "stamp": 10.0,
+          "valid_until": 10.08,
+          "epoch": 0,
+          "source": "static_local_quintic",
+          "frame_id": "world_ned",
+          "covariance_or_bounds": []
+        },
+        "full_reference_end": 18.0,
+        "waypoints": [
+          [
+            1.5,
+            2.5,
+            0.5
+          ],
+          [
+            2.5,
+            0.5,
+            0.5
+          ]
+        ],
+        "dense_spotcheck_points": 402
+      },
+      {
+        "case": "unknown",
+        "reason": "NO_STATIC_CANDIDATE",
+        "pieces": 0,
+        "elapsed_s": 0.01515376497991383,
+        "checks": [
+          {
+            "offset_m": 0.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 1.875000000001875,
+            "acceleration_bound_m_s2": 2.9687500000029687,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 0.0,
+            "segment_duration_s": 4.0,
+            "reason": "UNKNOWN_SPACE",
+            "speed_bound_m_s": 0.937500000001,
+            "acceleration_bound_m_s2": 0.742187500001,
+            "voxel_tests": 8
+          },
+          {
+            "offset_m": 1.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 1.3258252147261025,
+            "acceleration_bound_m_s2": 2.0992232566496623,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 1.0,
+            "segment_duration_s": 4.0,
+            "reason": "UNKNOWN_SPACE",
+            "speed_bound_m_s": 0.6629126073633883,
+            "acceleration_bound_m_s2": 0.5248058141628907,
+            "voxel_tests": 8
+          },
+          {
+            "offset_m": -1.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 1.3258252147261025,
+            "acceleration_bound_m_s2": 2.0992232566496623,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": -1.0,
+            "segment_duration_s": 4.0,
+            "reason": "UNKNOWN_SPACE",
+            "speed_bound_m_s": 0.6629126073633883,
+            "acceleration_bound_m_s2": 0.5248058141628907,
+            "voxel_tests": 8
+          },
+          {
+            "offset_m": 2.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 2.0963137289081493,
+            "acceleration_bound_m_s2": 3.3191634041045694,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 2.0,
+            "segment_duration_s": 4.0,
+            "reason": "UNKNOWN_SPACE",
+            "speed_bound_m_s": 1.0481568644540746,
+            "acceleration_bound_m_s2": 0.8297908510263126,
+            "voxel_tests": 8
+          },
+          {
+            "offset_m": -2.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 2.0963137289081493,
+            "acceleration_bound_m_s2": 3.3191634041045694,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": -2.0,
+            "segment_duration_s": 4.0,
+            "reason": "UNKNOWN_SPACE",
+            "speed_bound_m_s": 1.0481568644540746,
+            "acceleration_bound_m_s2": 0.8297908510263126,
+            "voxel_tests": 8
+          }
+        ]
+      },
+      {
+        "case": "map_expires_before_stop",
+        "reason": "NO_STATIC_CANDIDATE",
+        "pieces": 0,
+        "elapsed_s": 2.2307969629764557e-05,
+        "checks": [
+          {
+            "offset_m": 0.0,
+            "segment_duration_s": 2.0,
+            "reason": "MAP_STOP_HORIZON",
+            "speed_bound_m_s": 0.0,
+            "acceleration_bound_m_s2": 0.0,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 0.0,
+            "segment_duration_s": 4.0,
+            "reason": "MAP_STOP_HORIZON",
+            "speed_bound_m_s": 0.0,
+            "acceleration_bound_m_s2": 0.0,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 1.0,
+            "segment_duration_s": 2.0,
+            "reason": "MAP_STOP_HORIZON",
+            "speed_bound_m_s": 0.0,
+            "acceleration_bound_m_s2": 0.0,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 1.0,
+            "segment_duration_s": 4.0,
+            "reason": "MAP_STOP_HORIZON",
+            "speed_bound_m_s": 0.0,
+            "acceleration_bound_m_s2": 0.0,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": -1.0,
+            "segment_duration_s": 2.0,
+            "reason": "MAP_STOP_HORIZON",
+            "speed_bound_m_s": 0.0,
+            "acceleration_bound_m_s2": 0.0,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": -1.0,
+            "segment_duration_s": 4.0,
+            "reason": "MAP_STOP_HORIZON",
+            "speed_bound_m_s": 0.0,
+            "acceleration_bound_m_s2": 0.0,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 2.0,
+            "segment_duration_s": 2.0,
+            "reason": "MAP_STOP_HORIZON",
+            "speed_bound_m_s": 0.0,
+            "acceleration_bound_m_s2": 0.0,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": 2.0,
+            "segment_duration_s": 4.0,
+            "reason": "MAP_STOP_HORIZON",
+            "speed_bound_m_s": 0.0,
+            "acceleration_bound_m_s2": 0.0,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": -2.0,
+            "segment_duration_s": 2.0,
+            "reason": "MAP_STOP_HORIZON",
+            "speed_bound_m_s": 0.0,
+            "acceleration_bound_m_s2": 0.0,
+            "voxel_tests": 0
+          },
+          {
+            "offset_m": -2.0,
+            "segment_duration_s": 4.0,
+            "reason": "MAP_STOP_HORIZON",
+            "speed_bound_m_s": 0.0,
+            "acceleration_bound_m_s2": 0.0,
+            "voxel_tests": 0
+          }
+        ]
+      },
+      {
+        "case": "stale_state",
+        "reason": "STATE_UNAVAILABLE",
+        "pieces": 0,
+        "elapsed_s": 3.159046173095703e-06,
+        "checks": []
+      },
+      {
+        "case": "attempt_budget",
+        "reason": "NO_STATIC_CANDIDATE",
+        "pieces": 0,
+        "elapsed_s": 0.0005882210098206997,
+        "checks": [
+          {
+            "offset_m": 0.0,
+            "segment_duration_s": 2.0,
+            "reason": "KINEMATIC_LIMIT",
+            "speed_bound_m_s": 1.875000000001875,
+            "acceleration_bound_m_s2": 2.9687500000029687,
+            "voxel_tests": 0
+          }
+        ]
+      }
+    ],
+    "repeated_wall_case": {
+      "count": 10,
+      "median_s": 0.019280239939689636,
+      "max_s": 0.02007079287432134
+    },
+    "script_sha256": "887d6a399e9f85c7d61b8960f32f41ec99405f97056876c8864a4ce110c61112",
+    "control_published": false,
+    "simulator_started": false,
+    "actual_vehicle_map_braking_or_control_validated": false,
+    "dense_spotchecks_are_not_the_continuous_proof": true
+  },
+  "selected_trajectories_sha256": "6e82e044b69d5e18ea23bce322da0284ebb3f02ba3f18b7228f7e9d1f8dc2338",
+  "replay_script_sha256": "887d6a399e9f85c7d61b8960f32f41ec99405f97056876c8864a4ce110c61112",
+  "tests": {
+    "host_passed": 177,
+    "noetic_passed": 174,
+    "noetic_skipped": 3,
+    "new_tests": 15,
+    "logs": {
+      "runs/ffs_runtime/iteration42_host_verified_tests.log": "24894adcd3156586e79686b2a4539d1b177d7f2b45026364fb0e201b031bc59f",
+      "runs/ffs_runtime/iteration42_noetic_verified_tests.log": "9c9fad51837958686c4b8c02ebd6700610ade97ee44f141ec05cf29a4e834ebe"
+    }
+  },
+  "official_baseline_verification_reused_from_today": {
+    "path": "runs/ffs_runtime/iteration40_official_verification.json",
+    "sha256": "8ec267ab0020bb2b4932a467b76dc5c873ed95c11de1581270e1a1a5ddbfd474",
+    "design_sections_re_read": [
+      "11.1",
+      "11.2",
+      "11.3"
+    ]
+  },
+  "final_changes_since_replay": {
+    "modified": [
+      "README.md",
+      "docs/implementation_status.md"
+    ],
+    "new": [
+      "docs/static_local_planner.md",
+      "docs/evidence/p3_static_local_planner.json"
+    ],
+    "executable_code_unchanged": true
+  },
+  "limits": [
+    "All FREE and vehicle dimensions in replay are synthetic; no real map or envelope validated.",
+    "Reference endpoint stopping is kinematic, not evidence of actual braking or control authority.",
+    "No dynamic obstacles, road/forcefield, runtime wall-clock freshness or independent actuator acceptance covered.",
+    "Finite candidate family is not a complete global path search.",
+    "Isolated small-map latency is not a system real-time guarantee.",
+    "P1/P2 and actual online gate traversal remain unaccepted."
+  ]
+}

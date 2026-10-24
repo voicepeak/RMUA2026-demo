@@ -18,3 +18,6 @@ FREE。超出候选体素/分段预算直接拒绝，不把部分检查当成通
 当前 LiDAR 端点图仍在传感器坐标系且无 FREE，不能直接用于放行飞行。
 
 实现对应设计 6.1、11.3；阶段验收状态见 docs/implementation_status.md。
+
+`planning.spacetime_local.static_candidates` 已提供五次曲线及连续导数上界的候选生产者，
+可满足这里对参考加速度上界的数学前提；实际跟踪误差和机体包络仍需独立验证。

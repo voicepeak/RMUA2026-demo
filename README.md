@@ -76,3 +76,5 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.p1_regression
 [几何采样精度核验](docs/stereo_geometry_precision.md)修正并验证了可见坐标格式，但 12 组数值对照仍有两组失败，候选保持离线用途。
 
 [静态轨迹核验](docs/static_swept_volume.md)已连接轨迹与三态占据契约，检查连续机体扫掠体积、未知空间和体素有效期；仍需可信地图及其余安全约束才能用于自主飞行。
+
+[局部静态规划候选](docs/static_local_planner.md)已实现五次参考、连续运动学界、绕行候选与短租约选择，并在合成地图中验证；真实地图与飞行接入仍待验收。
