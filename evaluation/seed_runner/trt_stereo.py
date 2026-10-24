@@ -13,10 +13,12 @@ from evaluation.seed_runner.manifest import file_hash,prepare_run,source_hashes
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--source-run',type=Path,required=True)
     parser.add_argument('--precision',choices=('fp16','fp32'),default='fp16')
+    parser.add_argument('--precision-policy',choices=('default','sensitive_fp32'),default='default')
     parser.add_argument('--reuse-onnx-run',type=Path)
     parser.add_argument('--disable-tf32-globally',action='store_true')
     parser.add_argument('--freeze-fourier-inputs',action='store_true');parser.add_argument('--fp32-reference-run',type=Path)
     args=parser.parse_args()
+    if args.precision_policy!='default' and args.precision!='fp16':parser.error('mixed precision policy requires fp16')
     root=Path(__file__).resolve().parents[2];source=args.source_run.resolve()
     if root/'runs' not in source.parents:parser.error('owned retained input run required')
     rt='/workspace/main/runs/ffs_runtime';runtime=root/'runs/ffs_runtime';vendor=runtime/'Fast-FoundationStereo'
@@ -36,7 +38,8 @@ def main():
         reference_hashes={str(p.relative_to(reference)):file_hash(p) for p in reference.rglob('*') if p.is_file() and p.suffix=='.npz'}
     image=subprocess.check_output(['docker','inspect',container,'--format','{{.Image}}'],text=True).strip()
     config={'trt_experiment':{'source_run':str(source.relative_to(root)),'input_sha256':hashes,
-        'precision':args.precision,'global_tf32_override':'0' if args.disable_tf32_globally else None,
+        'precision':args.precision,'precision_policy':args.precision_policy,
+        'global_tf32_override':'0' if args.disable_tf32_globally else None,
         'fourier_inputs_frozen':args.freeze_fourier_inputs,
         'fp32_reference':{'run':str(reference.relative_to(root)),'input_sha256':reference_hashes,
             'manifest_sha256':file_hash(reference/'manifest.json')} if reference else None,
@@ -83,7 +86,8 @@ def main():
                 '--checkpoint',rt+'/model/'+checkpoint.name,'--sample','/workspace/main/'+str(source.relative_to(root))+'/inputs/0000.npz'],300))
             if args.freeze_fourier_inputs:
                 commands[-1][1].extend(['--freeze-fourier-inputs','--fp32-reference-run','/workspace/main/'+str(reference.relative_to(root))])
-        commands += [('build',docker+[python,'-m',module,'--run-dir',inside,'--stage','build','--precision',args.precision],1800),
+        commands += [('build',docker+[python,'-m',module,'--run-dir',inside,'--stage','build','--precision',args.precision,
+                '--precision-policy',args.precision_policy],1800),
             ('candidate',docker+[python,'-m',modules[1],'--run-dir',inside],300),
             ('evaluate',docker+[python,'-m',modules[2],'--run-dir',inside],120)]
         for stage,command,timeout in commands:

@@ -1,0 +1,4471 @@
+{
+  "iteration": 39,
+  "recorded_on": "2026-10-23",
+  "stage": "P2_CONTROLLED_MIXED_PRECISION_DIAGNOSIS",
+  "acceptance_eligible": false,
+  "current_control_eligible": false,
+  "control_published": false,
+  "simulator_started": false,
+  "run": "runs/20261023T120600Z_e95743bdf0714d0cb6ceb42983aa5f3d",
+  "parent_git_commit": "d8aa83ddb9ba72653125539af40428ff13d1acbc",
+  "run_state": "FAILED",
+  "failed_stage": "evaluate",
+  "error": "evaluate returned 2",
+  "exit_code": 2,
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "d63909dd9158128ed972ec3002e2446eb9bc8afe8e4395d999f86589e6fc8f2b",
+    "files": 308,
+    "uncompressed_bytes": 1603214,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "independent_precision_audit": {
+    "run": "runs/20261023T120600Z_e95743bdf0714d0cb6ceb42983aa5f3d",
+    "source_archive_files_verified": 308,
+    "source_archive_sha256": "d63909dd9158128ed972ec3002e2446eb9bc8afe8e4395d999f86589e6fc8f2b",
+    "input_files_verified": 39,
+    "onnx_and_engine_sha256_verified": true,
+    "packets": [
+      {
+        "key": "0000",
+        "comparisons": {
+          "pytorch_amp": {
+            "mask_iou": 0.8481429551624355,
+            "common_error_p99_px": 0.5711315917968856,
+            "common_pixels": 142153,
+            "raw": {
+              "forward": {
+                "p99_px": 4.756337847709662,
+                "max_px": 42.02932357788086
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": false
+          },
+          "pytorch_fp32": {
+            "mask_iou": 0.8514300799788803,
+            "common_error_p99_px": 0.7127270507812504,
+            "common_pixels": 141907,
+            "raw": {
+              "forward": {
+                "p99_px": 6.733937902450562,
+                "max_px": 59.43667221069336
+              },
+              "reverse": {
+                "p99_px": 7.267460765838656,
+                "max_px": 77.23585796356201
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": false
+          },
+          "onnx_ort": {
+            "mask_iou": 0.8513994300284986,
+            "common_error_p99_px": 0.7128939819335942,
+            "common_pixels": 141907,
+            "raw": {
+              "forward": {
+                "p99_px": 6.733056240081796,
+                "max_px": 59.419864654541016
+              },
+              "reverse": {
+                "p99_px": 7.265640087127725,
+                "max_px": 77.23276042938232
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": false
+          },
+          "fixed_trt_fp32": {
+            "mask_iou": 0.8514198630835599,
+            "common_error_p99_px": 0.7127478027343752,
+            "common_pixels": 141907,
+            "raw": {
+              "forward": {
+                "p99_px": 6.7343822097778325,
+                "max_px": 59.44388198852539
+              },
+              "reverse": {
+                "p99_px": 7.266966304779098,
+                "max_px": 77.2369031906128
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": false
+          }
+        }
+      },
+      {
+        "key": "0001",
+        "comparisons": {
+          "pytorch_amp": {
+            "mask_iou": 0.9829711047633395,
+            "common_error_p99_px": 0.1874176263809204,
+            "common_pixels": 169650,
+            "raw": {
+              "forward": {
+                "p99_px": 2.497552642822267,
+                "max_px": 50.236656188964844
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "pytorch_fp32": {
+            "mask_iou": 0.9771665410700829,
+            "common_error_p99_px": 0.182275652885437,
+            "common_pixels": 168571,
+            "raw": {
+              "forward": {
+                "p99_px": 2.194465789794922,
+                "max_px": 75.35742950439453
+              },
+              "reverse": {
+                "p99_px": 3.3823095703125006,
+                "max_px": 49.68037796020508
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "onnx_ort": {
+            "mask_iou": 0.9771549475392731,
+            "common_error_p99_px": 0.18226516246795654,
+            "common_pixels": 168569,
+            "raw": {
+              "forward": {
+                "p99_px": 2.194229393005375,
+                "max_px": 75.35747528076172
+              },
+              "reverse": {
+                "p99_px": 3.382370529174805,
+                "max_px": 49.679744720458984
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "fixed_trt_fp32": {
+            "mask_iou": 0.9771549475392731,
+            "common_error_p99_px": 0.18230056762695312,
+            "common_pixels": 168569,
+            "raw": {
+              "forward": {
+                "p99_px": 2.1945073699951205,
+                "max_px": 75.35894775390625
+              },
+              "reverse": {
+                "p99_px": 3.382263946533204,
+                "max_px": 49.68027114868164
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          }
+        }
+      },
+      {
+        "key": "0002",
+        "comparisons": {
+          "pytorch_amp": {
+            "mask_iou": 0.9805954779989813,
+            "common_error_p99_px": 0.15326881408691406,
+            "common_pixels": 177123,
+            "raw": {
+              "forward": {
+                "p99_px": 28.655594940185626,
+                "max_px": 52.488372802734375
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "pytorch_fp32": {
+            "mask_iou": 0.9762059328374632,
+            "common_error_p99_px": 0.1457691192626953,
+            "common_pixels": 177443,
+            "raw": {
+              "forward": {
+                "p99_px": 28.46337257385256,
+                "max_px": 48.095272064208984
+              },
+              "reverse": {
+                "p99_px": 10.175374450683616,
+                "max_px": 63.089813232421875
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "onnx_ort": {
+            "mask_iou": 0.9762166741854912,
+            "common_error_p99_px": 0.14577198028564453,
+            "common_pixels": 177443,
+            "raw": {
+              "forward": {
+                "p99_px": 28.460764083862323,
+                "max_px": 48.09628677368164
+              },
+              "reverse": {
+                "p99_px": 10.17543777465822,
+                "max_px": 63.089844703674316
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "fixed_trt_fp32": {
+            "mask_iou": 0.9762166741854912,
+            "common_error_p99_px": 0.1457834243774414,
+            "common_pixels": 177443,
+            "raw": {
+              "forward": {
+                "p99_px": 28.463177032470707,
+                "max_px": 48.097599029541016
+              },
+              "reverse": {
+                "p99_px": 10.177423400878908,
+                "max_px": 63.090646743774414
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          }
+        }
+      },
+      {
+        "key": "0003",
+        "comparisons": {
+          "pytorch_amp": {
+            "mask_iou": 0.9901035257674162,
+            "common_error_p99_px": 0.1341363668441772,
+            "common_pixels": 208396,
+            "raw": {
+              "forward": {
+                "p99_px": 16.081900177002044,
+                "max_px": 52.49639892578125
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "pytorch_fp32": {
+            "mask_iou": 0.9899101221806297,
+            "common_error_p99_px": 0.1467294692993164,
+            "common_pixels": 208384,
+            "raw": {
+              "forward": {
+                "p99_px": 9.438109283447329,
+                "max_px": 37.26367950439453
+              },
+              "reverse": {
+                "p99_px": 6.45234165191651,
+                "max_px": 44.21937942504883
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "onnx_ort": {
+            "mask_iou": 0.9899101221806297,
+            "common_error_p99_px": 0.14673757553100586,
+            "common_pixels": 208384,
+            "raw": {
+              "forward": {
+                "p99_px": 9.43839649200445,
+                "max_px": 37.26201629638672
+              },
+              "reverse": {
+                "p99_px": 6.45244773864747,
+                "max_px": 44.20357131958008
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "fixed_trt_fp32": {
+            "mask_iou": 0.9899101221806297,
+            "common_error_p99_px": 0.14670991897583008,
+            "common_pixels": 208384,
+            "raw": {
+              "forward": {
+                "p99_px": 9.438239860534708,
+                "max_px": 37.263126373291016
+              },
+              "reverse": {
+                "p99_px": 6.45286903381348,
+                "max_px": 44.19992446899414
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          }
+        }
+      },
+      {
+        "key": "0004",
+        "comparisons": {
+          "pytorch_amp": {
+            "mask_iou": 0.987499285673467,
+            "common_error_p99_px": 0.1478438377380371,
+            "common_pixels": 207363,
+            "raw": {
+              "forward": {
+                "p99_px": 13.53864692687993,
+                "max_px": 92.53350830078125
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "pytorch_fp32": {
+            "mask_iou": 0.9859120776713801,
+            "common_error_p99_px": 0.17745518684387207,
+            "common_pixels": 207359,
+            "raw": {
+              "forward": {
+                "p99_px": 11.794744110107427,
+                "max_px": 86.49534130096436
+              },
+              "reverse": {
+                "p99_px": 6.862355079650887,
+                "max_px": 58.666471004486084
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "onnx_ort": {
+            "mask_iou": 0.9859120776713801,
+            "common_error_p99_px": 0.17748570442199707,
+            "common_pixels": 207359,
+            "raw": {
+              "forward": {
+                "p99_px": 11.791962661743165,
+                "max_px": 86.49111461639404
+              },
+              "reverse": {
+                "p99_px": 6.862397193908703,
+                "max_px": 58.66677951812744
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "fixed_trt_fp32": {
+            "mask_iou": 0.9859120776713801,
+            "common_error_p99_px": 0.1774730682373047,
+            "common_pixels": 207359,
+            "raw": {
+              "forward": {
+                "p99_px": 11.792094726562503,
+                "max_px": 86.49030590057373
+              },
+              "reverse": {
+                "p99_px": 6.862666244506839,
+                "max_px": 58.66650605201721
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          }
+        }
+      },
+      {
+        "key": "0005",
+        "comparisons": {
+          "pytorch_amp": {
+            "mask_iou": 0.9793278320026597,
+            "common_error_p99_px": 0.21871662139892578,
+            "common_pixels": 197361,
+            "raw": {
+              "forward": {
+                "p99_px": 11.901013641357427,
+                "max_px": 82.6914291381836
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "pytorch_fp32": {
+            "mask_iou": 0.9781970421922574,
+            "common_error_p99_px": 0.29906654357910156,
+            "common_pixels": 197901,
+            "raw": {
+              "forward": {
+                "p99_px": 14.766870727539064,
+                "max_px": 78.01614379882812
+              },
+              "reverse": {
+                "p99_px": 32.07513997077943,
+                "max_px": 49.96518611907959
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "onnx_ort": {
+            "mask_iou": 0.9781970421922574,
+            "common_error_p99_px": 0.2989628314971924,
+            "common_pixels": 197901,
+            "raw": {
+              "forward": {
+                "p99_px": 14.766844024658223,
+                "max_px": 78.01382064819336
+              },
+              "reverse": {
+                "p99_px": 32.075630111694345,
+                "max_px": 49.96587371826172
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "fixed_trt_fp32": {
+            "mask_iou": 0.9781970421922574,
+            "common_error_p99_px": 0.2988710403442383,
+            "common_pixels": 197901,
+            "raw": {
+              "forward": {
+                "p99_px": 14.766815643310569,
+                "max_px": 78.01367950439453
+              },
+              "reverse": {
+                "p99_px": 32.074102325439455,
+                "max_px": 49.96356391906738
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          }
+        }
+      },
+      {
+        "key": "0006",
+        "comparisons": {
+          "pytorch_amp": {
+            "mask_iou": 0.9359003463856524,
+            "common_error_p99_px": 0.13228355884551996,
+            "common_pixels": 127800,
+            "raw": {
+              "forward": {
+                "p99_px": 3.608491821289064,
+                "max_px": 41.753910064697266
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "pytorch_fp32": {
+            "mask_iou": 0.9395456182517107,
+            "common_error_p99_px": 0.1523151397705078,
+            "common_pixels": 127828,
+            "raw": {
+              "forward": {
+                "p99_px": 4.052155761718751,
+                "max_px": 72.38284492492676
+              },
+              "reverse": {
+                "p99_px": 5.31162445068361,
+                "max_px": 46.16987228393555
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "onnx_ort": {
+            "mask_iou": 0.9395456182517107,
+            "common_error_p99_px": 0.15228700637817383,
+            "common_pixels": 127828,
+            "raw": {
+              "forward": {
+                "p99_px": 4.0522659301757855,
+                "max_px": 72.38290596008301
+              },
+              "reverse": {
+                "p99_px": 5.311324272155786,
+                "max_px": 46.13788986206055
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "fixed_trt_fp32": {
+            "mask_iou": 0.9395318069898203,
+            "common_error_p99_px": 0.1522970199584961,
+            "common_pixels": 127828,
+            "raw": {
+              "forward": {
+                "p99_px": 4.052145690917975,
+                "max_px": 72.41558265686035
+              },
+              "reverse": {
+                "p99_px": 5.311623649597187,
+                "max_px": 46.174007415771484
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          }
+        }
+      },
+      {
+        "key": "0007",
+        "comparisons": {
+          "pytorch_amp": {
+            "mask_iou": 0.9335848515435827,
+            "common_error_p99_px": 0.30057716369628906,
+            "common_pixels": 169258,
+            "raw": {
+              "forward": {
+                "p99_px": 14.582040481567406,
+                "max_px": 59.355401039123535
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "pytorch_fp32": {
+            "mask_iou": 0.9192279647347371,
+            "common_error_p99_px": 0.23303580284118652,
+            "common_pixels": 166406,
+            "raw": {
+              "forward": {
+                "p99_px": 19.57998008728029,
+                "max_px": 60.133408546447754
+              },
+              "reverse": {
+                "p99_px": 3.718754577636723,
+                "max_px": 47.24781036376953
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "onnx_ort": {
+            "mask_iou": 0.9192169167200654,
+            "common_error_p99_px": 0.23303699493408203,
+            "common_pixels": 166404,
+            "raw": {
+              "forward": {
+                "p99_px": 19.58084594726563,
+                "max_px": 60.13557529449463
+              },
+              "reverse": {
+                "p99_px": 3.718312530517583,
+                "max_px": 47.24879837036133
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "fixed_trt_fp32": {
+            "mask_iou": 0.919228857095509,
+            "common_error_p99_px": 0.23305058479309082,
+            "common_pixels": 166408,
+            "raw": {
+              "forward": {
+                "p99_px": 19.582924880981444,
+                "max_px": 60.139512062072754
+              },
+              "reverse": {
+                "p99_px": 3.7184393310546895,
+                "max_px": 47.25164031982422
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          }
+        }
+      },
+      {
+        "key": "0008",
+        "comparisons": {
+          "pytorch_amp": {
+            "mask_iou": 0.9713230898664954,
+            "common_error_p99_px": 0.15594863891601562,
+            "common_pixels": 175487,
+            "raw": {
+              "forward": {
+                "p99_px": 25.96607120513918,
+                "max_px": 86.03493881225586
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "pytorch_fp32": {
+            "mask_iou": 0.9756383866481224,
+            "common_error_p99_px": 0.13941091299057007,
+            "common_pixels": 175371,
+            "raw": {
+              "forward": {
+                "p99_px": 15.967608451843265,
+                "max_px": 39.806617736816406
+              },
+              "reverse": {
+                "p99_px": 2.666546287536627,
+                "max_px": 21.610973358154297
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "onnx_ort": {
+            "mask_iou": 0.9756218324237418,
+            "common_error_p99_px": 0.1394081711769104,
+            "common_pixels": 175369,
+            "raw": {
+              "forward": {
+                "p99_px": 15.965949401855482,
+                "max_px": 39.80886459350586
+              },
+              "reverse": {
+                "p99_px": 2.6667799568176274,
+                "max_px": 21.611618041992188
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "fixed_trt_fp32": {
+            "mask_iou": 0.975632958926515,
+            "common_error_p99_px": 0.13941967487335205,
+            "common_pixels": 175371,
+            "raw": {
+              "forward": {
+                "p99_px": 15.965768585205101,
+                "max_px": 39.81059646606445
+              },
+              "reverse": {
+                "p99_px": 2.6668627262115505,
+                "max_px": 21.61534881591797
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          }
+        }
+      },
+      {
+        "key": "0009",
+        "comparisons": {
+          "pytorch_amp": {
+            "mask_iou": 0.9098449798981985,
+            "common_error_p99_px": 0.5347208976745605,
+            "common_pixels": 204131,
+            "raw": {
+              "forward": {
+                "p99_px": 14.149434738159206,
+                "max_px": 50.22083282470703
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "pytorch_fp32": {
+            "mask_iou": 0.920508680035248,
+            "common_error_p99_px": 0.4204545021057129,
+            "common_pixels": 205788,
+            "raw": {
+              "forward": {
+                "p99_px": 17.989380798339894,
+                "max_px": 51.235267639160156
+              },
+              "reverse": {
+                "p99_px": 15.760804824829112,
+                "max_px": 26.08913564682007
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "onnx_ort": {
+            "mask_iou": 0.9204997338510192,
+            "common_error_p99_px": 0.4204525947570801,
+            "common_pixels": 205786,
+            "raw": {
+              "forward": {
+                "p99_px": 17.987943115234394,
+                "max_px": 51.22975158691406
+              },
+              "reverse": {
+                "p99_px": 15.760352668762227,
+                "max_px": 26.087998867034912
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "fixed_trt_fp32": {
+            "mask_iou": 0.9205176262194767,
+            "common_error_p99_px": 0.42049694061279297,
+            "common_pixels": 205790,
+            "raw": {
+              "forward": {
+                "p99_px": 17.9925608825684,
+                "max_px": 51.234764099121094
+              },
+              "reverse": {
+                "p99_px": 15.760932426452648,
+                "max_px": 26.08981466293335
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          }
+        }
+      },
+      {
+        "key": "0010",
+        "comparisons": {
+          "pytorch_amp": {
+            "mask_iou": 0.9894460221252066,
+            "common_error_p99_px": 0.17351341247558594,
+            "common_pixels": 210096,
+            "raw": {
+              "forward": {
+                "p99_px": 8.870929107666026,
+                "max_px": 37.12565612792969
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "pytorch_fp32": {
+            "mask_iou": 0.9912888368756843,
+            "common_error_p99_px": 0.17940576076507586,
+            "common_pixels": 210066,
+            "raw": {
+              "forward": {
+                "p99_px": 8.316628646850594,
+                "max_px": 55.03841781616211
+              },
+              "reverse": {
+                "p99_px": 12.898702716827396,
+                "max_px": 21.597249269485474
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "onnx_ort": {
+            "mask_iou": 0.9912888368756843,
+            "common_error_p99_px": 0.17940812110900892,
+            "common_pixels": 210066,
+            "raw": {
+              "forward": {
+                "p99_px": 8.316344375610358,
+                "max_px": 55.041603088378906
+              },
+              "reverse": {
+                "p99_px": 12.899888134002689,
+                "max_px": 21.597983360290527
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "fixed_trt_fp32": {
+            "mask_iou": 0.9912981926289463,
+            "common_error_p99_px": 0.17940196990966817,
+            "common_pixels": 210066,
+            "raw": {
+              "forward": {
+                "p99_px": 8.315359573364264,
+                "max_px": 55.04216384887695
+              },
+              "reverse": {
+                "p99_px": 12.899385261535652,
+                "max_px": 21.598544716835022
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          }
+        }
+      },
+      {
+        "key": "0011",
+        "comparisons": {
+          "pytorch_amp": {
+            "mask_iou": 0.9533591505997009,
+            "common_error_p99_px": 0.27421045303344727,
+            "common_pixels": 207777,
+            "raw": {
+              "forward": {
+                "p99_px": 9.209481010437024,
+                "max_px": 29.690940856933594
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "pytorch_fp32": {
+            "mask_iou": 0.9581454567182839,
+            "common_error_p99_px": 0.23980379104614258,
+            "common_pixels": 208457,
+            "raw": {
+              "forward": {
+                "p99_px": 6.337307701110855,
+                "max_px": 25.900775909423828
+              },
+              "reverse": {
+                "p99_px": 9.894370155334482,
+                "max_px": 32.92161273956299
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "onnx_ort": {
+            "mask_iou": 0.9581362639787097,
+            "common_error_p99_px": 0.23977231979370117,
+            "common_pixels": 208455,
+            "raw": {
+              "forward": {
+                "p99_px": 6.337038898468023,
+                "max_px": 25.9075927734375
+              },
+              "reverse": {
+                "p99_px": 9.89356648206711,
+                "max_px": 32.920735359191895
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          },
+          "fixed_trt_fp32": {
+            "mask_iou": 0.9581362639787097,
+            "common_error_p99_px": 0.23976564407348633,
+            "common_pixels": 208455,
+            "raw": {
+              "forward": {
+                "p99_px": 6.335545005798358,
+                "max_px": 25.90699005126953
+              },
+              "reverse": {
+                "p99_px": 9.893752574920661,
+                "max_px": 32.92237186431885
+              }
+            },
+            "finite_raw": true,
+            "compatible_existing_thresholds": true
+          }
+        }
+      }
+    ],
+    "summary": {
+      "pytorch_amp": {
+        "passed": 11,
+        "count": 12,
+        "mask_iou_min": 0.8481429551624355,
+        "common_error_p99_max_px": 0.5711315917968856
+      },
+      "pytorch_fp32": {
+        "passed": 11,
+        "count": 12,
+        "mask_iou_min": 0.8514300799788803,
+        "common_error_p99_max_px": 0.7127270507812504
+      },
+      "onnx_ort": {
+        "passed": 11,
+        "count": 12,
+        "mask_iou_min": 0.8513994300284986,
+        "common_error_p99_max_px": 0.7128939819335942
+      },
+      "fixed_trt_fp32": {
+        "passed": 11,
+        "count": 12,
+        "mask_iou_min": 0.8514198630835599,
+        "common_error_p99_max_px": 0.7127478027343752
+      }
+    },
+    "current_control_eligible": false,
+    "acceptance_eligible": false
+  },
+  "precision_constraints": {
+    "policy": "sensitive_fp32",
+    "layers": [
+      {
+        "index": 41,
+        "name": "/feature/stem/stem.1/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 51,
+        "name": "/feature/stages.0/blocks/blocks.0/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 88,
+        "name": "/feature/stages.0/blocks/blocks.1/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 125,
+        "name": "/feature/stages.0/blocks/blocks.2/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 161,
+        "name": "/feature/stages.1/downsample/downsample.0/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 172,
+        "name": "/feature/stages.1/blocks/blocks.0/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 209,
+        "name": "/feature/stages.1/blocks/blocks.1/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 316,
+        "name": "/feature/stages.1/blocks/blocks.2/norm_xca/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 335,
+        "name": "/feature/stages.1/blocks/blocks.2/xca/ReduceL2",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 354,
+        "name": "/feature/stages.1/blocks/blocks.2/xca/ReduceL2_1",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 377,
+        "name": "/feature/stages.1/blocks/blocks.2/xca/Softmax",
+        "type": "LayerType.SOFTMAX",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 399,
+        "name": "/feature/stages.1/blocks/blocks.2/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 435,
+        "name": "/feature/stages.2/downsample/downsample.0/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 446,
+        "name": "/feature/stages.2/blocks/blocks.0/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 483,
+        "name": "/feature/stages.2/blocks/blocks.1/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 520,
+        "name": "/feature/stages.2/blocks/blocks.2/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 557,
+        "name": "/feature/stages.2/blocks/blocks.3/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 594,
+        "name": "/feature/stages.2/blocks/blocks.4/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 631,
+        "name": "/feature/stages.2/blocks/blocks.5/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 668,
+        "name": "/feature/stages.2/blocks/blocks.6/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 705,
+        "name": "/feature/stages.2/blocks/blocks.7/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 836,
+        "name": "/feature/stages.2/blocks/blocks.8/norm_xca/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 855,
+        "name": "/feature/stages.2/blocks/blocks.8/xca/ReduceL2",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 874,
+        "name": "/feature/stages.2/blocks/blocks.8/xca/ReduceL2_1",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 897,
+        "name": "/feature/stages.2/blocks/blocks.8/xca/Softmax",
+        "type": "LayerType.SOFTMAX",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 919,
+        "name": "/feature/stages.2/blocks/blocks.8/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 955,
+        "name": "/feature/stages.3/downsample/downsample.0/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 966,
+        "name": "/feature/stages.3/blocks/blocks.0/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1003,
+        "name": "/feature/stages.3/blocks/blocks.1/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1163,
+        "name": "/feature/stages.3/blocks/blocks.2/norm_xca/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1182,
+        "name": "/feature/stages.3/blocks/blocks.2/xca/ReduceL2",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 1201,
+        "name": "/feature/stages.3/blocks/blocks.2/xca/ReduceL2_1",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 1224,
+        "name": "/feature/stages.3/blocks/blocks.2/xca/Softmax",
+        "type": "LayerType.SOFTMAX",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 1246,
+        "name": "/feature/stages.3/blocks/blocks.2/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1282,
+        "name": "/feature/deconv32_16/conv1/IN/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1292,
+        "name": "/feature/deconv32_16/conv2/bn1/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1301,
+        "name": "/feature/deconv32_16/conv2/bn2/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1311,
+        "name": "/feature/deconv16_8/conv1/IN/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1321,
+        "name": "/feature/deconv16_8/conv2/bn1/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1330,
+        "name": "/feature/deconv16_8/conv2/bn2/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1340,
+        "name": "/feature/deconv8_4/conv1/IN/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1350,
+        "name": "/feature/deconv8_4/conv2/bn1/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1359,
+        "name": "/feature/deconv8_4/conv2/bn2/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1505,
+        "name": "/stem_2/stem_2.0/IN/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 1514,
+        "name": "/stem_2/stem_2.2/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 5283,
+        "name": "/ReduceL2",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 5304,
+        "name": "/ReduceL2_1",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 5324,
+        "name": "/ReduceSum",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9101,
+        "name": "/corr_feature_att/layers.2/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9114,
+        "name": "/cost_agg/feature_att_8/layers.2/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9137,
+        "name": "/cost_agg/feature_att_32/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9148,
+        "name": "/cost_agg/post32_to_16/out.0/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9169,
+        "name": "/cost_agg/post16_to_8/out.1/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9247,
+        "name": "/cost_agg/post8_to_4/upsample/upsample.1/sa.0/self_attn/Softmax",
+        "type": "LayerType.SOFTMAX",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9264,
+        "name": "/cost_agg/post8_to_4/upsample/upsample.1/sa.0/norm1/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 9296,
+        "name": "/cost_agg/post8_to_4/upsample/upsample.1/sa.0/norm2/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": "fp32"
+      },
+      {
+        "index": 9312,
+        "name": "/Softmax",
+        "type": "LayerType.SOFTMAX",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9316,
+        "name": "/ReduceSum_1",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9321,
+        "name": "/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9323,
+        "name": "/cam/avg_pool/GlobalAveragePool",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9332,
+        "name": "/cam/sigmoid/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9334,
+        "name": "/sam/ReduceMean",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9335,
+        "name": "/sam/ReduceMax",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9338,
+        "name": "/sam/sigmoid/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9346,
+        "name": "/ReduceL2_2",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9366,
+        "name": "/ReduceL2_3",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9991,
+        "name": "/update_block/gru04/small_gru/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9993,
+        "name": "/update_block/gru04/small_gru/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 9997,
+        "name": "/update_block/gru04/small_gru/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 10006,
+        "name": "/update_block/gru04/large_gru/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 10008,
+        "name": "/update_block/gru04/large_gru/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 10012,
+        "name": "/update_block/gru04/large_gru/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 10670,
+        "name": "/update_block/gru04/small_gru_1/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 10672,
+        "name": "/update_block/gru04/small_gru_1/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 10676,
+        "name": "/update_block/gru04/small_gru_1/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 10685,
+        "name": "/update_block/gru04/large_gru_1/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 10687,
+        "name": "/update_block/gru04/large_gru_1/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 10691,
+        "name": "/update_block/gru04/large_gru_1/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 11340,
+        "name": "/update_block/gru04/small_gru_2/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 11342,
+        "name": "/update_block/gru04/small_gru_2/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 11346,
+        "name": "/update_block/gru04/small_gru_2/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 11355,
+        "name": "/update_block/gru04/large_gru_2/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 11357,
+        "name": "/update_block/gru04/large_gru_2/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 11361,
+        "name": "/update_block/gru04/large_gru_2/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 12010,
+        "name": "/update_block/gru04/small_gru_3/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 12012,
+        "name": "/update_block/gru04/small_gru_3/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 12016,
+        "name": "/update_block/gru04/small_gru_3/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 12025,
+        "name": "/update_block/gru04/large_gru_3/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 12027,
+        "name": "/update_block/gru04/large_gru_3/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 12031,
+        "name": "/update_block/gru04/large_gru_3/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 12143,
+        "name": "/Softmax_1",
+        "type": "LayerType.SOFTMAX",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      },
+      {
+        "index": 12257,
+        "name": "/ReduceSum_2",
+        "type": "LayerType.REDUCE",
+        "fp32_output_indices": [
+          0
+        ],
+        "requested_precision": "fp32",
+        "normalization_compute_precision": null
+      }
+    ],
+    "obey_precision_constraints": true,
+    "selection_is_experimental_not_cause_proof": true
+  },
+  "build": {
+    "engine_sha256": "85100f3d423e59cf3969b6edb231da940bd3c92b0988322a2d46445f96602399",
+    "engine_file": "stereo_fp16.engine",
+    "onnx_sha256": "c599bf9152d352b7a2ac1eab491113002a9ac49a19529df0b8ef90cbbdf49fed",
+    "tensorrt": "10.13.3.9",
+    "precision": "fp16",
+    "tf32_enabled": false,
+    "precision_policy": "sensitive_fp32",
+    "fp32_constrained_layers": 92,
+    "precision_constraints_sha256": "157b99b2145f6f1ebb8722286d539982b56c167b8e4a4c967b0459581858ab0d",
+    "global_tf32_override": "0",
+    "max_aux_streams": 0,
+    "workspace_limit_bytes": 536870912,
+    "build_s": 371.92126956093125,
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "compute_capability": [
+      8,
+      6
+    ],
+    "cuda_runtime": "12.4",
+    "acceptance_eligible": false,
+    "current_control_eligible": false
+  },
+  "export": {
+    "onnx_sha256": "c599bf9152d352b7a2ac1eab491113002a9ac49a19529df0b8ef90cbbdf49fed",
+    "opset": 17,
+    "image_shape": [
+      1,
+      3,
+      384,
+      480
+    ],
+    "external_imagenet_normalization": true,
+    "volume_normalize": true,
+    "mixed_precision_at_export": false,
+    "valid_iters": 4,
+    "max_disp": 192,
+    "sample_sha256": "dafbd4313a6b76187c70275e45c9e1064601b6adfdc567edb38f68e0f1af3b6d",
+    "exporter_sha256": "f9cc3c47266ad9c5d2c6649f3aab904f3df9edfe26cd17faa3b7557b4c07e169",
+    "export_s": 21.856169746024534,
+    "torch": "2.6.0+cu124",
+    "onnx": "1.17.0",
+    "normalization_compatibility_default_applied": true,
+    "fourier_inputs_frozen": true,
+    "source_weights_sha256": "7aee85948373da62b0503c2542507129a3e7cab9d97d10e6790d89512a7db214",
+    "acceptance_eligible": false
+  },
+  "inspector_audit": {
+    "engine_inspector_sha256": "dde2b2c40ea5c50bc3bdf58383cc15c57cb452ae556e94060e1a40f56641707c",
+    "fp32_constraints": 92,
+    "matched_constraint_metadata": 92,
+    "unmatched_constraint_metadata": [],
+    "matched_constraints": [
+      {
+        "constraint_name": "/feature/stem/stem.1/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_TranCastMeanSubMulMean_myl4_0",
+          "__myl_AddSqrtDivMulMulAddCastTran_myl4_1"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.0/blocks/blocks.0/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_TranCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl6_0"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.0/blocks/blocks.1/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_TranCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl8_0"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.0/blocks/blocks.2/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_TranCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl10_0"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.1/downsample/downsample.0/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_ReshAddMulTranAddTranCastMeanSubMulMean_myl10_4",
+          "__myl_AddSqrtDivMulMulAddCastTran_myl10_5"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.1/blocks/blocks.0/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_TranCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl13_0"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.1/blocks/blocks.1/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_TranCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl15_0"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.1/blocks/blocks.2/norm_xca/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_SlicTranConcReshTranAddCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl20_0"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.1/blocks/blocks.2/xca/ReduceL2",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "__myl_SlicReshMulCastSum_myl20_6",
+          "__myl_CastSqrtMaxMinReplDiv_myl20_7"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.1/blocks/blocks.2/xca/ReduceL2_1",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "__myl_SlicReshMulCastSum_myl20_4",
+          "__myl_CastSqrtMaxMinReplDivTran_myl20_5"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.1/blocks/blocks.2/xca/Softmax",
+        "type": "LayerType.SOFTMAX",
+        "engine_layer_names": [
+          "__myl_MulCastMaxrSubExpSumDivMulCast_myl20_9"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.1/blocks/blocks.2/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_MulReshAddReshCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl20_13"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/downsample/downsample.0/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_ReshAddMulTranAddTranCastMeanSubMulMean_myl20_17",
+          "__myl_AddSqrtDivMulMulAddCastTran_myl20_18"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.0/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_CastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl24_1"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.1/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_CastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl26_1"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.2/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_CastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl28_1"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.3/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_CastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl30_1"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.4/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_CastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl32_1"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.5/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_CastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl34_1"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.6/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_CastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl36_1"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.7/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_TranCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl40_0"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.8/norm_xca/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_SlicConcReshTranCastMeanSubMulMeanAddSqrtDivMulMulAddCastResh_myl44_0"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.8/xca/ReduceL2",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "__myl_SlicReshMulCastSum_myl44_6",
+          "__myl_CastSqrtMaxMinReplDiv_myl44_7"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.8/xca/ReduceL2_1",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "__myl_SlicReshMulCastSum_myl44_4",
+          "__myl_CastSqrtMaxMinReplDivTran_myl44_5"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.8/xca/Softmax",
+        "type": "LayerType.SOFTMAX",
+        "engine_layer_names": [
+          "__myl_MulCastMaxrSubExpSumDivMulCast_myl44_9"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.2/blocks/blocks.8/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_ReshCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl44_13"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.3/downsample/downsample.0/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_ReshAddMulTranAddTranCastMeanSubMulMean_myl44_17",
+          "__myl_AddSqrtDivMulMulAddCastTran_myl44_18"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.3/blocks/blocks.0/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_TranCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl47_0"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.3/blocks/blocks.1/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_TranCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl49_0"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.3/blocks/blocks.2/norm_xca/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_SlicConcReshTranCastMeanSubMulMeanAddSqrtDivMulMulAddCastResh_myl55_0"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.3/blocks/blocks.2/xca/ReduceL2",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "__myl_SlicReshMulCastSum_myl55_6",
+          "__myl_CastSqrtMaxMinReplDiv_myl55_7"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.3/blocks/blocks.2/xca/ReduceL2_1",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "__myl_SlicReshMulCastSum_myl55_4",
+          "__myl_CastSqrtMaxMinReplDivTran_myl55_5"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.3/blocks/blocks.2/xca/Softmax",
+        "type": "LayerType.SOFTMAX",
+        "engine_layer_names": [
+          "__myl_MulCastMaxrSubExpSumDivMulCast_myl55_9"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/stages.3/blocks/blocks.2/norm/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_ReshCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl55_13"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/feature/deconv32_16/conv1/IN/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_Cast_myl57_0",
+          "__myl_Inor_myl57_1"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/feature/deconv32_16/conv2/bn1/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_Cast_myl59_0",
+          "__myl_Inor_myl59_1"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/feature/deconv32_16/conv2/bn2/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_Cast_myl61_0",
+          "__myl_Inor_myl61_1"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/feature/deconv16_8/conv1/IN/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_Cast_myl63_0",
+          "__myl_Inor_myl63_1"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/feature/deconv16_8/conv2/bn1/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_Cast_myl65_0",
+          "__myl_Inor_myl65_1"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/feature/deconv16_8/conv2/bn2/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_Cast_myl67_0",
+          "__myl_Inor_myl67_1"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/feature/deconv8_4/conv1/IN/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_Cast_myl69_0",
+          "__myl_Inor_myl69_1"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/feature/deconv8_4/conv2/bn1/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_Cast_myl71_0",
+          "__myl_Inor_myl71_1"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/feature/deconv8_4/conv2/bn2/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_Cast_myl73_3",
+          "__myl_Inor_myl73_4"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/stem_2/stem_2.0/IN/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_Move_myl610_0",
+          "__myl_Move_myl610_1",
+          "__myl_CastCastSubMulAddSqrtDivMulAddCastCastMulMaxMeanMean_myl610_2"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half",
+          "Int32"
+        ]
+      },
+      {
+        "constraint_name": "/stem_2/stem_2.2/InstanceNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_Move_myl618_0",
+          "__myl_Move_myl618_1",
+          "__myl_CastCastSubMulAddSqrtDivMulAddCastCastReluCastMeanMean_myl618_2"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half",
+          "Int32"
+        ]
+      },
+      {
+        "constraint_name": "/ReduceL2",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "(Unnamed Layer* 5282) [ElementWise] + /ReduceL2 + /ReduceL2_5477"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/ReduceL2_1",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "(Unnamed Layer* 5303) [ElementWise] + /ReduceL2_1 + /ReduceL2_1_5492"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/ReduceSum",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "/ReduceSum"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/corr_feature_att/layers.2/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/corr_feature_att/layers.1/relu/LeakyRelu), PWN(PWN(/corr_feature_att/layers.2/Sigmoid), PWN(/corr_feature_att/layers.2/Mul)))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/cost_agg/feature_att_8/layers.2/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/cost_agg/feature_att_8/layers.2/Sigmoid), PWN(/cost_agg/feature_att_8/layers.2/Mul))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/cost_agg/feature_att_32/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/cost_agg/feature_att_32/Sigmoid), PWN(/cost_agg/feature_att_32/Mul))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/cost_agg/post32_to_16/out.0/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(PWN(/cost_agg/post32_to_16/upsample/upsample.0/relu/LeakyRelu), PWN(/cost_agg/post32_to_16/Add)), PWN(PWN(/cost_agg/post32_to_16/out.0/Sigmoid), PWN(/cost_agg/post32_to_16/out.0/Mul)))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/cost_agg/post16_to_8/out.1/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/cost_agg/post16_to_8/out.0/relu/LeakyRelu), PWN(PWN(/cost_agg/post16_to_8/out.1/Sigmoid), PWN(/cost_agg/post16_to_8/out.1/Mul)))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/cost_agg/post8_to_4/upsample/upsample.1/sa.0/self_attn/Softmax",
+        "type": "LayerType.SOFTMAX",
+        "engine_layer_names": [
+          "__myl_CastSlicSlicMaxSlicMaxSlicMaxSubExpSlicSlicAddSlicAddSlicAddDivMulCast_myl405_9"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/cost_agg/post8_to_4/upsample/upsample.1/sa.0/norm1/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_ReshAddCastMeanSubMulMeanAddSqrtDivMulMulAddCast_myl405_12"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/cost_agg/post8_to_4/upsample/upsample.1/sa.0/norm2/LayerNormalization",
+        "type": "LayerType.NORMALIZATION",
+        "engine_layer_names": [
+          "__myl_AddCastMeanSubMulMean_myl405_16",
+          "__myl_AddSqrtDivMulMulAddCastReshTran_myl405_17"
+        ],
+        "visible_output_formats": [
+          "Float",
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/Softmax",
+        "type": "LayerType.SOFTMAX",
+        "engine_layer_names": [
+          "/Softmax"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/ReduceSum_1",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "/ReduceSum_1"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/cnet/conv04.0/relu/LeakyRelu), PWN(/Tanh))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/cam/avg_pool/GlobalAveragePool",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "/cam/avg_pool/GlobalAveragePool"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/cam/sigmoid/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/cam/sigmoid/Sigmoid), PWN(/Mul_4))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/sam/ReduceMean",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "/sam/ReduceMean"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/sam/ReduceMax",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "/sam/ReduceMax"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/sam/sigmoid/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(/sam/sigmoid/Sigmoid)"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/ReduceL2_2",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "__myl_MoveMulCastSumCastSqrt_myl405_2"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/ReduceL2_3",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "__myl_MoveMulCastSumCastSqrt_myl405_4"
+        ],
+        "visible_output_formats": [
+          "Half"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/small_gru/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru/Sigmoid), PWN(PWN(/update_block/gru04/small_gru/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru/Tanh), PWN(/update_block/gru04/large_gru/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru/Constant_output_0 + ONNXTRT_Broadcast_10481, PWN(/update_block/gru04/large_gru/Sub)), PWN(/update_block/gru04/large_gru/Mul_1)), PWN(/update_block/gru04/large_gru/Add))), PWN(/update_block/gru04/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru/Tanh), PWN(/update_block/gru04/small_gru/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru/Constant_output_0 + ONNXTRT_Broadcast_10479, PWN(/update_block/gru04/small_gru/Sub)), PWN(/update_block/gru04/small_gru/Mul_1)), PWN(/update_block/gru04/small_gru/Add))), PWN(/update_block/gru04/Mul)), PWN(/update_block/gru04/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/small_gru/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "/update_block/gru04/small_gru/convr/Conv + PWN(PWN(/update_block/gru04/small_gru/Sigmoid_1), PWN(/update_block/gru04/small_gru/Mul))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/small_gru/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru/Sigmoid), PWN(PWN(/update_block/gru04/small_gru/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru/Tanh), PWN(/update_block/gru04/large_gru/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru/Constant_output_0 + ONNXTRT_Broadcast_10481, PWN(/update_block/gru04/large_gru/Sub)), PWN(/update_block/gru04/large_gru/Mul_1)), PWN(/update_block/gru04/large_gru/Add))), PWN(/update_block/gru04/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru/Tanh), PWN(/update_block/gru04/small_gru/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru/Constant_output_0 + ONNXTRT_Broadcast_10479, PWN(/update_block/gru04/small_gru/Sub)), PWN(/update_block/gru04/small_gru/Mul_1)), PWN(/update_block/gru04/small_gru/Add))), PWN(/update_block/gru04/Mul)), PWN(/update_block/gru04/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/large_gru/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru/Sigmoid), PWN(PWN(/update_block/gru04/small_gru/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru/Tanh), PWN(/update_block/gru04/large_gru/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru/Constant_output_0 + ONNXTRT_Broadcast_10481, PWN(/update_block/gru04/large_gru/Sub)), PWN(/update_block/gru04/large_gru/Mul_1)), PWN(/update_block/gru04/large_gru/Add))), PWN(/update_block/gru04/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru/Tanh), PWN(/update_block/gru04/small_gru/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru/Constant_output_0 + ONNXTRT_Broadcast_10479, PWN(/update_block/gru04/small_gru/Sub)), PWN(/update_block/gru04/small_gru/Mul_1)), PWN(/update_block/gru04/small_gru/Add))), PWN(/update_block/gru04/Mul)), PWN(/update_block/gru04/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/large_gru/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "/update_block/gru04/large_gru/convr/Conv + PWN(PWN(/update_block/gru04/large_gru/Sigmoid_1), PWN(/update_block/gru04/large_gru/Mul))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/large_gru/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru/Sigmoid), PWN(PWN(/update_block/gru04/small_gru/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru/Tanh), PWN(/update_block/gru04/large_gru/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru/Constant_output_0 + ONNXTRT_Broadcast_10481, PWN(/update_block/gru04/large_gru/Sub)), PWN(/update_block/gru04/large_gru/Mul_1)), PWN(/update_block/gru04/large_gru/Add))), PWN(/update_block/gru04/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru/Tanh), PWN(/update_block/gru04/small_gru/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru/Constant_output_0 + ONNXTRT_Broadcast_10479, PWN(/update_block/gru04/small_gru/Sub)), PWN(/update_block/gru04/small_gru/Mul_1)), PWN(/update_block/gru04/small_gru/Add))), PWN(/update_block/gru04/Mul)), PWN(/update_block/gru04/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/small_gru_1/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru_1/Sigmoid), PWN(PWN(/update_block/gru04/small_gru_1/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru_1/Tanh), PWN(/update_block/gru04/large_gru_1/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru_1/Constant_output_0 + ONNXTRT_Broadcast_10973, PWN(/update_block/gru04/large_gru_1/Sub)), PWN(/update_block/gru04/large_gru_1/Mul_1)), PWN(/update_block/gru04/large_gru_1/Add))), PWN(/update_block/gru04_1/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru_1/Tanh), PWN(/update_block/gru04/small_gru_1/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru_1/Constant_output_0 + ONNXTRT_Broadcast_10971, PWN(/update_block/gru04/small_gru_1/Sub)), PWN(/update_block/gru04/small_gru_1/Mul_1)), PWN(/update_block/gru04/small_gru_1/Add))), PWN(/update_block/gru04_1/Mul)), PWN(/update_block/gru04_1/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/small_gru_1/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "/update_block/gru04/small_gru/convr_1/Conv + PWN(PWN(/update_block/gru04/small_gru_1/Sigmoid_1), PWN(/update_block/gru04/small_gru_1/Mul))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/small_gru_1/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru_1/Sigmoid), PWN(PWN(/update_block/gru04/small_gru_1/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru_1/Tanh), PWN(/update_block/gru04/large_gru_1/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru_1/Constant_output_0 + ONNXTRT_Broadcast_10973, PWN(/update_block/gru04/large_gru_1/Sub)), PWN(/update_block/gru04/large_gru_1/Mul_1)), PWN(/update_block/gru04/large_gru_1/Add))), PWN(/update_block/gru04_1/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru_1/Tanh), PWN(/update_block/gru04/small_gru_1/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru_1/Constant_output_0 + ONNXTRT_Broadcast_10971, PWN(/update_block/gru04/small_gru_1/Sub)), PWN(/update_block/gru04/small_gru_1/Mul_1)), PWN(/update_block/gru04/small_gru_1/Add))), PWN(/update_block/gru04_1/Mul)), PWN(/update_block/gru04_1/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/large_gru_1/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru_1/Sigmoid), PWN(PWN(/update_block/gru04/small_gru_1/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru_1/Tanh), PWN(/update_block/gru04/large_gru_1/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru_1/Constant_output_0 + ONNXTRT_Broadcast_10973, PWN(/update_block/gru04/large_gru_1/Sub)), PWN(/update_block/gru04/large_gru_1/Mul_1)), PWN(/update_block/gru04/large_gru_1/Add))), PWN(/update_block/gru04_1/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru_1/Tanh), PWN(/update_block/gru04/small_gru_1/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru_1/Constant_output_0 + ONNXTRT_Broadcast_10971, PWN(/update_block/gru04/small_gru_1/Sub)), PWN(/update_block/gru04/small_gru_1/Mul_1)), PWN(/update_block/gru04/small_gru_1/Add))), PWN(/update_block/gru04_1/Mul)), PWN(/update_block/gru04_1/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/large_gru_1/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "/update_block/gru04/large_gru/convr_1/Conv + PWN(PWN(/update_block/gru04/large_gru_1/Sigmoid_1), PWN(/update_block/gru04/large_gru_1/Mul))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/large_gru_1/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru_1/Sigmoid), PWN(PWN(/update_block/gru04/small_gru_1/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru_1/Tanh), PWN(/update_block/gru04/large_gru_1/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru_1/Constant_output_0 + ONNXTRT_Broadcast_10973, PWN(/update_block/gru04/large_gru_1/Sub)), PWN(/update_block/gru04/large_gru_1/Mul_1)), PWN(/update_block/gru04/large_gru_1/Add))), PWN(/update_block/gru04_1/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru_1/Tanh), PWN(/update_block/gru04/small_gru_1/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru_1/Constant_output_0 + ONNXTRT_Broadcast_10971, PWN(/update_block/gru04/small_gru_1/Sub)), PWN(/update_block/gru04/small_gru_1/Mul_1)), PWN(/update_block/gru04/small_gru_1/Add))), PWN(/update_block/gru04_1/Mul)), PWN(/update_block/gru04_1/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/small_gru_2/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru_2/Sigmoid), PWN(PWN(/update_block/gru04/small_gru_2/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru_2/Tanh), PWN(/update_block/gru04/large_gru_2/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru_2/Constant_output_0 + ONNXTRT_Broadcast_11463, PWN(/update_block/gru04/large_gru_2/Sub)), PWN(/update_block/gru04/large_gru_2/Mul_1)), PWN(/update_block/gru04/large_gru_2/Add))), PWN(/update_block/gru04_2/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru_2/Tanh), PWN(/update_block/gru04/small_gru_2/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru_2/Constant_output_0 + ONNXTRT_Broadcast_11461, PWN(/update_block/gru04/small_gru_2/Sub)), PWN(/update_block/gru04/small_gru_2/Mul_1)), PWN(/update_block/gru04/small_gru_2/Add))), PWN(/update_block/gru04_2/Mul)), PWN(/update_block/gru04_2/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/small_gru_2/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "/update_block/gru04/small_gru/convr_2/Conv + PWN(PWN(/update_block/gru04/small_gru_2/Sigmoid_1), PWN(/update_block/gru04/small_gru_2/Mul))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/small_gru_2/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru_2/Sigmoid), PWN(PWN(/update_block/gru04/small_gru_2/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru_2/Tanh), PWN(/update_block/gru04/large_gru_2/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru_2/Constant_output_0 + ONNXTRT_Broadcast_11463, PWN(/update_block/gru04/large_gru_2/Sub)), PWN(/update_block/gru04/large_gru_2/Mul_1)), PWN(/update_block/gru04/large_gru_2/Add))), PWN(/update_block/gru04_2/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru_2/Tanh), PWN(/update_block/gru04/small_gru_2/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru_2/Constant_output_0 + ONNXTRT_Broadcast_11461, PWN(/update_block/gru04/small_gru_2/Sub)), PWN(/update_block/gru04/small_gru_2/Mul_1)), PWN(/update_block/gru04/small_gru_2/Add))), PWN(/update_block/gru04_2/Mul)), PWN(/update_block/gru04_2/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/large_gru_2/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru_2/Sigmoid), PWN(PWN(/update_block/gru04/small_gru_2/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru_2/Tanh), PWN(/update_block/gru04/large_gru_2/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru_2/Constant_output_0 + ONNXTRT_Broadcast_11463, PWN(/update_block/gru04/large_gru_2/Sub)), PWN(/update_block/gru04/large_gru_2/Mul_1)), PWN(/update_block/gru04/large_gru_2/Add))), PWN(/update_block/gru04_2/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru_2/Tanh), PWN(/update_block/gru04/small_gru_2/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru_2/Constant_output_0 + ONNXTRT_Broadcast_11461, PWN(/update_block/gru04/small_gru_2/Sub)), PWN(/update_block/gru04/small_gru_2/Mul_1)), PWN(/update_block/gru04/small_gru_2/Add))), PWN(/update_block/gru04_2/Mul)), PWN(/update_block/gru04_2/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/large_gru_2/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "/update_block/gru04/large_gru/convr_2/Conv + PWN(PWN(/update_block/gru04/large_gru_2/Sigmoid_1), PWN(/update_block/gru04/large_gru_2/Mul))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/large_gru_2/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru_2/Sigmoid), PWN(PWN(/update_block/gru04/small_gru_2/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru_2/Tanh), PWN(/update_block/gru04/large_gru_2/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru_2/Constant_output_0 + ONNXTRT_Broadcast_11463, PWN(/update_block/gru04/large_gru_2/Sub)), PWN(/update_block/gru04/large_gru_2/Mul_1)), PWN(/update_block/gru04/large_gru_2/Add))), PWN(/update_block/gru04_2/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru_2/Tanh), PWN(/update_block/gru04/small_gru_2/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru_2/Constant_output_0 + ONNXTRT_Broadcast_11461, PWN(/update_block/gru04/small_gru_2/Sub)), PWN(/update_block/gru04/small_gru_2/Mul_1)), PWN(/update_block/gru04/small_gru_2/Add))), PWN(/update_block/gru04_2/Mul)), PWN(/update_block/gru04_2/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/small_gru_3/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru_3/Sigmoid), PWN(PWN(/update_block/gru04/small_gru_3/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru_3/Tanh), PWN(/update_block/gru04/large_gru_3/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru_3/Constant_output_0 + ONNXTRT_Broadcast_11953, PWN(/update_block/gru04/large_gru_3/Sub)), PWN(/update_block/gru04/large_gru_3/Mul_1)), PWN(/update_block/gru04/large_gru_3/Add))), PWN(/update_block/gru04_3/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru_3/Tanh), PWN(/update_block/gru04/small_gru_3/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru_3/Constant_output_0 + ONNXTRT_Broadcast_11951, PWN(/update_block/gru04/small_gru_3/Sub)), PWN(/update_block/gru04/small_gru_3/Mul_1)), PWN(/update_block/gru04/small_gru_3/Add))), PWN(/update_block/gru04_3/Mul)), PWN(/update_block/gru04_3/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/small_gru_3/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "/update_block/gru04/small_gru/convr_3/Conv + PWN(PWN(/update_block/gru04/small_gru_3/Sigmoid_1), PWN(/update_block/gru04/small_gru_3/Mul))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/small_gru_3/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru_3/Sigmoid), PWN(PWN(/update_block/gru04/small_gru_3/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru_3/Tanh), PWN(/update_block/gru04/large_gru_3/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru_3/Constant_output_0 + ONNXTRT_Broadcast_11953, PWN(/update_block/gru04/large_gru_3/Sub)), PWN(/update_block/gru04/large_gru_3/Mul_1)), PWN(/update_block/gru04/large_gru_3/Add))), PWN(/update_block/gru04_3/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru_3/Tanh), PWN(/update_block/gru04/small_gru_3/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru_3/Constant_output_0 + ONNXTRT_Broadcast_11951, PWN(/update_block/gru04/small_gru_3/Sub)), PWN(/update_block/gru04/small_gru_3/Mul_1)), PWN(/update_block/gru04/small_gru_3/Add))), PWN(/update_block/gru04_3/Mul)), PWN(/update_block/gru04_3/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/large_gru_3/Sigmoid",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru_3/Sigmoid), PWN(PWN(/update_block/gru04/small_gru_3/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru_3/Tanh), PWN(/update_block/gru04/large_gru_3/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru_3/Constant_output_0 + ONNXTRT_Broadcast_11953, PWN(/update_block/gru04/large_gru_3/Sub)), PWN(/update_block/gru04/large_gru_3/Mul_1)), PWN(/update_block/gru04/large_gru_3/Add))), PWN(/update_block/gru04_3/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru_3/Tanh), PWN(/update_block/gru04/small_gru_3/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru_3/Constant_output_0 + ONNXTRT_Broadcast_11951, PWN(/update_block/gru04/small_gru_3/Sub)), PWN(/update_block/gru04/small_gru_3/Mul_1)), PWN(/update_block/gru04/small_gru_3/Add))), PWN(/update_block/gru04_3/Mul)), PWN(/update_block/gru04_3/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/large_gru_3/Sigmoid_1",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "/update_block/gru04/large_gru/convr_3/Conv + PWN(PWN(/update_block/gru04/large_gru_3/Sigmoid_1), PWN(/update_block/gru04/large_gru_3/Mul))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/update_block/gru04/large_gru_3/Tanh",
+        "type": "LayerType.ACTIVATION",
+        "engine_layer_names": [
+          "PWN(PWN(/update_block/gru04/large_gru_3/Sigmoid), PWN(PWN(/update_block/gru04/small_gru_3/Sigmoid), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/large_gru_3/Tanh), PWN(/update_block/gru04/large_gru_3/Mul_2)), PWN(PWN(PWN(/update_block/gru04/large_gru_3/Constant_output_0 + ONNXTRT_Broadcast_11953, PWN(/update_block/gru04/large_gru_3/Sub)), PWN(/update_block/gru04/large_gru_3/Mul_1)), PWN(/update_block/gru04/large_gru_3/Add))), PWN(/update_block/gru04_3/Mul_1)), PWN(PWN(PWN(PWN(PWN(/update_block/gru04/small_gru_3/Tanh), PWN(/update_block/gru04/small_gru_3/Mul_2)), PWN(PWN(PWN(/update_block/gru04/small_gru_3/Constant_output_0 + ONNXTRT_Broadcast_11951, PWN(/update_block/gru04/small_gru_3/Sub)), PWN(/update_block/gru04/small_gru_3/Mul_1)), PWN(/update_block/gru04/small_gru_3/Add))), PWN(/update_block/gru04_3/Mul)), PWN(/update_block/gru04_3/Add)))))"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/Softmax_1",
+        "type": "LayerType.SOFTMAX",
+        "engine_layer_names": [
+          "/Softmax_1"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      },
+      {
+        "constraint_name": "/ReduceSum_2",
+        "type": "LayerType.REDUCE",
+        "engine_layer_names": [
+          "/ReduceSum_2"
+        ],
+        "visible_output_formats": [
+          "Float"
+        ]
+      }
+    ],
+    "grid_sample_fused_layers": [
+      {
+        "Name": "__myl_MoveGridCastReshMoveGridCastReshMoveGridCastReshMoveGridCastReshConcTranCast_myl430_6",
+        "Inputs": [
+          {
+            "Name": "/Reshape_198_output_0",
+            "Dimensions": [
+              11520,
+              1,
+              1,
+              120
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_1_output_0.1_myl430",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/Reshape_197_output_0",
+            "Dimensions": [
+              11520,
+              28,
+              1,
+              48
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_output_0.1_myl430",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_2_output_0.1_myl430",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/AveragePool_output_0",
+            "Dimensions": [
+              11520,
+              28,
+              1,
+              24
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_3_output_0.1_myl430",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/AveragePool_1_output_0",
+            "Dimensions": [
+              11520,
+              1,
+              1,
+              60
+            ],
+            "Format/Datatype": "Half"
+          }
+        ],
+        "Outputs": [
+          {
+            "Name": "/Cast_107_output_0",
+            "Dimensions": [
+              1,
+              522,
+              96,
+              120
+            ],
+            "Format/Datatype": "Half"
+          }
+        ],
+        "Metadata": "[ONNX Layer: /GridSample_3]\u001f[ONNX Layer: /Reshape_208]\u001f[ONNX Layer: /GridSample_2]\u001f[ONNX Layer: /Reshape_206]\u001f[ONNX Layer: /Concat_113]\u001f[ONNX Layer: /Transpose_97]\u001f[ONNX Layer: /Cast_107]\u001f[ONNX Layer: /GridSample]\u001f[ONNX Layer: /Reshape_201]\u001f[ONNX Layer: /GridSample_1]\u001f[ONNX Layer: /Reshape_204]"
+      },
+      {
+        "Name": "__myl_MoveGridCastReshMoveGridCastReshMoveGridCastReshMoveGridCastReshConcTranCast_myl475_6",
+        "Inputs": [
+          {
+            "Name": "/Reshape_198_output_0",
+            "Dimensions": [
+              11520,
+              1,
+              1,
+              120
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_5_output_0.1_myl475",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/Reshape_197_output_0",
+            "Dimensions": [
+              11520,
+              28,
+              1,
+              48
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_4_output_0.1_myl475",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_6_output_0.1_myl475",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/AveragePool_output_0",
+            "Dimensions": [
+              11520,
+              28,
+              1,
+              24
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_7_output_0.1_myl475",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/AveragePool_1_output_0",
+            "Dimensions": [
+              11520,
+              1,
+              1,
+              60
+            ],
+            "Format/Datatype": "Half"
+          }
+        ],
+        "Outputs": [
+          {
+            "Name": "/Cast_109_output_0",
+            "Dimensions": [
+              1,
+              522,
+              96,
+              120
+            ],
+            "Format/Datatype": "Half"
+          }
+        ],
+        "Metadata": "[ONNX Layer: /GridSample_7]\u001f[ONNX Layer: /Reshape_218]\u001f[ONNX Layer: /GridSample_6]\u001f[ONNX Layer: /Reshape_216]\u001f[ONNX Layer: /Concat_126]\u001f[ONNX Layer: /Transpose_98]\u001f[ONNX Layer: /Cast_109]\u001f[ONNX Layer: /GridSample_4]\u001f[ONNX Layer: /Reshape_211]\u001f[ONNX Layer: /GridSample_5]\u001f[ONNX Layer: /Reshape_214]"
+      },
+      {
+        "Name": "__myl_MoveGridCastReshMoveGridCastReshMoveGridCastReshMoveGridCastReshConcTranCast_myl520_6",
+        "Inputs": [
+          {
+            "Name": "/Reshape_198_output_0",
+            "Dimensions": [
+              11520,
+              1,
+              1,
+              120
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_9_output_0.1_myl520",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/Reshape_197_output_0",
+            "Dimensions": [
+              11520,
+              28,
+              1,
+              48
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_8_output_0.1_myl520",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_10_output_0.1_myl520",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/AveragePool_output_0",
+            "Dimensions": [
+              11520,
+              28,
+              1,
+              24
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_11_output_0.1_myl520",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/AveragePool_1_output_0",
+            "Dimensions": [
+              11520,
+              1,
+              1,
+              60
+            ],
+            "Format/Datatype": "Half"
+          }
+        ],
+        "Outputs": [
+          {
+            "Name": "/Cast_111_output_0",
+            "Dimensions": [
+              1,
+              522,
+              96,
+              120
+            ],
+            "Format/Datatype": "Half"
+          }
+        ],
+        "Metadata": "[ONNX Layer: /GridSample_11]\u001f[ONNX Layer: /Reshape_228]\u001f[ONNX Layer: /GridSample_10]\u001f[ONNX Layer: /Reshape_226]\u001f[ONNX Layer: /Concat_139]\u001f[ONNX Layer: /Transpose_99]\u001f[ONNX Layer: /Cast_111]\u001f[ONNX Layer: /GridSample_8]\u001f[ONNX Layer: /Reshape_221]\u001f[ONNX Layer: /GridSample_9]\u001f[ONNX Layer: /Reshape_224]"
+      },
+      {
+        "Name": "__myl_MoveGridCastReshMoveGridCastReshMoveGridCastReshMoveGridCastReshConcTranCast_myl565_6",
+        "Inputs": [
+          {
+            "Name": "/Reshape_198_output_0",
+            "Dimensions": [
+              11520,
+              1,
+              1,
+              120
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_13_output_0.1_myl565",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/Reshape_197_output_0",
+            "Dimensions": [
+              11520,
+              28,
+              1,
+              48
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_12_output_0.1_myl565",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_14_output_0.1_myl565",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/AveragePool_output_0",
+            "Dimensions": [
+              11520,
+              28,
+              1,
+              24
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/ScatterND_15_output_0.1_myl565",
+            "Dimensions": [
+              11520,
+              1,
+              9,
+              2
+            ],
+            "Format/Datatype": "Half"
+          },
+          {
+            "Name": "/AveragePool_1_output_0",
+            "Dimensions": [
+              11520,
+              1,
+              1,
+              60
+            ],
+            "Format/Datatype": "Half"
+          }
+        ],
+        "Outputs": [
+          {
+            "Name": "/Cast_113_output_0",
+            "Dimensions": [
+              1,
+              522,
+              96,
+              120
+            ],
+            "Format/Datatype": "Half"
+          }
+        ],
+        "Metadata": "[ONNX Layer: /GridSample_15]\u001f[ONNX Layer: /Reshape_238]\u001f[ONNX Layer: /GridSample_14]\u001f[ONNX Layer: /Reshape_236]\u001f[ONNX Layer: /Concat_152]\u001f[ONNX Layer: /Transpose_100]\u001f[ONNX Layer: /Cast_113]\u001f[ONNX Layer: /GridSample_12]\u001f[ONNX Layer: /Reshape_231]\u001f[ONNX Layer: /GridSample_13]\u001f[ONNX Layer: /Reshape_234]"
+      }
+    ],
+    "interpretation": "Fused metadata links are not a per-operation internal compute trace. Listed external tensor formats are direct inspector evidence. Four fused geometry layers include 16 GridSample operations with Half inputs/grids/outputs."
+  },
+  "output_quantization_only": {
+    "description": "Only round stored FP32 outputs to FP16 then back to FP32; no model or TensorRT execution. Independent mask recomputation, unchanged thresholds.",
+    "reference_run": "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122",
+    "source_run": "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d",
+    "source_npz_sha256": {
+      "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d/inputs/0006.npz": "57ac5922e30ca101b88b68cf01849a5eb14668a8b6d1425ee2259a7e8bbadf29",
+      "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d/inputs/0001.npz": "7f0a0d9008de51ffb3ceb89dc193012ed0142c735376979820cf785a28237192",
+      "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d/inputs/0010.npz": "c67f573eb597b9c39bc3713eb08a288762aad4b32df3e40537fdea91fb261864",
+      "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d/inputs/0005.npz": "d2d6b4cb049e62f28c6e47452fabaf91107656abeba9e54b1ff656379c0b3553",
+      "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d/inputs/0002.npz": "5bdf1616f3c025e8e5a26acf7b40e80ce6ac0f427ad72d37761db9c9b9e8dd7f",
+      "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d/inputs/0007.npz": "2da76af764b1533eb67f01c82195afa5e8699474b9f77deeb2bbc199a17619ff",
+      "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d/inputs/0004.npz": "c61f864c22aea16e57af96b40fb70260d423a1f10695b67a6d2754e732ac7aca",
+      "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d/inputs/0000.npz": "dafbd4313a6b76187c70275e45c9e1064601b6adfdc567edb38f68e0f1af3b6d",
+      "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d/inputs/0003.npz": "e0163bcc6f201bebc0e254cfc80b7138df5c86462af9fb1f5c6b4a82ecfbb2d5",
+      "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d/inputs/0009.npz": "dc8ad137886d40752a6e1acca7a06884b025ae653007aa4253cf86e2bc9fefec",
+      "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d/inputs/0008.npz": "1d9e4f461e5a58550a85ddba195ae4414cfb00f99a390c34d9e70b0d00bcfc87",
+      "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d/inputs/0011.npz": "941b214e53160608372653c0df32a4ad27806fc9fe1ecc17ec69909764e55316",
+      "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122/fp32_predictions/0006.npz": "246ed2133b8764670c39aa4f34ff3c7e080af9a09ef1785a38ef71a16a98dbee",
+      "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122/fp32_predictions/0001.npz": "60724fa6f2fa1d06d31454b1f63daa0ffbae2ee485627e455b2efdc03407d4f2",
+      "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122/fp32_predictions/0010.npz": "7f102ef5310078dfcbd8c4e27ff046f70086f2a2f2c73ed94ccb65aa6091791b",
+      "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122/fp32_predictions/0005.npz": "4efa694258a14bed1c17668c4bcb75b4f7c17370dab6a31de2d6f1a5ab9c87ab",
+      "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122/fp32_predictions/0002.npz": "d9a548c68da9eaba2dc482e995d95ab04bb250f14e3b9bd6935a8f667ae625e7",
+      "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122/fp32_predictions/0007.npz": "96261608cd82d4b945f416e64f5711c7a9b81c56effe35bd91262f1f8a764865",
+      "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122/fp32_predictions/0004.npz": "985823d4bbfb6a0ff665a5a9bd68c364d7079c8c74fed1372c10ab9e3a7050b8",
+      "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122/fp32_predictions/0000.npz": "71aa1cc1a5fa8a96cca63254fdef90cf9cb61a6c774326d3f2d161b13ffadd0e",
+      "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122/fp32_predictions/0003.npz": "d5dcb4f5a94ce3ca77a787abddc3b4e137cce549868a19b3bdcab493c67f1600",
+      "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122/fp32_predictions/0009.npz": "dbb7415deee1278234a540b57380a2418deee9cd0a206cc6fca5a7e21e0641d9",
+      "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122/fp32_predictions/0008.npz": "d016286b7971f42d20db55fae8fabdd292a045494dc0637481a0d8e077274420",
+      "runs/20261023T103809Z_3c9587293ea84e509ea34a79ae6e6122/fp32_predictions/0011.npz": "5f95b558b636b9749a42cac2673eb195a9259ce2b160744b14771c1b945363bd"
+    },
+    "input_unchanged": true,
+    "script_sha256": "9c4376db9a370f3dc3022b67985c132221e70e3ecd0eadfb9bfcaf2dc1ce2404",
+    "opencv": "4.10.0",
+    "numpy": "1.26.4",
+    "packets": [
+      {
+        "key": "0000",
+        "mask_iou": 0.9945562583860457,
+        "common_error_p99_px": 0.056110992431640305,
+        "raw_quantization_max_px": 0.0625,
+        "compatible_existing_thresholds": true
+      },
+      {
+        "key": "0001",
+        "mask_iou": 0.9995996066724371,
+        "common_error_p99_px": 0.006045913696288929,
+        "raw_quantization_max_px": 0.035797119140625,
+        "compatible_existing_thresholds": true
+      },
+      {
+        "key": "0002",
+        "mask_iou": 0.9996132639418349,
+        "common_error_p99_px": 0.00653076171875,
+        "raw_quantization_max_px": 0.0625,
+        "compatible_existing_thresholds": true
+      },
+      {
+        "key": "0003",
+        "mask_iou": 0.9997949725358559,
+        "common_error_p99_px": 0.005947113037109375,
+        "raw_quantization_max_px": 0.06231689453125,
+        "compatible_existing_thresholds": true
+      },
+      {
+        "key": "0004",
+        "mask_iou": 0.9997900953634928,
+        "common_error_p99_px": 0.0059566497802734375,
+        "raw_quantization_max_px": 0.062255859375,
+        "compatible_existing_thresholds": true
+      },
+      {
+        "key": "0005",
+        "mask_iou": 0.9996605346579138,
+        "common_error_p99_px": 0.0059185028076171875,
+        "raw_quantization_max_px": 0.0623321533203125,
+        "compatible_existing_thresholds": true
+      },
+      {
+        "key": "0006",
+        "mask_iou": 0.9998068178440871,
+        "common_error_p99_px": 0.0037937164306640625,
+        "raw_quantization_max_px": 0.0625,
+        "compatible_existing_thresholds": true
+      },
+      {
+        "key": "0007",
+        "mask_iou": 0.9990530849798492,
+        "common_error_p99_px": 0.01446533203125,
+        "raw_quantization_max_px": 0.03125,
+        "compatible_existing_thresholds": true
+      },
+      {
+        "key": "0008",
+        "mask_iou": 0.9995802481572894,
+        "common_error_p99_px": 0.006282806396484375,
+        "raw_quantization_max_px": 0.0618896484375,
+        "compatible_existing_thresholds": true
+      },
+      {
+        "key": "0009",
+        "mask_iou": 0.9997034414690769,
+        "common_error_p99_px": 0.00589752197265625,
+        "raw_quantization_max_px": 0.0625,
+        "compatible_existing_thresholds": true
+      },
+      {
+        "key": "0010",
+        "mask_iou": 0.9997254112912771,
+        "common_error_p99_px": 0.0058078765869140625,
+        "raw_quantization_max_px": 0.0624542236328125,
+        "compatible_existing_thresholds": true
+      },
+      {
+        "key": "0011",
+        "mask_iou": 0.9997878229217255,
+        "common_error_p99_px": 0.0060577392578125,
+        "raw_quantization_max_px": 0.031219482421875,
+        "compatible_existing_thresholds": true
+      }
+    ],
+    "all_compatible": true,
+    "acceptance_eligible": false,
+    "current_control_eligible": false
+  },
+  "source_checks": {
+    "source_unchanged": true,
+    "input_unchanged": true,
+    "vendor_unchanged": true,
+    "checkpoint_unchanged": true,
+    "fp32_reference_unchanged": true
+  },
+  "runtime_ms_median": {
+    "bidirectional_resize_transfer_s": 117.4535600002855,
+    "with_gray_and_mask_s": 144.88788752350956
+  },
+  "runtime": {
+    "measurements": [
+      {
+        "key": "0000",
+        "bidirectional_resize_transfer_s": 0.12258361093699932,
+        "with_gray_and_mask_s": 0.16107620694674551,
+        "valid_fraction": 0.22103877314814815,
+        "all_raw_values_finite": true,
+        "prediction_sha256": "91b0b2023c35507d0b271c8d2d63fc96ede01eda3791d24d419eff38a4f0cf79"
+      },
+      {
+        "key": "0001",
+        "bidirectional_resize_transfer_s": 0.11760349082760513,
+        "with_gray_and_mask_s": 0.1487817510496825,
+        "valid_fraction": 0.24783998842592592,
+        "all_raw_values_finite": true,
+        "prediction_sha256": "d325033d51b2fbbb09bde97ffbd2f164465ba067d199fd717c8e1113cf085b18"
+      },
+      {
+        "key": "0002",
+        "bidirectional_resize_transfer_s": 0.11742341797798872,
+        "with_gray_and_mask_s": 0.1461487738415599,
+        "valid_fraction": 0.2579036458333333,
+        "all_raw_values_finite": true,
+        "prediction_sha256": "a45df806ae938748b16b662d06400b07516254da6df2129667f78bc09a8c901a"
+      },
+      {
+        "key": "0003",
+        "bidirectional_resize_transfer_s": 0.11675086407922208,
+        "with_gray_and_mask_s": 0.14196589612402022,
+        "valid_fraction": 0.3026591435185185,
+        "all_raw_values_finite": true,
+        "prediction_sha256": "6abb5761618146dbdd2f7c01b070f562fcbb18bd5094813839d818f2e7e1b205"
+      },
+      {
+        "key": "0004",
+        "bidirectional_resize_transfer_s": 0.11755528417415917,
+        "with_gray_and_mask_s": 0.14870884292759,
+        "valid_fraction": 0.30105324074074075,
+        "all_raw_values_finite": true,
+        "prediction_sha256": "528bd983ee8b9fad9c679c81c7bacdd3894445dd6409ded7d2f6a60bd66cabde"
+      },
+      {
+        "key": "0005",
+        "bidirectional_resize_transfer_s": 0.11748370202258229,
+        "with_gray_and_mask_s": 0.14217982394620776,
+        "valid_fraction": 0.2892722800925926,
+        "all_raw_values_finite": true,
+        "prediction_sha256": "221a3cce7bc746a2868797ce919ffff65ac9e9a768430220b4ea2cc845b7bb46"
+      },
+      {
+        "key": "0006",
+        "bidirectional_resize_transfer_s": 0.11699712695553899,
+        "with_gray_and_mask_s": 0.1420526949223131,
+        "valid_fraction": 0.18707899305555556,
+        "all_raw_values_finite": true,
+        "prediction_sha256": "da32c345f2bf6076412d25f7b747bac8a14d34b955339a36fcf277ae1c408f32"
+      },
+      {
+        "key": "0007",
+        "bidirectional_resize_transfer_s": 0.11842122790403664,
+        "with_gray_and_mask_s": 0.14276142395101488,
+        "valid_fraction": 0.2522757523148148,
+        "all_raw_values_finite": true,
+        "prediction_sha256": "3448c58908367e82bc70892a414fe6c114aaa49844aa0fa44149675f892320e9"
+      },
+      {
+        "key": "0008",
+        "bidirectional_resize_transfer_s": 0.11673274799250066,
+        "with_gray_and_mask_s": 0.14723775093443692,
+        "valid_fraction": 0.2553544560185185,
+        "all_raw_values_finite": true,
+        "prediction_sha256": "24db3362b024cd05ca77c353ea429a7e59aa5330fc2fece8ccd457511a64ba6d"
+      },
+      {
+        "key": "0009",
+        "bidirectional_resize_transfer_s": 0.11749279894866049,
+        "with_gray_and_mask_s": 0.14625324495136738,
+        "valid_fraction": 0.30899305555555556,
+        "all_raw_values_finite": true,
+        "prediction_sha256": "55d87e41f249216fc0c844dba30ddb31b86f4714b061b6bd06428a3cbf705e89"
+      },
+      {
+        "key": "0010",
+        "bidirectional_resize_transfer_s": 0.11682749493047595,
+        "with_gray_and_mask_s": 0.14142315299250185,
+        "valid_fraction": 0.30497106481481484,
+        "all_raw_values_finite": true,
+        "prediction_sha256": "ba71a03a9a31fb3d45e6aa84608fc2d92db1c1987bddeeba190c0d976d1f64d4"
+      },
+      {
+        "key": "0011",
+        "bidirectional_resize_transfer_s": 0.11677907616831362,
+        "with_gray_and_mask_s": 0.14362700120545924,
+        "valid_fraction": 0.3095572916666667,
+        "all_raw_values_finite": true,
+        "prediction_sha256": "7fba876769d59a403658ada6c90810b4a62b5f29bb43b2875cbdf9a96b4dcc2c"
+      }
+    ],
+    "tensorrt": "10.13.3.9",
+    "torch": "2.6.0+cu124",
+    "opencv": "4.10.0",
+    "numpy": "1.26.4",
+    "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+    "engine_sha256": "85100f3d423e59cf3969b6edb231da940bd3c92b0988322a2d46445f96602399",
+    "precision": "fp16",
+    "load_s": 1.25854502315633,
+    "warmup_s": 0.20440238388255239,
+    "first_pair_repeat_identical": true,
+    "peak_cuda_allocated_bytes": 14147584,
+    "peak_cuda_reserved_bytes": 25165824,
+    "source_metadata_preserved_in_index": true,
+    "current_control_eligible": false,
+    "acceptance_eligible": false
+  },
+  "original_amp_gate_report": {
+    "candidate_numerically_compatible_with_uncalibrated_pytorch": false,
+    "packets": [
+      {
+        "key": "0000",
+        "seed": 2110,
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738505.8738494,
+            "valid_until": 1792738506.0738494,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738505.8738494,
+            "valid_until": 1792738506.0738494,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        },
+        "numerical_agreement": {
+          "common_pixels": 142153,
+          "mask_iou": 0.8481429551624355,
+          "absolute_median_px": 0.012203214690089226,
+          "absolute_p99_px": 0.5711315917968856,
+          "absolute_max_px": 4.92333984375,
+          "min_iou_gate": 0.9,
+          "p99_error_gate_original_px": 1.0,
+          "compatible": false
+        },
+        "nominal_comparison": {
+          "reference_candidates": 629,
+          "methods": {
+            "pytorch": {
+              "own_support": {
+                "count": 150,
+                "absolute_median_px": 0.29613468384911634,
+                "absolute_p90_px": 10.879210971285854,
+                "signed_median_px": -0.0723031823438518
+              },
+              "shared_support": {
+                "count": 143,
+                "absolute_median_px": 0.2756977770142157,
+                "absolute_p90_px": 9.040434687767187,
+                "signed_median_px": -0.06636553504849907
+              }
+            },
+            "tensorrt": {
+              "own_support": {
+                "count": 145,
+                "absolute_median_px": 0.26981466979134083,
+                "absolute_p90_px": 8.95800340126008,
+                "signed_median_px": -0.07142751168397155
+              },
+              "shared_support": {
+                "count": 143,
+                "absolute_median_px": 0.2685577178785934,
+                "absolute_p90_px": 9.04578475177603,
+                "signed_median_px": -0.06772809904756727
+              }
+            }
+          }
+        }
+      },
+      {
+        "key": "0001",
+        "seed": 2110,
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738507.4668834,
+            "valid_until": 1792738507.6668835,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738507.4668834,
+            "valid_until": 1792738507.6668835,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        },
+        "numerical_agreement": {
+          "common_pixels": 169650,
+          "mask_iou": 0.9829711047633395,
+          "absolute_median_px": 0.013156875967979431,
+          "absolute_p99_px": 0.1874176263809204,
+          "absolute_max_px": 1.1612706184387207,
+          "min_iou_gate": 0.9,
+          "p99_error_gate_original_px": 1.0,
+          "compatible": true
+        },
+        "nominal_comparison": {
+          "reference_candidates": 677,
+          "methods": {
+            "pytorch": {
+              "own_support": {
+                "count": 214,
+                "absolute_median_px": 0.249255338052909,
+                "absolute_p90_px": 4.685116721762969,
+                "signed_median_px": -0.10816338142684057
+              },
+              "shared_support": {
+                "count": 213,
+                "absolute_median_px": 0.2463237856297269,
+                "absolute_p90_px": 4.725886104924623,
+                "signed_median_px": -0.10652841227044263
+              }
+            },
+            "tensorrt": {
+              "own_support": {
+                "count": 213,
+                "absolute_median_px": 0.22639725629317553,
+                "absolute_p90_px": 4.435369841556187,
+                "signed_median_px": -0.10428579588784714
+              },
+              "shared_support": {
+                "count": 213,
+                "absolute_median_px": 0.22639725629317553,
+                "absolute_p90_px": 4.435369841556187,
+                "signed_median_px": -0.10428579588784714
+              }
+            }
+          }
+        }
+      },
+      {
+        "key": "0002",
+        "seed": 2110,
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738509.0659175,
+            "valid_until": 1792738509.2659175,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738509.0659175,
+            "valid_until": 1792738509.2659175,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        },
+        "numerical_agreement": {
+          "common_pixels": 177123,
+          "mask_iou": 0.9805954779989813,
+          "absolute_median_px": 0.012923240661621094,
+          "absolute_p99_px": 0.15326881408691406,
+          "absolute_max_px": 1.9308090209960938,
+          "min_iou_gate": 0.9,
+          "p99_error_gate_original_px": 1.0,
+          "compatible": true
+        },
+        "nominal_comparison": {
+          "reference_candidates": 479,
+          "methods": {
+            "pytorch": {
+              "own_support": {
+                "count": 181,
+                "absolute_median_px": 0.27631779300161163,
+                "absolute_p90_px": 2.373952470459699,
+                "signed_median_px": -0.1683324420603185
+              },
+              "shared_support": {
+                "count": 181,
+                "absolute_median_px": 0.27631779300161163,
+                "absolute_p90_px": 2.373952470459699,
+                "signed_median_px": -0.1683324420603185
+              }
+            },
+            "tensorrt": {
+              "own_support": {
+                "count": 181,
+                "absolute_median_px": 0.2821013417591285,
+                "absolute_p90_px": 2.335258361408778,
+                "signed_median_px": -0.1833134930144933
+              },
+              "shared_support": {
+                "count": 181,
+                "absolute_median_px": 0.2821013417591285,
+                "absolute_p90_px": 2.335258361408778,
+                "signed_median_px": -0.1833134930144933
+              }
+            }
+          }
+        }
+      },
+      {
+        "key": "0003",
+        "seed": 2110,
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738510.8509555,
+            "valid_until": 1792738511.0509555,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738510.8509555,
+            "valid_until": 1792738511.0509555,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        },
+        "numerical_agreement": {
+          "common_pixels": 208396,
+          "mask_iou": 0.9901035257674162,
+          "absolute_median_px": 0.013793324120342731,
+          "absolute_p99_px": 0.1341363668441772,
+          "absolute_max_px": 1.7887802124023438,
+          "min_iou_gate": 0.9,
+          "p99_error_gate_original_px": 1.0,
+          "compatible": true
+        },
+        "nominal_comparison": {
+          "reference_candidates": 352,
+          "methods": {
+            "pytorch": {
+              "own_support": {
+                "count": 128,
+                "absolute_median_px": 0.36565897836657335,
+                "absolute_p90_px": 4.7890480774724224,
+                "signed_median_px": -0.26884070454337383
+              },
+              "shared_support": {
+                "count": 128,
+                "absolute_median_px": 0.36565897836657335,
+                "absolute_p90_px": 4.7890480774724224,
+                "signed_median_px": -0.26884070454337383
+              }
+            },
+            "tensorrt": {
+              "own_support": {
+                "count": 129,
+                "absolute_median_px": 0.38227460888560927,
+                "absolute_p90_px": 4.756045239478535,
+                "signed_median_px": -0.28169334892782416
+              },
+              "shared_support": {
+                "count": 128,
+                "absolute_median_px": 0.37886975437133863,
+                "absolute_p90_px": 4.756469901027183,
+                "signed_median_px": -0.28511364281882123
+              }
+            }
+          }
+        }
+      },
+      {
+        "key": "0004",
+        "seed": 2110,
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738512.749996,
+            "valid_until": 1792738512.949996,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738512.749996,
+            "valid_until": 1792738512.949996,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        },
+        "numerical_agreement": {
+          "common_pixels": 207363,
+          "mask_iou": 0.987499285673467,
+          "absolute_median_px": 0.014197945594787598,
+          "absolute_p99_px": 0.1478438377380371,
+          "absolute_max_px": 1.214944839477539,
+          "min_iou_gate": 0.9,
+          "p99_error_gate_original_px": 1.0,
+          "compatible": true
+        },
+        "nominal_comparison": {
+          "reference_candidates": 694,
+          "methods": {
+            "pytorch": {
+              "own_support": {
+                "count": 309,
+                "absolute_median_px": 0.30038765203983075,
+                "absolute_p90_px": 4.7894202386066205,
+                "signed_median_px": -0.22693297414480185
+              },
+              "shared_support": {
+                "count": 307,
+                "absolute_median_px": 0.2968624891655054,
+                "absolute_p90_px": 4.796885553601901,
+                "signed_median_px": -0.22200529216579135
+              }
+            },
+            "tensorrt": {
+              "own_support": {
+                "count": 309,
+                "absolute_median_px": 0.2934349057636645,
+                "absolute_p90_px": 4.8289790482613775,
+                "signed_median_px": -0.20820451128275153
+              },
+              "shared_support": {
+                "count": 307,
+                "absolute_median_px": 0.2934349057636645,
+                "absolute_p90_px": 4.805399605298811,
+                "signed_median_px": -0.20820451128275153
+              }
+            }
+          }
+        }
+      },
+      {
+        "key": "0005",
+        "seed": 2110,
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738514.3670306,
+            "valid_until": 1792738514.5670307,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738514.3670306,
+            "valid_until": 1792738514.5670307,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        },
+        "numerical_agreement": {
+          "common_pixels": 197361,
+          "mask_iou": 0.9793278320026597,
+          "absolute_median_px": 0.013494491577148438,
+          "absolute_p99_px": 0.21871662139892578,
+          "absolute_max_px": 2.3208770751953125,
+          "min_iou_gate": 0.9,
+          "p99_error_gate_original_px": 1.0,
+          "compatible": true
+        },
+        "nominal_comparison": {
+          "reference_candidates": 475,
+          "methods": {
+            "pytorch": {
+              "own_support": {
+                "count": 186,
+                "absolute_median_px": 0.31587539791938823,
+                "absolute_p90_px": 3.595780882265331,
+                "signed_median_px": -0.20246758854455837
+              },
+              "shared_support": {
+                "count": 185,
+                "absolute_median_px": 0.3149474276104982,
+                "absolute_p90_px": 3.50122047067835,
+                "signed_median_px": -0.19987483525062189
+              }
+            },
+            "tensorrt": {
+              "own_support": {
+                "count": 185,
+                "absolute_median_px": 0.31673401607256046,
+                "absolute_p90_px": 3.5261009962538594,
+                "signed_median_px": -0.1969422476688525
+              },
+              "shared_support": {
+                "count": 185,
+                "absolute_median_px": 0.31673401607256046,
+                "absolute_p90_px": 3.5261009962538594,
+                "signed_median_px": -0.1969422476688525
+              }
+            }
+          }
+        }
+      },
+      {
+        "key": "0006",
+        "seed": 2111,
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738723.2472508,
+            "valid_until": 1792738723.4472508,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738723.2472508,
+            "valid_until": 1792738723.4472508,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        },
+        "numerical_agreement": {
+          "common_pixels": 127800,
+          "mask_iou": 0.9359003463856524,
+          "absolute_median_px": 0.01200929656624794,
+          "absolute_p99_px": 0.13228355884551996,
+          "absolute_max_px": 1.3420791625976562,
+          "min_iou_gate": 0.9,
+          "p99_error_gate_original_px": 1.0,
+          "compatible": true
+        },
+        "nominal_comparison": {
+          "reference_candidates": 621,
+          "methods": {
+            "pytorch": {
+              "own_support": {
+                "count": 130,
+                "absolute_median_px": 0.250874423672343,
+                "absolute_p90_px": 5.094217631072245,
+                "signed_median_px": -0.11287450453523995
+              },
+              "shared_support": {
+                "count": 124,
+                "absolute_median_px": 0.24292322363300034,
+                "absolute_p90_px": 2.3940303835411587,
+                "signed_median_px": -0.11099374317697475
+              }
+            },
+            "tensorrt": {
+              "own_support": {
+                "count": 126,
+                "absolute_median_px": 0.24103399141364612,
+                "absolute_p90_px": 3.612620109539055,
+                "signed_median_px": -0.11631813823401949
+              },
+              "shared_support": {
+                "count": 124,
+                "absolute_median_px": 0.24103399141364612,
+                "absolute_p90_px": 2.408276636335478,
+                "signed_median_px": -0.1113853439503405
+              }
+            }
+          }
+        }
+      },
+      {
+        "key": "0007",
+        "seed": 2111,
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738724.8402846,
+            "valid_until": 1792738725.0402846,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738724.8402846,
+            "valid_until": 1792738725.0402846,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        },
+        "numerical_agreement": {
+          "common_pixels": 169258,
+          "mask_iou": 0.9335848515435827,
+          "absolute_median_px": 0.013035953044891357,
+          "absolute_p99_px": 0.30057716369628906,
+          "absolute_max_px": 5.4644775390625,
+          "min_iou_gate": 0.9,
+          "p99_error_gate_original_px": 1.0,
+          "compatible": true
+        },
+        "nominal_comparison": {
+          "reference_candidates": 451,
+          "methods": {
+            "pytorch": {
+              "own_support": {
+                "count": 145,
+                "absolute_median_px": 0.2474238047702464,
+                "absolute_p90_px": 5.26720561750836,
+                "signed_median_px": -0.12834192708558412
+              },
+              "shared_support": {
+                "count": 142,
+                "absolute_median_px": 0.2474145815054447,
+                "absolute_p90_px": 5.1575252178743245,
+                "signed_median_px": -0.1292710804247159
+              }
+            },
+            "tensorrt": {
+              "own_support": {
+                "count": 143,
+                "absolute_median_px": 0.24598994254157347,
+                "absolute_p90_px": 5.274969587250499,
+                "signed_median_px": -0.12322895700367553
+              },
+              "shared_support": {
+                "count": 142,
+                "absolute_median_px": 0.24550080132117813,
+                "absolute_p90_px": 5.152271586856121,
+                "signed_median_px": -0.11933073279657158
+              }
+            }
+          }
+        }
+      },
+      {
+        "key": "0008",
+        "seed": 2111,
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738726.4663193,
+            "valid_until": 1792738726.6663194,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738726.4663193,
+            "valid_until": 1792738726.6663194,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        },
+        "numerical_agreement": {
+          "common_pixels": 175487,
+          "mask_iou": 0.9713230898664954,
+          "absolute_median_px": 0.014123797416687012,
+          "absolute_p99_px": 0.15594863891601562,
+          "absolute_max_px": 10.431388854980469,
+          "min_iou_gate": 0.9,
+          "p99_error_gate_original_px": 1.0,
+          "compatible": true
+        },
+        "nominal_comparison": {
+          "reference_candidates": 482,
+          "methods": {
+            "pytorch": {
+              "own_support": {
+                "count": 190,
+                "absolute_median_px": 0.3253284311576117,
+                "absolute_p90_px": 3.3155889914033487,
+                "signed_median_px": -0.16279222488880318
+              },
+              "shared_support": {
+                "count": 188,
+                "absolute_median_px": 0.32388540485938755,
+                "absolute_p90_px": 3.2676511763202276,
+                "signed_median_px": -0.15844953887961477
+              }
+            },
+            "tensorrt": {
+              "own_support": {
+                "count": 189,
+                "absolute_median_px": 0.32354239965738074,
+                "absolute_p90_px": 3.2467182883107593,
+                "signed_median_px": -0.14079678857646272
+              },
+              "shared_support": {
+                "count": 188,
+                "absolute_median_px": 0.3251698612984395,
+                "absolute_p90_px": 3.253004780211466,
+                "signed_median_px": -0.14165683241075921
+              }
+            }
+          }
+        }
+      },
+      {
+        "key": "0009",
+        "seed": 2111,
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738728.0203526,
+            "valid_until": 1792738728.2203526,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738728.0203526,
+            "valid_until": 1792738728.2203526,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        },
+        "numerical_agreement": {
+          "common_pixels": 204131,
+          "mask_iou": 0.9098449798981985,
+          "absolute_median_px": 0.015377521514892578,
+          "absolute_p99_px": 0.5347208976745605,
+          "absolute_max_px": 10.604320526123047,
+          "min_iou_gate": 0.9,
+          "p99_error_gate_original_px": 1.0,
+          "compatible": true
+        },
+        "nominal_comparison": {
+          "reference_candidates": 481,
+          "methods": {
+            "pytorch": {
+              "own_support": {
+                "count": 197,
+                "absolute_median_px": 0.41326002257716965,
+                "absolute_p90_px": 5.299318657043109,
+                "signed_median_px": -0.32522656146715434
+              },
+              "shared_support": {
+                "count": 191,
+                "absolute_median_px": 0.401393752535693,
+                "absolute_p90_px": 4.812227549805698,
+                "signed_median_px": -0.30551238668423863
+              }
+            },
+            "tensorrt": {
+              "own_support": {
+                "count": 194,
+                "absolute_median_px": 0.398287083903357,
+                "absolute_p90_px": 4.966147598478866,
+                "signed_median_px": -0.3053011422763072
+              },
+              "shared_support": {
+                "count": 191,
+                "absolute_median_px": 0.3951628614695455,
+                "absolute_p90_px": 4.827455821290073,
+                "signed_median_px": -0.29793844423096694
+              }
+            }
+          }
+        }
+      },
+      {
+        "key": "0010",
+        "seed": 2111,
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738729.6133864,
+            "valid_until": 1792738729.8133864,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738729.6133864,
+            "valid_until": 1792738729.8133864,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        },
+        "numerical_agreement": {
+          "common_pixels": 210096,
+          "mask_iou": 0.9894460221252066,
+          "absolute_median_px": 0.015305519104003906,
+          "absolute_p99_px": 0.17351341247558594,
+          "absolute_max_px": 0.8864507675170898,
+          "min_iou_gate": 0.9,
+          "p99_error_gate_original_px": 1.0,
+          "compatible": true
+        },
+        "nominal_comparison": {
+          "reference_candidates": 481,
+          "methods": {
+            "pytorch": {
+              "own_support": {
+                "count": 203,
+                "absolute_median_px": 0.3860422007383377,
+                "absolute_p90_px": 3.978485052591425,
+                "signed_median_px": -0.28065079069000376
+              },
+              "shared_support": {
+                "count": 202,
+                "absolute_median_px": 0.3839382226801753,
+                "absolute_p90_px": 3.861228206351015,
+                "signed_median_px": -0.2801068347423268
+              }
+            },
+            "tensorrt": {
+              "own_support": {
+                "count": 202,
+                "absolute_median_px": 0.38904191963301216,
+                "absolute_p90_px": 3.8161279613761727,
+                "signed_median_px": -0.26782193031753465
+              },
+              "shared_support": {
+                "count": 202,
+                "absolute_median_px": 0.38904191963301216,
+                "absolute_p90_px": 3.8161279613761727,
+                "signed_median_px": -0.26782193031753465
+              }
+            }
+          }
+        }
+      },
+      {
+        "key": "0011",
+        "seed": 2111,
+        "source_metadata": {
+          "left": {
+            "stamp": 1792738731.230421,
+            "valid_until": 1792738731.430421,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_left/Scene",
+            "frame_id": "front_left_image",
+            "covariance_or_bounds": []
+          },
+          "right": {
+            "stamp": 1792738731.230421,
+            "valid_until": 1792738731.430421,
+            "epoch": 0,
+            "source": "/airsim_node/drone_1/front_right/Scene",
+            "frame_id": "front_right_image",
+            "covariance_or_bounds": []
+          }
+        },
+        "numerical_agreement": {
+          "common_pixels": 207777,
+          "mask_iou": 0.9533591505997009,
+          "absolute_median_px": 0.014566421508789062,
+          "absolute_p99_px": 0.27421045303344727,
+          "absolute_max_px": 5.691269874572754,
+          "min_iou_gate": 0.9,
+          "p99_error_gate_original_px": 1.0,
+          "compatible": true
+        },
+        "nominal_comparison": {
+          "reference_candidates": 483,
+          "methods": {
+            "pytorch": {
+              "own_support": {
+                "count": 197,
+                "absolute_median_px": 0.3969393434754398,
+                "absolute_p90_px": 4.777963807873853,
+                "signed_median_px": -0.21098473921021466
+              },
+              "shared_support": {
+                "count": 194,
+                "absolute_median_px": 0.3949106676919589,
+                "absolute_p90_px": 4.219060359767228,
+                "signed_median_px": -0.20811422862484186
+              }
+            },
+            "tensorrt": {
+              "own_support": {
+                "count": 194,
+                "absolute_median_px": 0.38009329576471806,
+                "absolute_p90_px": 4.223705042843758,
+                "signed_median_px": -0.20697097780531148
+              },
+              "shared_support": {
+                "count": 194,
+                "absolute_median_px": 0.38009329576471806,
+                "absolute_p90_px": 4.223705042843758,
+                "signed_median_px": -0.20697097780531148
+              }
+            }
+          }
+        }
+      }
+    ],
+    "runtime": {
+      "measurements": [
+        {
+          "key": "0000",
+          "bidirectional_resize_transfer_s": 0.12258361093699932,
+          "with_gray_and_mask_s": 0.16107620694674551,
+          "valid_fraction": 0.22103877314814815,
+          "all_raw_values_finite": true,
+          "prediction_sha256": "91b0b2023c35507d0b271c8d2d63fc96ede01eda3791d24d419eff38a4f0cf79"
+        },
+        {
+          "key": "0001",
+          "bidirectional_resize_transfer_s": 0.11760349082760513,
+          "with_gray_and_mask_s": 0.1487817510496825,
+          "valid_fraction": 0.24783998842592592,
+          "all_raw_values_finite": true,
+          "prediction_sha256": "d325033d51b2fbbb09bde97ffbd2f164465ba067d199fd717c8e1113cf085b18"
+        },
+        {
+          "key": "0002",
+          "bidirectional_resize_transfer_s": 0.11742341797798872,
+          "with_gray_and_mask_s": 0.1461487738415599,
+          "valid_fraction": 0.2579036458333333,
+          "all_raw_values_finite": true,
+          "prediction_sha256": "a45df806ae938748b16b662d06400b07516254da6df2129667f78bc09a8c901a"
+        },
+        {
+          "key": "0003",
+          "bidirectional_resize_transfer_s": 0.11675086407922208,
+          "with_gray_and_mask_s": 0.14196589612402022,
+          "valid_fraction": 0.3026591435185185,
+          "all_raw_values_finite": true,
+          "prediction_sha256": "6abb5761618146dbdd2f7c01b070f562fcbb18bd5094813839d818f2e7e1b205"
+        },
+        {
+          "key": "0004",
+          "bidirectional_resize_transfer_s": 0.11755528417415917,
+          "with_gray_and_mask_s": 0.14870884292759,
+          "valid_fraction": 0.30105324074074075,
+          "all_raw_values_finite": true,
+          "prediction_sha256": "528bd983ee8b9fad9c679c81c7bacdd3894445dd6409ded7d2f6a60bd66cabde"
+        },
+        {
+          "key": "0005",
+          "bidirectional_resize_transfer_s": 0.11748370202258229,
+          "with_gray_and_mask_s": 0.14217982394620776,
+          "valid_fraction": 0.2892722800925926,
+          "all_raw_values_finite": true,
+          "prediction_sha256": "221a3cce7bc746a2868797ce919ffff65ac9e9a768430220b4ea2cc845b7bb46"
+        },
+        {
+          "key": "0006",
+          "bidirectional_resize_transfer_s": 0.11699712695553899,
+          "with_gray_and_mask_s": 0.1420526949223131,
+          "valid_fraction": 0.18707899305555556,
+          "all_raw_values_finite": true,
+          "prediction_sha256": "da32c345f2bf6076412d25f7b747bac8a14d34b955339a36fcf277ae1c408f32"
+        },
+        {
+          "key": "0007",
+          "bidirectional_resize_transfer_s": 0.11842122790403664,
+          "with_gray_and_mask_s": 0.14276142395101488,
+          "valid_fraction": 0.2522757523148148,
+          "all_raw_values_finite": true,
+          "prediction_sha256": "3448c58908367e82bc70892a414fe6c114aaa49844aa0fa44149675f892320e9"
+        },
+        {
+          "key": "0008",
+          "bidirectional_resize_transfer_s": 0.11673274799250066,
+          "with_gray_and_mask_s": 0.14723775093443692,
+          "valid_fraction": 0.2553544560185185,
+          "all_raw_values_finite": true,
+          "prediction_sha256": "24db3362b024cd05ca77c353ea429a7e59aa5330fc2fece8ccd457511a64ba6d"
+        },
+        {
+          "key": "0009",
+          "bidirectional_resize_transfer_s": 0.11749279894866049,
+          "with_gray_and_mask_s": 0.14625324495136738,
+          "valid_fraction": 0.30899305555555556,
+          "all_raw_values_finite": true,
+          "prediction_sha256": "55d87e41f249216fc0c844dba30ddb31b86f4714b061b6bd06428a3cbf705e89"
+        },
+        {
+          "key": "0010",
+          "bidirectional_resize_transfer_s": 0.11682749493047595,
+          "with_gray_and_mask_s": 0.14142315299250185,
+          "valid_fraction": 0.30497106481481484,
+          "all_raw_values_finite": true,
+          "prediction_sha256": "ba71a03a9a31fb3d45e6aa84608fc2d92db1c1987bddeeba190c0d976d1f64d4"
+        },
+        {
+          "key": "0011",
+          "bidirectional_resize_transfer_s": 0.11677907616831362,
+          "with_gray_and_mask_s": 0.14362700120545924,
+          "valid_fraction": 0.3095572916666667,
+          "all_raw_values_finite": true,
+          "prediction_sha256": "7fba876769d59a403658ada6c90810b4a62b5f29bb43b2875cbdf9a96b4dcc2c"
+        }
+      ],
+      "tensorrt": "10.13.3.9",
+      "torch": "2.6.0+cu124",
+      "opencv": "4.10.0",
+      "numpy": "1.26.4",
+      "gpu": "NVIDIA GeForce RTX 3060 Laptop GPU",
+      "engine_sha256": "85100f3d423e59cf3969b6edb231da940bd3c92b0988322a2d46445f96602399",
+      "precision": "fp16",
+      "load_s": 1.25854502315633,
+      "warmup_s": 0.20440238388255239,
+      "first_pair_repeat_identical": true,
+      "peak_cuda_allocated_bytes": 14147584,
+      "peak_cuda_reserved_bytes": 25165824,
+      "source_metadata_preserved_in_index": true,
+      "current_control_eligible": false,
+      "acceptance_eligible": false
+    },
+    "historical_only": true,
+    "source_run": "runs/20261023T075301Z_5c1a906b01644ee091c1d183006f422d",
+    "comparison_uses_same_pixels": true,
+    "nominal_reference_not_ground_truth": true,
+    "online_latency_verified": false,
+    "metric_calibration_verified": false,
+    "current_control_eligible": false,
+    "acceptance_eligible": false,
+    "interpretation": "Fixed numerical gates compare two uncalibrated candidates, not geometry accuracy or safety. Residuals use nominal sparse LiDAR references and retain large differences. Offline timings exclude ROS, simulator contention and planning."
+  },
+  "tests": {
+    "host_passed": 146,
+    "noetic_passed": 143,
+    "noetic_skipped": 3,
+    "scope": "Generic suite regression, not a numerical acceptance proof. Policy APIs and constraints exercised by actual pinned SDK build and all 12 image pairs."
+  },
+  "preflight_failures": [
+    "First: ILayer lacks compute_precision; fixed explicit derived layer class.",
+    "Second: IActivationLayer exposes activation kind as type, not activation_type; fixed against installed SDK."
+  ],
+  "supporting_files": {
+    "runs/ffs_runtime/iteration39_policy_preflight_v2.log": "95a0eec618b9245bdb73f9e3ccf3dbb3049ab5ec5ccd8187fa2d193adec5fb21",
+    "runs/ffs_runtime/iteration39_policy_preflight.log": "461d4140c14b495c17ba1ba6b5e1cc1214d74421a20f87b006534843f52e873f",
+    "runs/ffs_runtime/iteration39_host_final_tests.log": "82fe2765643d4000a0dd5ed313696e7818a6a0f8716786d87a5cc57497f326fc",
+    "runs/ffs_runtime/iteration39_noetic_final_tests.log": "47d4038d06d60962cc852d78d7da74e0fd6d83b0fda5f4e6017a5514a91d4b07",
+    "runs/ffs_runtime/iteration39_output_quantization.py": "9c4376db9a370f3dc3022b67985c132221e70e3ecd0eadfb9bfcaf2dc1ce2404",
+    "runs/ffs_runtime/iteration39_output_quantization.log": "0caf4e1052f7c817f679f539c2eb65bfde9b9dfb46c13c20b07120ea64612390",
+    "runs/ffs_runtime/iteration39_output_quantization.json": "f2034c78b311f36f3d8e12a5932386d98b231969718e6cd62bcb9b0dd82d8689",
+    "runs/ffs_runtime/iteration39_precision_audit.py": "aa973f08fe1761156f88e3929ce864d48545272437d4994bd69d12966cf1991d",
+    "runs/ffs_runtime/iteration39_precision_audit.json": "90be0d4b631b5a90a597893e2614330f763ae42a1dd5eda837ca875b945cdbfb",
+    "runs/ffs_runtime/iteration39_inspector_audit.json": "ccd58af951a73c3486823240ca539a0231d087dde615e12dbc5894c6b8733891"
+  },
+  "official_requirements": {
+    "baseline_re_read": true,
+    "design_sections_re_read": [
+      "5.2",
+      "13"
+    ],
+    "previous_turn_fresh_official_pdf_verification": {
+      "title": "RMUA 2026 比赛规则文件 Competition Rules",
+      "updated_at": "2026-01-30T18:09:40.000+00:00",
+      "official_attachment_names": [
+        "RoboMaster 2026 机甲大师高校人工智能挑战赛比赛规则手册V1.0.0.pdf",
+        "RoboMaster 2026 机甲大师高校人工智能挑战赛参赛手册V1.0.0（20260115）.pdf"
+      ],
+      "baseline_names_match": true,
+      "documents": [
+        {
+          "name": "RoboMaster 2026 机甲大师高校人工智能挑战赛比赛规则手册V1.0.0.pdf",
+          "bytes": 1661673,
+          "sha256": "bdd9a6e66d6b6192e431ea991490da7fac6c1c304a1d0670c23b72c1bdab0d31",
+          "baseline_match": true
+        },
+        {
+          "name": "RoboMaster 2026 机甲大师高校人工智能挑战赛参赛手册V1.0.0（20260115）.pdf",
+          "bytes": 1203929,
+          "sha256": "3822a86b8277829bcbfbe1987e48f14b0031cfd5f692775562334bdbbd5c37db",
+          "baseline_match": true
+        }
+      ]
+    }
+  },
+  "primary_sources": [
+    "https://docs.nvidia.com/deeplearning/tensorrt/10.x.x/inference-library/accuracy-considerations.html",
+    "https://docs.nvidia.com/deeplearning/tensorrt/10.x.x/inference-library/precision-control.html"
+  ],
+  "limits": [
+    "Model numerical gate still FAILED: packet 0000 mask IoU below 0.9 for all four references.",
+    "Lower error over common pixels does not prove matching valid coverage.",
+    "Fused inspector metadata does not expose every operation internal compute precision.",
+    "Half geometry grids are a directly observed difference, not yet a proven cause.",
+    "Offline latency excludes ROS, IPC and simulator contention.",
+    "No online, default budget, FREE or control changes; P1/P2 unaccepted."
+  ],
+  "artifact_json_sha256": {
+    "runs/20261023T120600Z_e95743bdf0714d0cb6ceb42983aa5f3d/build_fp16.json": "6edb331c1c50533d1984c98b2ffbd47c0617a5b4e6c18b63d1df80aa0e3d629b",
+    "runs/20261023T120600Z_e95743bdf0714d0cb6ceb42983aa5f3d/engine_inspector.json": "dde2b2c40ea5c50bc3bdf58383cc15c57cb452ae556e94060e1a40f56641707c",
+    "runs/20261023T120600Z_e95743bdf0714d0cb6ceb42983aa5f3d/export.json": "a6434b70c39c1e477f5d3d2e9f23db99f62bf405990c089b0a3034796cfd7908",
+    "runs/20261023T120600Z_e95743bdf0714d0cb6ceb42983aa5f3d/export_parity.json": "a5a1cf499766e31878a064e203159a14dfc9f1fcc29cf486e7ef63421173626b",
+    "runs/20261023T120600Z_e95743bdf0714d0cb6ceb42983aa5f3d/fourier_parity.json": "8d82409b92493c2a53aadbf4cc054e0dccc730fba265b842586ec9898bf3a169",
+    "runs/20261023T120600Z_e95743bdf0714d0cb6ceb42983aa5f3d/manifest.json": "d6073524991ed27200b4c5ccba84b8f448104214b91a5075b88e83a8c25ab0a9",
+    "runs/20261023T120600Z_e95743bdf0714d0cb6ceb42983aa5f3d/precision_constraints.json": "157b99b2145f6f1ebb8722286d539982b56c167b8e4a4c967b0459581858ab0d",
+    "runs/20261023T120600Z_e95743bdf0714d0cb6ceb42983aa5f3d/profile.json": "d730f8a3ae540c0eaf23e5c5d87526ed8bb7d987ff38f655c3f26808c2a9f90c",
+    "runs/20261023T120600Z_e95743bdf0714d0cb6ceb42983aa5f3d/trt_comparison.json": "18223cf340e5d20999e6670d11eb4ca81ac4670d69cc5b403eec91daa4d869ed",
+    "runs/20261023T120600Z_e95743bdf0714d0cb6ceb42983aa5f3d/trt_runtime.json": "00e7f1d390335a45c41cea8b0ea3945dad0e442195bfc0a3c11350c0a55b2f9e"
+  },
+  "final_snapshot_differences_after_documentation": {
+    "modified": [
+      "README.md",
+      "docs/implementation_status.md"
+    ],
+    "added": [
+      "docs/stereo_mixed_precision.md",
+      "docs/evidence/p2_stereo_mixed_precision.json"
+    ],
+    "executable_code_unchanged": true
+  },
+  "runtime_packages_match_frozen_lock": true,
+  "invalid_fp32_mixed_policy_cli_rejected_before_gpu_work": true
+}

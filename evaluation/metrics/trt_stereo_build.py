@@ -93,7 +93,7 @@ def export(run,vendor,checkpoint,sample,freeze_fourier=False,reference_run=None)
     (run/'export.json').write_text(json.dumps(report,indent=2)+'\n')
 
 
-def build(run,precision):
+def build(run,precision,precision_policy='default'):
     import tensorrt as trt
     import torch
 
@@ -105,16 +105,27 @@ def build(run,precision):
     config=builder.create_builder_config();config.set_memory_pool_limit(trt.MemoryPoolType.WORKSPACE,512*1024*1024)
     config.clear_flag(trt.BuilderFlag.TF32);config.max_aux_streams=0
     if precision=='fp16':config.set_flag(trt.BuilderFlag.FP16)
+    from evaluation.metrics.trt_precision_policy import apply_precision_policy
+    constraints=apply_precision_policy(network,config,trt,precision_policy,precision)
+    (run/'precision_constraints.json').write_text(json.dumps({'policy':precision_policy,'layers':constraints,
+        'obey_precision_constraints':bool(constraints),'selection_is_experimental_not_cause_proof':True},indent=2)+'\n')
     serialized=builder.build_serialized_network(network,config)
     if serialized is None:raise RuntimeError('TensorRT engine construction failed')
     engine_path=run/('stereo_'+precision+'.engine');engine_path.write_bytes(bytes(serialized))
     report={'engine_sha256':file_hash(engine_path),'engine_file':engine_path.name,'onnx_sha256':file_hash(run/'stereo.onnx'),
         'tensorrt':trt.__version__,'precision':precision,'tf32_enabled':False,
+        'precision_policy':precision_policy,'fp32_constrained_layers':len(constraints),
+        'precision_constraints_sha256':file_hash(run/'precision_constraints.json'),
         'global_tf32_override':os.environ.get('NVIDIA_TF32_OVERRIDE'),'max_aux_streams':0,
         'workspace_limit_bytes':512*1024*1024,'build_s':time.monotonic()-start,
         'gpu':torch.cuda.get_device_name(0),'compute_capability':list(torch.cuda.get_device_capability(0)),
         'cuda_runtime':torch.version.cuda,'acceptance_eligible':False,'current_control_eligible':False}
     (run/('build_'+precision+'.json')).write_text(json.dumps(report,indent=2)+'\n')
+    if constraints:
+        runtime=trt.Runtime(logger);engine=runtime.deserialize_cuda_engine(serialized)
+        if engine is None:raise RuntimeError('built engine cannot be inspected')
+        inspector=engine.create_engine_inspector()
+        (run/'engine_inspector.json').write_text(inspector.get_engine_information(trt.LayerInformationFormat.JSON)+'\n')
 
 
 def main():
@@ -122,12 +133,13 @@ def main():
     parser.add_argument('--stage',choices=('export','build'),required=True)
     parser.add_argument('--vendor',type=Path);parser.add_argument('--checkpoint',type=Path);parser.add_argument('--sample',type=Path)
     parser.add_argument('--precision',choices=('fp16','fp32'),default='fp16')
+    parser.add_argument('--precision-policy',choices=('default','sensitive_fp32'),default='default')
     parser.add_argument('--freeze-fourier-inputs',action='store_true');parser.add_argument('--fp32-reference-run',type=Path)
     args=parser.parse_args()
     if args.stage=='export':
         if any(x is None for x in (args.vendor,args.checkpoint,args.sample)):parser.error('export requires vendor, checkpoint and sample')
         export(args.run_dir,args.vendor,args.checkpoint,args.sample,args.freeze_fourier_inputs,args.fp32_reference_run)
-    else:build(args.run_dir,args.precision)
+    else:build(args.run_dir,args.precision,args.precision_policy)
 
 
 if __name__=='__main__':main()

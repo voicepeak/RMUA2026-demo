@@ -70,3 +70,5 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.p1_regression
 双目转换最新进展见 [Fourier 导出偏差定位与验证](docs/stereo_conversion_diagnosis.md)：同精度 FP32 对照已恢复，旧 AMP 门限和在线时效仍待通过。
 
 后续 [同图 FP16 对照](docs/stereo_frozen_fp16.md) 记录了 12 组中的两组失败；离线约 122ms 不代表在线默认有效期通过。
+
+[混合精度约束实验](docs/stereo_mixed_precision.md)已验证 92 层 FP32 约束候选，仍有一组有效掩码失败，继续定位几何坐标精度。
