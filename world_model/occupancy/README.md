@@ -7,3 +7,13 @@ lidar.py 的 endpoint_snapshot 将单帧有效回波落入 0.25m 体素，仅生
 这是扫描时刻固定传感器坐标下的端点证据，尚无逐点运动补偿、外参/时延标定、位置不确定度膨胀或自由空间认证。不能直接当作运动中的世界地图、规划净空或三态地图验收。规则要求的三态语义已保留，FREE 的可信生成仍待实现。
 
 只读在线验证及 ROS 独立解码对照见 docs/lidar_endpoint_observation.md；整体状态见 docs/implementation_status.md。
+
+`rolling_endpoints.world_endpoints` 另提供名义 world_ned 端点观察：应用配置安装变换和
+扫描头历史位姿，要求时间/epoch 与扫描匹配，保留原始 stamp/valid_until。其米制标定、
+逐点去畸变、控制可用标志均固定为 false。
+
+`RollingEndpointMap.integrate(observation, now, epoch)` 有界积累 OCCUPIED，按每次命中
+自己的 lease 过期到 UNKNOWN，按最新扫描原点维护局部窗口。空帧不刷新旧障碍期限；
+重复/旧帧不更新数据，重置 epoch 清空。容量溢出或无效时间整帧拒绝，不发布部分更新。
+`snapshot` 返回现有 OccupancySnapshot 契约供下游检查。这个名义世界端点生产者同样
+不产生 FREE，尚不能作为飞行净空证书；实测/重放边界见 docs/rolling_world_endpoints.md。
