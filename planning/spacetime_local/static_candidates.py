@@ -1,10 +1,11 @@
 """Quintic reference candidates, continuous kinematic bounds and static map checks."""
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 import math
 from typing import Optional, Tuple
 
 from interfaces.contracts import Health, Metadata, Trajectory, TrajectorySample, finite_vec3
 from planning.trajectory_validator.static_sweep import SweepBounds, check_static_sweep
+from planning.trajectory_validator.dynamic_candidates import check_dynamic_candidates
 
 
 def _norm(value):
@@ -138,6 +139,8 @@ class LocalPlan:
     reason: str
     source_state: Metadata
     source_map: Metadata
+    source_dynamic: Optional[Metadata] = None
+    dynamic_coverage_certified: bool = field(default=False, init=False)
 
     def reference_at(self, stamp, epoch):
         if self.trajectory is None or not self.trajectory.metadata.current(stamp, epoch):
@@ -148,7 +151,8 @@ class LocalPlan:
         raise ValueError('reference has no covering segment')
 
 
-def plan_static_local(state, initial_reference, goal, snapshot, now, epoch, limits):
+def plan_static_local(state, initial_reference, goal, snapshot, now, epoch, limits,
+                      dynamic_scene=None, dynamic_bounds=None):
     """Select a fully checked stop-at-waypoint reference with a short output lease.
 
     Candidate paths include direct and left/right midpoints relative to the
@@ -156,10 +160,15 @@ def plan_static_local(state, initial_reference, goal, snapshot, now, epoch, limi
     waypoint ends at rest. The WHOLE stopping reference is checked in the map,
     then only a source-bounded short lease is issued. This is a static/kinematic
     candidate, not proof of actual braking, dynamic clearance or control health.
+    An optional dynamic candidate veto refuses predicted intersections but
+    does not certify sensing coverage or dynamic safety.
     """
     finite_vec3(goal)
+    if (dynamic_scene is None) != (dynamic_bounds is None):
+        raise ValueError('dynamic scene and bounds must be supplied together')
     def result(reason, trajectory=None, pieces=(), checks=()):
-        return LocalPlan(trajectory, pieces, tuple(checks), reason, state.metadata, snapshot.metadata)
+        return LocalPlan(trajectory, pieces, tuple(checks), reason, state.metadata, snapshot.metadata,
+                         dynamic_scene.metadata if dynamic_scene is not None else None)
     if not state.metadata.current(now, epoch) or state.health != Health.OK:
         return result('STATE_UNAVAILABLE')
     if state.metadata.frame_id != 'world_ned' or snapshot.metadata.frame_id != 'world_ned':
@@ -219,8 +228,13 @@ def plan_static_local(state, initial_reference, goal, snapshot, now, epoch, limi
                 continue
             full = Trajectory(Metadata(now, pieces[-1].end_stamp, epoch, 'static_local_quintic'), tuple(samples))
             sweep = check_static_sweep(full, snapshot, now, epoch, limits.sweep)
-            checks.append(CandidateCheck(offset, duration, sweep.reason, speed, acceleration, sweep.voxel_tests))
-            if not sweep.clear:
+            reason = sweep.reason
+            accepted = sweep.clear
+            if accepted and dynamic_scene is not None:
+                dynamic = check_dynamic_candidates(full, dynamic_scene, now, epoch, limits.sweep, dynamic_bounds)
+                reason, accepted = dynamic.reason, dynamic.allowed
+            checks.append(CandidateCheck(offset, duration, reason, speed, acceleration, sweep.voxel_tests))
+            if not accepted:
                 continue
             length = sum(_norm(_subtract(b, a)) for piece in pieces
                          for a, b in zip(piece.controls, piece.controls[1:]))
@@ -231,5 +245,8 @@ def plan_static_local(state, initial_reference, goal, snapshot, now, epoch, limi
         return result('NO_STATIC_CANDIDATE', checks=checks)
     _, full, pieces = best
     lease_end = min(now + limits.lease_s, state.metadata.valid_until, full.metadata.valid_until)
+    if dynamic_scene is not None:
+        lease_end = min(lease_end, dynamic_scene.metadata.valid_until,
+                        *(track.valid_until for track in dynamic_scene.tracks))
     leased = replace(full, metadata=replace(full.metadata, valid_until=lease_end))
     return result('STATIC_CANDIDATE', leased, pieces, checks)

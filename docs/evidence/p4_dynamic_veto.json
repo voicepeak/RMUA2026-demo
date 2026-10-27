@@ -1,0 +1,440 @@
+{
+  "iteration": 58,
+  "acceptance_eligible": false,
+  "control_published": false,
+  "validation_scope": "candidate conflict veto only; absent conflict is not certified clearance",
+  "runs": [
+    {
+      "mode": "pwm",
+      "path": "runs/dynamic_veto_20261027_iteration58/pwm.json",
+      "sha256": "dba9f723d9a87538293883a6df2db73985b91ae92a7db46682fc1d3bdc03bfd9",
+      "source": "runs/dynamic_lidar_20261027_iteration56/pwm.json",
+      "source_sha256": "bf08975ebf4688e034f4741258bb6365237edfe25e935595308d66143f915e79",
+      "state_sha256": "423ae1d9137975d7f82890cb1de650b1fdfbc7c120b98a01a36c282c15784aa6",
+      "role": "stationary_synthetic_geometry_probe",
+      "assumptions": {
+        "position_error_m": 0.2,
+        "velocity_error_m_s": 2.0,
+        "acceleration_bound_m_s2": 4.0,
+        "single_observation_speed_bound_m_s": 20.0,
+        "max_horizon_s": 0.3,
+        "max_pair_tests": 32768
+      },
+      "body_bounds": {
+        "half_extents_m": [
+          0.2,
+          0.2,
+          0.1
+        ],
+        "tracking_error_m": 0.05,
+        "acceleration_bound_m_s2": 0.0,
+        "max_voxel_tests": 20000,
+        "max_segments": 256
+      },
+      "source_time_is_idealized_not_processing_completion": true,
+      "control_eligible": false,
+      "counts": {
+        "DYNAMIC_CANDIDATE_CONFLICT": 5,
+        "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED": 15
+      },
+      "results": [
+        {
+          "file": "lidar_0011.npz",
+          "track_count": 17,
+          "reason": "DYNAMIC_CANDIDATE_CONFLICT",
+          "allowed": false,
+          "safety_certified": false,
+          "track_id": 0,
+          "pair_tests": 1
+        },
+        {
+          "file": "lidar_0012.npz",
+          "track_count": 20,
+          "reason": "DYNAMIC_CANDIDATE_CONFLICT",
+          "allowed": false,
+          "safety_certified": false,
+          "track_id": 0,
+          "pair_tests": 1
+        },
+        {
+          "file": "lidar_0013.npz",
+          "track_count": 12,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 12
+        },
+        {
+          "file": "lidar_0014.npz",
+          "track_count": 10,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 10
+        },
+        {
+          "file": "lidar_0015.npz",
+          "track_count": 3,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 3
+        },
+        {
+          "file": "lidar_0016.npz",
+          "track_count": 10,
+          "reason": "DYNAMIC_CANDIDATE_CONFLICT",
+          "allowed": false,
+          "safety_certified": false,
+          "track_id": 29,
+          "pair_tests": 3
+        },
+        {
+          "file": "lidar_0017.npz",
+          "track_count": 11,
+          "reason": "DYNAMIC_CANDIDATE_CONFLICT",
+          "allowed": false,
+          "safety_certified": false,
+          "track_id": 29,
+          "pair_tests": 2
+        },
+        {
+          "file": "lidar_0018.npz",
+          "track_count": 11,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 11
+        },
+        {
+          "file": "lidar_0019.npz",
+          "track_count": 11,
+          "reason": "DYNAMIC_CANDIDATE_CONFLICT",
+          "allowed": false,
+          "safety_certified": false,
+          "track_id": 40,
+          "pair_tests": 2
+        },
+        {
+          "file": "lidar_0020.npz",
+          "track_count": 4,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 4
+        },
+        {
+          "file": "lidar_0021.npz",
+          "track_count": 6,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 6
+        },
+        {
+          "file": "lidar_0022.npz",
+          "track_count": 5,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 5
+        },
+        {
+          "file": "lidar_0023.npz",
+          "track_count": 5,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 5
+        },
+        {
+          "file": "lidar_0024.npz",
+          "track_count": 6,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 6
+        },
+        {
+          "file": "lidar_0025.npz",
+          "track_count": 3,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 3
+        },
+        {
+          "file": "lidar_0026.npz",
+          "track_count": 7,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 7
+        },
+        {
+          "file": "lidar_0027.npz",
+          "track_count": 12,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 12
+        },
+        {
+          "file": "lidar_0028.npz",
+          "track_count": 7,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 7
+        },
+        {
+          "file": "lidar_0029.npz",
+          "track_count": 9,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 9
+        },
+        {
+          "file": "lidar_0030.npz",
+          "track_count": 7,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 7
+        }
+      ]
+    },
+    {
+      "mode": "vel",
+      "path": "runs/dynamic_veto_20261027_iteration58/vel.json",
+      "sha256": "2d349658ad74f39376fb64ebe1a2135e52c8f2631ea1d6b7c29e0a1193440c3e",
+      "source": "runs/dynamic_lidar_20261027_iteration56/vel.json",
+      "source_sha256": "91982b1b9584e760bc7c06d50569dc808e296be2bde813889e711d144cab62be",
+      "state_sha256": "b82572b939964c933735e9cc2268ff322549934b29b4c7a7fdeb935676d7b342",
+      "role": "stationary_synthetic_geometry_probe",
+      "assumptions": {
+        "position_error_m": 0.2,
+        "velocity_error_m_s": 2.0,
+        "acceleration_bound_m_s2": 4.0,
+        "single_observation_speed_bound_m_s": 20.0,
+        "max_horizon_s": 0.3,
+        "max_pair_tests": 32768
+      },
+      "body_bounds": {
+        "half_extents_m": [
+          0.2,
+          0.2,
+          0.1
+        ],
+        "tracking_error_m": 0.05,
+        "acceleration_bound_m_s2": 0.0,
+        "max_voxel_tests": 20000,
+        "max_segments": 256
+      },
+      "source_time_is_idealized_not_processing_completion": true,
+      "control_eligible": false,
+      "counts": {
+        "DYNAMIC_CANDIDATE_CONFLICT": 7,
+        "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED": 13
+      },
+      "results": [
+        {
+          "file": "lidar_0010.npz",
+          "track_count": 18,
+          "reason": "DYNAMIC_CANDIDATE_CONFLICT",
+          "allowed": false,
+          "safety_certified": false,
+          "track_id": 0,
+          "pair_tests": 1
+        },
+        {
+          "file": "lidar_0011.npz",
+          "track_count": 19,
+          "reason": "DYNAMIC_CANDIDATE_CONFLICT",
+          "allowed": false,
+          "safety_certified": false,
+          "track_id": 0,
+          "pair_tests": 1
+        },
+        {
+          "file": "lidar_0012.npz",
+          "track_count": 9,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 9
+        },
+        {
+          "file": "lidar_0013.npz",
+          "track_count": 6,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 6
+        },
+        {
+          "file": "lidar_0014.npz",
+          "track_count": 4,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 4
+        },
+        {
+          "file": "lidar_0015.npz",
+          "track_count": 8,
+          "reason": "DYNAMIC_CANDIDATE_CONFLICT",
+          "allowed": false,
+          "safety_certified": false,
+          "track_id": 22,
+          "pair_tests": 3
+        },
+        {
+          "file": "lidar_0016.npz",
+          "track_count": 17,
+          "reason": "DYNAMIC_CANDIDATE_CONFLICT",
+          "allowed": false,
+          "safety_certified": false,
+          "track_id": 22,
+          "pair_tests": 3
+        },
+        {
+          "file": "lidar_0017.npz",
+          "track_count": 13,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 13
+        },
+        {
+          "file": "lidar_0018.npz",
+          "track_count": 6,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 6
+        },
+        {
+          "file": "lidar_0019.npz",
+          "track_count": 5,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 5
+        },
+        {
+          "file": "lidar_0020.npz",
+          "track_count": 3,
+          "reason": "DYNAMIC_CANDIDATE_CONFLICT",
+          "allowed": false,
+          "safety_certified": false,
+          "track_id": 43,
+          "pair_tests": 3
+        },
+        {
+          "file": "lidar_0021.npz",
+          "track_count": 17,
+          "reason": "DYNAMIC_CANDIDATE_CONFLICT",
+          "allowed": false,
+          "safety_certified": false,
+          "track_id": 43,
+          "pair_tests": 2
+        },
+        {
+          "file": "lidar_0022.npz",
+          "track_count": 17,
+          "reason": "DYNAMIC_CANDIDATE_CONFLICT",
+          "allowed": false,
+          "safety_certified": false,
+          "track_id": 43,
+          "pair_tests": 1
+        },
+        {
+          "file": "lidar_0023.npz",
+          "track_count": 4,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 4
+        },
+        {
+          "file": "lidar_0024.npz",
+          "track_count": 8,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 8
+        },
+        {
+          "file": "lidar_0025.npz",
+          "track_count": 6,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 6
+        },
+        {
+          "file": "lidar_0026.npz",
+          "track_count": 22,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 22
+        },
+        {
+          "file": "lidar_0027.npz",
+          "track_count": 24,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 24
+        },
+        {
+          "file": "lidar_0028.npz",
+          "track_count": 3,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 3
+        },
+        {
+          "file": "lidar_0029.npz",
+          "track_count": 1,
+          "reason": "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED",
+          "allowed": true,
+          "safety_certified": false,
+          "track_id": null,
+          "pair_tests": 1
+        }
+      ]
+    }
+  ]
+}
