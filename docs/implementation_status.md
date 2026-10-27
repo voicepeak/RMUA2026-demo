@@ -17,6 +17,8 @@
 
 下一批开发按设计第 16 节 Sprint A 的未完成项推进，然后进入 Sprint B。旧版仅作参考，任何算法迁移都需接口、坐标和回归证据。
 
+2026-10-27 迭代 46：用隔离真值评测两场既有实际飞行的双目相对运动。PWM 28对配对图中23个相邻估计通过、4次拒绝，平移误差p50/p90/最大0.051/0.177/0.306m；VEL 23对中21次通过、1次拒绝，误差0.037/0.080/0.103m。实际位移同量级，不能用于融合授权。估计与真值评测分进程执行；图像仅用合法输入。宿主199项通过、Noetic196项通过/3项跳过；见 docs/stereo_odometry_flight_replay.md 和 docs/evidence/p2_stereo_flight_replay.json。
+
 2026-10-27 迭代 45：实现稀疏双目相对运动候选，ORB 双向关联、三角化和 PnP RANSAC 含机体/相机杠杆臂；两场留存图像各5对完成估计，和同场 ESKF 平移差约0.025–0.103m、旋转差约0.014–0.054rad，ESKF非真值。宿主197项通过，Noetic194项通过/3项跳过。属于离线诊断，未融合定位、无控制资格；无 GPS 实际飞行、动态场景、标定与实时性仍待验证。见 docs/stereo_odometry.md 和 docs/evidence/p2_stereo_odometry.json。
 
 2026-10-27 迭代 44：接通只读历史位姿、LiDAR 滚动占据图和静态规划诊断，按记录到达时间回放两场12帧；6帧停止时域不足、6帧运动学界拒绝，全部无候选且不授予控制。专项5项宿主/Noetic通过，宿主194项通过、Noetic191项通过/3项跳过；首次宿主回放缺 rospy 失败，在 Noetic 重跑成功并保留失败。官方两份规则 PDF 摘要与基线一致。无可信 FREE、标定、实时性或比赛验收；见 docs/lidar_static_probe.md 与 docs/evidence/p2_lidar_static_probe.json。

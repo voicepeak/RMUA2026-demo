@@ -1,0 +1,695 @@
+{
+  "iteration": 46,
+  "acceptance_eligible": false,
+  "processing": "image estimates saved before isolated truth evaluation",
+  "runs": [
+    {
+      "mode": "PWM",
+      "source": "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871",
+      "estimates_path": "runs/stereo_motion_20261027_iteration46/pwm_estimates.json",
+      "estimates_sha256": "d92e11e27507d23b9606320c152c33f7e5905634ce55a9b615a125fdf79a9e7c",
+      "comparison_path": "runs/stereo_motion_20261027_iteration46/pwm_comparison.json",
+      "comparison_sha256": "030f2111d1443cdfab2aaf3e39cf966c466de19b68cc1f0ebb5054d592986bc7",
+      "truth_sha256": "83fe4bd8a9bde471c2b02ef9b0babb654c7dfcc1dd1b1520f10ecc31e8751ae9",
+      "scene_index_sha256": "e438768894e1310122135592438987fe1dfc8a924799a29e67ed84b798370fc8",
+      "stereo_pairs": 28,
+      "unmatched_left": [
+        "front_left_0028.png",
+        "front_left_0029.png",
+        "front_left_0030.png"
+      ],
+      "unmatched_right_count": 3,
+      "estimation_status": {
+        "ESTIMATED": 23,
+        "REJECTED": 4
+      },
+      "rejection_reasons": {
+        "invalid PnP reprojection": 4
+      },
+      "truth_status": {
+        "COMPARED": 23,
+        "REJECTED": 4
+      },
+      "translation_error_m_p50_p90_max": [
+        0.051059364165193355,
+        0.17744489685368753,
+        0.3056146281036797
+      ],
+      "rotation_error_rad_p50_p90_max": [
+        0.0025009679127980227,
+        0.00829457258210774,
+        0.015509772920638541
+      ],
+      "truth_displacement_m_p50_p90_max": [
+        0.08438191818882375,
+        0.26895603718935285,
+        0.3164927326782082
+      ],
+      "comparisons": [
+        {
+          "previous": "front_left_0000.png",
+          "current": "front_left_0001.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "truth_displacement_norm_m": 0.0,
+          "translation_error_m": 0.0017877663826421245,
+          "rotation_error_rad": 9.960582644664353e-05
+        },
+        {
+          "previous": "front_left_0001.png",
+          "current": "front_left_0002.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "truth_displacement_norm_m": 0.0,
+          "translation_error_m": 0.0018655634369676695,
+          "rotation_error_rad": 0.00011236625682936253
+        },
+        {
+          "previous": "front_left_0002.png",
+          "current": "front_left_0003.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -5.5270770342156314e-05,
+            1.9243694656204343e-05,
+            -0.006939099787086844
+          ],
+          "truth_displacement_norm_m": 0.006939346585449304,
+          "translation_error_m": 0.028147409958533678,
+          "rotation_error_rad": 0.001566527116664435
+        },
+        {
+          "previous": "front_left_0003.png",
+          "current": "front_left_0004.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.018844980528850648,
+            0.011660534800792075,
+            -0.09245145902151372
+          ],
+          "truth_displacement_norm_m": 0.09507036151282836,
+          "translation_error_m": 0.03561340056700262,
+          "rotation_error_rad": 0.0018279431657138962
+        },
+        {
+          "previous": "front_left_0004.png",
+          "current": "front_left_0005.png",
+          "status": "REJECTED",
+          "reason": "invalid PnP reprojection"
+        },
+        {
+          "previous": "front_left_0005.png",
+          "current": "front_left_0006.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.04377490437140158,
+            -0.05549044325468286,
+            -0.3084999486106817
+          ],
+          "truth_displacement_norm_m": 0.3164927326782082,
+          "translation_error_m": 0.3056146281036797,
+          "rotation_error_rad": 0.015509772920638541
+        },
+        {
+          "previous": "front_left_0006.png",
+          "current": "front_left_0007.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.016539402733866983,
+            -0.05496570212879507,
+            -0.2652446697374333
+          ],
+          "truth_displacement_norm_m": 0.27138444148002394,
+          "translation_error_m": 0.2221945913922755,
+          "rotation_error_rad": 0.012415101795414534
+        },
+        {
+          "previous": "front_left_0007.png",
+          "current": "front_left_0008.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.0698771104016258,
+            0.036090435465769316,
+            -0.14328052844772876
+          ],
+          "truth_displacement_norm_m": 0.16344613767981878,
+          "translation_error_m": 0.07361290649799765,
+          "rotation_error_rad": 0.004035373765575671
+        },
+        {
+          "previous": "front_left_0008.png",
+          "current": "front_left_0009.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.05133877814456818,
+            0.07656150857401085,
+            -0.026402457785123835
+          ],
+          "truth_displacement_norm_m": 0.09588756182947178,
+          "translation_error_m": 0.01856415256029403,
+          "rotation_error_rad": 0.002016613641953827
+        },
+        {
+          "previous": "front_left_0009.png",
+          "current": "front_left_0010.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.008148191918141225,
+            -0.0006300821551075998,
+            -0.009334802523903453
+          ],
+          "truth_displacement_norm_m": 0.012406795445130918,
+          "translation_error_m": 0.045597316852801294,
+          "rotation_error_rad": 0.0023354360433098824
+        },
+        {
+          "previous": "front_left_0010.png",
+          "current": "front_left_0011.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.0128117188206748,
+            -0.030964911150541338,
+            -0.02387638831806059
+          ],
+          "truth_displacement_norm_m": 0.04114666184292199,
+          "translation_error_m": 0.05483141101024048,
+          "rotation_error_rad": 0.0025009679127980227
+        },
+        {
+          "previous": "front_left_0011.png",
+          "current": "front_left_0012.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.06439354533549757,
+            -0.012895312929845661,
+            -0.011714092699976201
+          ],
+          "truth_displacement_norm_m": 0.06670860322489941,
+          "translation_error_m": 0.05411676218284196,
+          "rotation_error_rad": 0.0033220648914601375
+        },
+        {
+          "previous": "front_left_0012.png",
+          "current": "front_left_0013.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.16965718139437638,
+            0.04497490140273209,
+            0.004952623855871753
+          ],
+          "truth_displacement_norm_m": 0.17558709929242397,
+          "translation_error_m": 0.08007970742886789,
+          "rotation_error_rad": 0.0046521551789554996
+        },
+        {
+          "previous": "front_left_0013.png",
+          "current": "front_left_0014.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.2743423442298499,
+            0.032241854427507724,
+            0.009060699164273925
+          ],
+          "truth_displacement_norm_m": 0.2763790065902248,
+          "translation_error_m": 0.023731226082541718,
+          "rotation_error_rad": 0.00118592998712907
+        },
+        {
+          "previous": "front_left_0014.png",
+          "current": "front_left_0015.png",
+          "status": "REJECTED",
+          "reason": "invalid PnP reprojection"
+        },
+        {
+          "previous": "front_left_0015.png",
+          "current": "front_left_0016.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.24873282329739374,
+            -0.07296565205071465,
+            0.003824732226588046
+          ],
+          "truth_displacement_norm_m": 0.2592424200266684,
+          "translation_error_m": 0.18839161171556,
+          "rotation_error_rad": 0.008551995910307633
+        },
+        {
+          "previous": "front_left_0016.png",
+          "current": "front_left_0017.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.015418469789930387,
+            -0.0956041981281229,
+            0.011946110324695145
+          ],
+          "truth_displacement_norm_m": 0.0975735694861788,
+          "translation_error_m": 0.1336580374061975,
+          "rotation_error_rad": 0.007264879269308163
+        },
+        {
+          "previous": "front_left_0017.png",
+          "current": "front_left_0018.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.16272885400885023,
+            -0.031083949148967976,
+            -0.02037798141186432
+          ],
+          "truth_displacement_norm_m": 0.16691960324704708,
+          "translation_error_m": 0.03269809312938294,
+          "rotation_error_rad": 0.0018064489967139648
+        },
+        {
+          "previous": "front_left_0018.png",
+          "current": "front_left_0019.png",
+          "status": "REJECTED",
+          "reason": "invalid PnP reprojection"
+        },
+        {
+          "previous": "front_left_0019.png",
+          "current": "front_left_0020.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.01844003127193142,
+            0.07555534611316359,
+            -0.032736264869951064
+          ],
+          "truth_displacement_norm_m": 0.08438191818882375,
+          "translation_error_m": 0.01984908775309008,
+          "rotation_error_rad": 0.0016016921543591906
+        },
+        {
+          "previous": "front_left_0020.png",
+          "current": "front_left_0021.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.06559192834288449,
+            0.06484656367348954,
+            0.005503635809561093
+          ],
+          "truth_displacement_norm_m": 0.09239950157399286,
+          "translation_error_m": 0.023531605674627643,
+          "rotation_error_rad": 0.0013121756796475197
+        },
+        {
+          "previous": "front_left_0021.png",
+          "current": "front_left_0022.png",
+          "status": "REJECTED",
+          "reason": "invalid PnP reprojection"
+        },
+        {
+          "previous": "front_left_0022.png",
+          "current": "front_left_0023.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.014763306996445087,
+            -0.004074056038187025,
+            0.029010225750304583
+          ],
+          "truth_displacement_norm_m": 0.03280466985289149,
+          "translation_error_m": 0.052773702890700505,
+          "rotation_error_rad": 0.002570507987267335
+        },
+        {
+          "previous": "front_left_0023.png",
+          "current": "front_left_0024.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.03533185969407999,
+            -0.026586817029836514,
+            0.001436299346617949
+          ],
+          "truth_displacement_norm_m": 0.04424095506465987,
+          "translation_error_m": 0.051059364165193355,
+          "rotation_error_rad": 0.002973422674074416
+        },
+        {
+          "previous": "front_left_0024.png",
+          "current": "front_left_0025.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.035240910180454166,
+            -0.022327645943210444,
+            -0.017435540497505925
+          ],
+          "truth_displacement_norm_m": 0.045215523840295924,
+          "translation_error_m": 0.03207623764803048,
+          "rotation_error_rad": 0.0015154001211131732
+        },
+        {
+          "previous": "front_left_0025.png",
+          "current": "front_left_0026.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.01957767862172296,
+            -0.0018981445807296179,
+            -0.036411027298493034
+          ],
+          "truth_displacement_norm_m": 0.041384192175230705,
+          "translation_error_m": 0.10674974151578542,
+          "rotation_error_rad": 0.004696556818496074
+        },
+        {
+          "previous": "front_left_0026.png",
+          "current": "front_left_0027.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.03443220925436996,
+            -0.003731376555834423,
+            -0.0059291079333885005
+          ],
+          "truth_displacement_norm_m": 0.03513765111705564,
+          "translation_error_m": 0.09092941814633049,
+          "rotation_error_rad": 0.004096275962224965
+        }
+      ]
+    },
+    {
+      "mode": "VEL",
+      "source": "runs/20261020T081752Z_88e3759cc7da4c2ea5703b37af94e6ea",
+      "estimates_path": "runs/stereo_motion_20261027_iteration46/vel_estimates.json",
+      "estimates_sha256": "97cdd19b85faea8ee43df60c729339b907c0ad5d8677e30f76265ae4cfb9ea5d",
+      "comparison_path": "runs/stereo_motion_20261027_iteration46/vel_comparison.json",
+      "comparison_sha256": "3028559150d37a421ba77fdfbbf1c786797f5b954c219bdc8392339bf33ac95c",
+      "truth_sha256": "de4b39fb9fe5a9e242b751218c435e2146662a8385478a164ccc16366c195918",
+      "scene_index_sha256": "6a0e82f256fdc69ee379885af1d12012f4ec7faa6d2fa3f1ebde38e42b0f3903",
+      "stereo_pairs": 23,
+      "unmatched_left": [],
+      "unmatched_right_count": 0,
+      "estimation_status": {
+        "ESTIMATED": 21,
+        "REJECTED": 1
+      },
+      "rejection_reasons": {
+        "invalid PnP reprojection": 1
+      },
+      "truth_status": {
+        "COMPARED": 21,
+        "REJECTED": 1
+      },
+      "translation_error_m_p50_p90_max": [
+        0.03726755972695877,
+        0.0796066739598056,
+        0.1032166774628569
+      ],
+      "rotation_error_rad_p50_p90_max": [
+        0.0018690274595400847,
+        0.0036692646030426824,
+        0.0050312234969542785
+      ],
+      "truth_displacement_m_p50_p90_max": [
+        0.017992968058329756,
+        0.17509865775986375,
+        0.28509982708827514
+      ],
+      "comparisons": [
+        {
+          "previous": "front_left_0000.png",
+          "current": "front_left_0001.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "truth_displacement_norm_m": 0.0,
+          "translation_error_m": 0.007750625267440142,
+          "rotation_error_rad": 0.00038669533810024046
+        },
+        {
+          "previous": "front_left_0001.png",
+          "current": "front_left_0002.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "truth_displacement_norm_m": 0.0,
+          "translation_error_m": 0.0019737491067862026,
+          "rotation_error_rad": 9.642821999521614e-05
+        },
+        {
+          "previous": "front_left_0002.png",
+          "current": "front_left_0003.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "truth_displacement_norm_m": 0.0,
+          "translation_error_m": 0.0030019848395345244,
+          "rotation_error_rad": 0.00015287595051852938
+        },
+        {
+          "previous": "front_left_0003.png",
+          "current": "front_left_0004.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.00028022498978922766,
+            -0.0015278322001298268,
+            -0.020701825618743896
+          ],
+          "truth_displacement_norm_m": 0.02076001881563543,
+          "translation_error_m": 0.04976225565092846,
+          "rotation_error_rad": 0.0024702095272866745
+        },
+        {
+          "previous": "front_left_0004.png",
+          "current": "front_left_0005.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.0001164916355857542,
+            -0.011075491405373615,
+            -0.18417301635649616
+          ],
+          "truth_displacement_norm_m": 0.18450577235962531,
+          "translation_error_m": 0.031718559252491785,
+          "rotation_error_rad": 0.0014709960545084633
+        },
+        {
+          "previous": "front_left_0005.png",
+          "current": "front_left_0006.png",
+          "status": "REJECTED",
+          "reason": "invalid PnP reprojection"
+        },
+        {
+          "previous": "front_left_0006.png",
+          "current": "front_left_0007.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.004454062753296634,
+            -0.00337873338638029,
+            -0.2850450085362974
+          ],
+          "truth_displacement_norm_m": 0.28509982708827514,
+          "translation_error_m": 0.04159025967854541,
+          "rotation_error_rad": 0.0022845520165485425
+        },
+        {
+          "previous": "front_left_0007.png",
+          "current": "front_left_0008.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.005036172481941176,
+            0.001239134405618427,
+            -0.175021831386724
+          ],
+          "truth_displacement_norm_m": 0.17509865775986375,
+          "translation_error_m": 0.1032166774628569,
+          "rotation_error_rad": 0.0050312234969542785
+        },
+        {
+          "previous": "front_left_0008.png",
+          "current": "front_left_0009.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.007703850819473683,
+            0.004918138369221457,
+            -0.028042267461760778
+          ],
+          "truth_displacement_norm_m": 0.029494171743997846,
+          "translation_error_m": 0.033347494031923594,
+          "rotation_error_rad": 0.001692401648292846
+        },
+        {
+          "previous": "front_left_0009.png",
+          "current": "front_left_0010.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.003797245982446913,
+            0.00890802097148112,
+            0.010547393267479372
+          ],
+          "truth_displacement_norm_m": 0.014318499202724629,
+          "translation_error_m": 0.046253141994936776,
+          "rotation_error_rad": 0.003070695392777513
+        },
+        {
+          "previous": "front_left_0010.png",
+          "current": "front_left_0011.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.0081369425680224,
+            0.004014034281627311,
+            0.007465772407681518
+          ],
+          "truth_displacement_norm_m": 0.011749896306464705,
+          "translation_error_m": 0.02935065754321942,
+          "rotation_error_rad": 0.0015246248758557595
+        },
+        {
+          "previous": "front_left_0011.png",
+          "current": "front_left_0012.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.015053771222086728,
+            0.003178613020359601,
+            0.011729935830236455
+          ],
+          "truth_displacement_norm_m": 0.019347118734364326,
+          "translation_error_m": 0.026013731258994574,
+          "rotation_error_rad": 0.0011937771431066704
+        },
+        {
+          "previous": "front_left_0012.png",
+          "current": "front_left_0013.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.003128421576147655,
+            0.010794046749837692,
+            0.0025345793164526895
+          ],
+          "truth_displacement_norm_m": 0.011520527726939317,
+          "translation_error_m": 0.03726755972695877,
+          "rotation_error_rad": 0.0018690274595400847
+        },
+        {
+          "previous": "front_left_0013.png",
+          "current": "front_left_0014.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.0020757383545161566,
+            0.010341541987616937,
+            -0.00041560983441168607
+          ],
+          "truth_displacement_norm_m": 0.010555989386718482,
+          "translation_error_m": 0.06607813945792332,
+          "rotation_error_rad": 0.0033818233445399213
+        },
+        {
+          "previous": "front_left_0014.png",
+          "current": "front_left_0015.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.0030255354036358836,
+            -0.009011679476249238,
+            -0.0038195848497993446
+          ],
+          "truth_displacement_norm_m": 0.010244679589236676,
+          "translation_error_m": 0.007691261465477981,
+          "rotation_error_rad": 0.00046726300380822965
+        },
+        {
+          "previous": "front_left_0015.png",
+          "current": "front_left_0016.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.004822759173790089,
+            -0.01799115597008711,
+            -0.0331441521284605
+          ],
+          "truth_displacement_norm_m": 0.038019409773205455,
+          "translation_error_m": 0.0796066739598056,
+          "rotation_error_rad": 0.0036692646030426824
+        },
+        {
+          "previous": "front_left_0016.png",
+          "current": "front_left_0017.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.013810308269179393,
+            -0.014091436011290228,
+            0.0023627895065683386
+          ],
+          "truth_displacement_norm_m": 0.019871486044138752,
+          "translation_error_m": 0.08095221946956628,
+          "rotation_error_rad": 0.0038452953454161543
+        },
+        {
+          "previous": "front_left_0017.png",
+          "current": "front_left_0018.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.017208086756255774,
+            -0.002672202139855888,
+            0.017854240538603735
+          ],
+          "truth_displacement_norm_m": 0.024940585784968976,
+          "translation_error_m": 0.060313176281785355,
+          "rotation_error_rad": 0.003119515647612078
+        },
+        {
+          "previous": "front_left_0018.png",
+          "current": "front_left_0019.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            0.005031476037784651,
+            0.004247935326753292,
+            0.008156303140259828
+          ],
+          "truth_displacement_norm_m": 0.010482651695772977,
+          "translation_error_m": 0.01875845919884977,
+          "rotation_error_rad": 0.0009638734327871215
+        },
+        {
+          "previous": "front_left_0019.png",
+          "current": "front_left_0020.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.011706380348943238,
+            0.006125165181300816,
+            0.012214332162493804
+          ],
+          "truth_displacement_norm_m": 0.017992968058329756,
+          "translation_error_m": 0.025746896436948677,
+          "rotation_error_rad": 0.0013587314757728883
+        },
+        {
+          "previous": "front_left_0020.png",
+          "current": "front_left_0021.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.016071591977645037,
+            0.010844812371392376,
+            0.002109406767595515
+          ],
+          "truth_displacement_norm_m": 0.019502708042161407,
+          "translation_error_m": 0.04776670091010899,
+          "rotation_error_rad": 0.0022948264362577563
+        },
+        {
+          "previous": "front_left_0021.png",
+          "current": "front_left_0022.png",
+          "status": "COMPARED",
+          "truth_displacement_m": [
+            -0.00874983439951218,
+            0.010641610285051922,
+            -0.001015447737332246
+          ],
+          "truth_displacement_norm_m": 0.013814289905205505,
+          "translation_error_m": 0.061526770483389406,
+          "rotation_error_rad": 0.003190451727696236
+        }
+      ]
+    }
+  ]
+}
