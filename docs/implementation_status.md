@@ -17,6 +17,8 @@
 
 下一批开发按设计第 16 节 Sprint A 的未完成项推进，然后进入 Sprint B。旧版仅作参考，任何算法迁移都需接口、坐标和回归证据。
 
+2026-10-27 迭代 50：实现官方当前终点输入的稳定确认、接收时效、epoch 与非零时间戳重复拒绝；三场只读分别接收120/100/100条，输出稳定目标，第二场1条因IMU未就绪拒绝。所有已接受目标stamp=0且frame_id为空，禁止虚构采样时间或以目标变化确认换段；坐标语义和控制可用性未验收。前两场后加非零时间戳去重并用第三场复核；宿主210项通过、Noetic207项通过/3项跳过。见 docs/goal_observation.md 与 docs/evidence/p3_goal_observation.json。
+
 2026-10-27 迭代 49：新增显式半分辨率 ORB/LK 候选及匹配内参缩放；离线三场共同帧相对全分辨率 PWM 误差中位0.014→0.030m、VEL 0.014→0.017m、另场0.015→0.018m，部分精度下降。在线默认150ms场次4次估计全部过期；200ms场次58次全部过期，计算中位97ms、图像stamp至检查中位243ms。未更改默认方法或授权控制。宿主205通过、Noetic202通过/3跳过，见 docs/visual_motion_half_scale.md 和 docs/evidence/p2_visual_motion_half.json。
 
 2026-10-27 迭代 48：实现只读在线双目视觉相对运动链、容量1最新帧队列及前后原始时效核验。seed2151/200ms 130对、31次估计全部过期，计算中位219ms、源stamp至结果检查中位351ms；seed2152/默认150ms仅6对、1次估计也过期。ROS白名单/计龄审计通过但时效不通过，未融合或发控制。seed2150入口漏传settings失败保留并修复；宿主204项通过、Noetic201项通过/3项跳过。见 docs/visual_motion_online.md 与 docs/evidence/p2_visual_motion_online.json。

@@ -1,0 +1,185 @@
+{
+  "iteration": 50,
+  "acceptance_eligible": false,
+  "official_stage_completion_inferred": false,
+  "runs": [
+    {
+      "path": "runs/20261027T103539Z_981f49f8ebc44dffb945953a5a880d87",
+      "run_state": "OBSERVED",
+      "observer_exit_code": 0,
+      "audit_exit_code": 0,
+      "source_unchanged": true,
+      "simulator_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "events": {
+          "goal_received": 120
+        },
+        "rows": 120,
+        "faults": [],
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/end_goal"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "latest": {
+          "status": "OBSERVED",
+          "position": [
+            545.5599505719422,
+            519.8547547745701,
+            -30.21285629272461
+          ],
+          "epoch": 0,
+          "observation_count": 120,
+          "last_arrival_wall": 1426967.307695735,
+          "source_stamp": 0.0,
+          "source_frame": "",
+          "official_stage_confirmed": false,
+          "control_eligible": false
+        },
+        "control_published": false,
+        "debug_inputs_used": false,
+        "stage_completion_inferred": false,
+        "frame_calibration_verified": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 120,
+        "source_stamp_zero_count": 120,
+        "official_stage_confirmed": false,
+        "control_eligible": false
+      },
+      "hashes": {
+        "manifest.json": "d21875346fed2b8b5ec9c06e160e6b393963fa7fe7732b9a54605a1cb695c5d9",
+        "goal_observations.jsonl": "0deff7e5f399e6a51fa18447397d2d0f06498db62b86327ffa97497e0b1940c2",
+        "goal_summary.json": "1f0caf0b48f33f33521cfeae80a5dec623e72073b4ffd0bb95627be84a6b0c9e",
+        "goal_audit.json": "b6900b0b681990bca5d50edd5d97f3e67453bb27eefefb3609520d0e8f72e4f0"
+      }
+    },
+    {
+      "path": "runs/20261027T103607Z_104582d55ebf46b78b2b2031b3369538",
+      "run_state": "OBSERVED",
+      "observer_exit_code": 0,
+      "audit_exit_code": 0,
+      "source_unchanged": true,
+      "simulator_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "events": {
+          "goal_received": 100,
+          "no_fresh_imu": 1
+        },
+        "rows": 99,
+        "faults": [],
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/end_goal"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "latest": {
+          "status": "OBSERVED",
+          "position": [
+            545.5599505719422,
+            519.8547547745701,
+            -30.21285629272461
+          ],
+          "epoch": 0,
+          "observation_count": 99,
+          "last_arrival_wall": 1426993.079382087,
+          "source_stamp": 0.0,
+          "source_frame": "",
+          "official_stage_confirmed": false,
+          "control_eligible": false
+        },
+        "control_published": false,
+        "debug_inputs_used": false,
+        "stage_completion_inferred": false,
+        "frame_calibration_verified": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 99,
+        "source_stamp_zero_count": 99,
+        "official_stage_confirmed": false,
+        "control_eligible": false
+      },
+      "hashes": {
+        "manifest.json": "b7fbeb3e06dff8e43e7775d9a9ca0f4f49dc199e9169861ce047d5bfd6435876",
+        "goal_observations.jsonl": "af2fb462b6a8a2dfd3674b211ed7dc92aa34353d6506d09cbd7395cc5abce2c9",
+        "goal_summary.json": "d403b2358d4e2e03e79ddc0fc77deb9555b67e2e6c2183faad3fcfcfc6ab3b70",
+        "goal_audit.json": "788f7ccdde68dbbe910471e97cb42071904ecc8bc735c9507b14ec4ee1a86432"
+      }
+    },
+    {
+      "path": "runs/20261027T103635Z_cb39f8e47fe543d6b5f9708bd525267b",
+      "run_state": "OBSERVED",
+      "observer_exit_code": 0,
+      "audit_exit_code": 0,
+      "source_unchanged": true,
+      "simulator_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "events": {
+          "goal_received": 100
+        },
+        "rows": 100,
+        "faults": [],
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/end_goal"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "latest": {
+          "status": "OBSERVED",
+          "position": [
+            545.5599505719422,
+            519.8547547745701,
+            -30.21285629272461
+          ],
+          "epoch": 0,
+          "observation_count": 100,
+          "last_arrival_wall": 1427020.155794418,
+          "source_stamp": 0.0,
+          "source_frame": "",
+          "official_stage_confirmed": false,
+          "control_eligible": false
+        },
+        "control_published": false,
+        "debug_inputs_used": false,
+        "stage_completion_inferred": false,
+        "frame_calibration_verified": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 100,
+        "source_stamp_zero_count": 100,
+        "official_stage_confirmed": false,
+        "control_eligible": false
+      },
+      "hashes": {
+        "manifest.json": "d55a19eb386a692368017f08e0827dbe9f438bcbf44f01acd376b329a0f30a23",
+        "goal_observations.jsonl": "c353b82bbed5b678f0a71eca6d9ad11b034e0dd218970a247af7669a2e55222b",
+        "goal_summary.json": "b56cd3ee802e668b93c5ab5ead2be1dd49f8516c12cbbf21ed3fa87a1310d147",
+        "goal_audit.json": "362f61a2e90f7bbdbfe6e54db449f8ed02644d1e8266a3ad36eb5de0522b8912"
+      }
+    }
+  ]
+}

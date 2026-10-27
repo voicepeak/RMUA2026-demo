@@ -16,7 +16,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--seed', type=int, required=True)
     parser.add_argument('--duration', type=float, default=10.)
-    parser.add_argument('--kind', choices=('lidar', 'stereo', 'pose-history', 'joint', 'visual-motion'), default='lidar')
+    parser.add_argument('--kind', choices=('lidar', 'stereo', 'pose-history', 'joint', 'visual-motion', 'goal'), default='lidar')
     parser.add_argument('--image-age-budget-ms', type=int, choices=(150, 200), default=150)
     parser.add_argument('--visual-motion-method', choices=('orb_lk', 'orb_lk_half'), default='orb_lk')
     args = parser.parse_args()
@@ -40,7 +40,7 @@ def main():
     run, manifest = prepare_run(root, root / 'runs', args.seed, digest, config)
     stages = {'lidar': 'P2_READ_ONLY_LIDAR_ENDPOINTS', 'stereo': 'P2_READ_ONLY_STEREO_PAIRING',
               'pose-history': 'P2_READ_ONLY_POSE_HISTORY', 'joint': 'P2_READ_ONLY_JOINT_SENSORS',
-              'visual-motion': 'P2_READ_ONLY_VISUAL_MOTION'}
+              'visual-motion': 'P2_READ_ONLY_VISUAL_MOTION', 'goal': 'P3_READ_ONLY_GOAL_OBSERVATION'}
     manifest.update(stage=stages[args.kind], acceptance_eligible=False,
                     simulator_preflight=before, run_state='PREPARED')
     (run / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
@@ -53,6 +53,8 @@ def main():
         module, audit_module = 'adapters.ros_noetic.joint_sensor_observer', 'evaluation.metrics.joint_sensors'
     if args.kind == 'visual-motion':
         module, audit_module = 'adapters.ros_noetic.visual_motion_observer', 'evaluation.metrics.visual_motion'
+    if args.kind == 'goal':
+        module, audit_module = 'adapters.ros_noetic.goal_observer', 'evaluation.metrics.goal_observer'
     sensor_type = 'PointCloud2' if args.kind == 'lidar' else 'Imu'
     sensor_topic = '/airsim_node/drone_1/lidar' if args.kind == 'lidar' else '/airsim_node/drone_1/imu/imu'
     marker = 'rmua_' + args.kind.replace('-', '_') + '_sensor_readiness'
@@ -156,6 +158,8 @@ def main():
             if args.kind == 'visual-motion':
                 manifest['telemetry'] = ['visual_motion_results.jsonl', 'visual_motion_summary.json',
                                          'visual_motion_audit.json']
+            if args.kind == 'goal':
+                manifest['telemetry'] = ['goal_observations.jsonl', 'goal_summary.json', 'goal_audit.json']
             (run / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     return code if manifest['source_unchanged'] and manifest['original_simulator_files_unchanged'] else 2
 
