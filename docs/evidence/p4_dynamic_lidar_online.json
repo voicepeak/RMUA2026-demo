@@ -1,0 +1,137 @@
+{
+  "runs": [
+    {
+      "run": "20261027T110055Z_83691ca3c8044a978a4970d352420b5a",
+      "summary": {
+        "faults": [],
+        "received": 77,
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 77,
+          "superseded": 0,
+          "taken": 77,
+          "discarded_on_close": 0
+        },
+        "results": 77,
+        "statuses": {
+          "REJECTED": 46,
+          "PROCESSED": 31
+        },
+        "veto_reasons": {
+          "DYNAMIC_CANDIDATE_CONFLICT": 16,
+          "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED": 15
+        },
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/gps",
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/drone_1/lidar",
+            "/airsim_node/initial_pose"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 77,
+        "statuses": {
+          "REJECTED": 46,
+          "PROCESSED": 31
+        },
+        "rejection_reasons": {
+          "INPUT_SOURCE_LEASE_NOT_CURRENT": 46
+        },
+        "control_eligible": false,
+        "safety_certified": false
+      },
+      "results_sha256": "040b7783bad7523433b332cb750b0c6eb22c246e76ad01e3b02dfe008680b974",
+      "manifest_sha256": "201a57c89194b22d487c372b601fcc3a3f258fb04b19b0b5c18847e2ebaebe98",
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "processed_median_ms": 28.431654209271073,
+      "processed_max_ms": 51.10816820524633,
+      "matched_total": 42,
+      "ambiguous_total": 309,
+      "future_source_rejections": null,
+      "future_source_lead_median_ms": null,
+      "future_source_lead_max_ms": null
+    },
+    {
+      "run": "20261027T110126Z_a00fd38a4a6948508a6bb83e55251eb0",
+      "summary": {
+        "faults": [],
+        "received": 78,
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 78,
+          "superseded": 0,
+          "taken": 78,
+          "discarded_on_close": 0
+        },
+        "results": 78,
+        "statuses": {
+          "REJECTED": 51,
+          "PROCESSED": 27
+        },
+        "veto_reasons": {
+          "DYNAMIC_CANDIDATE_CONFLICT": 16,
+          "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED": 11
+        },
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/gps",
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/drone_1/lidar",
+            "/airsim_node/initial_pose"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 78,
+        "statuses": {
+          "REJECTED": 51,
+          "PROCESSED": 27
+        },
+        "rejection_reasons": {
+          "INPUT_SOURCE_LEASE_NOT_CURRENT": 51
+        },
+        "control_eligible": false,
+        "safety_certified": false
+      },
+      "results_sha256": "8b632c2593fc4a03f5d42b9460b51c4526c772f0c6928cfcef25f211d3848d80",
+      "manifest_sha256": "cb52c266b3d5423238e605f6f2a0fa9220cd95534f896608ad21afa75fbf141a",
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "processed_median_ms": 35.39645601995289,
+      "processed_max_ms": 47.06032294780016,
+      "matched_total": 30,
+      "ambiguous_total": 279,
+      "future_source_rejections": 51,
+      "future_source_lead_median_ms": 3.0002593994140625,
+      "future_source_lead_max_ms": 9.000301361083984
+    }
+  ],
+  "interpretation": "Diagnostic held-position probe only; candidate coverage, bounds and dynamic tracking are not certified."
+}

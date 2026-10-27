@@ -16,7 +16,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--seed', type=int, required=True)
     parser.add_argument('--duration', type=float, default=10.)
-    parser.add_argument('--kind', choices=('lidar', 'stereo', 'pose-history', 'joint', 'visual-motion', 'goal', 'gate', 'gate-track'), default='lidar')
+    parser.add_argument('--kind', choices=('lidar', 'stereo', 'pose-history', 'joint', 'visual-motion', 'goal', 'gate', 'gate-track', 'dynamic-lidar'), default='lidar')
     parser.add_argument('--image-age-budget-ms', type=int, choices=(150, 200), default=150)
     parser.add_argument('--visual-motion-method', choices=('orb_lk', 'orb_lk_half'), default='orb_lk')
     args = parser.parse_args()
@@ -41,7 +41,8 @@ def main():
     stages = {'lidar': 'P2_READ_ONLY_LIDAR_ENDPOINTS', 'stereo': 'P2_READ_ONLY_STEREO_PAIRING',
               'pose-history': 'P2_READ_ONLY_POSE_HISTORY', 'joint': 'P2_READ_ONLY_JOINT_SENSORS',
               'visual-motion': 'P2_READ_ONLY_VISUAL_MOTION', 'goal': 'P3_READ_ONLY_GOAL_OBSERVATION',
-              'gate': 'P3_READ_ONLY_GATE_CANDIDATES', 'gate-track': 'P3_READ_ONLY_GATE_TRACKS'}
+              'gate': 'P3_READ_ONLY_GATE_CANDIDATES', 'gate-track': 'P3_READ_ONLY_GATE_TRACKS',
+              'dynamic-lidar': 'P4_READ_ONLY_DYNAMIC_LIDAR'}
     manifest.update(stage=stages[args.kind], acceptance_eligible=False,
                     simulator_preflight=before, run_state='PREPARED')
     (run / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
@@ -58,8 +59,10 @@ def main():
         module, audit_module = 'adapters.ros_noetic.goal_observer', 'evaluation.metrics.goal_observer'
     if args.kind in ('gate','gate-track'):
         module, audit_module = 'adapters.ros_noetic.visual_motion_observer', 'evaluation.metrics.visual_motion'
-    sensor_type = 'PointCloud2' if args.kind == 'lidar' else 'Imu'
-    sensor_topic = '/airsim_node/drone_1/lidar' if args.kind == 'lidar' else '/airsim_node/drone_1/imu/imu'
+    if args.kind == 'dynamic-lidar':
+        module, audit_module = 'adapters.ros_noetic.dynamic_lidar_observer', 'evaluation.metrics.dynamic_lidar'
+    sensor_type = 'PointCloud2' if args.kind in ('lidar', 'dynamic-lidar') else 'Imu'
+    sensor_topic = '/airsim_node/drone_1/lidar' if args.kind in ('lidar', 'dynamic-lidar') else '/airsim_node/drone_1/imu/imu'
     marker = 'rmua_' + args.kind.replace('-', '_') + '_sensor_readiness'
     code = 1
     observer_code = None
@@ -149,6 +152,8 @@ def main():
             manifest['telemetry'] = ['lidar_frames.jsonl', 'lidar_summary.json',
                                      'lidar_first_message.json', 'lidar_first_message.bin',
                                      'lidar_endpoint_snapshot.json', 'lidar_audit.json']
+            if args.kind == 'dynamic-lidar':
+                manifest['telemetry'] = ['dynamic_lidar_results.jsonl', 'dynamic_lidar_summary.json', 'dynamic_lidar_audit.json']
             if args.kind == 'stereo':
                 manifest['telemetry'] = ['stereo_pairs.jsonl', 'stereo_summary.json',
                     'stereo_first_left.json', 'stereo_first_left.bin', 'stereo_first_right.json',
