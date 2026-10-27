@@ -1,0 +1,656 @@
+{
+  "iteration": 49,
+  "acceptance_eligible": false,
+  "online_control_published": false,
+  "offline_comparison": [
+    {
+      "name": "pwm",
+      "input_sha256_equal": true,
+      "truth_sha256": "83fe4bd8a9bde471c2b02ef9b0babb654c7dfcc1dd1b1520f10ecc31e8751ae9",
+      "full_counts": {
+        "ESTIMATED": 26,
+        "REJECTED": 1
+      },
+      "half_counts": {
+        "ESTIMATED": 27
+      },
+      "common_count": 26,
+      "full_translation_error_m": [
+        0.014145772626126034,
+        0.03926760011741032,
+        0.049220176039291234
+      ],
+      "half_translation_error_m": [
+        0.030036245995093767,
+        0.09338573731910596,
+        0.11147633432686442
+      ],
+      "full_rotation_error_rad": [
+        0.0008205421772288298,
+        0.0021275136964906995,
+        0.002832305548780013
+      ],
+      "half_rotation_error_rad": [
+        0.0017264810511744139,
+        0.004780184054938404,
+        0.005265384820572201
+      ],
+      "improved_count": 1,
+      "paired_results": [
+        {
+          "previous": "front_left_0000.png",
+          "current": "front_left_0001.png",
+          "full_error_m": 0.0027681169826051983,
+          "half_error_m": 0.04980741852480763
+        },
+        {
+          "previous": "front_left_0002.png",
+          "current": "front_left_0003.png",
+          "full_error_m": 0.007096872677133748,
+          "half_error_m": 0.02416096881928751
+        },
+        {
+          "previous": "front_left_0003.png",
+          "current": "front_left_0004.png",
+          "full_error_m": 0.0037893450311052754,
+          "half_error_m": 0.02253654924176766
+        },
+        {
+          "previous": "front_left_0004.png",
+          "current": "front_left_0005.png",
+          "full_error_m": 0.049220176039291234,
+          "half_error_m": 0.07917514236214018
+        },
+        {
+          "previous": "front_left_0005.png",
+          "current": "front_left_0006.png",
+          "full_error_m": 0.046353452199280824,
+          "half_error_m": 0.0695124982948608
+        },
+        {
+          "previous": "front_left_0006.png",
+          "current": "front_left_0007.png",
+          "full_error_m": 0.03705842618372051,
+          "half_error_m": 0.028423646669975648
+        },
+        {
+          "previous": "front_left_0007.png",
+          "current": "front_left_0008.png",
+          "full_error_m": 0.0107854039001994,
+          "half_error_m": 0.08768444459985203
+        },
+        {
+          "previous": "front_left_0008.png",
+          "current": "front_left_0009.png",
+          "full_error_m": 0.02111549935687661,
+          "half_error_m": 0.06275390523701739
+        },
+        {
+          "previous": "front_left_0009.png",
+          "current": "front_left_0010.png",
+          "full_error_m": 0.0036263015799505548,
+          "half_error_m": 0.017531341292870928
+        },
+        {
+          "previous": "front_left_0010.png",
+          "current": "front_left_0011.png",
+          "full_error_m": 0.00748866996979504,
+          "half_error_m": 0.01717205986390661
+        },
+        {
+          "previous": "front_left_0011.png",
+          "current": "front_left_0012.png",
+          "full_error_m": 0.013160444745479343,
+          "half_error_m": 0.020389677458394588
+        },
+        {
+          "previous": "front_left_0012.png",
+          "current": "front_left_0013.png",
+          "full_error_m": 0.02362435955324131,
+          "half_error_m": 0.031147346293764172
+        },
+        {
+          "previous": "front_left_0013.png",
+          "current": "front_left_0014.png",
+          "full_error_m": 0.009909589792136663,
+          "half_error_m": 0.020490044025976106
+        },
+        {
+          "previous": "front_left_0014.png",
+          "current": "front_left_0015.png",
+          "full_error_m": 0.007925409538295179,
+          "half_error_m": 0.039121933098842966
+        },
+        {
+          "previous": "front_left_0015.png",
+          "current": "front_left_0016.png",
+          "full_error_m": 0.025078628064657462,
+          "half_error_m": 0.11147633432686442
+        },
+        {
+          "previous": "front_left_0016.png",
+          "current": "front_left_0017.png",
+          "full_error_m": 0.019145568002355704,
+          "half_error_m": 0.06007163295967224
+        },
+        {
+          "previous": "front_left_0017.png",
+          "current": "front_left_0018.png",
+          "full_error_m": 0.015588221268685505,
+          "half_error_m": 0.028925145696423363
+        },
+        {
+          "previous": "front_left_0018.png",
+          "current": "front_left_0019.png",
+          "full_error_m": 0.04147677405110012,
+          "half_error_m": 0.096134686693792
+        },
+        {
+          "previous": "front_left_0019.png",
+          "current": "front_left_0020.png",
+          "full_error_m": 0.009713635929220954,
+          "half_error_m": 0.019590821064637717
+        },
+        {
+          "previous": "front_left_0020.png",
+          "current": "front_left_0021.png",
+          "full_error_m": 0.007432487819393669,
+          "half_error_m": 0.025377022406054432
+        },
+        {
+          "previous": "front_left_0021.png",
+          "current": "front_left_0022.png",
+          "full_error_m": 0.009052168892017326,
+          "half_error_m": 0.0906367879444199
+        },
+        {
+          "previous": "front_left_0022.png",
+          "current": "front_left_0023.png",
+          "full_error_m": 0.015131100506772726,
+          "half_error_m": 0.019549619257767804
+        },
+        {
+          "previous": "front_left_0023.png",
+          "current": "front_left_0024.png",
+          "full_error_m": 0.009574467434208145,
+          "half_error_m": 0.10778593533000089
+        },
+        {
+          "previous": "front_left_0024.png",
+          "current": "front_left_0025.png",
+          "full_error_m": 0.017189939641090893,
+          "half_error_m": 0.01809578011919791
+        },
+        {
+          "previous": "front_left_0025.png",
+          "current": "front_left_0026.png",
+          "full_error_m": 0.019706199497693352,
+          "half_error_m": 0.06191658965310808
+        },
+        {
+          "previous": "front_left_0026.png",
+          "current": "front_left_0027.png",
+          "full_error_m": 0.01859579778903666,
+          "half_error_m": 0.01961969881175325
+        }
+      ],
+      "artifacts": {
+        "runs/stereo_motion_20261027_iteration47/pwm_lk.json": "75ad8a52b9bdb1e45476a517b53333f467a38a26bcb112528a257849049b7c10",
+        "runs/stereo_motion_20261027_iteration47/pwm_lk_eval.json": "b33c6650ac8fa119cad3431648b098833b02948fc551faa57607fc7990c12928",
+        "runs/stereo_motion_20261027_iteration49/pwm_half.json": "5e1e7305018c6778ab632c9dc58c128cc414deb8e98d066bbeb179f122982f55",
+        "runs/stereo_motion_20261027_iteration49/pwm_half_eval.json": "d77b3c15535c59c13c90d777e1c37fbe6049d84287f9f12e596d740f6394ba07"
+      }
+    },
+    {
+      "name": "vel",
+      "input_sha256_equal": true,
+      "truth_sha256": "de4b39fb9fe5a9e242b751218c435e2146662a8385478a164ccc16366c195918",
+      "full_counts": {
+        "ESTIMATED": 22
+      },
+      "half_counts": {
+        "ESTIMATED": 22
+      },
+      "common_count": 22,
+      "full_translation_error_m": [
+        0.014128733259453824,
+        0.03666910411583067,
+        0.06345577542800908
+      ],
+      "half_translation_error_m": [
+        0.01722544602394293,
+        0.031474131479306396,
+        0.06137522742811394
+      ],
+      "full_rotation_error_rad": [
+        0.0007152564769335084,
+        0.0020271750414150237,
+        0.0033875105758052614
+      ],
+      "half_rotation_error_rad": [
+        0.000851676593326471,
+        0.001822083764765988,
+        0.0034173898618003783
+      ],
+      "improved_count": 12,
+      "paired_results": [
+        {
+          "previous": "front_left_0000.png",
+          "current": "front_left_0001.png",
+          "full_error_m": 0.06345577542800908,
+          "half_error_m": 0.051280214105976614
+        },
+        {
+          "previous": "front_left_0001.png",
+          "current": "front_left_0002.png",
+          "full_error_m": 0.011199636801828375,
+          "half_error_m": 0.03158168681219934
+        },
+        {
+          "previous": "front_left_0002.png",
+          "current": "front_left_0003.png",
+          "full_error_m": 0.004843742490399416,
+          "half_error_m": 0.008533513499280469
+        },
+        {
+          "previous": "front_left_0003.png",
+          "current": "front_left_0004.png",
+          "full_error_m": 0.013129352676752864,
+          "half_error_m": 0.00773662238011696
+        },
+        {
+          "previous": "front_left_0004.png",
+          "current": "front_left_0005.png",
+          "full_error_m": 0.009014578222632746,
+          "half_error_m": 0.027676094759461225
+        },
+        {
+          "previous": "front_left_0005.png",
+          "current": "front_left_0006.png",
+          "full_error_m": 0.032181123230536283,
+          "half_error_m": 0.02945411072799594
+        },
+        {
+          "previous": "front_left_0006.png",
+          "current": "front_left_0007.png",
+          "full_error_m": 0.03714061464635132,
+          "half_error_m": 0.03050613348326986
+        },
+        {
+          "previous": "front_left_0007.png",
+          "current": "front_left_0008.png",
+          "full_error_m": 0.056131106150398354,
+          "half_error_m": 0.06137522742811394
+        },
+        {
+          "previous": "front_left_0008.png",
+          "current": "front_left_0009.png",
+          "full_error_m": 0.029041823465427365,
+          "half_error_m": 0.028512871552567015
+        },
+        {
+          "previous": "front_left_0009.png",
+          "current": "front_left_0010.png",
+          "full_error_m": 0.011705600992403233,
+          "half_error_m": 0.011854398185000548
+        },
+        {
+          "previous": "front_left_0010.png",
+          "current": "front_left_0011.png",
+          "full_error_m": 0.016849553085264556,
+          "half_error_m": 0.02266450532181602
+        },
+        {
+          "previous": "front_left_0011.png",
+          "current": "front_left_0012.png",
+          "full_error_m": 0.032425509341144736,
+          "half_error_m": 0.021363207679741397
+        },
+        {
+          "previous": "front_left_0012.png",
+          "current": "front_left_0013.png",
+          "full_error_m": 0.024371895480296293,
+          "half_error_m": 0.0262878315431701
+        },
+        {
+          "previous": "front_left_0013.png",
+          "current": "front_left_0014.png",
+          "full_error_m": 0.003417881465036447,
+          "half_error_m": 0.005496766200362813
+        },
+        {
+          "previous": "front_left_0014.png",
+          "current": "front_left_0015.png",
+          "full_error_m": 0.015128113842154785,
+          "half_error_m": 0.008961259929135513
+        },
+        {
+          "previous": "front_left_0015.png",
+          "current": "front_left_0016.png",
+          "full_error_m": 0.0065717870638225566,
+          "half_error_m": 0.02405349509518515
+        },
+        {
+          "previous": "front_left_0016.png",
+          "current": "front_left_0017.png",
+          "full_error_m": 0.011274150548834752,
+          "half_error_m": 0.006910190021635207
+        },
+        {
+          "previous": "front_left_0017.png",
+          "current": "front_left_0018.png",
+          "full_error_m": 0.011304388505667954,
+          "half_error_m": 0.003714313871328685
+        },
+        {
+          "previous": "front_left_0018.png",
+          "current": "front_left_0019.png",
+          "full_error_m": 0.008849375600085072,
+          "half_error_m": 0.007932757640478447
+        },
+        {
+          "previous": "front_left_0019.png",
+          "current": "front_left_0020.png",
+          "full_error_m": 0.0066225462663430205,
+          "half_error_m": 0.013087684368144462
+        },
+        {
+          "previous": "front_left_0020.png",
+          "current": "front_left_0021.png",
+          "full_error_m": 0.020579925666033613,
+          "half_error_m": 0.0065960392363927905
+        },
+        {
+          "previous": "front_left_0021.png",
+          "current": "front_left_0022.png",
+          "full_error_m": 0.01852324169196163,
+          "half_error_m": 0.009228494557715072
+        }
+      ],
+      "artifacts": {
+        "runs/stereo_motion_20261027_iteration47/vel_lk.json": "0bcc410cf5a3087f0b8234ec97ca1081eb2f7b5480f426de965188582a713abc",
+        "runs/stereo_motion_20261027_iteration47/vel_lk_eval.json": "8cc0a74a3043bcb83e6a18b825a18cc350904e31e44420aec3098d18e32019ff",
+        "runs/stereo_motion_20261027_iteration49/vel_half.json": "bde48ef4cb0704bceb06fcd22065936d26207e0ce9c15286b4d64b0415b73c63",
+        "runs/stereo_motion_20261027_iteration49/vel_half_eval.json": "da9a6450a3c221185a88bf020e4bf8bfc3bf7a74ffaea685411c0ec5436f80fc"
+      }
+    },
+    {
+      "name": "other",
+      "input_sha256_equal": true,
+      "truth_sha256": "e767ed76fb8c7b6183d2db4d4a65646695537f047e6b86e1f4da7095d30999c8",
+      "full_counts": {
+        "ESTIMATED": 12,
+        "REJECTED": 1
+      },
+      "half_counts": {
+        "ESTIMATED": 12,
+        "REJECTED": 1
+      },
+      "common_count": 12,
+      "full_translation_error_m": [
+        0.014528813432713988,
+        0.03943286564979514,
+        0.04444027356109255
+      ],
+      "half_translation_error_m": [
+        0.01769159026694154,
+        0.08329605529957844,
+        0.11881324182454278
+      ],
+      "full_rotation_error_rad": [
+        0.0009195704439636803,
+        0.0020437873932159234,
+        0.0024066804355326265
+      ],
+      "half_rotation_error_rad": [
+        0.001344200552799321,
+        0.0045699600547810994,
+        0.006896990330661058
+      ],
+      "improved_count": 4,
+      "paired_results": [
+        {
+          "previous": "front_left_0000.png",
+          "current": "front_left_0001.png",
+          "full_error_m": 0.005696718485744815,
+          "half_error_m": 0.08489736749258975
+        },
+        {
+          "previous": "front_left_0001.png",
+          "current": "front_left_0002.png",
+          "full_error_m": 0.008935724460884545,
+          "half_error_m": 0.02418822227237519
+        },
+        {
+          "previous": "front_left_0002.png",
+          "current": "front_left_0003.png",
+          "full_error_m": 0.002302580917640024,
+          "half_error_m": 0.0025849156395595795
+        },
+        {
+          "previous": "front_left_0003.png",
+          "current": "front_left_0004.png",
+          "full_error_m": 0.0012730846891583648,
+          "half_error_m": 0.012866620230945173
+        },
+        {
+          "previous": "front_left_0004.png",
+          "current": "front_left_0005.png",
+          "full_error_m": 0.009326140522253846,
+          "half_error_m": 0.005319171081133498
+        },
+        {
+          "previous": "front_left_0005.png",
+          "current": "front_left_0006.png",
+          "full_error_m": 0.03252714407701411,
+          "half_error_m": 0.015346133742458364
+        },
+        {
+          "previous": "front_left_0006.png",
+          "current": "front_left_0007.png",
+          "full_error_m": 0.027520220570423415,
+          "half_error_m": 0.020037046791424717
+        },
+        {
+          "previous": "front_left_0007.png",
+          "current": "front_left_0008.png",
+          "full_error_m": 0.04444027356109255,
+          "half_error_m": 0.11881324182454278
+        },
+        {
+          "previous": "front_left_0008.png",
+          "current": "front_left_0009.png",
+          "full_error_m": 0.040200168046770804,
+          "half_error_m": 0.005699961541389585
+        },
+        {
+          "previous": "front_left_0009.png",
+          "current": "front_left_0010.png",
+          "full_error_m": 0.019731486343174127,
+          "half_error_m": 0.0688842455624766
+        },
+        {
+          "previous": "front_left_0010.png",
+          "current": "front_left_0011.png",
+          "full_error_m": 0.030462903643318818,
+          "half_error_m": 0.034503842842782885
+        },
+        {
+          "previous": "front_left_0028.png",
+          "current": "front_left_0029.png",
+          "full_error_m": 0.007488810264275873,
+          "half_error_m": 0.010135173657512127
+        }
+      ],
+      "artifacts": {
+        "runs/stereo_motion_20261027_iteration47/other_lk.json": "c88dd78953c53a426414e08e819060e1b9974fcc09a746f866eda7c880efca06",
+        "runs/stereo_motion_20261027_iteration47/other_lk_eval.json": "fa997de49ef37eb5ab1f75c9926b58d5b7344ce406ee942bcbf689d0444e0924",
+        "runs/stereo_motion_20261027_iteration49/other_half.json": "f8df0a8a6ab8f684442014543fcc89b30e313e17fc798b7d3c40cd9d9443f1e8",
+        "runs/stereo_motion_20261027_iteration49/other_half_eval.json": "2d0779d95a19731f6ad916b580d1ce5b32c2346435f1bd14d9186072f7f91601"
+      }
+    }
+  ],
+  "online_runs": [
+    {
+      "path": "runs/20261027T103241Z_c425062a66f44396927996e3ab632a4b",
+      "run_state": "OBSERVED",
+      "source_unchanged": true,
+      "simulator_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "faults": [],
+        "pairs": 17,
+        "received": {
+          "imu": 800,
+          "left": 145,
+          "right": 145
+        },
+        "overwritten": {},
+        "pairing_events": {
+          "SENSOR_EXPIRED_left": 128,
+          "SENSOR_EXPIRED_right": 128,
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 17,
+          "superseded": 0,
+          "taken": 17,
+          "discarded_on_close": 0
+        },
+        "results": 17,
+        "statuses": {
+          "WARMUP": 7,
+          "ESTIMATED": 4,
+          "REJECTED": 6
+        },
+        "timing_current_results": 0,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.15,
+        "source_settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "method": "orb_lk_half",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 17,
+        "timing_current_results": 0,
+        "status_counts": {
+          "WARMUP": 7,
+          "ESTIMATED": 4,
+          "REJECTED": 6
+        },
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "compute_s_p50_p90_max": [
+        0.08982878748793155,
+        0.10169166051782667,
+        0.1062579290010035
+      ],
+      "sensor_age_s_p50_p90_max": [
+        0.1905040740966797,
+        0.20820448398590088,
+        0.21000456809997559
+      ],
+      "result_sha256": "2aa1e8863b5dc840f492be57e1cdfff289e73a1d53d1a57e032aeb58ff4da4c5",
+      "manifest_sha256": "7a79d5239175e63676424f26f46e0bd69e2756434a9d6ded385009c740edab71"
+    },
+    {
+      "path": "runs/20261027T103309Z_d8e0cc97376645098279d47422d4ff5a",
+      "run_state": "OBSERVED",
+      "source_unchanged": true,
+      "simulator_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "faults": [],
+        "pairs": 128,
+        "received": {
+          "imu": 806,
+          "left": 130,
+          "right": 130
+        },
+        "overwritten": {},
+        "pairing_events": {
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0,
+          "SENSOR_EXPIRED_left": 1,
+          "SENSOR_EXPIRED_right": 1
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 128,
+          "superseded": 0,
+          "taken": 128,
+          "discarded_on_close": 0
+        },
+        "results": 128,
+        "statuses": {
+          "WARMUP": 58,
+          "ESTIMATED": 58,
+          "REJECTED": 12
+        },
+        "timing_current_results": 0,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.2,
+        "source_settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "method": "orb_lk_half",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 128,
+        "timing_current_results": 0,
+        "status_counts": {
+          "WARMUP": 58,
+          "ESTIMATED": 58,
+          "REJECTED": 12
+        },
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "compute_s_p50_p90_max": [
+        0.09724310005549341,
+        0.11875683455727998,
+        0.1339777559041977
+      ],
+      "sensor_age_s_p50_p90_max": [
+        0.24300527572631836,
+        0.2610056400299072,
+        0.279005765914917
+      ],
+      "result_sha256": "641a56f28f929f0cb4578ecb1ef0e16b7a9d850932a1855e9573b8f6331537c7",
+      "manifest_sha256": "b50d04f04d004c42164f3b39fb484fc102eec57e49aeae0c28319a42f151c1bc"
+    }
+  ],
+  "timing_note": "host and Noetic tests ran concurrently with simulator startup for seed2153; online samples not an isolated latency benchmark"
+}

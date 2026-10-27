@@ -17,6 +17,8 @@
 
 下一批开发按设计第 16 节 Sprint A 的未完成项推进，然后进入 Sprint B。旧版仅作参考，任何算法迁移都需接口、坐标和回归证据。
 
+2026-10-27 迭代 49：新增显式半分辨率 ORB/LK 候选及匹配内参缩放；离线三场共同帧相对全分辨率 PWM 误差中位0.014→0.030m、VEL 0.014→0.017m、另场0.015→0.018m，部分精度下降。在线默认150ms场次4次估计全部过期；200ms场次58次全部过期，计算中位97ms、图像stamp至检查中位243ms。未更改默认方法或授权控制。宿主205通过、Noetic202通过/3跳过，见 docs/visual_motion_half_scale.md 和 docs/evidence/p2_visual_motion_half.json。
+
 2026-10-27 迭代 48：实现只读在线双目视觉相对运动链、容量1最新帧队列及前后原始时效核验。seed2151/200ms 130对、31次估计全部过期，计算中位219ms、源stamp至结果检查中位351ms；seed2152/默认150ms仅6对、1次估计也过期。ROS白名单/计龄审计通过但时效不通过，未融合或发控制。seed2150入口漏传settings失败保留并修复；宿主204项通过、Noetic201项通过/3项跳过。见 docs/visual_motion_online.md 与 docs/evidence/p2_visual_motion_online.json。
 
 2026-10-27 迭代 47：稀疏双目候选增加 ORB 关联后双向 LK 亚像素细化，原 ORB 默认不变；同图、共同成功帧的 PWM 平移误差中位数0.052→0.014m（22组），VEL 0.037→0.013m（21组）；另一低速悬停记录0.023→0.015m（12组），部分帧变差。首次合成测试失败与后续修正已记录；宿主200项通过、Noetic197项通过/3项跳过。约141–151ms离线中位数不证明在线时效；未融合/授予控制。见 docs/stereo_odometry_lk.md 与 docs/evidence/p2_stereo_lk_flight.json。

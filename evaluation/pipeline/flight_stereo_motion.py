@@ -124,7 +124,7 @@ def main():
     sub = parser.add_subparsers(dest='command', required=True)
     est = sub.add_parser('estimate'); est.add_argument('source'); est.add_argument('output')
     est.add_argument('--settings', default='configs/simulator_settings.json')
-    est.add_argument('--method', choices=('orb', 'orb_lk'), default='orb')
+    est.add_argument('--method', choices=('orb', 'orb_lk', 'orb_lk_half'), default='orb')
     ev = sub.add_parser('evaluate'); ev.add_argument('estimate'); ev.add_argument('truth'); ev.add_argument('output')
     args = parser.parse_args()
     result = (estimate(args.source, args.settings, args.method) if args.command == 'estimate'

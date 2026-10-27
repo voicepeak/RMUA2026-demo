@@ -1,5 +1,5 @@
 """Sparse stereo visual odometry; nominal geometry, no control authorization."""
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import math
 
 import numpy as np
@@ -35,7 +35,7 @@ def _reciprocal(first, second, cv2):
             and backward[m.trainIdx].trainIdx == m.queryIdx]
 
 
-def solve_relative(points_body_previous, pixels_current, rig, *, min_inliers=12):
+def solve_relative(points_body_previous, pixels_current, rig, *, min_inliers=12, reprojection_limit_px=2.):
     """Estimate body-current pose in body-previous, using nominal stereo geometry.
 
     PnP maps previous optical points into the current optical frame; we invert
@@ -48,7 +48,8 @@ def solve_relative(points_body_previous, pixels_current, rig, *, min_inliers=12)
     pixels = np.asarray(pixels_current, dtype=np.float64)
     if (body.ndim != 2 or body.shape[1:] != (3,) or pixels.shape != (len(body), 2)
             or len(body) < min_inliers or not np.isfinite(body).all() or not np.isfinite(pixels).all()
-            or not isinstance(min_inliers, int) or isinstance(min_inliers, bool) or min_inliers < 6):
+            or not isinstance(min_inliers, int) or isinstance(min_inliers, bool) or min_inliers < 6
+            or not math.isfinite(reprojection_limit_px) or not 0 < reprojection_limit_px <= 2.):
         raise ValueError('invalid visual odometry correspondences')
     camera = rig.left
     if (np.any(pixels[:, 0] < 0) or np.any(pixels[:, 0] >= camera.width)
@@ -63,7 +64,7 @@ def solve_relative(points_body_previous, pixels_current, rig, *, min_inliers=12)
         raise ValueError('degenerate geometry')
     k = np.array(((camera.fx, 0., camera.cx), (0., camera.fy, camera.cy), (0., 0., 1.)))
     ok, rvec, tvec, inliers = cv2.solvePnPRansac(optical, pixels, k, None,
-        iterationsCount=150, reprojectionError=2., confidence=.99, flags=cv2.SOLVEPNP_EPNP)
+        iterationsCount=150, reprojectionError=reprojection_limit_px, confidence=.99, flags=cv2.SOLVEPNP_EPNP)
     if not ok or inliers is None or len(inliers) < min_inliers or len(inliers) / len(body) < .5:
         raise ValueError('insufficient PnP inliers')
     indices = inliers.ravel()
@@ -75,7 +76,7 @@ def solve_relative(points_body_previous, pixels_current, rig, *, min_inliers=12)
     projected, _ = cv2.projectPoints(optical[indices], rvec, tvec, k, None)
     errors = np.linalg.norm(projected.reshape(-1, 2) - pixels[indices], axis=1)
     p95 = float(np.percentile(errors, 95))
-    if not math.isfinite(p95) or p95 > 2. or np.any((optical[indices] @ rotation.T + tvec.ravel())[:, 2] <= 0):
+    if not math.isfinite(p95) or p95 > reprojection_limit_px or np.any((optical[indices] @ rotation.T + tvec.ravel())[:, 2] <= 0):
         raise ValueError('invalid PnP reprojection')
     # Optical (right, down, forward) -> sensor FRD (forward, right, down).
     optical_to_frd = np.array(((0., 0., 1.), (1., 0., 0.), (0., 1., 0.)))
@@ -88,12 +89,14 @@ def solve_relative(points_body_previous, pixels_current, rig, *, min_inliers=12)
     return tuple(displacement), tuple(tuple(float(v) for v in row) for row in prev_from_cur_body), len(indices), p95
 
 
-def refine_correspondences(source_image, target_image, source_points, target_points, cv2):
+def refine_correspondences(source_image, target_image, source_points, target_points, cv2, pixel_scale=1.):
     """Refine descriptor matches with forward/backward pyramidal LK.
 
     Returns refined target pixels and a mask; invalid, drifting or inconsistent
     patches never contribute to triangulation or PnP. Not a calibration claim.
     """
+    if pixel_scale not in (1., .5):
+        raise ValueError("unsupported image scale")
     source = np.asarray(source_points, dtype=np.float32).reshape(-1, 1, 2)
     initial = np.asarray(target_points, dtype=np.float32).reshape(-1, 1, 2)
     if source.shape != initial.shape or not np.isfinite(source).all() or not np.isfinite(initial).all():
@@ -116,11 +119,23 @@ def refine_correspondences(source_image, target_image, source_points, target_poi
     height, width = target_image.shape
     valid = ((good_forward.ravel() != 0) & (good_backward.ravel() != 0)
              & np.isfinite(forward).all(axis=1) & np.isfinite(backward).all(axis=1)
-             & (np.linalg.norm(backward - original, axis=1) <= .75)
-             & (np.linalg.norm(forward - guessed, axis=1) <= 3.)
+             & (np.linalg.norm(backward - original, axis=1) <= .75 * pixel_scale)
+             & (np.linalg.norm(forward - guessed, axis=1) <= 3. * pixel_scale)
              & (forward[:, 0] >= 0) & (forward[:, 0] < width)
              & (forward[:, 1] >= 0) & (forward[:, 1] < height))
     return forward.astype(np.float64), valid
+
+
+
+def half_scale_rig(rig):
+    """Pixel-center-preserving geometry for OpenCV 2x area downsampling."""
+    if rig.left.width % 2 or rig.left.height % 2:
+        raise ValueError('half scale requires even dimensions')
+    def scaled(camera):
+        return replace(camera, width=camera.width // 2, height=camera.height // 2,
+                       fx=camera.fx * .5, fy=camera.fy * .5,
+                       cx=(camera.cx + .5) * .5 - .5, cy=(camera.cy + .5) * .5 - .5)
+    return replace(rig, left=scaled(rig.left), right=scaled(rig.right))
 
 
 def estimate_stereo_motion(previous, current, rig, max_gap_s=2., method="orb"):
@@ -134,10 +149,14 @@ def estimate_stereo_motion(previous, current, rig, max_gap_s=2., method="orb"):
     shape = (rig.left.height, rig.left.width)
     if any(frame.pixels.shape[:2] != shape for frame in (previous.left, previous.right, current.left)):
         raise ValueError('stereo dimensions differ from camera model')
-    if method not in ("orb", "orb_lk"):
+    if method not in ("orb", "orb_lk", "orb_lk_half"):
         raise ValueError("unknown visual odometry method")
-    orb = cv2.ORB_create(nfeatures=2000, fastThreshold=10)
+    scale = .5 if method == "orb_lk_half" else 1.
+    orb = cv2.ORB_create(nfeatures=1200 if scale == .5 else 2000, fastThreshold=10)
     images = [_gray(frame, cv2) for frame in (previous.left, previous.right, current.left)]
+    if scale == .5:
+        images = [cv2.resize(image, (rig.left.width // 2, rig.left.height // 2), interpolation=cv2.INTER_AREA) for image in images]
+        rig = half_scale_rig(rig)
     features = [orb.detectAndCompute(image, None) for image in images]
     (kl, dl), (kr, dr), (kc, dc) = features
     stereo, temporal = _reciprocal(dl, dr, cv2), _reciprocal(dl, dc, cv2)
@@ -146,12 +165,12 @@ def estimate_stereo_motion(previous, current, rig, max_gap_s=2., method="orb"):
     left = np.array([kl[m.queryIdx].pt for m in joined], dtype=np.float64).reshape(-1, 2)
     right = np.array([kr[stereo_by_left[m.queryIdx]].pt for m in joined], dtype=np.float64).reshape(-1, 2)
     target = np.array([kc[m.trainIdx].pt for m in joined], dtype=np.float64).reshape(-1, 2)
-    if method == "orb_lk":
-        right, good_stereo = refine_correspondences(images[0], images[1], left, right, cv2)
-        target, good_temporal = refine_correspondences(images[0], images[2], left, target, cv2)
+    if method in ("orb_lk", "orb_lk_half"):
+        right, good_stereo = refine_correspondences(images[0], images[1], left, right, cv2, pixel_scale=scale)
+        target, good_temporal = refine_correspondences(images[0], images[2], left, target, cv2, pixel_scale=scale)
         keep = good_stereo & good_temporal
         left, right, target = left[keep], right[keep], target[keep]
-    body, valid, _ = rig.triangulate_body(left, right, max_depth_m=30., max_vertical_px=1.)
-    translation, rotation, inliers, p95 = solve_relative(body[valid], target[valid], rig)
+    body, valid, _ = rig.triangulate_body(left, right, max_depth_m=30., max_vertical_px=scale)
+    translation, rotation, inliers, p95 = solve_relative(body[valid], target[valid], rig, reprojection_limit_px=2. * scale)
     return RelativeMotion(translation, rotation, len(stereo), len(joined), inliers, p95,
                           previous.metadata.stamp, current.metadata.stamp, current.metadata.epoch)

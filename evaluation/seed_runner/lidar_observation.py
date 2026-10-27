@@ -18,11 +18,14 @@ def main():
     parser.add_argument('--duration', type=float, default=10.)
     parser.add_argument('--kind', choices=('lidar', 'stereo', 'pose-history', 'joint', 'visual-motion'), default='lidar')
     parser.add_argument('--image-age-budget-ms', type=int, choices=(150, 200), default=150)
+    parser.add_argument('--visual-motion-method', choices=('orb_lk', 'orb_lk_half'), default='orb_lk')
     args = parser.parse_args()
     if args.seed < 0 or not math.isfinite(args.duration) or not 0 < args.duration <= 30:
         parser.error('nonnegative seed and duration in (0,30] required')
     if args.kind not in ('stereo','joint','visual-motion') and args.image_age_budget_ms != 150:
         parser.error('image age experiment requires --kind stereo or joint')
+    if args.kind != 'visual-motion' and args.visual_motion_method != 'orb_lk':
+        parser.error('visual motion method requires --kind visual-motion')
     root = Path(__file__).resolve().parents[2]
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
     digest = subprocess.check_output(['docker', 'inspect', container, '--format', '{{.Image}}'],
@@ -32,6 +35,8 @@ def main():
     config['experiment'] = {'kind': args.kind + '_read_only', 'duration_s': args.duration}
     if args.kind in ('stereo','joint','visual-motion'):
         config['experiment']['image_age_budget_ms'] = args.image_age_budget_ms
+    if args.kind == 'visual-motion':
+        config['experiment']['visual_motion_method'] = args.visual_motion_method
     run, manifest = prepare_run(root, root / 'runs', args.seed, digest, config)
     stages = {'lidar': 'P2_READ_ONLY_LIDAR_ENDPOINTS', 'stereo': 'P2_READ_ONLY_STEREO_PAIRING',
               'pose-history': 'P2_READ_ONLY_POSE_HISTORY', 'joint': 'P2_READ_ONLY_JOINT_SENSORS',
@@ -86,6 +91,8 @@ def main():
                         '--duration', str(args.duration)]
                 if args.kind in ('stereo','joint','visual-motion'):
                     command.extend(['--image-age-budget-ms', str(args.image_age_budget_ms)])
+                if args.kind == 'visual-motion':
+                    command.extend(['--method', args.visual_motion_method])
                 code = subprocess.call(command, stdout=observer_log,
                         stderr=subprocess.STDOUT, timeout=args.duration + 15)
                 observer_code = code

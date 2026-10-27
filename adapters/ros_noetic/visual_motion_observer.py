@@ -16,7 +16,7 @@ from perception.stereo_depth.transport import LatestSlot
 from perception.visual_odometry.online import MotionWindow
 
 
-def observe(run, duration, image_ttl, settings):
+def observe(run, duration, image_ttl, settings, method='orb_lk'):
     import cv2
     import rosgraph
     import rospy
@@ -25,7 +25,7 @@ def observe(run, duration, image_ttl, settings):
     rospy.init_node('rmua_visual_motion_observer', anonymous=True, disable_signals=True)
     lock = threading.Lock(); clock = SensorClock(); pending = {}; received = Counter(); overwritten = Counter()
     faults = []; slot = LatestSlot(); stop = threading.Event(); rows = []
-    rig = load_nominal_rig(settings); window = MotionWindow(rig)
+    rig = load_nominal_rig(settings); window = MotionWindow(rig, method=method)
     def receive(side, message):
         arrival = time.monotonic()
         with lock:
@@ -98,7 +98,7 @@ def observe(run, duration, image_ttl, settings):
                    'statuses': dict(Counter(row['status'] for row in rows)),
                    'timing_current_results': sum(row.get('timing_current', False) for row in rows),
                    'node_graph': graph, 'image_age_budget_s': image_ttl,
-                   'source_settings_sha256': rig.settings_sha256, 'control_published': False,
+                   'source_settings_sha256': rig.settings_sha256, 'method': method, 'control_published': False,
                    'debug_inputs_used': False, 'control_eligible': False, 'acceptance_eligible': False}
         (run / 'visual_motion_summary.json').write_text(json.dumps(summary, indent=2, allow_nan=False) + '\n')
     return 0 if pairs and rows and not faults else 2
@@ -110,9 +110,10 @@ def main():
     parser.add_argument('--duration', type=float, default=10.)
     parser.add_argument('--image-age-budget-ms', type=int, choices=(150, 200), default=150)
     parser.add_argument('--settings', default='/workspace/main/configs/simulator_settings.json')
+    parser.add_argument('--method', choices=('orb_lk', 'orb_lk_half'), default='orb_lk')
     args = parser.parse_args()
     if not math.isfinite(args.duration) or not 0 < args.duration <= 30: parser.error('duration must be in (0,30]')
-    return observe(args.run_dir, args.duration, args.image_age_budget_ms/1000., args.settings)
+    return observe(args.run_dir, args.duration, args.image_age_budget_ms/1000., args.settings, args.method)
 
 
 if __name__ == '__main__':

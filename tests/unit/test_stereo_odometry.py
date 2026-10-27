@@ -7,7 +7,7 @@ import numpy as np
 from interfaces.contracts import Metadata
 from perception.stereo_depth.geometry import load_nominal_rig
 from perception.stereo_depth.pairing import ImageFrame, StereoPair
-from perception.visual_odometry.stereo import estimate_stereo_motion, solve_relative
+from perception.visual_odometry.stereo import estimate_stereo_motion, solve_relative, half_scale_rig
 
 
 class StereoOdometryTests(unittest.TestCase):
@@ -18,6 +18,18 @@ class StereoOdometryTests(unittest.TestCase):
     def scene(self):
         rng = np.random.RandomState(7)
         return np.column_stack((rng.uniform(7, 18, 100), rng.uniform(-4, 4, 100), rng.uniform(-3, 3, 100)))
+
+    def test_half_scale_preserves_stereo_metric_geometry(self):
+        rig = half_scale_rig(self.rig)
+        points = self.scene()
+        left, _, visible_left = self.rig.left.project_body(points)
+        right, _, visible_right = self.rig.right.project_body(points)
+        visible = visible_left & visible_right
+        left = (left[visible] + .5) * .5 - .5
+        right = (right[visible] + .5) * .5 - .5
+        recovered, valid, _ = rig.triangulate_body(left, right)
+        self.assertTrue(valid.all())
+        np.testing.assert_allclose(recovered, points[visible], atol=1e-10)
 
     def test_known_body_motion_and_camera_lever_arm(self):
         points = self.scene()

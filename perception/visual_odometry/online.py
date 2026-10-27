@@ -7,7 +7,7 @@ from perception.visual_odometry.stereo import estimate_stereo_motion
 
 class MotionWindow:
     def __init__(self, rig, method='orb_lk', estimator=estimate_stereo_motion):
-        if method not in ('orb', 'orb_lk'):
+        if method not in ('orb', 'orb_lk', 'orb_lk_half'):
             raise ValueError('unknown motion method')
         self.rig, self.method, self.estimator = rig, method, estimator
         self.previous = None
