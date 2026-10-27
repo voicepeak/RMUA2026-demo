@@ -1,0 +1,194 @@
+{
+  "iteration": 54,
+  "acceptance_eligible": false,
+  "control_published": false,
+  "enhanced_audit_added_after_scenes": true,
+  "runs": [
+    {
+      "path": "runs/20261027T104637Z_242ea4c61de54b91a54c1f8989e6f904",
+      "run_state": "OBSERVED",
+      "source_unchanged": true,
+      "simulator_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "faults": [],
+        "pairs": 131,
+        "received": {
+          "right": 132,
+          "left": 132
+        },
+        "overwritten": {},
+        "pairing_events": {
+          "SENSOR_EXPIRED_right": 1,
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 131,
+          "superseded": 3,
+          "taken": 127,
+          "discarded_on_close": 1
+        },
+        "results": 127,
+        "statuses": {
+          "GATE_CANDIDATES": 6,
+          "REJECTED": 121
+        },
+        "tracking_statuses": {
+          "REJECTED": 5,
+          "TRACKED": 1,
+          "SOURCE_UNAVAILABLE": 121
+        },
+        "timing_current_results": 6,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/gps",
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/initial_pose"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.2,
+        "source_settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "method": "orb_lk",
+        "pipeline": "gate_track",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "initial_audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 127,
+        "timing_current_results": 6,
+        "status_counts": {
+          "GATE_CANDIDATES": 6,
+          "REJECTED": 121
+        },
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "enhanced_offline_audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 127,
+        "timing_current_results": 6,
+        "status_counts": {
+          "GATE_CANDIDATES": 6,
+          "REJECTED": 121
+        },
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "tracking_rejection_reasons": {
+        "POSE_NO_BRACKET": 3,
+        "POSE_BRACKET_HEALTH": 1,
+        "OUTPUT_SOURCE_LEASE_NOT_CURRENT": 1
+      },
+      "nonempty_tracks": 0,
+      "timely_nonempty_candidates": 0,
+      "results_sha256": "714f4ab2644b622c342e3b1d8631ab95f868e3367c5a35fccff808ecb1f421bb",
+      "manifest_sha256": "3898d16746c2254141e7b0b6903f073cc20accddd1a383bec88bff29474435f6"
+    },
+    {
+      "path": "runs/20261027T104706Z_a898367ebd1449f195be20171466f3e3",
+      "run_state": "OBSERVED",
+      "source_unchanged": true,
+      "simulator_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "faults": [],
+        "pairs": 128,
+        "received": {
+          "left": 130,
+          "right": 130
+        },
+        "overwritten": {},
+        "pairing_events": {
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0,
+          "SENSOR_EXPIRED_left": 1,
+          "SENSOR_EXPIRED_right": 1
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 128,
+          "superseded": 11,
+          "taken": 117,
+          "discarded_on_close": 0
+        },
+        "results": 117,
+        "statuses": {
+          "GATE_CANDIDATES": 9,
+          "REJECTED": 108
+        },
+        "tracking_statuses": {
+          "SOURCE_UNAVAILABLE": 112,
+          "REJECTED": 2,
+          "TRACKED": 3
+        },
+        "timing_current_results": 5,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/gps",
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/initial_pose"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.2,
+        "source_settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "method": "orb_lk",
+        "pipeline": "gate_track",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "initial_audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 117,
+        "timing_current_results": 5,
+        "status_counts": {
+          "GATE_CANDIDATES": 9,
+          "REJECTED": 108
+        },
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "enhanced_offline_audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 117,
+        "timing_current_results": 5,
+        "status_counts": {
+          "GATE_CANDIDATES": 9,
+          "REJECTED": 108
+        },
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "tracking_rejection_reasons": {
+        "POSE_NO_BRACKET": 1,
+        "POSE_BRACKET_HEALTH": 1
+      },
+      "nonempty_tracks": 0,
+      "timely_nonempty_candidates": 0,
+      "results_sha256": "c7b77f681f172291b6b5c0417f3431c1b17213467b316572f2d01b7cfa1c5e3a",
+      "manifest_sha256": "44e2b346055d932ed4086453493c9e2bbdb7beff4ac87e708b01c39a95307a34"
+    }
+  ]
+}

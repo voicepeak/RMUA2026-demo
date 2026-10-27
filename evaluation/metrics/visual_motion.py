@@ -28,9 +28,26 @@ def audit(run):
                 errors.append('MOTION_IDENTITY')
             if row['status'] == 'GATE_CANDIDATES' and any(c['metadata']['stamp'] != row['source_stamp'] or c['metadata']['valid_until'] != row['source_valid_until'] or c['control_eligible'] for c in row['candidates']):
                 errors.append('GATE_IDENTITY')
+    for row in rows:
+        if 'tracking' not in row or row['tracking']['status'] != 'TRACKED':
+            continue
+        tracked = row['tracking']
+        metadata = Metadata(tracked['source_stamp'], tracked['source_valid_until'], tracked['source_epoch'], 'audit')
+        reason = freshness_reason(metadata, tracked['check_imu_stamp'], tracked['check_epoch'],
+                                  tracked['clock_fresh_at_check'], tracked['source_arrival_wall'], tracked['check_wall'])
+        if (reason is not None or tracked['pose_stamp'] != tracked['source_stamp']
+                or tracked['pose_bracket_stamps'][1] > tracked['check_imu_stamp']
+                or tracked['control_eligible'] or any(t['control_eligible'] or t['epoch'] != tracked['check_epoch']
+                    or not t['last_stamp'] <= tracked['check_imu_stamp'] < t['last_valid_until']
+                    for t in tracked['tracks'])):
+            errors.append('TRACK_TIMING_OR_IDENTITY')
+    if summary.get('pipeline') == 'gate_track' and Counter(row['tracking']['status'] for row in rows if 'tracking' in row) != Counter(summary['tracking_statuses']):
+        errors.append('TRACK_COUNT')
     graph = summary.get('node_graph') or {}
     expected = sorted(['/airsim_node/drone_1/front_left/Scene', '/airsim_node/drone_1/front_right/Scene',
                        '/airsim_node/drone_1/imu/imu'])
+    if summary.get('pipeline') == 'gate_track':
+        expected = sorted(expected + ['/airsim_node/initial_pose', '/airsim_node/drone_1/gps'])
     if graph.get('subscriptions') != expected or set(graph.get('publishers', [])) - {'/rosout'}:
         errors.append('GRAPH')
     if summary['faults'] or summary['control_published'] or summary['debug_inputs_used']:

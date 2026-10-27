@@ -16,13 +16,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--seed', type=int, required=True)
     parser.add_argument('--duration', type=float, default=10.)
-    parser.add_argument('--kind', choices=('lidar', 'stereo', 'pose-history', 'joint', 'visual-motion', 'goal', 'gate'), default='lidar')
+    parser.add_argument('--kind', choices=('lidar', 'stereo', 'pose-history', 'joint', 'visual-motion', 'goal', 'gate', 'gate-track'), default='lidar')
     parser.add_argument('--image-age-budget-ms', type=int, choices=(150, 200), default=150)
     parser.add_argument('--visual-motion-method', choices=('orb_lk', 'orb_lk_half'), default='orb_lk')
     args = parser.parse_args()
     if args.seed < 0 or not math.isfinite(args.duration) or not 0 < args.duration <= 30:
         parser.error('nonnegative seed and duration in (0,30] required')
-    if args.kind not in ('stereo','joint','visual-motion','gate') and args.image_age_budget_ms != 150:
+    if args.kind not in ('stereo','joint','visual-motion','gate','gate-track') and args.image_age_budget_ms != 150:
         parser.error('image age experiment requires --kind stereo or joint')
     if args.kind != 'visual-motion' and args.visual_motion_method != 'orb_lk':
         parser.error('visual motion method requires --kind visual-motion')
@@ -33,7 +33,7 @@ def main():
     before = verify_local_simulator(root)
     config = json.loads((root / 'configs/official_baseline.yaml').read_text())
     config['experiment'] = {'kind': args.kind + '_read_only', 'duration_s': args.duration}
-    if args.kind in ('stereo','joint','visual-motion','gate'):
+    if args.kind in ('stereo','joint','visual-motion','gate','gate-track'):
         config['experiment']['image_age_budget_ms'] = args.image_age_budget_ms
     if args.kind == 'visual-motion':
         config['experiment']['visual_motion_method'] = args.visual_motion_method
@@ -41,7 +41,7 @@ def main():
     stages = {'lidar': 'P2_READ_ONLY_LIDAR_ENDPOINTS', 'stereo': 'P2_READ_ONLY_STEREO_PAIRING',
               'pose-history': 'P2_READ_ONLY_POSE_HISTORY', 'joint': 'P2_READ_ONLY_JOINT_SENSORS',
               'visual-motion': 'P2_READ_ONLY_VISUAL_MOTION', 'goal': 'P3_READ_ONLY_GOAL_OBSERVATION',
-              'gate': 'P3_READ_ONLY_GATE_CANDIDATES'}
+              'gate': 'P3_READ_ONLY_GATE_CANDIDATES', 'gate-track': 'P3_READ_ONLY_GATE_TRACKS'}
     manifest.update(stage=stages[args.kind], acceptance_eligible=False,
                     simulator_preflight=before, run_state='PREPARED')
     (run / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
@@ -56,7 +56,7 @@ def main():
         module, audit_module = 'adapters.ros_noetic.visual_motion_observer', 'evaluation.metrics.visual_motion'
     if args.kind == 'goal':
         module, audit_module = 'adapters.ros_noetic.goal_observer', 'evaluation.metrics.goal_observer'
-    if args.kind == 'gate':
+    if args.kind in ('gate','gate-track'):
         module, audit_module = 'adapters.ros_noetic.visual_motion_observer', 'evaluation.metrics.visual_motion'
     sensor_type = 'PointCloud2' if args.kind == 'lidar' else 'Imu'
     sensor_topic = '/airsim_node/drone_1/lidar' if args.kind == 'lidar' else '/airsim_node/drone_1/imu/imu'
@@ -94,12 +94,12 @@ def main():
                 command = [str(root / 'tools/enter_env.sh'), 'env',
                         'OPENBLAS_NUM_THREADS=1', 'python3', '-m', module, '--run-dir', container_run,
                         '--duration', str(args.duration)]
-                if args.kind in ('stereo','joint','visual-motion','gate'):
+                if args.kind in ('stereo','joint','visual-motion','gate','gate-track'):
                     command.extend(['--image-age-budget-ms', str(args.image_age_budget_ms)])
                 if args.kind == 'visual-motion':
                     command.extend(['--method', args.visual_motion_method])
-                if args.kind == 'gate':
-                    command.extend(['--pipeline', 'gate_roi'])
+                if args.kind in ('gate','gate-track'):
+                    command.extend(['--pipeline', 'gate_track' if args.kind == 'gate-track' else 'gate_roi'])
                 code = subprocess.call(command, stdout=observer_log,
                         stderr=subprocess.STDOUT, timeout=args.duration + 15)
                 observer_code = code
@@ -160,7 +160,7 @@ def main():
             if args.kind == 'joint':
                 manifest['telemetry'] = ['joint_states.jsonl', 'joint_raw_sensors.jsonl', 'joint_summary.json',
                                         'joint_audit.json', 'joint/']
-            if args.kind in ('visual-motion','gate'):
+            if args.kind in ('visual-motion','gate','gate-track'):
                 manifest['telemetry'] = ['visual_motion_results.jsonl', 'visual_motion_summary.json',
                                          'visual_motion_audit.json']
             if args.kind == 'goal':

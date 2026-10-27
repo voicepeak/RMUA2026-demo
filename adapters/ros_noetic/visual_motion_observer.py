@@ -15,6 +15,9 @@ from perception.stereo_depth.pairing import StereoPairBuffer
 from perception.stereo_depth.transport import LatestSlot
 from perception.visual_odometry.online import MotionWindow
 from perception.gate_geometry.online import GateWindow
+from perception.gate_geometry.track_online import OnlineGateTracks
+from estimation.history import PoseHistory
+from adapters.ros_noetic.flight_sensors import FlightSensors
 
 
 def observe(run, duration, image_ttl, settings, method='orb_lk', pipeline='visual_motion'):
@@ -27,7 +30,10 @@ def observe(run, duration, image_ttl, settings, method='orb_lk', pipeline='visua
     lock = threading.Lock(); clock = SensorClock(); pending = {}; received = Counter(); overwritten = Counter()
     faults = []; slot = LatestSlot(); stop = threading.Event(); rows = []
     rig = load_nominal_rig(settings)
-    window = GateWindow(rig) if pipeline == 'gate_roi' else MotionWindow(rig, method=method)
+    history = PoseHistory() if pipeline == 'gate_track' else None
+    sensors = FlightSensors(pose_history=history) if history is not None else None
+    tracking = OnlineGateTracks(history) if history is not None else None
+    window = GateWindow(rig) if pipeline in ('gate_roi', 'gate_track') else MotionWindow(rig, method=method)
     def receive(side, message):
         arrival = time.monotonic()
         with lock:
@@ -41,10 +47,14 @@ def observe(run, duration, image_ttl, settings, method='orb_lk', pipeline='visua
                 pending[side] = (message, arrival)
     def snapshot():
         with lock:
+            if sensors is not None:
+                with sensors.lock:
+                    return (sensors.clock.stamp, sensors.clock.epoch,
+                            sensors.clock.fresh(time.monotonic()) and not sensors.fault and not faults)
             return clock.stamp, clock.epoch, clock.fresh(time.monotonic()) and not faults
     listeners = [rospy.Subscriber(topic, Imu if side == 'imu' else Image,
                  lambda msg, s=side: receive(s, msg), queue_size=1, buff_size=4000000)
-                 for side, topic in TOPICS.items()]
+                 for side, topic in TOPICS.items() if sensors is None or side != 'imu']
     def worker():
         try:
             with (run / 'visual_motion_results.jsonl').open('x') as output:
@@ -55,6 +65,8 @@ def observe(run, duration, image_ttl, settings, method='orb_lk', pipeline='visua
                     pair, arrival = item
                     started = time.monotonic()
                     row = window.process(pair, arrival, snapshot, time.monotonic)
+                    if tracking is not None:
+                        row['tracking'] = tracking.process(row, pair, arrival, snapshot, time.monotonic)
                     row.update(processing_s=time.monotonic()-started, source_pair_stamp=pair.metadata.stamp,
                                source_epoch=pair.metadata.epoch, source_skew_s=pair.skew_s)
                     output.write(json.dumps(row, allow_nan=False) + '\n'); output.flush(); rows.append(row)
@@ -91,13 +103,17 @@ def observe(run, duration, image_ttl, settings, method='orb_lk', pipeline='visua
             pubs, subs, _ = rosgraph.Master(rospy.get_name()).getSystemState(); node = rospy.get_name()
             graph = {'subscriptions': sorted(t for t, nodes in subs if node in nodes),
                      'publishers': sorted(t for t, nodes in pubs if node in nodes)}
-            if graph['subscriptions'] != sorted(TOPICS.values()) or set(graph['publishers']) - {'/rosout'}:
+            expected = list(TOPICS.values())
+            if sensors is not None: expected.extend(['/airsim_node/initial_pose','/airsim_node/drone_1/gps'])
+            if graph['subscriptions'] != sorted(expected) or set(graph['publishers']) - {'/rosout'}:
                 faults.append('GRAPH_POLICY')
         except Exception as error: faults.append('GRAPH_AUDIT:' + str(error))
         for listener in listeners: listener.unregister()
+        if sensors is not None: sensors.close()
         summary = {'faults': faults, 'pairs': pairs, 'received': dict(received), 'overwritten': dict(overwritten),
                    'pairing_events': dict(buffer.events), 'slot': slot.stats(), 'results': len(rows),
                    'statuses': dict(Counter(row['status'] for row in rows)),
+                   'tracking_statuses': dict(Counter(row['tracking']['status'] for row in rows if 'tracking' in row)),
                    'timing_current_results': sum(row.get('timing_current', False) for row in rows),
                    'node_graph': graph, 'image_age_budget_s': image_ttl,
                    'source_settings_sha256': rig.settings_sha256, 'method': method, 'pipeline': pipeline, 'control_published': False,
@@ -113,7 +129,7 @@ def main():
     parser.add_argument('--image-age-budget-ms', type=int, choices=(150, 200), default=150)
     parser.add_argument('--settings', default='/workspace/main/configs/simulator_settings.json')
     parser.add_argument('--method', choices=('orb_lk', 'orb_lk_half'), default='orb_lk')
-    parser.add_argument('--pipeline', choices=('visual_motion', 'gate_roi'), default='visual_motion')
+    parser.add_argument('--pipeline', choices=('visual_motion', 'gate_roi', 'gate_track'), default='visual_motion')
     args = parser.parse_args()
     if not math.isfinite(args.duration) or not 0 < args.duration <= 30: parser.error('duration must be in (0,30]')
     return observe(args.run_dir, args.duration, args.image_age_budget_ms/1000., args.settings, args.method, args.pipeline)
