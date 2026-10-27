@@ -17,6 +17,8 @@
 
 下一批开发按设计第 16 节 Sprint A 的未完成项推进，然后进入 Sprint B。旧版仅作参考，任何算法迁移都需接口、坐标和回归证据。
 
+2026-10-27 迭代 68：新增离线名义 IMU 姿态/比力积分与双目相对位移松耦合原型，缺样本断链；同一低速历史片段 11.42s 末端误差融合约 0.0728m、纯视觉约 0.0419m，未表现出改善。增益、零初速、偏置及协方差未标定，未用于在线控制；宿主 271 项通过、Noetic 268 项通过/3 跳过。见 docs/inertial_visual_fusion.md 和 docs/evidence/p2_inertial_visual_fusion.json。
+
 2026-10-27 迭代 67：在线规划诊断增加至多 1mm 的极短探针，以区分运动学和地图约束；seed2165 的 64 帧探针中 128 个候选有 111 次运动学拒绝、17 次 UNKNOWN 拒绝，无轨迹。原 1m 候选 128 次全因运动学拒绝；宿主/Noetic 各 6 项在线链路专项通过，新增 UNKNOWN 断言在场后加入。仅诊断，见 docs/joint_planner_online.md 和 docs/evidence/p3_joint_planner_short_probe.json。
 
 2026-10-27 迭代 66：在线只读接通官方目标、LiDAR 端点图、动态候选及局部规划；seed2166 模拟器启动前 SIGSEGV 保留，seed2165 处理 71/72 帧，68 帧规划的 136 候选均因运动学限制拒绝，未进入净空检查。场后补目标时效检查并重审留存行；宿主 269 项通过、Noetic 266 项通过/3 跳过。无控制输出，源 lease、可信 FREE、目标坐标和制动时域仍是卡点；见 docs/joint_planner_online.md 与 docs/evidence/p3_joint_planner_online.json。
