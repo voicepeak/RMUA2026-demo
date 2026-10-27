@@ -1,0 +1,305 @@
+{
+  "iteration": 52,
+  "acceptance_eligible": false,
+  "uses_truth": false,
+  "timing_note": "earliest state bracket, not actual gate-processing completion",
+  "runs": [
+    {
+      "mode": "pwm",
+      "path": "runs/gate_tracks_20261027_iteration52/pwm.json",
+      "sha256": "b26c7b2716a6e5bfbc37ad87f4f2d5c33d46de8a00515d42b09bf4b9df354726",
+      "gate_input": "runs/stereo_gate_20261027_iteration51/pwm.json",
+      "gate_input_sha256": "3adaf006b4cb3f94677ba4890dcaf669cb4e3e0c8c8b08c3153bf8c7486126f9",
+      "state_input": "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/pwm_telemetry.jsonl",
+      "state_input_sha256": "423ae1d9137975d7f82890cb1de650b1fdfbc7c120b98a01a36c282c15784aa6",
+      "statuses": {
+        "NO_STATE_BRACKET": 1,
+        "TRACKED": 3,
+        "NO_CANDIDATE": 2,
+        "UNPAIRED": 1
+      },
+      "results": [
+        {
+          "left": "front_left_0000.png",
+          "status": "NO_STATE_BRACKET"
+        },
+        {
+          "left": "front_left_0005.png",
+          "status": "TRACKED",
+          "stamp": 1792484471.4413402,
+          "now": 1792484471.4413402,
+          "associations": {
+            "matched": 0,
+            "created": 1,
+            "ambiguous": 0
+          },
+          "tracks": [
+            {
+              "track_id": 0,
+              "epoch": 0,
+              "center_world_ned": [
+                23.596365544015903,
+                -0.11050092056743206,
+                -2.9995681202293287
+              ],
+              "width_m": 9.746787722218405,
+              "height_m": 4.4778325123152705,
+              "first_stamp": 1792484471.4413402,
+              "last_stamp": 1792484471.4413402,
+              "last_valid_until": 1792484471.6413403,
+              "observations": 1,
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "pose_bracket_stamps": [
+            1792484471.4233398,
+            1792484471.4413402
+          ]
+        },
+        {
+          "left": "front_left_0010.png",
+          "status": "TRACKED",
+          "stamp": 1792484473.77539,
+          "now": 1792484473.7813902,
+          "associations": {
+            "matched": 1,
+            "created": 0,
+            "ambiguous": 0
+          },
+          "tracks": [
+            {
+              "track_id": 0,
+              "epoch": 0,
+              "center_world_ned": [
+                23.618758554921257,
+                -0.4033072404448998,
+                -3.1170783755509897
+              ],
+              "width_m": 9.771273370776651,
+              "height_m": 4.471742417947652,
+              "first_stamp": 1792484471.4413402,
+              "last_stamp": 1792484473.77539,
+              "last_valid_until": 1792484473.97539,
+              "observations": 2,
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "pose_bracket_stamps": [
+            1792484473.77239,
+            1792484473.7813902
+          ]
+        },
+        {
+          "left": "front_left_0015.png",
+          "status": "TRACKED",
+          "stamp": 1792484476.2024417,
+          "now": 1792484476.211442,
+          "associations": {
+            "matched": 1,
+            "created": 0,
+            "ambiguous": 0
+          },
+          "tracks": [
+            {
+              "track_id": 0,
+              "epoch": 0,
+              "center_world_ned": [
+                23.68111652462189,
+                -0.6419412471440418,
+                -3.2378352550413365
+              ],
+              "width_m": 9.806189101707053,
+              "height_m": 4.485311232070303,
+              "first_stamp": 1792484471.4413402,
+              "last_stamp": 1792484476.2024417,
+              "last_valid_until": 1792484476.4024417,
+              "observations": 3,
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "pose_bracket_stamps": [
+            1792484476.1994417,
+            1792484476.211442
+          ]
+        },
+        {
+          "left": "front_left_0020.png",
+          "status": "NO_CANDIDATE"
+        },
+        {
+          "left": "front_left_0025.png",
+          "status": "NO_CANDIDATE"
+        },
+        {
+          "left": "front_left_0030.png",
+          "status": "UNPAIRED"
+        }
+      ]
+    },
+    {
+      "mode": "vel",
+      "path": "runs/gate_tracks_20261027_iteration52/vel.json",
+      "sha256": "0757ee1c0300bdfa7285f1dd7041325d434747ac729bb2ed602ceb419a1b8975",
+      "gate_input": "runs/stereo_gate_20261027_iteration51/vel.json",
+      "gate_input_sha256": "f0568a9ecc315b74b9d1298da30c74de099df43ae54567cd7caa47f2ceea8893",
+      "state_input": "runs/20261020T081752Z_88e3759cc7da4c2ea5703b37af94e6ea/vel_telemetry.jsonl",
+      "state_input_sha256": "b82572b939964c933735e9cc2268ff322549934b29b4c7a7fdeb935676d7b342",
+      "statuses": {
+        "NO_STATE_BRACKET": 1,
+        "TRACKED": 4
+      },
+      "results": [
+        {
+          "left": "front_left_0000.png",
+          "status": "NO_STATE_BRACKET"
+        },
+        {
+          "left": "front_left_0005.png",
+          "status": "TRACKED",
+          "stamp": 1792484286.307261,
+          "now": 1792484286.319261,
+          "associations": {
+            "matched": 0,
+            "created": 1,
+            "ambiguous": 0
+          },
+          "tracks": [
+            {
+              "track_id": 0,
+              "epoch": 0,
+              "center_world_ned": [
+                23.847322893452496,
+                -0.9246705902242743,
+                -2.9921746919366
+              ],
+              "width_m": 9.843318338613523,
+              "height_m": 4.4750350238161944,
+              "first_stamp": 1792484286.307261,
+              "last_stamp": 1792484286.307261,
+              "last_valid_until": 1792484286.507261,
+              "observations": 1,
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "pose_bracket_stamps": [
+            1792484286.2982607,
+            1792484286.319261
+          ]
+        },
+        {
+          "left": "front_left_0010.png",
+          "status": "TRACKED",
+          "stamp": 1792484288.6893117,
+          "now": 1792484288.6953118,
+          "associations": {
+            "matched": 1,
+            "created": 0,
+            "ambiguous": 0
+          },
+          "tracks": [
+            {
+              "track_id": 0,
+              "epoch": 0,
+              "center_world_ned": [
+                23.902312680505283,
+                -0.6470721954499604,
+                -2.978066543496255
+              ],
+              "width_m": 9.854521445179326,
+              "height_m": 4.475315340753438,
+              "first_stamp": 1792484286.307261,
+              "last_stamp": 1792484288.6893117,
+              "last_valid_until": 1792484288.8893118,
+              "observations": 2,
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "pose_bracket_stamps": [
+            1792484288.6773114,
+            1792484288.6953118
+          ]
+        },
+        {
+          "left": "front_left_0015.png",
+          "status": "TRACKED",
+          "stamp": 1792484291.0563622,
+          "now": 1792484291.0713625,
+          "associations": {
+            "matched": 1,
+            "created": 0,
+            "ambiguous": 0
+          },
+          "tracks": [
+            {
+              "track_id": 0,
+              "epoch": 0,
+              "center_world_ned": [
+                24.07774126376199,
+                -0.3857607642353778,
+                -3.009697703585551
+              ],
+              "width_m": 9.920526637648168,
+              "height_m": 4.520306309947968,
+              "first_stamp": 1792484286.307261,
+              "last_stamp": 1792484291.0563622,
+              "last_valid_until": 1792484291.2563622,
+              "observations": 3,
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "pose_bracket_stamps": [
+            1792484291.050362,
+            1792484291.0713625
+          ]
+        },
+        {
+          "left": "front_left_0020.png",
+          "status": "TRACKED",
+          "stamp": 1792484293.4474132,
+          "now": 1792484293.4594135,
+          "associations": {
+            "matched": 1,
+            "created": 0,
+            "ambiguous": 0
+          },
+          "tracks": [
+            {
+              "track_id": 0,
+              "epoch": 0,
+              "center_world_ned": [
+                24.064081726804567,
+                -0.2986205663341129,
+                -3.073045236456474
+              ],
+              "width_m": 9.917817615405754,
+              "height_m": 4.525844705723008,
+              "first_stamp": 1792484286.307261,
+              "last_stamp": 1792484293.4474132,
+              "last_valid_until": 1792484293.6474133,
+              "observations": 4,
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "pose_bracket_stamps": [
+            1792484293.4384131,
+            1792484293.4594135
+          ]
+        }
+      ]
+    }
+  ]
+}
