@@ -1,0 +1,181 @@
+{
+  "iteration": 44,
+  "date": "2026-10-27",
+  "acceptance_eligible": false,
+  "rules_pdf_sha256_match_baseline": true,
+  "host_replay_first_attempt": "FAILED: host Python has no rospy; reran in Noetic",
+  "runs": [
+    {
+      "source": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "role": "read_only_diagnostic",
+      "control_published": false,
+      "current_control_eligible": false,
+      "captures": [
+        {
+          "capture": "joint/0000",
+          "scan_stamp": 1792738505.861849,
+          "query_now": 1792738506.0328526,
+          "result": {
+            "reason": "NO_STATIC_CANDIDATE",
+            "map_cells": 4668,
+            "candidate_reasons": [
+              "MAP_STOP_HORIZON"
+            ],
+            "control_eligible": false
+          }
+        },
+        {
+          "capture": "joint/0001",
+          "scan_stamp": 1792738507.4608831,
+          "query_now": 1792738507.631887,
+          "result": {
+            "reason": "NO_STATIC_CANDIDATE",
+            "map_cells": 4650,
+            "candidate_reasons": [
+              "MAP_STOP_HORIZON"
+            ],
+            "control_eligible": false
+          }
+        },
+        {
+          "capture": "joint/0002",
+          "scan_stamp": 1792738509.0719175,
+          "query_now": 1792738509.2219207,
+          "result": {
+            "reason": "NO_STATIC_CANDIDATE",
+            "map_cells": 4611,
+            "candidate_reasons": [
+              "MAP_STOP_HORIZON"
+            ],
+            "control_eligible": false
+          }
+        },
+        {
+          "capture": "joint/0003",
+          "scan_stamp": 1792738510.8599558,
+          "query_now": 1792738511.006959,
+          "result": {
+            "reason": "NO_STATIC_CANDIDATE",
+            "map_cells": 4617,
+            "candidate_reasons": [
+              "KINEMATIC_LIMIT"
+            ],
+            "control_eligible": false
+          }
+        },
+        {
+          "capture": "joint/0004",
+          "scan_stamp": 1792738512.7649963,
+          "query_now": 1792738512.8999991,
+          "result": {
+            "reason": "NO_STATIC_CANDIDATE",
+            "map_cells": 4852,
+            "candidate_reasons": [
+              "KINEMATIC_LIMIT"
+            ],
+            "control_eligible": false
+          }
+        },
+        {
+          "capture": "joint/0005",
+          "scan_stamp": 1792738514.3730307,
+          "query_now": 1792738514.5170338,
+          "result": {
+            "reason": "NO_STATIC_CANDIDATE",
+            "map_cells": 4768,
+            "candidate_reasons": [
+              "KINEMATIC_LIMIT"
+            ],
+            "control_eligible": false
+          }
+        }
+      ]
+    },
+    {
+      "source": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "role": "read_only_diagnostic",
+      "control_published": false,
+      "current_control_eligible": false,
+      "captures": [
+        {
+          "capture": "joint/0000",
+          "scan_stamp": 1792738723.2652512,
+          "query_now": 1792738723.406254,
+          "result": {
+            "reason": "NO_STATIC_CANDIDATE",
+            "map_cells": 4688,
+            "candidate_reasons": [
+              "KINEMATIC_LIMIT"
+            ],
+            "control_eligible": false
+          }
+        },
+        {
+          "capture": "joint/0001",
+          "scan_stamp": 1792738724.855285,
+          "query_now": 1792738725.0112884,
+          "result": {
+            "reason": "NO_STATIC_CANDIDATE",
+            "map_cells": 4675,
+            "candidate_reasons": [
+              "MAP_STOP_HORIZON"
+            ],
+            "control_eligible": false
+          }
+        },
+        {
+          "capture": "joint/0002",
+          "scan_stamp": 1792738726.448319,
+          "query_now": 1792738726.6223228,
+          "result": {
+            "reason": "NO_STATIC_CANDIDATE",
+            "map_cells": 4528,
+            "candidate_reasons": [
+              "MAP_STOP_HORIZON"
+            ],
+            "control_eligible": false
+          }
+        },
+        {
+          "capture": "joint/0003",
+          "scan_stamp": 1792738728.035353,
+          "query_now": 1792738728.1823559,
+          "result": {
+            "reason": "NO_STATIC_CANDIDATE",
+            "map_cells": 4672,
+            "candidate_reasons": [
+              "KINEMATIC_LIMIT"
+            ],
+            "control_eligible": false
+          }
+        },
+        {
+          "capture": "joint/0004",
+          "scan_stamp": 1792738729.6283867,
+          "query_now": 1792738729.7663898,
+          "result": {
+            "reason": "NO_STATIC_CANDIDATE",
+            "map_cells": 4673,
+            "candidate_reasons": [
+              "KINEMATIC_LIMIT"
+            ],
+            "control_eligible": false
+          }
+        },
+        {
+          "capture": "joint/0005",
+          "scan_stamp": 1792738731.2184207,
+          "query_now": 1792738731.3894243,
+          "result": {
+            "reason": "NO_STATIC_CANDIDATE",
+            "map_cells": 4677,
+            "candidate_reasons": [
+              "MAP_STOP_HORIZON"
+            ],
+            "control_eligible": false
+          }
+        }
+      ]
+    }
+  ]
+}
