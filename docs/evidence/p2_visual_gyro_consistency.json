@@ -1,0 +1,199 @@
+{
+  "source": "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871",
+  "estimate_sha256": "11eae81f2083c176785beb988a1d6d5dea9c24c4d03fb28a9913707cb806f2fa",
+  "imu_telemetry_sha256": "423ae1d9137975d7f82890cb1de650b1fdfbc7c120b98a01a36c282c15784aa6",
+  "input_role": "official image VO and recorded official IMU angular velocity only",
+  "gyro_bias_correction": "none",
+  "truth_accessed": false,
+  "control_eligible": false,
+  "status_counts": {
+    "REJECTED": 2,
+    "COMPARED": 24
+  },
+  "results": [
+    {
+      "previous_stamp": 1792484469.0502892,
+      "current_stamp": 1792484469.5032988,
+      "epoch": 0,
+      "status": "REJECTED",
+      "reason": "gyro interval not bracketed"
+    },
+    {
+      "previous_stamp": 1792484469.9953094,
+      "current_stamp": 1792484470.49332,
+      "epoch": 0,
+      "status": "REJECTED",
+      "reason": "gyro interval not bracketed"
+    },
+    {
+      "previous_stamp": 1792484470.49332,
+      "current_stamp": 1792484470.9493296,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0008718501821125081
+    },
+    {
+      "previous_stamp": 1792484470.9493296,
+      "current_stamp": 1792484471.4413402,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0024758677189117033
+    },
+    {
+      "previous_stamp": 1792484471.4413402,
+      "current_stamp": 1792484471.9183502,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0018490159848054378
+    },
+    {
+      "previous_stamp": 1792484471.9183502,
+      "current_stamp": 1792484472.37136,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0017888955392018724
+    },
+    {
+      "previous_stamp": 1792484472.37136,
+      "current_stamp": 1792484472.83337,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0009314726559025648
+    },
+    {
+      "previous_stamp": 1792484472.83337,
+      "current_stamp": 1792484473.3223803,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.001296444875717553
+    },
+    {
+      "previous_stamp": 1792484473.3223803,
+      "current_stamp": 1792484473.77539,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0004689586643895476
+    },
+    {
+      "previous_stamp": 1792484473.77539,
+      "current_stamp": 1792484474.2734005,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0008058650509778274
+    },
+    {
+      "previous_stamp": 1792484474.2734005,
+      "current_stamp": 1792484474.762411,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0008603913731655575
+    },
+    {
+      "previous_stamp": 1792484474.762411,
+      "current_stamp": 1792484475.230421,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0013785791957694063
+    },
+    {
+      "previous_stamp": 1792484475.230421,
+      "current_stamp": 1792484475.707431,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0008578890061282497
+    },
+    {
+      "previous_stamp": 1792484475.707431,
+      "current_stamp": 1792484476.2024417,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0005023848675084742
+    },
+    {
+      "previous_stamp": 1792484476.2024417,
+      "current_stamp": 1792484476.6974523,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.001789144366024034
+    },
+    {
+      "previous_stamp": 1792484476.6974523,
+      "current_stamp": 1792484477.201463,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0020859410822626785
+    },
+    {
+      "previous_stamp": 1792484477.201463,
+      "current_stamp": 1792484477.669473,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0013252553085868844
+    },
+    {
+      "previous_stamp": 1792484477.669473,
+      "current_stamp": 1792484478.1254828,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.002804342975682892
+    },
+    {
+      "previous_stamp": 1792484478.1254828,
+      "current_stamp": 1792484478.608493,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.000850092719623105
+    },
+    {
+      "previous_stamp": 1792484478.608493,
+      "current_stamp": 1792484479.082503,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.00028486771046899154
+    },
+    {
+      "previous_stamp": 1792484479.082503,
+      "current_stamp": 1792484479.5505133,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0005659748021397178
+    },
+    {
+      "previous_stamp": 1792484479.5505133,
+      "current_stamp": 1792484480.015523,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.001374590528052325
+    },
+    {
+      "previous_stamp": 1792484480.015523,
+      "current_stamp": 1792484480.4865332,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0003819337918266721
+    },
+    {
+      "previous_stamp": 1792484480.4865332,
+      "current_stamp": 1792484480.9455428,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0007056012256584088
+    },
+    {
+      "previous_stamp": 1792484480.9455428,
+      "current_stamp": 1792484481.4465537,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.0008884070051589715
+    },
+    {
+      "previous_stamp": 1792484481.4465537,
+      "current_stamp": 1792484481.9115636,
+      "epoch": 0,
+      "status": "COMPARED",
+      "rotation_residual_rad": 0.000735501738543172
+    }
+  ],
+  "iteration": 62,
+  "limitations": "Offline low-speed data, controller-sampled raw IMU and uncorrected gyro bias; no calibrated residual threshold, fusion, control or acceptance."
+}
