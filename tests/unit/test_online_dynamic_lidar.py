@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 
 from adapters.ros_noetic.lidar_cloud import LidarCloud
+from adapters.ros_noetic.dynamic_lidar_observer import wait_for_imu
 from estimation.history import PoseHistory
 from interfaces.contracts import Health, Metadata, StateEstimate
 from perception.object_motion.online import OnlineDynamicLidar
@@ -38,6 +39,26 @@ class OnlineDynamicLidarTests(unittest.TestCase):
         row = self.pipeline.process(self.cloud, 20.01, lambda: next(snapshots), lambda: 20.02)
         self.assertEqual(row['reason'], 'AFTER_CLUSTER_SOURCE_LEASE_NOT_CURRENT')
         self.assertEqual(self.pipeline.tracker.snapshot(10.21, 0), ())
+
+    def test_wait_for_imu_is_bounded_and_causal(self):
+        wall = [20.01]
+        def sleep(dt): wall[0] += dt
+        wait_for_imu(self.cloud, 20.01, lambda: (10., 0, True, self.state),
+                     lambda: wall[0], sleep, lambda: False)
+        self.assertGreaterEqual(wall[0] - 20.01, .03)
+        self.assertLess(wall[0] - 20.01, .031)
+        wall[0] = 20.01
+        def snapshot():
+            return (10.01 if wall[0] >= 20.014 else 10., 0, True, self.state)
+        wait_for_imu(self.cloud, 20.01, snapshot, lambda: wall[0], sleep, lambda: False)
+        self.assertLess(wall[0] - 20.01, .01)
+        row = self.pipeline.process(self.cloud, 20.01, snapshot, lambda: wall[0])
+        self.assertEqual(row['status'], 'PROCESSED', row)
+
+    def test_wait_stops_for_clock_fault_or_epoch_change(self):
+        for snapshot in (lambda: (10., 1, True, self.state), lambda: (10., 0, False, self.state)):
+            wait_for_imu(self.cloud, 20.01, snapshot, lambda: 20.01,
+                         lambda _: self.fail('unexpected wait'), lambda: False)
 
 
 if __name__ == '__main__': unittest.main()

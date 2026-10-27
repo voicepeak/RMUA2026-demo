@@ -17,6 +17,10 @@
 
 下一批开发按设计第 16 节 Sprint A 的未完成项推进，然后进入 Sprint B。旧版仅作参考，任何算法迁移都需接口、坐标和回归证据。
 
+2026-10-27 迭代 60：点云时间领先时最多等待 30ms 以取得因果 IMU 历史，不延长原始租约；同 seed2165 单场 76/77 帧完成，1 帧状态健康拒绝，中位处理约 30ms，但关联歧义 1078 次，不能用于控制。宿主 254 项通过，Noetic 251 项通过、3 项跳过；证据见 docs/evidence/p4_dynamic_lidar_imu_wait.json 和 docs/dynamic_lidar_online.md。
+
+2026-10-27 迭代 59：接通只读 LiDAR 世界坐标聚类、候选跟踪和静止探针动态冲突检查；两场分别处理 31/77、27/78 帧，第二场 51 次输入拒绝均由点云时间领先当前 IMU，关联歧义仍多。宿主 252 项通过；Noetic 249 项通过、3 项跳过。结果只供诊断，不代表检测覆盖、FREE、飞行安全或整机验收。证据见 docs/evidence/p4_dynamic_lidar_online.json 和 docs/dynamic_lidar_online.md。
+
 2026-10-27 迭代 58：实现连续动态候选相交拒绝并可选接入局部规划，检查候选交叉/擦边、误差膨胀、源lease、预测时域和预算；无候选冲突明确不认证动态净空。两场历史各20帧静止几何探针分别5/7帧候选冲突，输入未标定、时间理想化，不代表真实碰撞或可飞行。宿主249通过、Noetic246通过/3跳过；见 docs/dynamic_candidate_veto.md 和 docs/evidence/p4_dynamic_veto.json。
 
 2026-10-27 迭代 57：新增可选聚类质心及互为最近、次优距离有余量的关联；原严格策略不变。同两场20帧匹配数13→154、27→183，歧义261→153、291→178，但最大候选速度仍19.70/18.55m/s，缺目标真值、不同轨迹集合不能当正确率或精度提升。无控制授权；宿主241通过、Noetic238通过/3跳过。见 docs/dynamic_association_experiment.md 和 docs/evidence/p4_dynamic_association_experiment.json。
@@ -76,8 +80,6 @@
 2026-10-23 迭代 30：实现仅像素单位的 SGBM 离线诊断基线，正反一致性与双侧纹理检查保留 NaN/UNKNOWN，不换算深度或生成自由空间。合成 8/16px 位移恢复、遮挡/纯色/垂直错位拒绝测试通过；配对契约禁止跨 epoch 和延长源有效期。两份真实首对输入严格有效覆盖约 8.95/8.87%，单线程中位耗时 275/328ms，计算已超出 200ms 实验图像有效期，不接入在线深度。95 项宿主测试通过；Noetic 92 项通过、3 项 Git 测试跳过；契约收紧后各重跑 10 项相关测试通过。同一冻结代码的两个 242 文件归档与原始输入独立重核，三次重复输出一致。证据见 docs/evidence/p2_sgbm_baseline.json 和 docs/stereo_sgbm_baseline.md；真实深度精度、标定和 P1/P2 验收仍开放。
 
 2026-10-23 迭代 29：新增有界前视双目头时间戳配对，以 IMU 为时钟，逐图像记录到达/处理年龄；来源按订阅话题识别，不将空 header.frame_id 当成标定 TF。默认 150ms 两场各仅 1 对后触发过期保护，失败保留。显式 200ms 只读实验两场完成 10s，182/181 对，最大 IMU 年龄约 189/192ms；左右首帧与 cv_bridge 逐像素一致。默认保持 150ms，不把头时间一致等同曝光同步或可信深度。91 项宿主测试通过；Noetic 88 项通过、3 项 Git 测试跳过。共享启动器默认 LiDAR 3s/29 帧回归通过，五份源码归档独立重核、原环境不变。证据见 docs/evidence/p2_stereo_pairing.json 和 docs/stereo_pairing_observation.md；P1/P2 未验收。
-
-2026-10-27 迭代 59：接通只读 LiDAR 世界坐标聚类、候选跟踪和静止探针动态冲突检查；两场分别处理 31/77、27/78 帧，第二场 51 次输入拒绝均由点云时间领先当前 IMU，关联歧义仍多。宿主 252 项通过；Noetic 249 项通过、3 项跳过。结果只供诊断，不代表检测覆盖、FREE、飞行安全或整机验收。证据见 docs/evidence/p4_dynamic_lidar_online.json 和 docs/dynamic_lidar_online.md。
 
 2026-10-23 迭代 28：新增严格有界 PointCloud2 解码与独立在线 LiDAR 单帧端点占据，保留传感器坐标，不创建 FREE 或跨帧累积；未做世界变换/运动补偿，不接入控制。两场未插桩 10s 只读场次处理 96/98 帧，首帧 15745/15881 点与 ROS 解码器逐点匹配，图审计仅订阅 LiDAR、无控制/debug 输入；P99 处理耗时约 41.76/34.19ms，不是端到端时延认证。修复 Noetic 旧 NumPy 的空点云去重兼容问题后，85 项宿主测试通过；Noetic 82 项通过、3 项 Git 测试跳过。两份源码归档独立重核，原环境不变。证据见 docs/evidence/p2_lidar_endpoints.json 和 docs/lidar_endpoint_observation.md；P1/P2 继续未验收。
 

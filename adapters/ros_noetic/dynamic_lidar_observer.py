@@ -15,6 +15,17 @@ from perception.stereo_depth.geometry import load_nominal_rig
 from perception.stereo_depth.transport import LatestSlot
 
 
+def wait_for_imu(cloud, arrival, snapshot, wall_clock, sleep, stopped, max_wait_s=.03):
+    """Wait briefly for causal IMU coverage without extending source lifetime."""
+    while not stopped():
+        now, epoch, fresh, _ = snapshot()
+        elapsed = wall_clock() - arrival
+        if (not fresh or epoch != cloud.metadata.epoch or now is None
+                or now >= cloud.metadata.stamp or elapsed < 0 or elapsed >= max_wait_s):
+            return
+        sleep(min(.001, max_wait_s - elapsed))
+
+
 def observe(run,duration,settings):
     import rospy
     import rosgraph
@@ -45,7 +56,11 @@ def observe(run,duration,settings):
                     else:
                         try:
                             cloud=decode_xyz(message,epoch)
+                            wait_started=time.monotonic()
+                            wait_for_imu(cloud,arrival,snapshot,time.monotonic,time.sleep,stop.is_set)
+                            waited=time.monotonic()-wait_started
                             row=pipeline.process(cloud,arrival,snapshot,time.monotonic)
+                            row['imu_wait_s']=waited
                         except (ValueError,ArithmeticError) as error:
                             row={'status':'REJECTED','reason':'DECODE_'+str(error),'control_eligible':False}
                     row.update(processing_s=time.monotonic()-started)

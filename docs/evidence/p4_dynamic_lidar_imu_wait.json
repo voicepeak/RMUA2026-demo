@@ -1,0 +1,65 @@
+{
+  "run": "20261027T110240Z_3254b8cc3799437ab6d110273634b3c3",
+  "summary": {
+    "faults": [],
+    "received": 77,
+    "slot": {
+      "capacity": 1,
+      "pending": 0,
+      "submitted": 77,
+      "superseded": 0,
+      "taken": 77,
+      "discarded_on_close": 0
+    },
+    "results": 77,
+    "statuses": {
+      "REJECTED": 1,
+      "PROCESSED": 76
+    },
+    "veto_reasons": {
+      "DYNAMIC_CANDIDATE_CONFLICT": 29,
+      "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED": 47
+    },
+    "node_graph": {
+      "subscriptions": [
+        "/airsim_node/drone_1/gps",
+        "/airsim_node/drone_1/imu/imu",
+        "/airsim_node/drone_1/lidar",
+        "/airsim_node/initial_pose"
+      ],
+      "publishers": [
+        "/rosout"
+      ]
+    },
+    "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+    "control_published": false,
+    "debug_inputs_used": false,
+    "control_eligible": false,
+    "acceptance_eligible": false
+  },
+  "audit": {
+    "audit_valid": true,
+    "errors": [],
+    "rows": 77,
+    "statuses": {
+      "REJECTED": 1,
+      "PROCESSED": 76
+    },
+    "rejection_reasons": {
+      "POSE_LATEST_STATE_HEALTH": 1
+    },
+    "control_eligible": false,
+    "safety_certified": false
+  },
+  "results_sha256": "2e05e4ca00964c7379d27cb5ff6b91c454b880a8433539cc5576e652630424a2",
+  "manifest_sha256": "963a982d23360a5719c3abb952df477e8872a531c19dd4257ade6c6f0d09fa93",
+  "source_unchanged": true,
+  "original_simulator_files_unchanged": true,
+  "cleanup_errors": [],
+  "processing_median_ms": 29.952925397083163,
+  "processing_max_ms": 57.96617199666798,
+  "wait_median_ms": 2.45943502523005,
+  "wait_max_ms": 9.333858964964747,
+  "matched_total": 111,
+  "ambiguous_total": 1078
+}
