@@ -38,6 +38,8 @@ class OnlineDynamicLidarTests(unittest.TestCase):
         self.assertEqual(row['status'], 'PROCESSED', row)
         self.assertEqual(row['planner']['reason'], 'NO_STATIC_CANDIDATE')
         self.assertFalse(row['planner']['trajectory_produced'])
+        self.assertFalse(row['planner']['short_probe']['trajectory_produced'])
+        self.assertIn('UNKNOWN_SPACE', [c['reason'] for c in row['planner']['short_probe']['attempts']])
         self.assertFalse(row['planner']['control_eligible'])
 
     def test_expired_source_is_rejected_before_tracking(self):

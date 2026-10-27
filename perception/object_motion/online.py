@@ -67,9 +67,19 @@ class OnlineDynamicLidar:
                     initial=TrajectorySample(now,state.position_ned,state.velocity_ned,(0.,0.,0.),0.)
                     plan=plan_static_local(state,initial,target,grid,now,epoch,self.plan_limits,
                                            DynamicScene(clusters.metadata,tracks),self.bounds)
+                    # Diagnostic only: a millimetre-scale probe can expose the
+                    # subsequent map check; it is not a meaningful flight step.
+                    short_distance=min(length,.001)
+                    short_factor=short_distance/length if length else 0.
+                    short_target=tuple(a+short_factor*d for a,d in zip(state.position_ned,delta))
+                    short=plan_static_local(state,initial,short_target,grid,now,epoch,self.plan_limits,
+                                            DynamicScene(clusters.metadata,tracks),self.bounds)
                     planner={'reason':plan.reason,'attempts':[asdict(c) for c in plan.checks],
                              'map_cells':len(grid.cells),'goal':asdict(goal),'target':target,
                              'trajectory_produced':plan.trajectory is not None,
+                             'short_probe':{'target':short_target,'reason':short.reason,
+                                 'attempts':[asdict(c) for c in short.checks],
+                                 'trajectory_produced':short.trajectory is not None},
                              'goal_frame_calibrated':False,'control_eligible':False}
             check_now,check_epoch,check_fresh,_,check_wall,reason=check()
             if reason:return {'status':'REJECTED','reason':'OUTPUT_'+reason,'control_eligible':False}
