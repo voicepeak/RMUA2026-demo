@@ -1,0 +1,744 @@
+{
+  "iteration": 45,
+  "acceptance_eligible": false,
+  "runs": [
+    {
+      "source": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+      "role": "offline_diagnostic",
+      "comparison": "imu_gps_eskf_not_truth",
+      "control_eligible": false,
+      "counts": {
+        "ESTIMATED": 5
+      },
+      "results": [
+        {
+          "previous": "joint/0000",
+          "current": "joint/0001",
+          "gap_s": 1.593034029006958,
+          "status": "ESTIMATED",
+          "result": {
+            "translation_previous_body_m": [
+              0.001966906839271393,
+              -0.007830058952221136,
+              0.0007496017013324179
+            ],
+            "rotation_previous_from_current_body": [
+              [
+                0.9999999343765512,
+                -0.0003419929336320877,
+                0.00011953127846098469
+              ],
+              [
+                0.0003420056675803401,
+                0.9999999358419359,
+                -0.00010652815254300218
+              ],
+              [
+                -0.00011949483891668668,
+                0.0001065690259269442,
+                0.999999987182013
+              ]
+            ],
+            "stereo_matches": 902,
+            "temporal_matches": 393,
+            "inliers": 237,
+            "reprojection_p95_px": 1.409484733004285,
+            "previous_stamp": 1792738505.8738494,
+            "current_stamp": 1792738507.4668834,
+            "epoch": 0,
+            "metric_calibration_verified": false,
+            "control_eligible": false
+          },
+          "elapsed_s": 0.3154605901800096,
+          "eskf_delta_previous_body_m": [
+            0.004897607987273293,
+            0.04119605273089576,
+            0.049381187569014995
+          ],
+          "translation_difference_m": 0.06911714534028539,
+          "rotation_difference_rad": 0.053627406171494627
+        },
+        {
+          "previous": "joint/0001",
+          "current": "joint/0002",
+          "gap_s": 1.599034070968628,
+          "status": "ESTIMATED",
+          "result": {
+            "translation_previous_body_m": [
+              -0.0003536643021708752,
+              -0.010100544877373746,
+              -0.0037580813441450193
+            ],
+            "rotation_previous_from_current_body": [
+              [
+                0.9999998760640166,
+                -0.0004571833547373861,
+                -0.00019711755752137522
+              ],
+              [
+                0.00045714591904109084,
+                0.9999998774742154,
+                -0.00018991883242576275
+              ],
+              [
+                0.00019720436109832803,
+                0.00018982869740099328,
+                0.9999999625377521
+              ]
+            ],
+            "stereo_matches": 953,
+            "temporal_matches": 720,
+            "inliers": 318,
+            "reprojection_p95_px": 0.0964833856349989,
+            "previous_stamp": 1792738507.4668834,
+            "current_stamp": 1792738509.0659175,
+            "epoch": 0,
+            "metric_calibration_verified": false,
+            "control_eligible": false
+          },
+          "elapsed_s": 0.12452018191106617,
+          "eskf_delta_previous_body_m": [
+            0.021618287123928645,
+            -0.031402354256125864,
+            0.006506110808934654
+          ],
+          "translation_difference_m": 0.032278280202558976,
+          "rotation_difference_rad": 0.027142661547092693
+        },
+        {
+          "previous": "joint/0002",
+          "current": "joint/0003",
+          "gap_s": 1.7850379943847656,
+          "status": "ESTIMATED",
+          "result": {
+            "translation_previous_body_m": [
+              0.00014020770604680766,
+              0.0010152866638754032,
+              -3.318155115967974e-07
+            ],
+            "rotation_previous_from_current_body": [
+              [
+                0.9999999991695802,
+                4.074346974968726e-05,
+                -8.996558557149358e-07
+              ],
+              [
+                -4.074345101501274e-05,
+                0.9999999989533644,
+                2.0814475906514942e-05
+              ],
+              [
+                9.005039087427767e-07,
+                -2.0814439234145902e-05,
+                0.9999999997829742
+              ]
+            ],
+            "stereo_matches": 982,
+            "temporal_matches": 861,
+            "inliers": 366,
+            "reprojection_p95_px": 0.012611058614259953,
+            "previous_stamp": 1792738509.0659175,
+            "current_stamp": 1792738510.8509555,
+            "epoch": 0,
+            "metric_calibration_verified": false,
+            "control_eligible": false
+          },
+          "elapsed_s": 0.12461506621912122,
+          "eskf_delta_previous_body_m": [
+            0.04778592289867819,
+            -0.012136260237704845,
+            0.011732757524626542
+          ],
+          "translation_difference_m": 0.050801011285066686,
+          "rotation_difference_rad": 0.01621205309264248
+        },
+        {
+          "previous": "joint/0003",
+          "current": "joint/0004",
+          "gap_s": 1.8990404605865479,
+          "status": "ESTIMATED",
+          "result": {
+            "translation_previous_body_m": [
+              -0.0001922806734305782,
+              0.002622293185052721,
+              -9.206512339581328e-05
+            ],
+            "rotation_previous_from_current_body": [
+              [
+                0.9999999916061955,
+                0.00012929259701928666,
+                -8.428135993548262e-06
+              ],
+              [
+                -0.00012929232606840238,
+                0.9999999911252253,
+                3.2140997294497866e-05
+              ],
+              [
+                8.43229151176145e-06,
+                -3.213990733140559e-05,
+                0.9999999994479614
+              ]
+            ],
+            "stereo_matches": 970,
+            "temporal_matches": 894,
+            "inliers": 361,
+            "reprojection_p95_px": 0.02772353344024738,
+            "previous_stamp": 1792738510.8509555,
+            "current_stamp": 1792738512.749996,
+            "epoch": 0,
+            "metric_calibration_verified": false,
+            "control_eligible": false
+          },
+          "elapsed_s": 0.12509098905138671,
+          "eskf_delta_previous_body_m": [
+            -0.024854136491665103,
+            0.0008541634159492124,
+            -0.006049828688648572
+          ],
+          "translation_difference_m": 0.025432820566725026,
+          "rotation_difference_rad": 0.019984366412021615
+        },
+        {
+          "previous": "joint/0004",
+          "current": "joint/0005",
+          "gap_s": 1.617034673690796,
+          "status": "ESTIMATED",
+          "result": {
+            "translation_previous_body_m": [
+              -0.0010358105409161433,
+              0.001651885299921746,
+              -0.0016111672083669174
+            ],
+            "rotation_previous_from_current_body": [
+              [
+                0.9999999920356163,
+                6.833535911048719e-05,
+                -0.00010610865159796212
+              ],
+              [
+                -6.833198735446187e-05,
+                0.9999999971603936,
+                3.177974793915799e-05
+              ],
+              [
+                0.00010611082297714318,
+                -3.1772497071012694e-05,
+                0.9999999938655009
+              ]
+            ],
+            "stereo_matches": 969,
+            "temporal_matches": 894,
+            "inliers": 357,
+            "reprojection_p95_px": 0.0367149207531316,
+            "previous_stamp": 1792738512.749996,
+            "current_stamp": 1792738514.3670306,
+            "epoch": 0,
+            "metric_calibration_verified": false,
+            "control_eligible": false
+          },
+          "elapsed_s": 0.12613276205956936,
+          "eskf_delta_previous_body_m": [
+            -0.005604605304137831,
+            -0.014016737170759875,
+            0.021027929983666895
+          ],
+          "translation_difference_m": 0.027908929348642957,
+          "rotation_difference_rad": 0.01551331865605868
+        }
+      ]
+    },
+    {
+      "source": "runs/20261023T065832Z_cee28fe232c844808f28c88ba0ba63a8",
+      "role": "offline_diagnostic",
+      "comparison": "imu_gps_eskf_not_truth",
+      "control_eligible": false,
+      "counts": {
+        "ESTIMATED": 5
+      },
+      "results": [
+        {
+          "previous": "joint/0000",
+          "current": "joint/0001",
+          "gap_s": 1.593033790588379,
+          "status": "ESTIMATED",
+          "result": {
+            "translation_previous_body_m": [
+              0.009176820210749698,
+              -0.007170990225602303,
+              0.01593241708203208
+            ],
+            "rotation_previous_from_current_body": [
+              [
+                0.9999990038727469,
+                -0.00034902951523846083,
+                0.0013676373465014385
+              ],
+              [
+                0.00034894987377630146,
+                0.999999937407558,
+                5.847106634923719e-05
+              ],
+              [
+                -0.0013676576690256207,
+                -5.799377122518104e-05,
+                0.9999990630741725
+              ]
+            ],
+            "stereo_matches": 913,
+            "temporal_matches": 378,
+            "inliers": 227,
+            "reprojection_p95_px": 1.4414455665406063,
+            "previous_stamp": 1792738723.2472508,
+            "current_stamp": 1792738724.8402846,
+            "epoch": 0,
+            "metric_calibration_verified": false,
+            "control_eligible": false
+          },
+          "elapsed_s": 0.12328195106238127,
+          "eskf_delta_previous_body_m": [
+            -0.02292693530558374,
+            0.05759102750054021,
+            -0.057413764131133756
+          ],
+          "translation_difference_m": 0.10297782458747255,
+          "rotation_difference_rad": 0.03852061839003885
+        },
+        {
+          "previous": "joint/0001",
+          "current": "joint/0002",
+          "gap_s": 1.6260347366333008,
+          "status": "ESTIMATED",
+          "result": {
+            "translation_previous_body_m": [
+              -0.0008898247328970599,
+              -0.005267878121347769,
+              -0.004090818815757367
+            ],
+            "rotation_previous_from_current_body": [
+              [
+                0.999999943011615,
+                -0.0002483013108140735,
+                -0.0002287427064107178
+              ],
+              [
+                0.00024828875813653027,
+                0.9999999676691428,
+                -5.4903605546106645e-05
+              ],
+              [
+                0.00022875633165249552,
+                5.484680817473134e-05,
+                0.9999999723311838
+              ]
+            ],
+            "stereo_matches": 941,
+            "temporal_matches": 697,
+            "inliers": 322,
+            "reprojection_p95_px": 0.06499803088128858,
+            "previous_stamp": 1792738724.8402846,
+            "current_stamp": 1792738726.4663193,
+            "epoch": 0,
+            "metric_calibration_verified": false,
+            "control_eligible": false
+          },
+          "elapsed_s": 0.12393077206797898,
+          "eskf_delta_previous_body_m": [
+            -0.0467019359604059,
+            -0.05218872111274974,
+            0.050733282395728226
+          ],
+          "translation_difference_m": 0.08547512571381602,
+          "rotation_difference_rad": 0.029412498425896463
+        },
+        {
+          "previous": "joint/0002",
+          "current": "joint/0003",
+          "gap_s": 1.5540332794189453,
+          "status": "ESTIMATED",
+          "result": {
+            "translation_previous_body_m": [
+              -0.00016569946773520305,
+              0.00012782103076530715,
+              -0.0009793762672606213
+            ],
+            "rotation_previous_from_current_body": [
+              [
+                0.9999999989230905,
+                9.023233335604305e-06,
+                -4.5523622009852876e-05
+              ],
+              [
+                -9.024328825845815e-06,
+                0.9999999996697411,
+                -2.406406728558742e-05
+              ],
+              [
+                4.5523404859124176e-05,
+                2.4064478079806956e-05,
+                0.9999999986742603
+              ]
+            ],
+            "stereo_matches": 971,
+            "temporal_matches": 852,
+            "inliers": 361,
+            "reprojection_p95_px": 0.022802577528670872,
+            "previous_stamp": 1792738726.4663193,
+            "current_stamp": 1792738728.0203526,
+            "epoch": 0,
+            "metric_calibration_verified": false,
+            "control_eligible": false
+          },
+          "elapsed_s": 0.12447803490795195,
+          "eskf_delta_previous_body_m": [
+            0.0007711911225224848,
+            0.06594833314776971,
+            -0.020582331774438977
+          ],
+          "translation_difference_m": 0.06868401155974548,
+          "rotation_difference_rad": 0.014119197240659694
+        },
+        {
+          "previous": "joint/0003",
+          "current": "joint/0004",
+          "gap_s": 1.593033790588379,
+          "status": "ESTIMATED",
+          "result": {
+            "translation_previous_body_m": [
+              -0.0003192651483594211,
+              0.0002552147367014812,
+              0.0001832246739939351
+            ],
+            "rotation_previous_from_current_body": [
+              [
+                0.9999999999234104,
+                1.235827663112021e-05,
+                -6.724836010923283e-07
+              ],
+              [
+                -1.2358261055704375e-05,
+                0.999999999655534,
+                2.3156111641376424e-05
+              ],
+              [
+                6.727697704940457e-07,
+                -2.3156103328875007e-05,
+                0.9999999997316711
+              ]
+            ],
+            "stereo_matches": 945,
+            "temporal_matches": 857,
+            "inliers": 337,
+            "reprojection_p95_px": 0.01804208651862967,
+            "previous_stamp": 1792738728.0203526,
+            "current_stamp": 1792738729.6133864,
+            "epoch": 0,
+            "metric_calibration_verified": false,
+            "control_eligible": false
+          },
+          "elapsed_s": 0.12458332907408476,
+          "eskf_delta_previous_body_m": [
+            0.018974606413381726,
+            -0.029596212857584285,
+            0.06240217594954722
+          ],
+          "translation_difference_m": 0.07165583791351214,
+          "rotation_difference_rad": 0.02266067500517776
+        },
+        {
+          "previous": "joint/0004",
+          "current": "joint/0005",
+          "gap_s": 1.617034673690796,
+          "status": "ESTIMATED",
+          "result": {
+            "translation_previous_body_m": [
+              0.0002518773569951671,
+              0.0011271093210116212,
+              -6.088917007734404e-05
+            ],
+            "rotation_previous_from_current_body": [
+              [
+                0.9999999990556551,
+                4.345502001172624e-05,
+                5.92613143853804e-07
+              ],
+              [
+                -4.345502734492103e-05,
+                0.9999999989791988,
+                1.2379943414388722e-05
+              ],
+              [
+                -5.920751725600474e-07,
+                -1.2379969154718156e-05,
+                0.9999999999231929
+              ]
+            ],
+            "stereo_matches": 969,
+            "temporal_matches": 864,
+            "inliers": 340,
+            "reprojection_p95_px": 0.018151922939533254,
+            "previous_stamp": 1792738729.6133864,
+            "current_stamp": 1792738731.230421,
+            "epoch": 0,
+            "metric_calibration_verified": false,
+            "control_eligible": false
+          },
+          "elapsed_s": 0.1251482639927417,
+          "eskf_delta_previous_body_m": [
+            0.0408991474309982,
+            0.004982881757563243,
+            -0.030474720658656338
+          ],
+          "translation_difference_m": 0.050912362853899176,
+          "rotation_difference_rad": 0.023897359357470956
+        }
+      ]
+    }
+  ],
+  "noetic_first_source_replay": {
+    "source": "runs/20261023T065455Z_abd6fdcb40e8464ab03367bc3e81d3fe",
+    "role": "offline_diagnostic",
+    "comparison": "imu_gps_eskf_not_truth",
+    "control_eligible": false,
+    "counts": {
+      "ESTIMATED": 5
+    },
+    "results": [
+      {
+        "previous": "joint/0000",
+        "current": "joint/0001",
+        "gap_s": 1.593034029006958,
+        "status": "ESTIMATED",
+        "result": {
+          "translation_previous_body_m": [
+            0.001966906839271393,
+            -0.007830058952221136,
+            0.0007496017013324179
+          ],
+          "rotation_previous_from_current_body": [
+            [
+              0.9999999343765512,
+              -0.0003419929336320877,
+              0.00011953127846098469
+            ],
+            [
+              0.0003420056675803401,
+              0.9999999358419359,
+              -0.00010652815254300218
+            ],
+            [
+              -0.00011949483891668668,
+              0.0001065690259269442,
+              0.999999987182013
+            ]
+          ],
+          "stereo_matches": 902,
+          "temporal_matches": 393,
+          "inliers": 237,
+          "reprojection_p95_px": 1.409484733004285,
+          "previous_stamp": 1792738505.8738494,
+          "current_stamp": 1792738507.4668834,
+          "epoch": 0,
+          "metric_calibration_verified": false,
+          "control_eligible": false
+        },
+        "elapsed_s": 0.14356757095083594,
+        "eskf_delta_previous_body_m": [
+          0.004897607987273293,
+          0.04119605273089576,
+          0.049381187569014995
+        ],
+        "translation_difference_m": 0.06911714534028539,
+        "rotation_difference_rad": 0.053627406171494627
+      },
+      {
+        "previous": "joint/0001",
+        "current": "joint/0002",
+        "gap_s": 1.599034070968628,
+        "status": "ESTIMATED",
+        "result": {
+          "translation_previous_body_m": [
+            -0.0003536643021708752,
+            -0.010100544877373746,
+            -0.0037580813441450193
+          ],
+          "rotation_previous_from_current_body": [
+            [
+              0.9999998760640166,
+              -0.0004571833547373861,
+              -0.00019711755752137522
+            ],
+            [
+              0.00045714591904109084,
+              0.9999998774742154,
+              -0.00018991883242576275
+            ],
+            [
+              0.00019720436109832803,
+              0.00018982869740099328,
+              0.9999999625377521
+            ]
+          ],
+          "stereo_matches": 953,
+          "temporal_matches": 720,
+          "inliers": 318,
+          "reprojection_p95_px": 0.0964833856349989,
+          "previous_stamp": 1792738507.4668834,
+          "current_stamp": 1792738509.0659175,
+          "epoch": 0,
+          "metric_calibration_verified": false,
+          "control_eligible": false
+        },
+        "elapsed_s": 0.1339291031472385,
+        "eskf_delta_previous_body_m": [
+          0.021618287123928645,
+          -0.031402354256125864,
+          0.006506110808934654
+        ],
+        "translation_difference_m": 0.032278280202558976,
+        "rotation_difference_rad": 0.027142661547092693
+      },
+      {
+        "previous": "joint/0002",
+        "current": "joint/0003",
+        "gap_s": 1.7850379943847656,
+        "status": "ESTIMATED",
+        "result": {
+          "translation_previous_body_m": [
+            0.00014020770604680766,
+            0.0010152866638754032,
+            -3.318155115967974e-07
+          ],
+          "rotation_previous_from_current_body": [
+            [
+              0.9999999991695802,
+              4.074346974968726e-05,
+              -8.996558557149358e-07
+            ],
+            [
+              -4.074345101501274e-05,
+              0.9999999989533644,
+              2.0814475906514942e-05
+            ],
+            [
+              9.005039087427767e-07,
+              -2.0814439234145902e-05,
+              0.9999999997829742
+            ]
+          ],
+          "stereo_matches": 982,
+          "temporal_matches": 861,
+          "inliers": 366,
+          "reprojection_p95_px": 0.012611058614259953,
+          "previous_stamp": 1792738509.0659175,
+          "current_stamp": 1792738510.8509555,
+          "epoch": 0,
+          "metric_calibration_verified": false,
+          "control_eligible": false
+        },
+        "elapsed_s": 0.13514461601153016,
+        "eskf_delta_previous_body_m": [
+          0.04778592289867819,
+          -0.012136260237704845,
+          0.011732757524626542
+        ],
+        "translation_difference_m": 0.050801011285066686,
+        "rotation_difference_rad": 0.01621205309264248
+      },
+      {
+        "previous": "joint/0003",
+        "current": "joint/0004",
+        "gap_s": 1.8990404605865479,
+        "status": "ESTIMATED",
+        "result": {
+          "translation_previous_body_m": [
+            -0.0001922806734305782,
+            0.002622293185052721,
+            -9.206512339581328e-05
+          ],
+          "rotation_previous_from_current_body": [
+            [
+              0.9999999916061955,
+              0.00012929259701928666,
+              -8.428135993548262e-06
+            ],
+            [
+              -0.00012929232606840238,
+              0.9999999911252253,
+              3.2140997294497866e-05
+            ],
+            [
+              8.43229151176145e-06,
+              -3.213990733140559e-05,
+              0.9999999994479614
+            ]
+          ],
+          "stereo_matches": 970,
+          "temporal_matches": 894,
+          "inliers": 361,
+          "reprojection_p95_px": 0.02772353344024738,
+          "previous_stamp": 1792738510.8509555,
+          "current_stamp": 1792738512.749996,
+          "epoch": 0,
+          "metric_calibration_verified": false,
+          "control_eligible": false
+        },
+        "elapsed_s": 0.13478859490714967,
+        "eskf_delta_previous_body_m": [
+          -0.024854136491665103,
+          0.0008541634159492124,
+          -0.006049828688648572
+        ],
+        "translation_difference_m": 0.025432820566725026,
+        "rotation_difference_rad": 0.019984366412021615
+      },
+      {
+        "previous": "joint/0004",
+        "current": "joint/0005",
+        "gap_s": 1.617034673690796,
+        "status": "ESTIMATED",
+        "result": {
+          "translation_previous_body_m": [
+            -0.0010358105409161433,
+            0.001651885299921746,
+            -0.0016111672083669174
+          ],
+          "rotation_previous_from_current_body": [
+            [
+              0.9999999920356163,
+              6.833535911048719e-05,
+              -0.00010610865159796212
+            ],
+            [
+              -6.833198735446187e-05,
+              0.9999999971603936,
+              3.177974793915799e-05
+            ],
+            [
+              0.00010611082297714318,
+              -3.1772497071012694e-05,
+              0.9999999938655009
+            ]
+          ],
+          "stereo_matches": 969,
+          "temporal_matches": 894,
+          "inliers": 357,
+          "reprojection_p95_px": 0.0367149207531316,
+          "previous_stamp": 1792738512.749996,
+          "current_stamp": 1792738514.3670306,
+          "epoch": 0,
+          "metric_calibration_verified": false,
+          "control_eligible": false
+        },
+        "elapsed_s": 0.13670693803578615,
+        "eskf_delta_previous_body_m": [
+          -0.005604605304137831,
+          -0.014016737170759875,
+          0.021027929983666895
+        ],
+        "translation_difference_m": 0.027908929348642957,
+        "rotation_difference_rad": 0.01551331865605868
+      }
+    ]
+  }
+}
