@@ -88,7 +88,42 @@ def solve_relative(points_body_previous, pixels_current, rig, *, min_inliers=12)
     return tuple(displacement), tuple(tuple(float(v) for v in row) for row in prev_from_cur_body), len(indices), p95
 
 
-def estimate_stereo_motion(previous, current, rig, max_gap_s=2.):
+def refine_correspondences(source_image, target_image, source_points, target_points, cv2):
+    """Refine descriptor matches with forward/backward pyramidal LK.
+
+    Returns refined target pixels and a mask; invalid, drifting or inconsistent
+    patches never contribute to triangulation or PnP. Not a calibration claim.
+    """
+    source = np.asarray(source_points, dtype=np.float32).reshape(-1, 1, 2)
+    initial = np.asarray(target_points, dtype=np.float32).reshape(-1, 1, 2)
+    if source.shape != initial.shape or not np.isfinite(source).all() or not np.isfinite(initial).all():
+        raise ValueError('invalid feature coordinates')
+    if not len(source):
+        return np.empty((0, 2)), np.zeros(0, dtype=bool)
+    criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 30, .01)
+    parameters = dict(winSize=(21, 21), maxLevel=3, criteria=criteria,
+                      flags=cv2.OPTFLOW_USE_INITIAL_FLOW, minEigThreshold=1e-4)
+    forward, good_forward, _ = cv2.calcOpticalFlowPyrLK(source_image, target_image,
+        source, initial.copy(), **parameters)
+    if forward is None or good_forward is None:
+        return np.full((len(source), 2), np.nan), np.zeros(len(source), dtype=bool)
+    backward, good_backward, _ = cv2.calcOpticalFlowPyrLK(target_image, source_image,
+        forward, source.copy(), **parameters)
+    if backward is None or good_backward is None:
+        return np.full((len(source), 2), np.nan), np.zeros(len(source), dtype=bool)
+    forward = forward.reshape(-1, 2); backward = backward.reshape(-1, 2)
+    original = source.reshape(-1, 2); guessed = initial.reshape(-1, 2)
+    height, width = target_image.shape
+    valid = ((good_forward.ravel() != 0) & (good_backward.ravel() != 0)
+             & np.isfinite(forward).all(axis=1) & np.isfinite(backward).all(axis=1)
+             & (np.linalg.norm(backward - original, axis=1) <= .75)
+             & (np.linalg.norm(forward - guessed, axis=1) <= 3.)
+             & (forward[:, 0] >= 0) & (forward[:, 0] < width)
+             & (forward[:, 1] >= 0) & (forward[:, 1] < height))
+    return forward.astype(np.float64), valid
+
+
+def estimate_stereo_motion(previous, current, rig, max_gap_s=2., method="orb"):
     """Extract stereo/temporal ORB tracks and estimate nominal relative motion."""
     import cv2
     if (previous.metadata.epoch != current.metadata.epoch
@@ -99,9 +134,11 @@ def estimate_stereo_motion(previous, current, rig, max_gap_s=2.):
     shape = (rig.left.height, rig.left.width)
     if any(frame.pixels.shape[:2] != shape for frame in (previous.left, previous.right, current.left)):
         raise ValueError('stereo dimensions differ from camera model')
+    if method not in ("orb", "orb_lk"):
+        raise ValueError("unknown visual odometry method")
     orb = cv2.ORB_create(nfeatures=2000, fastThreshold=10)
-    features = [orb.detectAndCompute(_gray(frame, cv2), None)
-                for frame in (previous.left, previous.right, current.left)]
+    images = [_gray(frame, cv2) for frame in (previous.left, previous.right, current.left)]
+    features = [orb.detectAndCompute(image, None) for image in images]
     (kl, dl), (kr, dr), (kc, dc) = features
     stereo, temporal = _reciprocal(dl, dr, cv2), _reciprocal(dl, dc, cv2)
     stereo_by_left = {m.queryIdx: m.trainIdx for m in stereo}
@@ -109,6 +146,11 @@ def estimate_stereo_motion(previous, current, rig, max_gap_s=2.):
     left = np.array([kl[m.queryIdx].pt for m in joined], dtype=np.float64).reshape(-1, 2)
     right = np.array([kr[stereo_by_left[m.queryIdx]].pt for m in joined], dtype=np.float64).reshape(-1, 2)
     target = np.array([kc[m.trainIdx].pt for m in joined], dtype=np.float64).reshape(-1, 2)
+    if method == "orb_lk":
+        right, good_stereo = refine_correspondences(images[0], images[1], left, right, cv2)
+        target, good_temporal = refine_correspondences(images[0], images[2], left, target, cv2)
+        keep = good_stereo & good_temporal
+        left, right, target = left[keep], right[keep], target[keep]
     body, valid, _ = rig.triangulate_body(left, right, max_depth_m=30., max_vertical_px=1.)
     translation, rotation, inliers, p95 = solve_relative(body[valid], target[valid], rig)
     return RelativeMotion(translation, rotation, len(stereo), len(joined), inliers, p95,

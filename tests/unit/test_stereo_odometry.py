@@ -53,6 +53,21 @@ class StereoOdometryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'epoch or time'): estimate_stereo_motion(pair(1.), pair(1.1, 1), self.rig)
         with self.assertRaisesRegex(ValueError, 'epoch or time'): estimate_stereo_motion(pair(1.), pair(1.), self.rig)
 
+class RefineCorrespondencesTests(unittest.TestCase):
+    def test_subpixel_shift_is_recovered_and_blank_image_rejected(self):
+        import cv2
+        from perception.visual_odometry.stereo import refine_correspondences
+        rng = np.random.RandomState(64)
+        image = rng.randint(0, 256, (150, 200), dtype=np.uint8)
+        shifted = cv2.warpAffine(image, np.float32([[1., 0., 2.4], [0., 1., -.7]]), (200, 150))
+        points = np.array([[40., 40.], [80., 90.], [140., 110.]], dtype=np.float32)
+        expected = points + (2.4, -.7)
+        result, valid = refine_correspondences(image, shifted, points, points + (2., -1.), cv2)
+        self.assertGreaterEqual(int(valid.sum()), 1)
+        np.testing.assert_allclose(result[valid], expected[valid], atol=.2)
+        _, valid = refine_correspondences(np.zeros_like(image), np.zeros_like(image), points, points, cv2)
+        self.assertFalse(valid.any())
+
 
 if __name__ == '__main__':
     unittest.main()

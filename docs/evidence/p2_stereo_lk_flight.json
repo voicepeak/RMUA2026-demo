@@ -1,0 +1,580 @@
+{
+  "iteration": 47,
+  "acceptance_eligible": false,
+  "candidate": "orb_lk",
+  "processing": "estimate images first, evaluate truth separately",
+  "comparisons": [
+    {
+      "name": "pwm",
+      "source": "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871",
+      "input_sha256_equal": true,
+      "truth_sha256": "83fe4bd8a9bde471c2b02ef9b0babb654c7dfcc1dd1b1520f10ecc31e8751ae9",
+      "baseline_counts": {
+        "ESTIMATED": 23,
+        "REJECTED": 4
+      },
+      "candidate_counts": {
+        "ESTIMATED": 26,
+        "REJECTED": 1
+      },
+      "common_count": 22,
+      "baseline_error_m": [
+        0.05191653352794693,
+        0.18291825428462385,
+        0.3056146281036797
+      ],
+      "candidate_error_m": [
+        0.014145772626126034,
+        0.02493320121351585,
+        0.046353452199280824
+      ],
+      "baseline_rotation_error_rad": [
+        0.002535737950032679,
+        0.00842328424620769,
+        0.015509772920638541
+      ],
+      "candidate_rotation_error_rad": [
+        0.0008205421772288298,
+        0.001962343543652473,
+        0.002273517970548784
+      ],
+      "translation_improved_count": 20,
+      "paired_comparisons": [
+        {
+          "previous": "front_left_0000.png",
+          "current": "front_left_0001.png",
+          "baseline_translation_error_m": 0.0017877663826421245,
+          "candidate_translation_error_m": 0.0027681169826051983,
+          "baseline_rotation_error_rad": 9.960582644664353e-05,
+          "candidate_rotation_error_rad": 0.00016144061784355003
+        },
+        {
+          "previous": "front_left_0002.png",
+          "current": "front_left_0003.png",
+          "baseline_translation_error_m": 0.028147409958533678,
+          "candidate_translation_error_m": 0.007096872677133748,
+          "baseline_rotation_error_rad": 0.001566527116664435,
+          "candidate_rotation_error_rad": 0.00046965683105704647
+        },
+        {
+          "previous": "front_left_0003.png",
+          "current": "front_left_0004.png",
+          "baseline_translation_error_m": 0.03561340056700262,
+          "candidate_translation_error_m": 0.0037893450311052754,
+          "baseline_rotation_error_rad": 0.0018279431657138962,
+          "candidate_rotation_error_rad": 0.0007804593564354757
+        },
+        {
+          "previous": "front_left_0005.png",
+          "current": "front_left_0006.png",
+          "baseline_translation_error_m": 0.3056146281036797,
+          "candidate_translation_error_m": 0.046353452199280824,
+          "baseline_rotation_error_rad": 0.015509772920638541,
+          "candidate_rotation_error_rad": 0.001981509422432615
+        },
+        {
+          "previous": "front_left_0006.png",
+          "current": "front_left_0007.png",
+          "baseline_translation_error_m": 0.2221945913922755,
+          "candidate_translation_error_m": 0.03705842618372051,
+          "baseline_rotation_error_rad": 0.012415101795414534,
+          "candidate_rotation_error_rad": 0.0018115610470582756
+        },
+        {
+          "previous": "front_left_0007.png",
+          "current": "front_left_0008.png",
+          "baseline_translation_error_m": 0.07361290649799765,
+          "candidate_translation_error_m": 0.0107854039001994,
+          "baseline_rotation_error_rad": 0.004035373765575671,
+          "candidate_rotation_error_rad": 0.0011173913248840952
+        },
+        {
+          "previous": "front_left_0008.png",
+          "current": "front_left_0009.png",
+          "baseline_translation_error_m": 0.01856415256029403,
+          "candidate_translation_error_m": 0.02111549935687661,
+          "baseline_rotation_error_rad": 0.002016613641953827,
+          "candidate_rotation_error_rad": 0.0012180123518899587
+        },
+        {
+          "previous": "front_left_0009.png",
+          "current": "front_left_0010.png",
+          "baseline_translation_error_m": 0.045597316852801294,
+          "candidate_translation_error_m": 0.0036263015799505548,
+          "baseline_rotation_error_rad": 0.0023354360433098824,
+          "candidate_rotation_error_rad": 0.0003596082743036862
+        },
+        {
+          "previous": "front_left_0010.png",
+          "current": "front_left_0011.png",
+          "baseline_translation_error_m": 0.05483141101024048,
+          "candidate_translation_error_m": 0.00748866996979504,
+          "baseline_rotation_error_rad": 0.0025009679127980227,
+          "candidate_rotation_error_rad": 0.0006077978368787855
+        },
+        {
+          "previous": "front_left_0011.png",
+          "current": "front_left_0012.png",
+          "baseline_translation_error_m": 0.05411676218284196,
+          "candidate_translation_error_m": 0.013160444745479343,
+          "baseline_rotation_error_rad": 0.0033220648914601375,
+          "candidate_rotation_error_rad": 0.0007791719291847061
+        },
+        {
+          "previous": "front_left_0012.png",
+          "current": "front_left_0013.png",
+          "baseline_translation_error_m": 0.08007970742886789,
+          "candidate_translation_error_m": 0.02362435955324131,
+          "baseline_rotation_error_rad": 0.0046521551789554996,
+          "candidate_rotation_error_rad": 0.0013016487417183216
+        },
+        {
+          "previous": "front_left_0013.png",
+          "current": "front_left_0014.png",
+          "baseline_translation_error_m": 0.023731226082541718,
+          "candidate_translation_error_m": 0.009909589792136663,
+          "baseline_rotation_error_rad": 0.00118592998712907,
+          "candidate_rotation_error_rad": 0.0007383284855263299
+        },
+        {
+          "previous": "front_left_0015.png",
+          "current": "front_left_0016.png",
+          "baseline_translation_error_m": 0.18839161171556,
+          "candidate_translation_error_m": 0.025078628064657462,
+          "baseline_rotation_error_rad": 0.008551995910307633,
+          "candidate_rotation_error_rad": 0.0019790971543851613
+        },
+        {
+          "previous": "front_left_0016.png",
+          "current": "front_left_0017.png",
+          "baseline_translation_error_m": 0.1336580374061975,
+          "candidate_translation_error_m": 0.019145568002355704,
+          "baseline_rotation_error_rad": 0.007264879269308163,
+          "candidate_rotation_error_rad": 0.002273517970548784
+        },
+        {
+          "previous": "front_left_0017.png",
+          "current": "front_left_0018.png",
+          "baseline_translation_error_m": 0.03269809312938294,
+          "candidate_translation_error_m": 0.015588221268685505,
+          "baseline_rotation_error_rad": 0.0018064489967139648,
+          "candidate_rotation_error_rad": 0.0013813751979518509
+        },
+        {
+          "previous": "front_left_0019.png",
+          "current": "front_left_0020.png",
+          "baseline_translation_error_m": 0.01984908775309008,
+          "candidate_translation_error_m": 0.009713635929220954,
+          "baseline_rotation_error_rad": 0.0016016921543591906,
+          "candidate_rotation_error_rad": 0.0007126584066938801
+        },
+        {
+          "previous": "front_left_0020.png",
+          "current": "front_left_0021.png",
+          "baseline_translation_error_m": 0.023531605674627643,
+          "candidate_translation_error_m": 0.007432487819393669,
+          "baseline_rotation_error_rad": 0.0013121756796475197,
+          "candidate_rotation_error_rad": 0.0002959695497902023
+        },
+        {
+          "previous": "front_left_0022.png",
+          "current": "front_left_0023.png",
+          "baseline_translation_error_m": 0.052773702890700505,
+          "candidate_translation_error_m": 0.015131100506772726,
+          "baseline_rotation_error_rad": 0.002570507987267335,
+          "candidate_rotation_error_rad": 0.00118051866159578
+        },
+        {
+          "previous": "front_left_0023.png",
+          "current": "front_left_0024.png",
+          "baseline_translation_error_m": 0.051059364165193355,
+          "candidate_translation_error_m": 0.009574467434208145,
+          "baseline_rotation_error_rad": 0.002973422674074416,
+          "candidate_rotation_error_rad": 0.0005035462827057612
+        },
+        {
+          "previous": "front_left_0024.png",
+          "current": "front_left_0025.png",
+          "baseline_translation_error_m": 0.03207623764803048,
+          "candidate_translation_error_m": 0.017189939641090893,
+          "baseline_rotation_error_rad": 0.0015154001211131732,
+          "candidate_rotation_error_rad": 0.0006762707336462401
+        },
+        {
+          "previous": "front_left_0025.png",
+          "current": "front_left_0026.png",
+          "baseline_translation_error_m": 0.10674974151578542,
+          "candidate_translation_error_m": 0.019706199497693352,
+          "baseline_rotation_error_rad": 0.004696556818496074,
+          "candidate_rotation_error_rad": 0.0008961106744153854
+        },
+        {
+          "previous": "front_left_0026.png",
+          "current": "front_left_0027.png",
+          "baseline_translation_error_m": 0.09092941814633049,
+          "candidate_translation_error_m": 0.01859579778903666,
+          "baseline_rotation_error_rad": 0.004096275962224965,
+          "candidate_rotation_error_rad": 0.0008606249980221837
+        }
+      ],
+      "artifacts": {
+        "runs/stereo_motion_20261027_iteration46/pwm_estimates.json": "d92e11e27507d23b9606320c152c33f7e5905634ce55a9b615a125fdf79a9e7c",
+        "runs/stereo_motion_20261027_iteration46/pwm_comparison.json": "030f2111d1443cdfab2aaf3e39cf966c466de19b68cc1f0ebb5054d592986bc7",
+        "runs/stereo_motion_20261027_iteration47/pwm_lk.json": "75ad8a52b9bdb1e45476a517b53333f467a38a26bcb112528a257849049b7c10",
+        "runs/stereo_motion_20261027_iteration47/pwm_lk_eval.json": "b33c6650ac8fa119cad3431648b098833b02948fc551faa57607fc7990c12928"
+      }
+    },
+    {
+      "name": "vel",
+      "source": "runs/20261020T081752Z_88e3759cc7da4c2ea5703b37af94e6ea",
+      "input_sha256_equal": true,
+      "truth_sha256": "de4b39fb9fe5a9e242b751218c435e2146662a8385478a164ccc16366c195918",
+      "baseline_counts": {
+        "ESTIMATED": 21,
+        "REJECTED": 1
+      },
+      "candidate_counts": {
+        "ESTIMATED": 22
+      },
+      "common_count": 21,
+      "baseline_error_m": [
+        0.03726755972695877,
+        0.0796066739598056,
+        0.1032166774628569
+      ],
+      "candidate_error_m": [
+        0.013129352676752864,
+        0.03714061464635132,
+        0.06345577542800908
+      ],
+      "baseline_rotation_error_rad": [
+        0.0018690274595400847,
+        0.0036692646030426824,
+        0.0050312234969542785
+      ],
+      "candidate_rotation_error_rad": [
+        0.0006760067731573252,
+        0.002056004007475782,
+        0.0033875105758052614
+      ],
+      "translation_improved_count": 16,
+      "paired_comparisons": [
+        {
+          "previous": "front_left_0000.png",
+          "current": "front_left_0001.png",
+          "baseline_translation_error_m": 0.007750625267440142,
+          "candidate_translation_error_m": 0.06345577542800908,
+          "baseline_rotation_error_rad": 0.00038669533810024046,
+          "candidate_rotation_error_rad": 0.0033875105758052614
+        },
+        {
+          "previous": "front_left_0001.png",
+          "current": "front_left_0002.png",
+          "baseline_translation_error_m": 0.0019737491067862026,
+          "candidate_translation_error_m": 0.011199636801828375,
+          "baseline_rotation_error_rad": 9.642821999521614e-05,
+          "candidate_rotation_error_rad": 0.0005613336427206505
+        },
+        {
+          "previous": "front_left_0002.png",
+          "current": "front_left_0003.png",
+          "baseline_translation_error_m": 0.0030019848395345244,
+          "candidate_translation_error_m": 0.004843742490399416,
+          "baseline_rotation_error_rad": 0.00015287595051852938,
+          "candidate_rotation_error_rad": 0.00023490938914560815
+        },
+        {
+          "previous": "front_left_0003.png",
+          "current": "front_left_0004.png",
+          "baseline_translation_error_m": 0.04976225565092846,
+          "candidate_translation_error_m": 0.013129352676752864,
+          "baseline_rotation_error_rad": 0.0024702095272866745,
+          "candidate_rotation_error_rad": 0.0006760067731573252
+        },
+        {
+          "previous": "front_left_0004.png",
+          "current": "front_left_0005.png",
+          "baseline_translation_error_m": 0.031718559252491785,
+          "candidate_translation_error_m": 0.009014578222632746,
+          "baseline_rotation_error_rad": 0.0014709960545084633,
+          "candidate_rotation_error_rad": 0.0005053198094991713
+        },
+        {
+          "previous": "front_left_0006.png",
+          "current": "front_left_0007.png",
+          "baseline_translation_error_m": 0.04159025967854541,
+          "candidate_translation_error_m": 0.03714061464635132,
+          "baseline_rotation_error_rad": 0.0022845520165485425,
+          "candidate_rotation_error_rad": 0.002056004007475782
+        },
+        {
+          "previous": "front_left_0007.png",
+          "current": "front_left_0008.png",
+          "baseline_translation_error_m": 0.1032166774628569,
+          "candidate_translation_error_m": 0.056131106150398354,
+          "baseline_rotation_error_rad": 0.0050312234969542785,
+          "candidate_rotation_error_rad": 0.003177588398479075
+        },
+        {
+          "previous": "front_left_0008.png",
+          "current": "front_left_0009.png",
+          "baseline_translation_error_m": 0.033347494031923594,
+          "candidate_translation_error_m": 0.029041823465427365,
+          "baseline_rotation_error_rad": 0.001692401648292846,
+          "candidate_rotation_error_rad": 0.0013689604817221834
+        },
+        {
+          "previous": "front_left_0009.png",
+          "current": "front_left_0010.png",
+          "baseline_translation_error_m": 0.046253141994936776,
+          "candidate_translation_error_m": 0.011705600992403233,
+          "baseline_rotation_error_rad": 0.003070695392777513,
+          "candidate_rotation_error_rad": 0.0005416706346860848
+        },
+        {
+          "previous": "front_left_0010.png",
+          "current": "front_left_0011.png",
+          "baseline_translation_error_m": 0.02935065754321942,
+          "candidate_translation_error_m": 0.016849553085264556,
+          "baseline_rotation_error_rad": 0.0015246248758557595,
+          "candidate_rotation_error_rad": 0.0009160027003198424
+        },
+        {
+          "previous": "front_left_0011.png",
+          "current": "front_left_0012.png",
+          "baseline_translation_error_m": 0.026013731258994574,
+          "candidate_translation_error_m": 0.032425509341144736,
+          "baseline_rotation_error_rad": 0.0011937771431066704,
+          "candidate_rotation_error_rad": 0.0015706040138783078
+        },
+        {
+          "previous": "front_left_0012.png",
+          "current": "front_left_0013.png",
+          "baseline_translation_error_m": 0.03726755972695877,
+          "candidate_translation_error_m": 0.024371895480296293,
+          "baseline_rotation_error_rad": 0.0018690274595400847,
+          "candidate_rotation_error_rad": 0.001182800046448093
+        },
+        {
+          "previous": "front_left_0013.png",
+          "current": "front_left_0014.png",
+          "baseline_translation_error_m": 0.06607813945792332,
+          "candidate_translation_error_m": 0.003417881465036447,
+          "baseline_rotation_error_rad": 0.0033818233445399213,
+          "candidate_rotation_error_rad": 0.00015341365452786713
+        },
+        {
+          "previous": "front_left_0014.png",
+          "current": "front_left_0015.png",
+          "baseline_translation_error_m": 0.007691261465477981,
+          "candidate_translation_error_m": 0.015128113842154785,
+          "baseline_rotation_error_rad": 0.00046726300380822965,
+          "candidate_rotation_error_rad": 0.0007545061807096916
+        },
+        {
+          "previous": "front_left_0015.png",
+          "current": "front_left_0016.png",
+          "baseline_translation_error_m": 0.0796066739598056,
+          "candidate_translation_error_m": 0.0065717870638225566,
+          "baseline_rotation_error_rad": 0.0036692646030426824,
+          "candidate_rotation_error_rad": 0.0003620124952759756
+        },
+        {
+          "previous": "front_left_0016.png",
+          "current": "front_left_0017.png",
+          "baseline_translation_error_m": 0.08095221946956628,
+          "candidate_translation_error_m": 0.011274150548834752,
+          "baseline_rotation_error_rad": 0.0038452953454161543,
+          "candidate_rotation_error_rad": 0.000587827283075561
+        },
+        {
+          "previous": "front_left_0017.png",
+          "current": "front_left_0018.png",
+          "baseline_translation_error_m": 0.060313176281785355,
+          "candidate_translation_error_m": 0.011304388505667954,
+          "baseline_rotation_error_rad": 0.003119515647612078,
+          "candidate_rotation_error_rad": 0.0005215104672866604
+        },
+        {
+          "previous": "front_left_0018.png",
+          "current": "front_left_0019.png",
+          "baseline_translation_error_m": 0.01875845919884977,
+          "candidate_translation_error_m": 0.008849375600085072,
+          "baseline_rotation_error_rad": 0.0009638734327871215,
+          "candidate_rotation_error_rad": 0.00045004604003775876
+        },
+        {
+          "previous": "front_left_0019.png",
+          "current": "front_left_0020.png",
+          "baseline_translation_error_m": 0.025746896436948677,
+          "candidate_translation_error_m": 0.0066225462663430205,
+          "baseline_rotation_error_rad": 0.0013587314757728883,
+          "candidate_rotation_error_rad": 0.0003119392504486686
+        },
+        {
+          "previous": "front_left_0020.png",
+          "current": "front_left_0021.png",
+          "baseline_translation_error_m": 0.04776670091010899,
+          "candidate_translation_error_m": 0.020579925666033613,
+          "baseline_rotation_error_rad": 0.0022948264362577563,
+          "candidate_rotation_error_rad": 0.00104580732279405
+        },
+        {
+          "previous": "front_left_0021.png",
+          "current": "front_left_0022.png",
+          "baseline_translation_error_m": 0.061526770483389406,
+          "candidate_translation_error_m": 0.01852324169196163,
+          "baseline_rotation_error_rad": 0.003190451727696236,
+          "candidate_rotation_error_rad": 0.000913286851319129
+        }
+      ],
+      "artifacts": {
+        "runs/stereo_motion_20261027_iteration46/vel_estimates.json": "97cdd19b85faea8ee43df60c729339b907c0ad5d8677e30f76265ae4cfb9ea5d",
+        "runs/stereo_motion_20261027_iteration46/vel_comparison.json": "3028559150d37a421ba77fdfbbf1c786797f5b954c219bdc8392339bf33ac95c",
+        "runs/stereo_motion_20261027_iteration47/vel_lk.json": "0bcc410cf5a3087f0b8234ec97ca1081eb2f7b5480f426de965188582a713abc",
+        "runs/stereo_motion_20261027_iteration47/vel_lk_eval.json": "8cc0a74a3043bcb83e6a18b825a18cc350904e31e44420aec3098d18e32019ff"
+      }
+    },
+    {
+      "name": "other",
+      "source": "runs/20261020T083636Z_207cb4e788d949c1b16c989e934214b9",
+      "input_sha256_equal": true,
+      "truth_sha256": "e767ed76fb8c7b6183d2db4d4a65646695537f047e6b86e1f4da7095d30999c8",
+      "baseline_counts": {
+        "ESTIMATED": 12,
+        "REJECTED": 1
+      },
+      "candidate_counts": {
+        "ESTIMATED": 12,
+        "REJECTED": 1
+      },
+      "common_count": 12,
+      "baseline_error_m": [
+        0.022678729984218125,
+        0.10348620521344064,
+        0.11713780180293226
+      ],
+      "candidate_error_m": [
+        0.014528813432713988,
+        0.03943286564979514,
+        0.04444027356109255
+      ],
+      "baseline_rotation_error_rad": [
+        0.0011519266133408496,
+        0.005416600158657829,
+        0.0058914262467175404
+      ],
+      "candidate_rotation_error_rad": [
+        0.0009195704439636803,
+        0.0020437873932159234,
+        0.0024066804355326265
+      ],
+      "translation_improved_count": 6,
+      "paired_comparisons": [
+        {
+          "previous": "front_left_0000.png",
+          "current": "front_left_0001.png",
+          "baseline_translation_error_m": 0.0046818864438463725,
+          "candidate_translation_error_m": 0.005696718485744815,
+          "baseline_rotation_error_rad": 0.0002555921610146277,
+          "candidate_rotation_error_rad": 0.0002598432793319702
+        },
+        {
+          "previous": "front_left_0001.png",
+          "current": "front_left_0002.png",
+          "baseline_translation_error_m": 0.001374970582805271,
+          "candidate_translation_error_m": 0.008935724460884545,
+          "baseline_rotation_error_rad": 8.6442436265885e-05,
+          "candidate_rotation_error_rad": 0.000488950186127066
+        },
+        {
+          "previous": "front_left_0002.png",
+          "current": "front_left_0003.png",
+          "baseline_translation_error_m": 0.00478676543419895,
+          "candidate_translation_error_m": 0.002302580917640024,
+          "baseline_rotation_error_rad": 0.0002357931935354057,
+          "candidate_rotation_error_rad": 0.00010427636919473204
+        },
+        {
+          "previous": "front_left_0003.png",
+          "current": "front_left_0004.png",
+          "baseline_translation_error_m": 0.0009653032510443185,
+          "candidate_translation_error_m": 0.0012730846891583648,
+          "baseline_rotation_error_rad": 4.748473336525721e-05,
+          "candidate_rotation_error_rad": 8.546368194784072e-05
+        },
+        {
+          "previous": "front_left_0004.png",
+          "current": "front_left_0005.png",
+          "baseline_translation_error_m": 0.02295757101754498,
+          "candidate_translation_error_m": 0.009326140522253846,
+          "baseline_rotation_error_rad": 0.0012371349409129383,
+          "candidate_rotation_error_rad": 0.0004611513292815802
+        },
+        {
+          "previous": "front_left_0005.png",
+          "current": "front_left_0006.png",
+          "baseline_translation_error_m": 0.02239988895089127,
+          "candidate_translation_error_m": 0.03252714407701411,
+          "baseline_rotation_error_rad": 0.00108622189152488,
+          "candidate_rotation_error_rad": 0.002061065056947198
+        },
+        {
+          "previous": "front_left_0006.png",
+          "current": "front_left_0007.png",
+          "baseline_translation_error_m": 0.025324320945151614,
+          "candidate_translation_error_m": 0.027520220570423415,
+          "baseline_rotation_error_rad": 0.0012176313351568192,
+          "candidate_rotation_error_rad": 0.0016370994071723518
+        },
+        {
+          "previous": "front_left_0007.png",
+          "current": "front_left_0008.png",
+          "baseline_translation_error_m": 0.10912773391635433,
+          "candidate_translation_error_m": 0.04444027356109255,
+          "baseline_rotation_error_rad": 0.0057339896413157515,
+          "candidate_rotation_error_rad": 0.0024066804355326265
+        },
+        {
+          "previous": "front_left_0008.png",
+          "current": "front_left_0009.png",
+          "baseline_translation_error_m": 0.11713780180293226,
+          "candidate_translation_error_m": 0.040200168046770804,
+          "baseline_rotation_error_rad": 0.0058914262467175404,
+          "candidate_rotation_error_rad": 0.0017155612346559086
+        },
+        {
+          "previous": "front_left_0009.png",
+          "current": "front_left_0010.png",
+          "baseline_translation_error_m": 0.05271244688721724,
+          "candidate_translation_error_m": 0.019731486343174127,
+          "baseline_rotation_error_rad": 0.0025600948147365154,
+          "candidate_rotation_error_rad": 0.001313605249259238
+        },
+        {
+          "previous": "front_left_0010.png",
+          "current": "front_left_0011.png",
+          "baseline_translation_error_m": 0.021225619325124817,
+          "candidate_translation_error_m": 0.030462903643318818,
+          "baseline_rotation_error_rad": 0.0009378151234635169,
+          "candidate_rotation_error_rad": 0.0018882884196344517
+        },
+        {
+          "previous": "front_left_0028.png",
+          "current": "front_left_0029.png",
+          "baseline_translation_error_m": 0.029687152559386983,
+          "candidate_translation_error_m": 0.007488810264275873,
+          "baseline_rotation_error_rad": 0.0013133802017261727,
+          "candidate_rotation_error_rad": 0.0005255356386681224
+        }
+      ],
+      "artifacts": {
+        "runs/stereo_motion_20261027_iteration47/other_orb.json": "6b03b1daf746f554cb04b0572eed5712a8d0a7ec25468a96b0f11aa4f4f7dd37",
+        "runs/stereo_motion_20261027_iteration47/other_orb_eval.json": "ddcef83383dc7698254ee14d1b06d9475256870c7f96b0f37cae086747370136",
+        "runs/stereo_motion_20261027_iteration47/other_lk.json": "c88dd78953c53a426414e08e819060e1b9974fcc09a746f866eda7c880efca06",
+        "runs/stereo_motion_20261027_iteration47/other_lk_eval.json": "fa997de49ef37eb5ab1f75c9926b58d5b7344ce406ee942bcbf689d0444e0924"
+      }
+    }
+  ],
+  "initial_test_failure": "three expected valid tracks; two rejected by forward/backward consistency, corrected test to require accuracy only for retained tracks"
+}

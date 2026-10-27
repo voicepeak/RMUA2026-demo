@@ -22,7 +22,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def estimate(source, settings):
+def estimate(source, settings, method="orb"):
     """Only scene images/index and simulator settings are read in this step."""
     import cv2
     cv2.setNumThreads(1)
@@ -67,13 +67,13 @@ def estimate(source, settings):
         started = time.monotonic()
         try:
             cv2.setRNGSeed(0)
-            result = estimate_stereo_motion(previous, current, rig)
+            result = estimate_stereo_motion(previous, current, rig, method=method)
             row.update(status='ESTIMATED', motion=asdict(result))
         except (ValueError, cv2.error) as error:
             row.update(status='REJECTED', reason=str(error))
         row['elapsed_s'] = time.monotonic() - started
         output.append(row)
-    return {'source': str(source), 'status_counts': dict(Counter(r['status'] for r in output)),
+    return {'source': str(source), 'method': method, 'status_counts': dict(Counter(r['status'] for r in output)),
             'stereo_pairs': len(pairs), 'unmatched_left': unmatched,
             'unmatched_right_count': len(images['right']) - len(used), 'input_sha256': files,
             'input_role': 'official_recorded_images_and_nominal_settings',
@@ -124,9 +124,10 @@ def main():
     sub = parser.add_subparsers(dest='command', required=True)
     est = sub.add_parser('estimate'); est.add_argument('source'); est.add_argument('output')
     est.add_argument('--settings', default='configs/simulator_settings.json')
+    est.add_argument('--method', choices=('orb', 'orb_lk'), default='orb')
     ev = sub.add_parser('evaluate'); ev.add_argument('estimate'); ev.add_argument('truth'); ev.add_argument('output')
     args = parser.parse_args()
-    result = (estimate(args.source, args.settings) if args.command == 'estimate'
+    result = (estimate(args.source, args.settings, args.method) if args.command == 'estimate'
               else evaluate(json.loads(Path(args.estimate).read_text()), args.truth))
     with Path(args.output).open('x') as out: json.dump(result, out, indent=2, allow_nan=False); out.write('\n')
     print(json.dumps({'output': args.output, 'status_counts': result['status_counts']}))
