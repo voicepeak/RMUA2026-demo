@@ -18,14 +18,16 @@ def audit(run):
     for row in rows:
         if row['control_eligible'] or row['source_skew_s'] > .005:
             errors.append('SOURCE_OR_AUTHORITY')
-        if row['status'] == 'ESTIMATED':
+        if row['status'] in ('ESTIMATED', 'GATE_CANDIDATES'):
             metadata = Metadata(row['source_stamp'], row['source_valid_until'], row['source_epoch'], 'audit')
             reason = freshness_reason(metadata, row['check_imu_stamp'], row['check_epoch'],
                 row['clock_fresh_at_check'], row['source_arrival_wall'], row['check_wall'])
             if reason != row['timing_rejection'] or row['timing_current'] != (reason is None):
                 errors.append('TIMING')
-            if row['motion']['current_stamp'] != row['source_pair_stamp'] or row['motion']['control_eligible']:
+            if row['status'] == 'ESTIMATED' and (row['motion']['current_stamp'] != row['source_pair_stamp'] or row['motion']['control_eligible']):
                 errors.append('MOTION_IDENTITY')
+            if row['status'] == 'GATE_CANDIDATES' and any(c['metadata']['stamp'] != row['source_stamp'] or c['metadata']['valid_until'] != row['source_valid_until'] or c['control_eligible'] for c in row['candidates']):
+                errors.append('GATE_IDENTITY')
     graph = summary.get('node_graph') or {}
     expected = sorted(['/airsim_node/drone_1/front_left/Scene', '/airsim_node/drone_1/front_right/Scene',
                        '/airsim_node/drone_1/imu/imu'])

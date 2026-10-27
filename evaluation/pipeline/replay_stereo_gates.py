@@ -10,12 +10,13 @@ import cv2
 
 from interfaces.contracts import Metadata
 from perception.gate_geometry.stereo_gate import stereo_gate_candidates
+from perception.gate_geometry.roi_disparity import gate_region_disparity
 from perception.stereo_depth.geometry import load_nominal_rig
 from perception.stereo_depth.pairing import ImageFrame, StereoPair
 from perception.stereo_depth.sgbm import compute_diagnostic_disparity
 
 
-def replay(source, settings, stride=5):
+def replay(source, settings, stride=5, depth_method="full"):
     source = Path(source); directory = source / 'scene_trace'
     index = json.loads((directory / 'index.json').read_text())
     rig = load_nominal_rig(settings)
@@ -44,14 +45,14 @@ def replay(source, settings, stride=5):
         stamp=max(x.metadata.stamp for x in frames)
         pair=StereoPair(Metadata(stamp,min(x.metadata.valid_until for x in frames),0,'offline_pair','front_stereo'),
                         frames[0],frames[1],skew)
-        started=time.monotonic(); depth=compute_diagnostic_disparity(pair)
+        started=time.monotonic(); depth=(gate_region_disparity(pair) if depth_method=="roi" else compute_diagnostic_disparity(pair))
         # Query at capture time solely to test geometry; do not claim real-time output.
         gates=stereo_gate_candidates(pair,depth,rig,stamp,0)
         rows.append({'left':left['file'],'right':right['file'],'input_sha256':hashes,'skew_s':skew,
                      'status':'PROCESSED','gate_count':len(gates),'candidates':[asdict(g) for g in gates],
                      'valid_disparity_fraction':float(depth.valid.mean()),'elapsed_s':time.monotonic()-started,
                      'query_at_capture_time_not_output_time':True})
-    return {'source':str(source),'role':'offline_nominal_gate_proposal','settings_sha256':rig.settings_sha256,
+    return {'source':str(source),'depth_method':depth_method,'role':'offline_nominal_gate_proposal','settings_sha256':rig.settings_sha256,
             'index_sha256':hashlib.sha256((directory/'index.json').read_bytes()).hexdigest(),
             'control_published':False,'acceptance_eligible':False,'results':rows}
 
@@ -59,10 +60,11 @@ def replay(source, settings, stride=5):
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('source');parser.add_argument('output')
     parser.add_argument('--settings',default='configs/simulator_settings.json');parser.add_argument('--stride',type=int,default=5)
+    parser.add_argument('--depth-method',choices=('full','roi'),default='full')
     args=parser.parse_args()
     if not 1 <= args.stride <= 20: parser.error('stride must be 1..20')
     cv2.setNumThreads(1)
-    result=replay(args.source,args.settings,args.stride)
+    result=replay(args.source,args.settings,args.stride,args.depth_method)
     with Path(args.output).open('x') as out:json.dump(result,out,indent=2,allow_nan=False);out.write('\n')
     print(json.dumps({'output':args.output,'frames':len(result['results']),
                       'candidate_counts':[r.get('gate_count') for r in result['results']]}))

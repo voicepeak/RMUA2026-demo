@@ -1,0 +1,278 @@
+{
+  "iteration": 53,
+  "acceptance_eligible": false,
+  "control_published": false,
+  "offline_comparison": [
+    {
+      "mode": "pwm",
+      "full_artifact_sha256": "3adaf006b4cb3f94677ba4890dcaf669cb4e3e0c8c8b08c3153bf8c7486126f9",
+      "roi_artifact_sha256": "48db497154b676e54cc285c6c4b7b6fea4c6b07ae370e9f0d7a4479140d74bed",
+      "frames": [
+        {
+          "left": "front_left_0000.png",
+          "full_count": 1,
+          "roi_count": 1,
+          "full_s": 0.35823659086599946,
+          "roi_s": 0.06340639409609139,
+          "paired_center_differences_m": [
+            0.0
+          ]
+        },
+        {
+          "left": "front_left_0005.png",
+          "full_count": 1,
+          "roi_count": 1,
+          "full_s": 0.3461048149038106,
+          "roi_s": 0.05818708706647158,
+          "paired_center_differences_m": [
+            0.0
+          ]
+        },
+        {
+          "left": "front_left_0010.png",
+          "full_count": 1,
+          "roi_count": 1,
+          "full_s": 0.345900721848011,
+          "roi_s": 0.057204606011509895,
+          "paired_center_differences_m": [
+            0.0
+          ]
+        },
+        {
+          "left": "front_left_0015.png",
+          "full_count": 1,
+          "roi_count": 1,
+          "full_s": 0.3391869750339538,
+          "roi_s": 0.06373387994244695,
+          "paired_center_differences_m": [
+            0.0
+          ]
+        },
+        {
+          "left": "front_left_0020.png",
+          "full_count": 0,
+          "roi_count": 0,
+          "full_s": 0.29270873009227216,
+          "roi_s": 0.06151878903619945,
+          "paired_center_differences_m": []
+        },
+        {
+          "left": "front_left_0025.png",
+          "full_count": 0,
+          "roi_count": 0,
+          "full_s": 0.29196841712109745,
+          "roi_s": 0.057665542932227254,
+          "paired_center_differences_m": []
+        }
+      ],
+      "full_elapsed_median_s": 0.3425438484409824,
+      "roi_elapsed_median_s": 0.059852938051335514
+    },
+    {
+      "mode": "vel",
+      "full_artifact_sha256": "f0568a9ecc315b74b9d1298da30c74de099df43ae54567cd7caa47f2ceea8893",
+      "roi_artifact_sha256": "2775eb3b1c3ef6b6ef405074862221fafa60cdc145b0017c4ddcba2308b2e65a",
+      "frames": [
+        {
+          "left": "front_left_0000.png",
+          "full_count": 1,
+          "roi_count": 1,
+          "full_s": 0.34457292687147856,
+          "roi_s": 0.06265544495545328,
+          "paired_center_differences_m": [
+            0.0
+          ]
+        },
+        {
+          "left": "front_left_0005.png",
+          "full_count": 1,
+          "roi_count": 1,
+          "full_s": 0.291750974021852,
+          "roi_s": 0.056015306152403355,
+          "paired_center_differences_m": [
+            0.0
+          ]
+        },
+        {
+          "left": "front_left_0010.png",
+          "full_count": 1,
+          "roi_count": 1,
+          "full_s": 0.292725367937237,
+          "roi_s": 0.05704639689065516,
+          "paired_center_differences_m": [
+            0.0
+          ]
+        },
+        {
+          "left": "front_left_0015.png",
+          "full_count": 1,
+          "roi_count": 1,
+          "full_s": 0.29316623602062464,
+          "roi_s": 0.05444668489508331,
+          "paired_center_differences_m": [
+            0.07660395997972261
+          ]
+        },
+        {
+          "left": "front_left_0020.png",
+          "full_count": 1,
+          "roi_count": 1,
+          "full_s": 0.2916770810261369,
+          "roi_s": 0.05426043597981334,
+          "paired_center_differences_m": [
+            0.0
+          ]
+        }
+      ],
+      "full_elapsed_median_s": 0.292725367937237,
+      "roi_elapsed_median_s": 0.056015306152403355
+    }
+  ],
+  "online_runs": [
+    {
+      "path": "runs/20261027T104349Z_f7721f2bd9d147ea98df252d0fe5d0ef",
+      "run_state": "OBSERVED",
+      "source_unchanged": true,
+      "simulator_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "faults": [],
+        "pairs": 131,
+        "received": {
+          "imu": 804,
+          "right": 133,
+          "left": 132
+        },
+        "overwritten": {},
+        "pairing_events": {
+          "SENSOR_EXPIRED_right": 1,
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 131,
+          "superseded": 8,
+          "taken": 122,
+          "discarded_on_close": 1
+        },
+        "results": 122,
+        "statuses": {
+          "GATE_CANDIDATES": 11,
+          "REJECTED": 111
+        },
+        "timing_current_results": 11,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.2,
+        "source_settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "method": "orb_lk",
+        "pipeline": "gate_roi",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 122,
+        "timing_current_results": 11,
+        "status_counts": {
+          "GATE_CANDIDATES": 11,
+          "REJECTED": 111
+        },
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "rejection_reasons": {
+        "AFTER_DEPTH_SOURCE_LEASE_NOT_CURRENT": 89,
+        "INPUT_SOURCE_LEASE_NOT_CURRENT": 22
+      },
+      "timely_nonempty_candidate_count": 3,
+      "result_sha256": "da7aebf8ec2282913748cc2e961b07ef0c65acd5b6f24365edc67ade578df7db",
+      "manifest_sha256": "39a26f6c81d614cee712c280ddc4149d5c18c4f324c30918ba9f8691fd89d86a"
+    },
+    {
+      "path": "runs/20261027T104420Z_802c6fe2894d41b98649b8d64678e84a",
+      "run_state": "OBSERVED",
+      "source_unchanged": true,
+      "simulator_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "faults": [],
+        "pairs": 13,
+        "received": {
+          "imu": 599,
+          "left": 107,
+          "right": 107
+        },
+        "overwritten": {},
+        "pairing_events": {
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0,
+          "SENSOR_EXPIRED_left": 94,
+          "SENSOR_EXPIRED_right": 93
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 13,
+          "superseded": 0,
+          "taken": 13,
+          "discarded_on_close": 0
+        },
+        "results": 13,
+        "statuses": {
+          "REJECTED": 13
+        },
+        "timing_current_results": 0,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.15,
+        "source_settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "method": "orb_lk",
+        "pipeline": "gate_roi",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 13,
+        "timing_current_results": 0,
+        "status_counts": {
+          "REJECTED": 13
+        },
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "rejection_reasons": {
+        "AFTER_DEPTH_SOURCE_LEASE_NOT_CURRENT": 9,
+        "INPUT_SOURCE_LEASE_NOT_CURRENT": 4
+      },
+      "timely_nonempty_candidate_count": 0,
+      "result_sha256": "90bbfac9111c6ac644c16d689d72e91710a89052beb4115ee98d7778ef617a59",
+      "manifest_sha256": "7255eaca011dec61515302db3832007d1d27579d25af7b636c7bc2820b5bde48"
+    }
+  ]
+}
