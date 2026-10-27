@@ -17,6 +17,8 @@
 
 下一批开发按设计第 16 节 Sprint A 的未完成项推进，然后进入 Sprint B。旧版仅作参考，任何算法迁移都需接口、坐标和回归证据。
 
+2026-10-27 迭代 61：双目相对运动可串接为初始机体系局部轨迹，拒绝不连续/非法旋转并在相对估计失败后断链；一场历史低速飞行 26 次有效估计分两段，最长段约 11.92s，隔离真值对照末端位置误差约 0.048m。宿主/Noetic 各 257 项回归（Noetic 3 项跳过），追加专项 4 项两环境通过；没有在线定位融合、协方差标定或无 GPS 验收。见 docs/visual_trajectory.md 和 docs/evidence/p2_visual_trajectory.json。
+
 2026-10-27 迭代 60：点云时间领先时最多等待 30ms 以取得因果 IMU 历史，不延长原始租约；同 seed2165 单场 76/77 帧完成，1 帧状态健康拒绝，中位处理约 30ms，但关联歧义 1078 次，不能用于控制。宿主 254 项通过，Noetic 251 项通过、3 项跳过；证据见 docs/evidence/p4_dynamic_lidar_imu_wait.json 和 docs/dynamic_lidar_online.md。
 
 2026-10-27 迭代 59：接通只读 LiDAR 世界坐标聚类、候选跟踪和静止探针动态冲突检查；两场分别处理 31/77、27/78 帧，第二场 51 次输入拒绝均由点云时间领先当前 IMU，关联歧义仍多。宿主 252 项通过；Noetic 249 项通过、3 项跳过。结果只供诊断，不代表检测覆盖、FREE、飞行安全或整机验收。证据见 docs/evidence/p4_dynamic_lidar_online.json 和 docs/dynamic_lidar_online.md。

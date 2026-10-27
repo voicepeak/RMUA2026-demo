@@ -1,0 +1,1006 @@
+{
+  "iteration": 61,
+  "source": "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871",
+  "method": "orb_lk",
+  "status_counts": {
+    "ESTIMATED": 26,
+    "REJECTED": 1
+  },
+  "source_input_sha256": {
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/index.json": "e438768894e1310122135592438987fe1dfc8a924799a29e67ed84b798370fc8",
+    "configs/simulator_settings.json": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0000.png": "4b8bac243f49333f4c8936eb7b48cbd8fbeca27f5dd8bc17d4f771cb0ad41b4e",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0000.png": "47d8119d2fdd40337611391e5a8aa18a907a99e313042e6b496c5845c6eff2d5",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0001.png": "245e9cba7870801dcd42a1ea141e9b3d12949cd5b3967552bc943d529e26afde",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0001.png": "e051caaae4a2276abbda27d918fd8cf1790f2a36991b387d0f660c5648cb96d1",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0002.png": "4f595dda8c1e9438232625b7e03c95e39bac850ef2a468f9c752b3e4e8584a90",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0002.png": "a2efc67f1c8ffa1b7ebe224d756f2bead85b56731527885c2438c9482ffe1a96",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0003.png": "85470901c66a4d059cc37f1b4cca2835a8ff02805459dcea948c3d89680c5cdf",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0003.png": "2106338241fbfaadb75d0e364b46a3de29cbdcbac9e560117c16a621a860c4b8",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0004.png": "a3ad5ac3d90c55f96ad8dee37e41ce2b5f6db121fde50e87c136c0691a23991a",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0004.png": "33cfb8445ae907b34b2eada2e710f5c0dca8f3d7fb2f41ed682da77523925272",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0005.png": "d8742807fbcf37d7498e3bbd2337722f309ed727f54613a135e027d747a6fded",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0005.png": "fd62309c039ead4e6931b1ef9dbc57c3277e25eece2290bb7220e045eea2dd8d",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0006.png": "991b4e645741406548dffb409b265955ea8a382f281bbff8b2529164ded8fad4",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0006.png": "30c43a0e84aff908ae32fa4e772eca43f21b8a036646237c5bf39667577d80f7",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0007.png": "b23559a93f93f179c09b42644e94081339299587350868469f5f3bbc645602d6",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0007.png": "aaf15814ddd47b43a2c6a91ff5fea48003f60ec058ef9d59427988c2ed50405d",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0008.png": "564b7fac4aac0bfb438c0d930eadf8ecad41a687004393af089e6839642003b4",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0008.png": "d00cd46ba22d2bf763f9d9f9d7a132c53c66d9f8c68dc1041a06c64367d09a75",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0009.png": "2cf0164c62eaeb7764cbe532e7978ef994fb30490cdaf1167dfd085e020b3303",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0009.png": "d6382a055731cf6c6e59812f8823f95c57b752180390ee13af81bcb6067bea3e",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0010.png": "803a9d1156d0c4c854e19c2801d96c6f50bcb89a498a6278c8b2fc7495427358",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0010.png": "51ebb8892db04488bd514866b9e330e7f412efb1e393cf58051ca06e008e0e0f",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0011.png": "c854272ef6843169811b1ac05e75c441777df6df40450544e671039ceed3076e",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0011.png": "bdca6dbeb810614e74592c1bb12d4ab4e849c6a8a1940fcca560ce0322b71b77",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0012.png": "c51acd645b2c8b5624b5a877011c502852b29fb99bd18796f0208ebe524a8cb8",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0012.png": "982f475d40bf0225b5c6d43d4f1d940ac9592428bb59d71cddf18911852f127e",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0013.png": "5a649b41a52c5789487c10d62e2bba5da4666b0887cf65a24b4da7f8ef15eb11",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0013.png": "759a03d2e5cb76b0c95f2ecb02336a541ed66055c33d91046406367f65b884d1",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0014.png": "96db8435bffb338f74a893ab849798f5d0b29cff34abad65a2109a2333ab5a8a",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0014.png": "2e3718f92708e8e10df9bccbf454f59832e93b2b444ec3ee8a185bd07db5678d",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0015.png": "4c71966408c95cad6deca00761769e5ad87261fe751985cd01d85649e038dff7",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0015.png": "ff0b0b939c6adea717806a58127400eb839234b37a037e7c71a7c3a589f42332",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0016.png": "03bcbb91fde52b7019e0bda60a707403e3b530ce0065d12c9307831e456303a6",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0016.png": "b9f719d46efee2937ccf4f441212e1b2126515e7fdd6004f90b1ce69087575c2",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0017.png": "b9385c563d12adf92d28759e4d9f00865b7d6b946ee67ab29b8a57daa025af81",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0017.png": "afa9d26c0290c56a4814274f2b05a2f6eb13b57f435ce8e906217a482fef3ed5",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0018.png": "9b5126315aa3d19f87615f99c6d88c6efbfa5cfc5cb888b2c0bda09fe14cdd5c",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0018.png": "8e93d7eff3ecfbbc8ddc4be54657ff2b3904c007b4c60284e8defe4a240e9a8c",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0019.png": "72ecc92598adeb13f6c2250b7762a45dc08d76aa5662234f382b46fe586f9c13",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0019.png": "0c2c6c440177f75f1f0bd7e776bf6bed60a728ee77fbf209add4d1afd9b87904",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0020.png": "d669ca91c1ec14c507443a05f1997ccbcbffcb710313e48b16bf21b2dd8905d4",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0020.png": "c6398b65c67f556c828b5467b734977a00610178ee1ba3b05b6ba85995775b10",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0021.png": "2e44ded6018f6be7ab0413f251e34cc049b012e0efb73927a23d31a8dfc7c2d9",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0021.png": "800ada597f0dd6f9fb991796122e422d787eb1c9c5f5f6d0d97fbe4771bf9f98",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0022.png": "f6e59ab9f8e764c7990b1d884861f3ef40f512b019e84faf924fc4e73cc6158b",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0022.png": "f1fd688521f9e493fe45c8b31f2bdc381f87158446d0cca56f786cf8635b4535",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0023.png": "1325e6d386357036cecc5b709ec53575a4c70a44d164483ffc43f9df7d6fe2ea",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0023.png": "c64296341202fc11a0a915f0e8c4bb9e0ebe1ff1dea04c5e07a842dfab544058",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0024.png": "f011835e7cf7940f4a109c1e681401d296c69d1e2b8591230bc642ac41672084",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0024.png": "eefe790d851d335e4247f446afda906f9c4e6c2934ca783eac7b32b882eade9f",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0025.png": "2e83f0ebb0b5fc2efa7cd34b12b1a17f0f8e7e732af271b4bacae122168da5a6",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0025.png": "6747a005bd8c110fb044d2433df10f6ea96cc3db900bd22f6d1646dd64cccc43",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0026.png": "a41b1e31c3eaf09ebdd3dd787c85ea2bcb87f577ed2895eeb247fa2984554e62",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0026.png": "74a744b75b2ddeb79d7d062b2c46b05bdd1ea966d78523f8114b6d34cd94a7f6",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_left_0027.png": "66fdc78f4f4ed2267ae86b0d02b6ea1337ec969a7a5708afd2e89335c7178baa",
+    "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871/scene_trace/front_right_0027.png": "6b85e2fab0853ef82dff640ae1f331fe2c146cc12f0c03f7324eeb7c051c7fc3"
+  },
+  "output_sha256": {
+    "rmua61_estimates.json": "11eae81f2083c176785beb988a1d6d5dea9c24c4d03fb28a9913707cb806f2fa",
+    "rmua61_trajectory_v2.json": "f03b701cd812c9b5552a55e8c250d1a1b4c9e5a8c3d002766822b9118b1157bf",
+    "rmua61_evaluation_v2.json": "5a9ba2e55dc82b989ab4ab5760d74ba3c5103efbd7a19c8ad36e0db2a1640e41"
+  },
+  "trajectory": {
+    "source": "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871",
+    "segments": [
+      {
+        "anchor_stamp": 1792484469.0502892,
+        "epoch": 0,
+        "poses": [
+          {
+            "stamp": 1792484469.5032988,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.0009000099426747232,
+              -0.00011082599012091077,
+              0.0026153721212071653
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9999999869985798,
+                2.2013091015406604e-05,
+                0.00015974437059954245
+              ],
+              [
+                -2.2011851242499954e-05,
+                0.9999999997276092,
+                -7.762734243215144e-06
+              ],
+              [
+                -0.00015974454143780498,
+                7.759217872966111e-06,
+                0.9999999872107379
+              ]
+            ],
+            "steps": 1,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          }
+        ]
+      },
+      {
+        "anchor_stamp": 1792484469.9953094,
+        "epoch": 0,
+        "poses": [
+          {
+            "stamp": 1792484470.49332,
+            "epoch": 0,
+            "position_initial_body_m": [
+              -0.0016114547228002762,
+              -0.006790402452577643,
+              -0.008193138323585057
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9999913033014773,
+                0.0016210540219071205,
+                0.0038425909580515638
+              ],
+              [
+                -0.0016105109823320364,
+                0.9999949349426243,
+                -0.002745240148403309
+              ],
+              [
+                -0.0038470216776915595,
+                0.0027390277389388144,
+                0.9999888490134561
+              ]
+            ],
+            "steps": 1,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484470.9493296,
+            "epoch": 0,
+            "position_initial_body_m": [
+              -0.019961893881165402,
+              0.0014746736087003515,
+              -0.10017867362940858
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9987687419082777,
+                0.007567587063882214,
+                0.04902786771813208
+              ],
+              [
+                -0.0075125412430861495,
+                0.9999709264146514,
+                -0.0013069236759592506
+              ],
+              [
+                -0.04903633256093918,
+                0.0009369906373149234,
+                0.9987965559299444
+              ]
+            ],
+            "steps": 2,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484471.4413402,
+            "epoch": 0,
+            "position_initial_body_m": [
+              -0.11487604320236014,
+              0.05239592371133103,
+              -0.31014378516550645
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9990747780548553,
+                0.006546362659986826,
+                -0.04250568186213911
+              ],
+              [
+                -0.005114905392560427,
+                0.9994189491091962,
+                0.0336986929167153
+              ],
+              [
+                0.04270158776282925,
+                -0.03345010160513496,
+                0.9985277487907582
+              ]
+            ],
+            "steps": 3,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484471.9183502,
+            "epoch": 0,
+            "position_initial_body_m": [
+              -0.1372838329665263,
+              -0.016771583123232625,
+              -0.5727871347250453
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9999483744893386,
+                -0.00032041417363502,
+                -0.01015606670354998
+              ],
+              [
+                0.0003288089909831756,
+                0.9999996056936137,
+                0.0008249225809546026
+              ],
+              [
+                0.010155798382060939,
+                -0.0008282193999502516,
+                0.9999480855583697
+              ]
+            ],
+            "steps": 4,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484472.37136,
+            "epoch": 0,
+            "position_initial_body_m": [
+              -0.12150528715478759,
+              -0.1087240246093115,
+              -0.840803456506562
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9992942196719253,
+                -0.006701885433930396,
+                -0.036961429381293334
+              ],
+              [
+                0.00434222005235544,
+                0.997968832713059,
+                -0.063555912851216
+              ],
+              [
+                0.0373122989816332,
+                0.06335056167836961,
+                0.9972935870042183
+              ]
+            ],
+            "steps": 5,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484472.83337,
+            "epoch": 0,
+            "position_initial_body_m": [
+              -0.049331275897424004,
+              -0.06732918200089788,
+              -0.9884325200679158
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9995539513102883,
+                -0.019975097835018853,
+                0.02220121362608936
+              ],
+              [
+                0.020463479494560132,
+                0.9995486772365464,
+                -0.021992904347677658
+              ],
+              [
+                -0.021751883296982515,
+                0.02243740852130225,
+                0.9995115898637107
+              ]
+            ],
+            "steps": 6,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484473.3223803,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.0018387965042557033,
+              0.03136689192224684,
+              -1.0187131756709629
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.998888844512542,
+                -0.036092135439518405,
+                0.030305677154854417
+              ],
+              [
+                0.03469717325885731,
+                0.9983680323272132,
+                0.04535833104219681
+              ],
+              [
+                -0.03189329829672124,
+                -0.04425640955278835,
+                0.9985109852862172
+              ]
+            ],
+            "steps": 7,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484473.77539,
+            "epoch": 0,
+            "position_initial_body_m": [
+              -0.008573061339212939,
+              0.027858727639003267,
+              -1.0256539991101081
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9991459536661165,
+                -0.03906419324236714,
+                -0.01346670260123065
+              ],
+              [
+                0.039210137649697906,
+                0.9991731677673221,
+                0.010749228777286839
+              ],
+              [
+                0.013035657947289739,
+                -0.011268079700539307,
+                0.9998515399806832
+              ]
+            ],
+            "steps": 8,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484474.2734005,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.0016204143315577003,
+              -0.0054584699653775146,
+              -1.0546739698324767
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9991373250121913,
+                -0.037957929696966645,
+                -0.016846404382040055
+              ],
+              [
+                0.0379139182006041,
+                0.9992767298857901,
+                -0.002924365818350129
+              ],
+              [
+                0.016945222753359798,
+                0.0022831298433884806,
+                0.9998538126866133
+              ]
+            ],
+            "steps": 9,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484474.762411,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.06477100298540168,
+              -0.026334026667904416,
+              -1.0575681239229564
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9978535967067261,
+                -0.03977659927477134,
+                -0.052019435690758106
+              ],
+              [
+                0.037886419082942685,
+                0.9986030679031154,
+                -0.036831128458919254
+              ],
+              [
+                0.05341178510892794,
+                0.03478124386246179,
+                0.9979666558993129
+              ]
+            ],
+            "steps": 10,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484475.230421,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.2321702484224369,
+              0.04842241390820102,
+              -1.0430816006238182
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9980035734476431,
+                -0.037433341745914554,
+                -0.05086857882297028
+              ],
+              [
+                0.03801119591253029,
+                0.9992227769479863,
+                0.010439876132102954
+              ],
+              [
+                0.05043824313984789,
+                -0.012352609201621408,
+                0.9986507881511322
+              ]
+            ],
+            "steps": 11,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484475.707431,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.5040222224266382,
+              0.10017259057407825,
+              -1.0164792524584596
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9980994064539227,
+                -0.06159636402035053,
+                0.00186085351386623
+              ],
+              [
+                0.06155480235174637,
+                0.9979518731761169,
+                0.01740876594467851
+              ],
+              [
+                -0.0029293589341426313,
+                -0.01726113448622728,
+                0.9998467242995215
+              ]
+            ],
+            "steps": 12,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484476.2024417,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.8004644021354356,
+              0.10779159553004874,
+              -1.014291619518113
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9923408972776105,
+                -0.1228991600607495,
+                0.012463548717336827
+              ],
+              [
+                0.12263088313234648,
+                0.992242811688217,
+                0.020392870206081406
+              ],
+              [
+                -0.01487313324245862,
+                -0.018708263132198626,
+                0.9997143546024178
+              ]
+            ],
+            "steps": 13,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484476.6974523,
+            "epoch": 0,
+            "position_initial_body_m": [
+              1.0594476247713513,
+              0.08011907833029855,
+              -1.0332704657912706
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9770024625821153,
+                -0.18473981621327004,
+                0.106477173206138
+              ],
+              [
+                0.18333631640366008,
+                0.9827833030409646,
+                0.022907953890045043
+              ],
+              [
+                -0.10887599917346216,
+                -0.0028599946466037213,
+                0.9940512246532378
+              ]
+            ],
+            "steps": 14,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484477.201463,
+            "epoch": 0,
+            "position_initial_body_m": [
+              1.0869450486282473,
+              -0.008632308529807217,
+              -1.0049160265613974
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9673788668825192,
+                -0.237793894082179,
+                0.08736241666945274
+              ],
+              [
+                0.23946920605573044,
+                0.9708615814622055,
+                -0.00907132800328703
+              ],
+              [
+                -0.08265970759766667,
+                0.029696019563883225,
+                0.9961352915954388
+              ]
+            ],
+            "steps": 15,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484477.669473,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.9300708035397288,
+              -0.0921027691768497,
+              -1.0153024102343653
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9649005751912194,
+                -0.2624628301765986,
+                -0.008952249513061977
+              ],
+              [
+                0.26202939507289075,
+                0.9644638465513479,
+                -0.03391290039369897
+              ],
+              [
+                0.017534996817482523,
+                0.03037682457183346,
+                0.9993846969088246
+              ]
+            ],
+            "steps": 16,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484478.1254828,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.7920119815401571,
+              -0.12819149592151113,
+              -1.0812483722209258
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9671333062191524,
+                -0.24875190971932473,
+                -0.05268448929808719
+              ],
+              [
+                0.24701063337250653,
+                0.9682897852718386,
+                -0.03742510840505099
+              ],
+              [
+                0.06032342001681054,
+                0.0231814397569596,
+                0.9979096681805774
+              ]
+            ],
+            "steps": 17,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484478.608493,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.7570680371403353,
+              -0.06785786954407609,
+              -1.115320827354543
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9713261408757599,
+                -0.23415595365811806,
+                -0.04118880209305646
+              ],
+              [
+                0.23423304737061765,
+                0.9721758100896558,
+                -0.0030122742231135646
+              ],
+              [
+                0.040748098984832636,
+                -0.006721877935405459,
+                0.9991468404524652
+              ]
+            ],
+            "steps": 18,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484479.082503,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.8119034038018392,
+              0.008200499149594781,
+              -1.1102496413341154
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9715118381396372,
+                -0.2366431986068055,
+                0.012835299282991909
+              ],
+              [
+                0.23648535282612204,
+                0.9715521684878808,
+                0.012691012772852719
+              ],
+              [
+                -0.015473404707709394,
+                -0.009294108867240542,
+                0.999837083372644
+              ]
+            ],
+            "steps": 19,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484479.5505133,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.8402183290047396,
+              0.050280573264007505,
+              -1.0855405064423018
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9709026122605273,
+                -0.23856619888315495,
+                0.020839535890402855
+              ],
+              [
+                0.23813622632615708,
+                0.971001211537336,
+                0.021160928716923183
+              ],
+              [
+                -0.0252834969262907,
+                -0.015582552533790477,
+                0.9995588671207465
+              ]
+            ],
+            "steps": 20,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484480.015523,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.8236702932241021,
+              0.028986005930756984,
+              -1.0536249588935704
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9727910586121372,
+                -0.23159026692332707,
+                0.006595797954731704
+              ],
+              [
+                0.23153507618589594,
+                0.97279217313577,
+                0.008179020807970963
+              ],
+              [
+                -0.00831052223803733,
+                -0.006429319728241187,
+                0.9999447980103519
+              ]
+            ],
+            "steps": 21,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484480.4865332,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.7940355545744188,
+              -0.0014780911296239062,
+              -1.0604929292439955
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9752931775421746,
+                -0.22087986521069766,
+                0.0039119028863682575
+              ],
+              [
+                0.22090013473356404,
+                0.9752787931238779,
+                -0.005865676220636624
+              ],
+              [
+                -0.002519586152851203,
+                0.006584893874321639,
+                0.9999751451202586
+              ]
+            ],
+            "steps": 22,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484480.9455428,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.7708230403435151,
+              -0.015750079203808554,
+              -1.0830120390714375
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9762944244836637,
+                -0.21471925840254172,
+                -0.02729169824643419
+              ],
+              [
+                0.21415809459302643,
+                0.9765494172295811,
+                -0.022080449018302417
+              ],
+              [
+                0.031392789656165945,
+                0.015712281172000256,
+                0.999383618525927
+              ]
+            ],
+            "steps": 23,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484481.4465537,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.7869436167829205,
+              -0.028461659787232522,
+              -1.1079689627863003
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9777910011817784,
+                -0.20946372085545706,
+                -0.00705036547439505
+              ],
+              [
+                0.20945972126062123,
+                0.9778163994333308,
+                -0.0013092626397641083
+              ],
+              [
+                0.007168206006964096,
+                -0.00019658235970743815,
+                0.9999742887584747
+              ]
+            ],
+            "steps": 24,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          },
+          {
+            "stamp": 1792484481.9115636,
+            "epoch": 0,
+            "position_initial_body_m": [
+              0.8171674799534167,
+              -0.03872216075091042,
+              -1.1253241328661112
+            ],
+            "rotation_initial_from_body": [
+              [
+                0.9778652591199214,
+                -0.20769722756978798,
+                0.025325810276333672
+              ],
+              [
+                0.2076201536520468,
+                0.978193121314804,
+                0.005664733877421263
+              ],
+              [
+                -0.02595008292529438,
+                -0.000281197839954947,
+                0.9996632003449687
+              ]
+            ],
+            "steps": 25,
+            "control_eligible": false,
+            "covariance_calibrated": false
+          }
+        ]
+      }
+    ],
+    "breaks": [
+      {
+        "previous_stamp": 1792484469.5032988,
+        "current_stamp": 1792484469.9953094,
+        "reason": "insufficient image coverage"
+      }
+    ],
+    "truth_accessed": false,
+    "control_eligible": false,
+    "metric_calibration_verified": false
+  },
+  "isolated_evaluation": {
+    "source": "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871",
+    "truth_sha256": "83fe4bd8a9bde471c2b02ef9b0babb654c7dfcc1dd1b1520f10ecc31e8751ae9",
+    "role": "isolated_post_estimate_evaluation",
+    "segments": [
+      {
+        "anchor_stamp": 1792484469.0502892,
+        "steps": 1,
+        "comparisons": [
+          {
+            "stamp": 1792484469.5032988,
+            "elapsed_s": 0.45300960540771484,
+            "translation_error_m": 0.0027681169826051983
+          }
+        ]
+      },
+      {
+        "anchor_stamp": 1792484469.9953094,
+        "steps": 25,
+        "comparisons": [
+          {
+            "stamp": 1792484470.49332,
+            "elapsed_s": 0.49801063537597656,
+            "translation_error_m": 0.007096872677133748
+          },
+          {
+            "stamp": 1792484470.9493296,
+            "elapsed_s": 0.9540202617645264,
+            "translation_error_m": 0.010564874458479924
+          },
+          {
+            "stamp": 1792484471.4413402,
+            "elapsed_s": 1.446030855178833,
+            "translation_error_m": 0.038786138362560334
+          },
+          {
+            "stamp": 1792484471.9183502,
+            "elapsed_s": 1.9230408668518066,
+            "translation_error_m": 0.060837119496657675
+          },
+          {
+            "stamp": 1792484472.37136,
+            "elapsed_s": 2.3760507106781006,
+            "translation_error_m": 0.046350254642184105
+          },
+          {
+            "stamp": 1792484472.83337,
+            "elapsed_s": 2.8380606174468994,
+            "translation_error_m": 0.036853421518464734
+          },
+          {
+            "stamp": 1792484473.3223803,
+            "elapsed_s": 3.327070951461792,
+            "translation_error_m": 0.03499704721441555
+          },
+          {
+            "stamp": 1792484473.77539,
+            "elapsed_s": 3.780080556869507,
+            "translation_error_m": 0.036057658452790284
+          },
+          {
+            "stamp": 1792484474.2734005,
+            "elapsed_s": 4.278091192245483,
+            "translation_error_m": 0.030079993847995357
+          },
+          {
+            "stamp": 1792484474.762411,
+            "elapsed_s": 4.767101764678955,
+            "translation_error_m": 0.03635544001835343
+          },
+          {
+            "stamp": 1792484475.230421,
+            "elapsed_s": 5.235111713409424,
+            "translation_error_m": 0.04158508561114191
+          },
+          {
+            "stamp": 1792484475.707431,
+            "elapsed_s": 5.7121217250823975,
+            "translation_error_m": 0.049573501713811884
+          },
+          {
+            "stamp": 1792484476.2024417,
+            "elapsed_s": 6.207132339477539,
+            "translation_error_m": 0.04438244966641554
+          },
+          {
+            "stamp": 1792484476.6974523,
+            "elapsed_s": 6.702142953872681,
+            "translation_error_m": 0.04720839205671376
+          },
+          {
+            "stamp": 1792484477.201463,
+            "elapsed_s": 7.206153631210327,
+            "translation_error_m": 0.05586153358891301
+          },
+          {
+            "stamp": 1792484477.669473,
+            "elapsed_s": 7.674163579940796,
+            "translation_error_m": 0.04437979378591604
+          },
+          {
+            "stamp": 1792484478.1254828,
+            "elapsed_s": 8.130173444747925,
+            "translation_error_m": 0.018492011063667144
+          },
+          {
+            "stamp": 1792484478.608493,
+            "elapsed_s": 8.613183736801147,
+            "translation_error_m": 0.020712606108132484
+          },
+          {
+            "stamp": 1792484479.082503,
+            "elapsed_s": 9.087193727493286,
+            "translation_error_m": 0.01690629618562494
+          },
+          {
+            "stamp": 1792484479.5505133,
+            "elapsed_s": 9.555203914642334,
+            "translation_error_m": 0.020209183717789216
+          },
+          {
+            "stamp": 1792484480.015523,
+            "elapsed_s": 10.020213603973389,
+            "translation_error_m": 0.03184716378164831
+          },
+          {
+            "stamp": 1792484480.4865332,
+            "elapsed_s": 10.491223812103271,
+            "translation_error_m": 0.033492140646363446
+          },
+          {
+            "stamp": 1792484480.9455428,
+            "elapsed_s": 10.950233459472656,
+            "translation_error_m": 0.02630132735427295
+          },
+          {
+            "stamp": 1792484481.4465537,
+            "elapsed_s": 11.451244354248047,
+            "translation_error_m": 0.030188612276895038
+          },
+          {
+            "stamp": 1792484481.9115636,
+            "elapsed_s": 11.91625428199768,
+            "translation_error_m": 0.04789533611900052
+          }
+        ]
+      }
+    ],
+    "control_eligible": false
+  },
+  "limitations": "Low-speed single development flight, nominal geometry, no online timing or VIO/control authorization."
+}
