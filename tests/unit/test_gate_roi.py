@@ -6,6 +6,7 @@ import numpy as np
 
 from interfaces.contracts import Metadata
 from perception.gate_geometry.roi_disparity import gate_region_disparity
+from perception.gate_geometry.stereo_gate import prepare_gate_edges
 from perception.stereo_depth.pairing import ImageFrame, StereoPair
 from perception.stereo_depth.sgbm import SgbmConfig, compute_diagnostic_disparity
 
@@ -31,6 +32,18 @@ class GateRoiTests(unittest.TestCase):
         self.assertEqual(result.metadata.stamp,p.metadata.stamp)
         self.assertEqual(result.metadata.valid_until,p.metadata.valid_until)
         self.assertFalse(result.valid[10,10]);self.assertTrue(np.isnan(result.disparity_px[10,10]))
+
+    def test_shared_edges_require_identical_immutable_source_frame(self):
+        image=np.zeros((240,480,3),np.uint8)
+        cv2.rectangle(image,(200,60),(204,180),(0,0,255),-1)
+        cv2.rectangle(image,(330,60),(334,180),(0,0,255),-1)
+        p=pair(image,image);prepared=prepare_gate_edges(p)
+        first=gate_region_disparity(p,SgbmConfig(num_disparities=32))
+        shared=gate_region_disparity(p,SgbmConfig(num_disparities=32),prepared=prepared)
+        np.testing.assert_array_equal(first.valid,shared.valid)
+        np.testing.assert_array_equal(first.disparity_px,shared.disparity_px)
+        with self.assertRaisesRegex(ValueError,'another image'):
+            gate_region_disparity(pair(image,image),SgbmConfig(num_disparities=32),prepared=prepared)
 
     def test_skew_is_rejected_even_without_edges(self):
         image=np.zeros((240,480,3),np.uint8)

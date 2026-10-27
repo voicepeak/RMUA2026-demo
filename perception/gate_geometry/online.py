@@ -2,7 +2,7 @@
 from dataclasses import asdict
 
 from perception.gate_geometry.roi_disparity import gate_region_disparity
-from perception.gate_geometry.stereo_gate import stereo_gate_candidates
+from perception.gate_geometry.stereo_gate import stereo_gate_candidates, prepare_gate_edges
 from perception.stereo_depth.transport import freshness_reason
 
 
@@ -18,11 +18,14 @@ class GateWindow:
         if reason:
             return {'status':'REJECTED','reason':'INPUT_'+reason,'control_eligible':False}
         try:
-            depth = self.depth_fn(pair)
+            use_shared_edges = self.depth_fn is gate_region_disparity and self.candidates_fn is stereo_gate_candidates
+            prepared = prepare_gate_edges(pair) if use_shared_edges else None
+            depth = self.depth_fn(pair, prepared=prepared) if use_shared_edges else self.depth_fn(pair)
             now, epoch, fresh, wall, reason = check()
             if reason:
                 return {'status':'REJECTED','reason':'AFTER_DEPTH_'+reason,'control_eligible':False}
-            candidates = self.candidates_fn(pair, depth, self.rig, now, epoch)
+            candidates = (self.candidates_fn(pair, depth, self.rig, now, epoch, prepared=prepared)
+                          if use_shared_edges else self.candidates_fn(pair, depth, self.rig, now, epoch))
         except (ValueError, ArithmeticError) as error:
             return {'status':'REJECTED','reason':'GATE_'+str(error),'control_eligible':False}
         now, epoch, fresh, wall, reason = check()

@@ -44,7 +44,26 @@ def _vertical_edges(image, encoding, cv2):
     return sorted(edges, key=lambda e: (e[0], e[1]))[:128]
 
 
-def stereo_gate_candidates(pair, disparity, rig, now, epoch):
+
+@dataclass(frozen=True)
+class PreparedGateEdges:
+    """Edges tied by identity to one immutable left image observation."""
+    source_frame: object
+    edges: tuple
+
+
+def prepare_gate_edges(pair):
+    import cv2
+    return PreparedGateEdges(pair.left, tuple(_vertical_edges(pair.left.pixels, pair.left.encoding, cv2)))
+
+
+def checked_gate_edges(pair, prepared):
+    if not isinstance(prepared, PreparedGateEdges) or prepared.source_frame is not pair.left:
+        raise ValueError('prepared gate edges belong to another image')
+    return prepared.edges
+
+
+def stereo_gate_candidates(pair, disparity, rig, now, epoch, prepared=None):
     """Produce nominal 3D proposals, never a gate passage or obstacle clearance.
 
     Conservative source-age checks apply to the original image/derived disparity.
@@ -61,7 +80,8 @@ def stereo_gate_candidates(pair, disparity, rig, now, epoch):
             or pair.left.pixels.shape[:2] != (rig.left.height, rig.left.width)
             or disparity.disparity_px.shape != (rig.left.height, rig.left.width)):
         raise ValueError('gate inputs do not share a current source pair')
-    edges = _vertical_edges(pair.left.pixels, pair.left.encoding, cv2)
+    edges = (_vertical_edges(pair.left.pixels, pair.left.encoding, cv2) if prepared is None
+             else checked_gate_edges(pair, prepared))
     h, w = disparity.disparity_px.shape
     supported = []
     for x, top, bottom, width in edges:

@@ -2,12 +2,12 @@
 import numpy as np
 
 from interfaces.contracts import Metadata
-from perception.gate_geometry.stereo_gate import _vertical_edges
+from perception.gate_geometry.stereo_gate import _vertical_edges, checked_gate_edges
 from perception.stereo_depth.pairing import ImageFrame, StereoPair
 from perception.stereo_depth.sgbm import DisparityObservation, SgbmConfig, compute_diagnostic_disparity
 
 
-def gate_region_disparity(pair, config=None):
+def gate_region_disparity(pair, config=None, prepared=None):
     """Match in an edge-bounded crop, returning UNKNOWN everywhere else.
 
     Both images use the same crop origin so disparity remains in original pixel
@@ -18,7 +18,8 @@ def gate_region_disparity(pair, config=None):
     config = config or SgbmConfig()
     if pair.skew_s > .005:
         raise ValueError('incompatible diagnostic stereo input')
-    edges = _vertical_edges(pair.left.pixels, pair.left.encoding, cv2)
+    edges = (_vertical_edges(pair.left.pixels, pair.left.encoding, cv2) if prepared is None
+             else checked_gate_edges(pair, prepared))
     height, width = pair.left.pixels.shape[:2]
     values = np.full((height, width), np.nan, dtype=np.float32)
     valid = np.zeros((height, width), dtype=bool)

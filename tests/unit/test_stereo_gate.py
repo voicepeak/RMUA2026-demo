@@ -9,7 +9,7 @@ from interfaces.contracts import Metadata
 from perception.stereo_depth.geometry import load_nominal_rig
 from perception.stereo_depth.pairing import ImageFrame, StereoPair
 from perception.stereo_depth.sgbm import DisparityObservation
-from perception.gate_geometry.stereo_gate import stereo_gate_candidates
+from perception.gate_geometry.stereo_gate import stereo_gate_candidates, prepare_gate_edges
 
 
 class StereoGateTests(unittest.TestCase):
@@ -30,6 +30,15 @@ class StereoGateTests(unittest.TestCase):
         self.assertGreater(out[0].center_body_frd_m[0],20.)
         self.assertFalse(out[0].control_eligible);self.assertFalse(out[0].aperture_verified)
         self.assertEqual(out[0].metadata.valid_until,10.2)
+
+    def test_shared_edge_cache_matches_and_rejects_different_frame(self):
+        prepared=prepare_gate_edges(self.pair)
+        baseline=stereo_gate_candidates(self.pair,self.disparity,self.rig,10.05,0)
+        shared=stereo_gate_candidates(self.pair,self.disparity,self.rig,10.05,0,prepared=prepared)
+        self.assertEqual(baseline,shared)
+        new_pair=replace(self.pair,left=replace(self.pair.left,pixels=self.image))
+        with self.assertRaisesRegex(ValueError,'another image'):
+            stereo_gate_candidates(new_pair,self.disparity,self.rig,10.05,0,prepared=prepared)
 
     def test_empty_depth_and_border_cropped_frame_are_not_promoted(self):
         empty=replace(self.disparity,disparity_px=np.full((720,960),np.nan,np.float32),valid=np.zeros((720,960),bool))

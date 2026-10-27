@@ -1,0 +1,264 @@
+{
+  "iteration": 55,
+  "acceptance_eligible": false,
+  "control_published": false,
+  "offline_comparison": [
+    {
+      "mode": "pwm",
+      "source": "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871",
+      "frames": [
+        {
+          "left": "front_left_0000.png",
+          "same_candidates": true,
+          "base_s": 0.06411235104314983,
+          "reuse_s": 0.06252686190418899
+        },
+        {
+          "left": "front_left_0005.png",
+          "same_candidates": true,
+          "base_s": 0.05794974882155657,
+          "reuse_s": 0.056915695080533624
+        },
+        {
+          "left": "front_left_0010.png",
+          "same_candidates": true,
+          "base_s": 0.05625827889889479,
+          "reuse_s": 0.052702926099300385
+        },
+        {
+          "left": "front_left_0015.png",
+          "same_candidates": true,
+          "base_s": 0.06006867508403957,
+          "reuse_s": 0.05884714308194816
+        },
+        {
+          "left": "front_left_0020.png",
+          "same_candidates": true,
+          "base_s": 0.05757739907130599,
+          "reuse_s": 0.06518990593031049
+        },
+        {
+          "left": "front_left_0025.png",
+          "same_candidates": true,
+          "base_s": 0.05685380008071661,
+          "reuse_s": 0.05386502901092172
+        }
+      ],
+      "base_median_s": 0.05776357394643128,
+      "reuse_median_s": 0.05788141908124089,
+      "base_sha256": "29832e876cc6ba0bab5f21570070f803410dcec73d9e3ec723745b3f3030c58a",
+      "reuse_sha256": "55c33bf866c8e83ae2358fe92b9267eba3865870e583462420302101f37e880f"
+    },
+    {
+      "mode": "vel",
+      "source": "runs/20261020T081752Z_88e3759cc7da4c2ea5703b37af94e6ea",
+      "frames": [
+        {
+          "left": "front_left_0000.png",
+          "same_candidates": true,
+          "base_s": 0.07463973900303245,
+          "reuse_s": 0.061035150894895196
+        },
+        {
+          "left": "front_left_0005.png",
+          "same_candidates": true,
+          "base_s": 0.0668095019645989,
+          "reuse_s": 0.05470433598384261
+        },
+        {
+          "left": "front_left_0010.png",
+          "same_candidates": true,
+          "base_s": 0.0643870688509196,
+          "reuse_s": 0.05234653293155134
+        },
+        {
+          "left": "front_left_0015.png",
+          "same_candidates": true,
+          "base_s": 0.05912708002142608,
+          "reuse_s": 0.051972141955047846
+        },
+        {
+          "left": "front_left_0020.png",
+          "same_candidates": true,
+          "base_s": 0.054524197010323405,
+          "reuse_s": 0.05300411186181009
+        }
+      ],
+      "base_median_s": 0.0643870688509196,
+      "reuse_median_s": 0.05300411186181009,
+      "base_sha256": "f74334964a22e88ddbd0e180a8b1d7f27d5070430e3d2adbf3c1d391313c66f5",
+      "reuse_sha256": "4cdc1589bfedfa2056b7342ecb9a220c2069be8975d5a1c7f38dab058af73797"
+    }
+  ],
+  "online_runs": [
+    {
+      "path": "runs/20261027T104947Z_7e31edeaef4d4c548385453a9dbe8e9d",
+      "run_state": "OBSERVED",
+      "source_unchanged": true,
+      "simulator_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "faults": [],
+        "pairs": 131,
+        "received": {
+          "right": 134,
+          "left": 133
+        },
+        "overwritten": {},
+        "pairing_events": {
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0,
+          "SENSOR_EXPIRED_left": 1,
+          "SENSOR_EXPIRED_right": 1
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 131,
+          "superseded": 11,
+          "taken": 120,
+          "discarded_on_close": 0
+        },
+        "results": 120,
+        "statuses": {
+          "GATE_CANDIDATES": 6,
+          "REJECTED": 114
+        },
+        "tracking_statuses": {
+          "REJECTED": 4,
+          "TRACKED": 2,
+          "SOURCE_UNAVAILABLE": 114
+        },
+        "timing_current_results": 6,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/gps",
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/initial_pose"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.2,
+        "source_settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "method": "orb_lk",
+        "pipeline": "gate_track",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 120,
+        "timing_current_results": 6,
+        "status_counts": {
+          "GATE_CANDIDATES": 6,
+          "REJECTED": 114
+        },
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "rejection_reasons": {
+        "AFTER_DEPTH_SOURCE_LEASE_NOT_CURRENT": 96,
+        "INPUT_SOURCE_LEASE_NOT_CURRENT": 18
+      },
+      "tracking_rejection_reasons": {
+        "POSE_LATEST_STATE_HEALTH": 1,
+        "POSE_NO_BRACKET": 2,
+        "POSE_BRACKET_HEALTH": 1
+      },
+      "nonempty_tracks": 1,
+      "nonempty_track_remaining_lease_s": [
+        0.0019958019256591797
+      ],
+      "result_sha256": "2d2f477a66562b8d16d00f5854006c18134e3363e98e914c32e5237e0c95a1b3",
+      "manifest_sha256": "887db22a74d359a5debaad1cf539d6bef8cde815f2ef5e8e0c5095e9729a7631"
+    },
+    {
+      "path": "runs/20261027T105020Z_7370c2773bc24ef184333370aaca646b",
+      "run_state": "OBSERVED",
+      "source_unchanged": true,
+      "simulator_unchanged": true,
+      "cleanup_errors": [],
+      "summary": {
+        "faults": [],
+        "pairs": 17,
+        "received": {
+          "left": 108,
+          "right": 108
+        },
+        "overwritten": {},
+        "pairing_events": {
+          "SENSOR_EXPIRED_left": 91,
+          "SENSOR_EXPIRED_right": 91,
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 17,
+          "superseded": 0,
+          "taken": 17,
+          "discarded_on_close": 0
+        },
+        "results": 17,
+        "statuses": {
+          "GATE_CANDIDATES": 1,
+          "REJECTED": 16
+        },
+        "tracking_statuses": {
+          "TRACKED": 1,
+          "SOURCE_UNAVAILABLE": 16
+        },
+        "timing_current_results": 1,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/gps",
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/initial_pose"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.15,
+        "source_settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "method": "orb_lk",
+        "pipeline": "gate_track",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 17,
+        "timing_current_results": 1,
+        "status_counts": {
+          "GATE_CANDIDATES": 1,
+          "REJECTED": 16
+        },
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "rejection_reasons": {
+        "AFTER_DEPTH_SOURCE_LEASE_NOT_CURRENT": 10,
+        "INPUT_SOURCE_LEASE_NOT_CURRENT": 6
+      },
+      "tracking_rejection_reasons": {},
+      "nonempty_tracks": 0,
+      "nonempty_track_remaining_lease_s": [],
+      "result_sha256": "d0a9a45fc7d84393cfd204996b6a016a7cd34b2cf84a947b6c8903fe94b68a36",
+      "manifest_sha256": "1c7fa7cbbf4b2d60676e97a5aefffe7f355b02e5aad1dfe7939a370e94b0330f"
+    }
+  ]
+}
