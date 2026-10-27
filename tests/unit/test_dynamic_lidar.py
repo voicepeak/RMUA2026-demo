@@ -28,6 +28,18 @@ class DynamicLidarTests(unittest.TestCase):
         for point in cloud[:10]:
             self.assertTrue(all(abs(a-b)<=h+1e-12 for a,b,h in zip(point,c.center_ned,c.half_extents_m)))
 
+    def test_centroid_reduces_voxel_boundary_jump_and_keeps_voxel_enclosure(self):
+        first=[(.499+.0001*i,2.,3.) for i in range(10)]
+        second=[(.501+.0001*i,2.,3.) for i in range(10)]
+        a=cluster_endpoints(observation(10.,first),10.,0,center_mode='centroid').clusters[0]
+        b=cluster_endpoints(observation(10.1,second),10.1,0,center_mode='centroid').clusters[0]
+        self.assertLess(abs(b.center_ned[0]-a.center_ned[0]),.01)
+        for c,points in ((a,first),(b,second)):
+            self.assertTrue(all(all(abs(x-y)<=h+1e-12 for x,y,h in zip(p,c.center_ned,c.half_extents_m)) for p in points))
+        default_a=cluster_endpoints(observation(10.,first),10.,0).clusters[0]
+        default_b=cluster_endpoints(observation(10.1,second),10.1,0).clusters[0]
+        self.assertAlmostEqual(default_b.center_ned[0]-default_a.center_ned[0],.5)
+
     def test_track_velocity_lease_and_epoch(self):
         tracker=DynamicTracker(max_speed_m_s=10.)
         tracker.ingest(frame(10.,[(0.,0.,0.)]),10.,0)
@@ -53,6 +65,17 @@ class DynamicLidarTests(unittest.TestCase):
         t.ingest(frame(10.,[(0.,0.,0.)]),10.,0)
         stats=t.ingest(frame(10.1,[(-.2,0.,0.),(.2,0.,0.)]),10.1,0)
         self.assertEqual(stats['ambiguous'],2);self.assertEqual(t.snapshot(10.1,0)[0].observations,1)
+
+    def test_mutual_nearest_requires_distinct_margin_and_preserves_ties(self):
+        t=DynamicTracker(max_speed_m_s=10.,association_mode='mutual',nearest_margin_m=.5)
+        t.ingest(frame(10.,[(0.,0.,0.)]),10.,0)
+        stats=t.ingest(frame(10.1,[(.1,0.,0.),(1.,0.,0.)]),10.1,0)
+        self.assertEqual(stats['matched'],1);self.assertEqual(stats['ambiguous'],1)
+        self.assertEqual(t.snapshot(10.1,0)[0].observations,2)
+        t=DynamicTracker(max_speed_m_s=10.,association_mode='mutual',nearest_margin_m=.5)
+        t.ingest(frame(10.,[(0.,0.,0.)]),10.,0)
+        stats=t.ingest(frame(10.1,[(-.2,0.,0.),(.2,0.,0.)]),10.1,0)
+        self.assertEqual(stats['matched'],0);self.assertEqual(stats['ambiguous'],2)
 
     def test_stale_duplicate_and_capacity_failure(self):
         t=DynamicTracker(capacity=1);t.ingest(frame(10.,[(0.,0.,0.)]),10.,0)

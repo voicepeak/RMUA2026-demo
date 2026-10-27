@@ -18,7 +18,7 @@ from world_model.dynamic_tracks.tracker import DynamicTracker
 from world_model.occupancy.rolling_endpoints import world_endpoints
 
 
-def replay(source,settings,limit=24):
+def replay(source,settings,limit=24,center_mode="bbox",association_mode="strict"):
     source=Path(source);directory=source/'scene_trace';index_path=directory/'index.json'
     index=json.loads(index_path.read_text());rig=load_nominal_rig(settings)
     manifest=json.loads((source/'manifest.json').read_text())
@@ -29,7 +29,7 @@ def replay(source,settings,limit=24):
     if any(a['raw']['stamp']>=b['raw']['stamp'] for a,b in zip(states,states[1:])):
         raise ValueError('nonmonotonic state recording')
     scans=sorted((r for r in index['frames'] if r['sensor']=='lidar'),key=lambda r:r['stamp'])
-    tracker=DynamicTracker();rows=[];processed=0
+    tracker=DynamicTracker(association_mode=association_mode);rows=[];processed=0
     for scan in scans:
         if processed>=limit:break
         stamp=scan['stamp']; pose,reason=interpolate_pose(states,stamp)
@@ -41,7 +41,7 @@ def replay(source,settings,limit=24):
         cloud=LidarCloud(Metadata(stamp,stamp+.2,0,'recorded_lidar','lidar'),points,len(points),0)
         now=pose.bracket_stamps[1];started=time.monotonic()
         try:
-            world=world_endpoints(cloud,pose,rig.lidar_pose);clusters=cluster_endpoints(world,now,0)
+            world=world_endpoints(cloud,pose,rig.lidar_pose);clusters=cluster_endpoints(world,now,0,center_mode=center_mode)
             association=tracker.ingest(clusters,now,0);tracks=tracker.snapshot(now,0)
             rows.append({'file':scan['file'],'stamp':stamp,'status':'PROCESSED','input_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
                          'now':now,'duration_s':time.monotonic()-started,'clusters':len(clusters.clusters),
@@ -50,7 +50,7 @@ def replay(source,settings,limit=24):
         except (ValueError,ArithmeticError) as error:
             rows.append({'file':scan['file'],'stamp':stamp,'status':'REJECTED','reason':str(error)})
         processed+=1
-    return {'source':str(source),'settings_sha256':rig.settings_sha256,
+    return {'source':str(source),'center_mode':center_mode,'association_mode':association_mode,'settings_sha256':rig.settings_sha256,
             'scene_index_sha256':hashlib.sha256(index_path.read_bytes()).hexdigest(),
             'state_input_sha256':hashlib.sha256(log.read_bytes()).hexdigest(),'statuses':dict(Counter(x['status'] for x in rows)),
             'uses_truth':False,'now_is_earliest_bracket_not_processing_completion':True,
@@ -60,9 +60,11 @@ def replay(source,settings,limit=24):
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('source');p.add_argument('output')
     p.add_argument('--settings',default='configs/simulator_settings.json');p.add_argument('--limit',type=int,default=24)
+    p.add_argument('--center-mode',choices=('bbox','centroid'),default='bbox')
+    p.add_argument('--association-mode',choices=('strict','mutual'),default='strict')
     args=p.parse_args()
     if not 1<=args.limit<=100:p.error('limit must be 1..100')
-    result=replay(args.source,args.settings,args.limit)
+    result=replay(args.source,args.settings,args.limit,args.center_mode,args.association_mode)
     with Path(args.output).open('x') as out:json.dump(result,out,indent=2,allow_nan=False);out.write('\n')
     print(json.dumps({'output':args.output,'statuses':result['statuses']}))
 

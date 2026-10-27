@@ -17,6 +17,8 @@
 
 下一批开发按设计第 16 节 Sprint A 的未完成项推进，然后进入 Sprint B。旧版仅作参考，任何算法迁移都需接口、坐标和回归证据。
 
+2026-10-27 迭代 57：新增可选聚类质心及互为最近、次优距离有余量的关联；原严格策略不变。同两场20帧匹配数13→154、27→183，歧义261→153、291→178，但最大候选速度仍19.70/18.55m/s，缺目标真值、不同轨迹集合不能当正确率或精度提升。无控制授权；宿主241通过、Noetic238通过/3跳过。见 docs/dynamic_association_experiment.md 和 docs/evidence/p4_dynamic_association_experiment.json。
+
 2026-10-27 迭代 56：实现LiDAR连通聚类、歧义拒绝的一对一候选关联与显式界短时预测盒；两场各20帧重放产生大量歧义261/291，最大候选速度约19.95/18.71m/s，不能当真实车辆运动或安全占据。帧使用最早估计括号而非计算完成时刻，未做逐点补偿/在线控制；宿主239通过、Noetic236通过/3跳过。见 docs/dynamic_lidar_candidates.md 和 docs/evidence/p4_dynamic_lidar_candidates.json。
 
 2026-10-27 迭代 55：复用同一不可变左图的门边提取，跨图缓存拒绝；两场历史回放11帧候选逐项一致。200ms在线实验131对、6次及时检查、首次1条非空在线轨迹但仅1次观测且剩约2ms；150ms场17对仅1次及时检查、结果为空。未证明连续实时性或门准确，未授权控制；宿主234通过、Noetic231通过/3跳过，见 docs/gate_shared_edges.md 和 docs/evidence/p3_gate_shared_edges.json。

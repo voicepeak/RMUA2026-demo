@@ -1,0 +1,154 @@
+{
+  "iteration": 57,
+  "acceptance_eligible": false,
+  "control_published": false,
+  "ground_truth_object_motion_available": false,
+  "runs": [
+    {
+      "mode": "pwm",
+      "source": "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871",
+      "same_scan_and_estimator_hashes": true,
+      "variants": [
+        {
+          "path": "runs/dynamic_lidar_20261027_iteration56/pwm.json",
+          "sha256": "bf08975ebf4688e034f4741258bb6365237edfe25e935595308d66143f915e79",
+          "center_mode": "bbox",
+          "association_mode": "strict",
+          "status": {
+            "NO_STATE_BRACKET": 11,
+            "PROCESSED": 20
+          },
+          "associations": {
+            "matched": 13,
+            "created": 79,
+            "ambiguous": 261
+          },
+          "multiframe_track_entries": 23,
+          "candidate_speed_m_s_p50_p90_max": [
+            7.352786633880906,
+            17.78604912473347,
+            19.949115749057853
+          ],
+          "elapsed_median_s": 0.01905368349980563
+        },
+        {
+          "path": "runs/dynamic_lidar_20261027_iteration57/pwm_centroid.json",
+          "sha256": "426f9ceebd844bb9c7068acd5426b6276248e570a7268d9c939ee8910d2ae03e",
+          "center_mode": "centroid",
+          "association_mode": "strict",
+          "status": {
+            "NO_STATE_BRACKET": 11,
+            "PROCESSED": 20
+          },
+          "associations": {
+            "matched": 14,
+            "created": 77,
+            "ambiguous": 262
+          },
+          "multiframe_track_entries": 24,
+          "candidate_speed_m_s_p50_p90_max": [
+            7.022508574069754,
+            17.421848890057134,
+            19.703244263921277
+          ],
+          "elapsed_median_s": 0.018812416004948318
+        },
+        {
+          "path": "runs/dynamic_lidar_20261027_iteration57/pwm_mutual.json",
+          "sha256": "e725793f30dd088ffb63fd7a47b61de9ce6bcc4a090ab7be44b28617b82aba37",
+          "center_mode": "centroid",
+          "association_mode": "mutual",
+          "status": {
+            "NO_STATE_BRACKET": 11,
+            "PROCESSED": 20
+          },
+          "associations": {
+            "matched": 154,
+            "created": 46,
+            "ambiguous": 153
+          },
+          "multiframe_track_entries": 221,
+          "candidate_speed_m_s_p50_p90_max": [
+            4.048577243244767,
+            12.729292145600741,
+            19.703244263921277
+          ],
+          "elapsed_median_s": 0.019943831022828817
+        }
+      ]
+    },
+    {
+      "mode": "vel",
+      "source": "runs/20261020T081752Z_88e3759cc7da4c2ea5703b37af94e6ea",
+      "same_scan_and_estimator_hashes": true,
+      "variants": [
+        {
+          "path": "runs/dynamic_lidar_20261027_iteration56/vel.json",
+          "sha256": "91982b1b9584e760bc7c06d50569dc808e296be2bde813889e711d144cab62be",
+          "center_mode": "bbox",
+          "association_mode": "strict",
+          "status": {
+            "NO_STATE_BRACKET": 10,
+            "PROCESSED": 20
+          },
+          "associations": {
+            "matched": 27,
+            "created": 89,
+            "ambiguous": 291
+          },
+          "multiframe_track_entries": 47,
+          "candidate_speed_m_s_p50_p90_max": [
+            7.352786633880905,
+            15.22249184704635,
+            18.705902818381958
+          ],
+          "elapsed_median_s": 0.018866842496208847
+        },
+        {
+          "path": "runs/dynamic_lidar_20261027_iteration57/vel_centroid.json",
+          "sha256": "41dc74537312adaa81d66cabfd81f26fa0608134bf5459bca717ef706fc5fbe7",
+          "center_mode": "centroid",
+          "association_mode": "strict",
+          "status": {
+            "NO_STATE_BRACKET": 10,
+            "PROCESSED": 20
+          },
+          "associations": {
+            "matched": 28,
+            "created": 98,
+            "ambiguous": 281
+          },
+          "multiframe_track_entries": 49,
+          "candidate_speed_m_s_p50_p90_max": [
+            6.596582106101189,
+            13.458296445531191,
+            17.534556834112646
+          ],
+          "elapsed_median_s": 0.018453168566338718
+        },
+        {
+          "path": "runs/dynamic_lidar_20261027_iteration57/vel_mutual.json",
+          "sha256": "72d5a4beac1ab24c53cc4aa9df6435ca0767fc4ed55e480ef9d613b7e674f51b",
+          "center_mode": "centroid",
+          "association_mode": "mutual",
+          "status": {
+            "NO_STATE_BRACKET": 10,
+            "PROCESSED": 20
+          },
+          "associations": {
+            "matched": 183,
+            "created": 46,
+            "ambiguous": 178
+          },
+          "multiframe_track_entries": 257,
+          "candidate_speed_m_s_p50_p90_max": [
+            4.9476153529365865,
+            13.690007886746331,
+            18.55076485511154
+          ],
+          "elapsed_median_s": 0.019449532497674227
+        }
+      ]
+    }
+  ]
+}

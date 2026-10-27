@@ -23,14 +23,18 @@ class ObjectTrack:
 
 
 class DynamicTracker:
-    def __init__(self,epoch=0,max_gap_s=.5,max_speed_m_s=20.,association_margin_m=1.,capacity=128):
+    def __init__(self,epoch=0,max_gap_s=.5,max_speed_m_s=20.,association_margin_m=1.,capacity=128,
+                 association_mode="strict", nearest_margin_m=.5):
         if (isinstance(epoch,bool) or not isinstance(epoch,int) or epoch<0
                 or not all(math.isfinite(x) and x>0 for x in (max_gap_s,max_speed_m_s,association_margin_m))
                 or max_gap_s>2 or max_speed_m_s>50 or association_margin_m>5
-                or isinstance(capacity,bool) or not isinstance(capacity,int) or not 1<=capacity<=256):
+                or isinstance(capacity,bool) or not isinstance(capacity,int) or not 1<=capacity<=256
+                or association_mode not in ("strict","mutual")
+                or not math.isfinite(nearest_margin_m) or not 0<nearest_margin_m<=3):
             raise ValueError('invalid dynamic tracker limits')
         self.epoch=epoch;self.max_gap_s=max_gap_s;self.max_speed_m_s=max_speed_m_s
         self.association_margin_m=association_margin_m;self.capacity=capacity
+        self.association_mode=association_mode;self.nearest_margin_m=nearest_margin_m
         self._tracks={};self._last_stamp=None;self._last_now=None;self._next_id=0;self._lock=threading.RLock()
 
     def reset(self,epoch):
@@ -50,20 +54,33 @@ class DynamicTracker:
                 finite_vec3(obj.center_ned);finite_vec3(obj.half_extents_m)
                 if any(v<=0 for v in obj.half_extents_m):raise ValueError('invalid cluster extents')
             live={k:t for k,t in self._tracks.items() if 0 < meta.stamp-t.stamp <= self.max_gap_s}
-            edges=[]
+            edges=[];distances={}
             for i,obj in enumerate(frame.clusters):
                 for track_id,t in live.items():
                     dt=meta.stamp-t.stamp
                     predicted=tuple(p+v*dt for p,v in zip(t.center_ned,t.velocity_ned_m_s))
                     if (math.dist(predicted,obj.center_ned)<=self.association_margin_m+self.max_speed_m_s*dt
                             and all(abs(a-b)<=max(2.,a,b) for a,b in zip(obj.half_extents_m,t.half_extents_m))):
-                        edges.append((i,track_id))
+                        edges.append((i,track_id));distances[(i,track_id)]=math.dist(predicted,obj.center_ned)
             degree={k:sum(b==k for _,b in edges) for k in live};updated=dict(live);next_id=self._next_id
             matched=created=ambiguous=0
+            def mutual_choice(i, track_id):
+                ordered_candidate=sorted((distances[(a,b)],b) for a,b in edges if a==i)
+                ordered_track=sorted((distances[(a,b)],a) for a,b in edges if b==track_id)
+                def unique(items, expected):
+                    return (items and items[0][1]==expected and
+                            (len(items)==1 or items[1][0]-items[0][0]>=self.nearest_margin_m))
+                return unique(ordered_candidate,track_id) and unique(ordered_track,i)
             for i,obj in enumerate(frame.clusters):
                 possible=[k for a,k in edges if a==i]
-                if len(possible)==1 and degree[possible[0]]==1:
-                    t=updated[possible[0]];dt=meta.stamp-t.stamp
+                matched_id = None
+                if self.association_mode=='strict':
+                    if len(possible)==1 and degree[possible[0]]==1:matched_id=possible[0]
+                elif possible:
+                    best=min(possible,key=lambda k:distances[(i,k)])
+                    if mutual_choice(i,best):matched_id=best
+                if matched_id is not None:
+                    t=updated[matched_id];dt=meta.stamp-t.stamp
                     velocity=tuple((a-b)/dt for a,b in zip(obj.center_ned,t.center_ned))
                     if math.hypot(*velocity)>self.max_speed_m_s:
                         ambiguous+=1;continue

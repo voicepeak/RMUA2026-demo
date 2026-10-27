@@ -24,7 +24,7 @@ class ClusterFrame:
     control_eligible: bool = False
 
 
-def cluster_endpoints(observation, now, epoch, voxel_m=.5, min_points=8, max_voxels=50000, max_clusters=128):
+def cluster_endpoints(observation, now, epoch, voxel_m=.5, min_points=8, max_voxels=50000, max_clusters=128, center_mode="bbox"):
     """Connected voxel clusters, preserving source lease and unknown space.
 
     Large connected components and sparse points are omitted from the object
@@ -35,23 +35,25 @@ def cluster_endpoints(observation, now, epoch, voxel_m=.5, min_points=8, max_vox
             or observation.pose_bracket_stamps[1]>now or not math.isfinite(voxel_m)
             or not .1<=voxel_m<=2. or isinstance(min_points,bool) or not isinstance(min_points,int) or min_points<3
             or isinstance(max_voxels,bool) or not isinstance(max_voxels,int) or not 1<=max_voxels<=100000
-            or isinstance(max_clusters,bool) or not isinstance(max_clusters,int) or not 1<=max_clusters<=256):
+            or isinstance(max_clusters,bool) or not isinstance(max_clusters,int) or not 1<=max_clusters<=256
+            or center_mode not in ('bbox','centroid')):
         raise ValueError('invalid cluster input or limits')
     points=observation.world_points
     with np.errstate(over='ignore',invalid='ignore'):
         coords=points/voxel_m
     if not np.isfinite(coords).all() or np.any(np.abs(coords)>2**45):raise ValueError('cluster coordinates exceed range')
     if not len(coords):return ClusterFrame(observation.metadata,(),0,0)
-    keys,counts=np.unique(np.floor(coords).astype(np.int64),axis=0,return_counts=True)
+    keys,inverse,counts=np.unique(np.floor(coords).astype(np.int64),axis=0,return_inverse=True,return_counts=True)
+    sums=np.column_stack([np.bincount(inverse,weights=points[:,axis],minlength=len(keys)) for axis in range(3)]) if center_mode=='centroid' else None
     if len(keys)>max_voxels:raise ValueError('cluster voxel budget exceeded')
     # Every selected cluster encloses its contributing occupied voxels, rather
     # than only centroids, and is therefore no smaller than the sampled points.
     mapping={tuple(int(v) for v in key):i for i,key in enumerate(keys)}
     unvisited=set(mapping);components=[];rejected=0
     while unvisited:
-        first=unvisited.pop();queue=deque([first]); members=[];total=0
+        first=unvisited.pop();queue=deque([first]); members=[];total=0;indices=[]
         while queue:
-            key=queue.popleft();idx=mapping[key];members.append(key);total+=int(counts[idx])
+            key=queue.popleft();idx=mapping[key];members.append(key);indices.append(idx);total+=int(counts[idx])
             for dx in (-1,0,1):
                 for dy in (-1,0,1):
                     for dz in (-1,0,1):
@@ -62,7 +64,11 @@ def cluster_endpoints(observation, now, epoch, voxel_m=.5, min_points=8, max_vox
         extents=(upper-lower)/2
         if total<min_points or np.any(extents*2>np.array((12.,12.,8.))):
             rejected+=1;continue
-        components.append(Cluster(tuple((lower+upper)/2),tuple(extents),total))
+        center=(lower+upper)/2 if center_mode=='bbox' else sums[indices].sum(axis=0)/total
+        # Ensure the box still encloses every selected voxel when its center
+        # moves from the midpoint to the measured centroid.
+        extents=np.maximum(center-lower,upper-center)
+        components.append(Cluster(tuple(center),tuple(extents),total))
         if len(components)>max_clusters:raise ValueError('cluster count budget exceeded')
     components.sort(key=lambda c:(-c.points,c.center_ned))
     return ClusterFrame(Metadata(observation.metadata.stamp,observation.metadata.valid_until,epoch,
