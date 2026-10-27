@@ -13,6 +13,7 @@ from estimation.history import PoseHistory
 from perception.object_motion.online import OnlineDynamicLidar
 from perception.stereo_depth.geometry import load_nominal_rig
 from perception.stereo_depth.transport import LatestSlot
+from planning.mission.goal_tracker import GoalTracker
 
 
 def wait_for_imu(cloud, arrival, snapshot, wall_clock, sleep, stopped, max_wait_s=.03):
@@ -26,19 +27,37 @@ def wait_for_imu(cloud, arrival, snapshot, wall_clock, sleep, stopped, max_wait_
         sleep(min(.001, max_wait_s - elapsed))
 
 
-def observe(run,duration,settings):
+def observe(run,duration,settings,planning_diagnostic=False):
     import rospy
     import rosgraph
     from sensor_msgs.msg import PointCloud2
+    from geometry_msgs.msg import PoseStamped
     rospy.init_node('rmua_dynamic_lidar_observer',anonymous=True,disable_signals=True)
     history=PoseHistory();sensors=FlightSensors(pose_history=history)
-    rig=load_nominal_rig(settings);pipeline=OnlineDynamicLidar(history,rig.lidar_pose)
+    rig=load_nominal_rig(settings);pipeline=OnlineDynamicLidar(history,rig.lidar_pose,planning_diagnostic)
+    goals=GoalTracker();goal_listener=None
     slot=LatestSlot();stop=threading.Event();faults=[];rows=[];received=0;lock=threading.Lock()
     def callback(msg):
         nonlocal received
         with lock:received+=1
         slot.put((msg,time.monotonic()))
     listener=rospy.Subscriber('/airsim_node/drone_1/lidar',PointCloud2,callback,queue_size=1,buff_size=4000000)
+    def goal_callback(message):
+        wall=time.monotonic()
+        with sensors.lock:
+            if not sensors.clock.fresh(wall) or sensors.fault:return
+            epoch=sensors.clock.epoch
+            if epoch>goals.epoch:goals.reset(epoch)
+            p=message.pose.position
+            try:goals.observe((p.x,p.y,p.z),message.header.stamp.to_sec(),message.header.frame_id,
+                              wall,sensors.clock.stamp,epoch)
+            except (ValueError,ArithmeticError):pass
+    if planning_diagnostic:
+        goal_listener=rospy.Subscriber('/airsim_node/end_goal',PoseStamped,goal_callback,queue_size=1)
+    def goal_snapshot():
+        wall=time.monotonic()
+        with sensors.lock:
+            return goals.snapshot(wall,sensors.clock.epoch,sensors.clock.fresh(wall) and not sensors.fault)
     def snapshot():
         with sensors.lock:
             fresh=sensors.clock.fresh(time.monotonic()) and not sensors.fault
@@ -59,7 +78,7 @@ def observe(run,duration,settings):
                             wait_started=time.monotonic()
                             wait_for_imu(cloud,arrival,snapshot,time.monotonic,time.sleep,stop.is_set)
                             waited=time.monotonic()-wait_started
-                            row=pipeline.process(cloud,arrival,snapshot,time.monotonic)
+                            row=pipeline.process(cloud,arrival,snapshot,time.monotonic,goal_snapshot if planning_diagnostic else None)
                             row['imu_wait_s']=waited
                         except (ValueError,ArithmeticError) as error:
                             row={'status':'REJECTED','reason':'DECODE_'+str(error),'control_eligible':False}
@@ -87,14 +106,18 @@ def observe(run,duration,settings):
                    'publishers':sorted(t for t,nodes in pubs if node in nodes)}
             expected=sorted(['/airsim_node/drone_1/lidar','/airsim_node/drone_1/gps',
                              '/airsim_node/drone_1/imu/imu','/airsim_node/initial_pose'])
+            if planning_diagnostic:expected=sorted(expected+['/airsim_node/end_goal'])
             if graph['subscriptions']!=expected or set(graph['publishers'])-{'/rosout'}:faults.append('GRAPH_POLICY')
         except Exception as error:faults.append('GRAPH_AUDIT:'+str(error))
-        listener.unregister();sensors.close()
+        listener.unregister()
+        if goal_listener is not None:goal_listener.unregister()
+        sensors.close()
     summary={'faults':faults,'received':received,'slot':slot.stats(),'results':len(rows),
              'statuses':dict(Counter(row['status'] for row in rows)),
              'veto_reasons':dict(Counter(row['dynamic_check']['reason'] for row in rows if row['status']=='PROCESSED')),
              'node_graph':graph,'settings_sha256':rig.settings_sha256,'control_published':False,
-             'debug_inputs_used':False,'control_eligible':False,'acceptance_eligible':False}
+             'debug_inputs_used':False,'control_eligible':False,'acceptance_eligible':False,
+             'planning_diagnostic':planning_diagnostic}
     (run/'dynamic_lidar_summary.json').write_text(json.dumps(summary,indent=2,allow_nan=False)+'\n')
     return 0 if rows and not faults else 2
 
@@ -102,9 +125,10 @@ def observe(run,duration,settings):
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--run-dir',type=Path,required=True)
     p.add_argument('--duration',type=float,default=8.);p.add_argument('--settings',default='/workspace/main/configs/simulator_settings.json')
+    p.add_argument('--planning-diagnostic',action='store_true')
     a=p.parse_args()
     if not math.isfinite(a.duration) or not 0<a.duration<=30:p.error('duration must be in (0,30]')
-    return observe(a.run_dir,a.duration,a.settings)
+    return observe(a.run_dir,a.duration,a.settings,a.planning_diagnostic)
 
 
 if __name__=='__main__':raise SystemExit(main())

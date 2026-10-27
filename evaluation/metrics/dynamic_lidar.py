@@ -15,6 +15,7 @@ def audit(run):
     errors = []
     expected = sorted(['/airsim_node/drone_1/lidar', '/airsim_node/drone_1/gps',
                        '/airsim_node/drone_1/imu/imu', '/airsim_node/initial_pose'])
+    if summary.get('planning_diagnostic'): expected.append('/airsim_node/end_goal'); expected.sort()
     graph = summary['node_graph'] or {}
     if graph.get('subscriptions') != expected or set(graph.get('publishers', [])) - {'/rosout'}:
         errors.append('GRAPH')
@@ -25,6 +26,14 @@ def audit(run):
     for row in rows:
         if row.get('control_eligible') is not False:
             errors.append('CONTROL_ELIGIBILITY')
+        planner = row.get('planner')
+        if summary.get('planning_diagnostic') and row['status'] == 'PROCESSED' and planner is None:
+            errors.append('PLANNER_MISSING')
+        if planner and planner.get('control_eligible', False):
+            errors.append('PLANNER_CONTROL_ELIGIBILITY')
+        if planner and 'goal' in planner and (planner['goal']['epoch'] != row['check_epoch']
+                or not 0 <= row['check_wall']-planner['goal']['last_arrival_wall'] < .5):
+            errors.append('PLANNER_GOAL_STALE')
         if row['status'] != 'PROCESSED':
             continue
         meta = Metadata(row['source_stamp'], row['source_valid_until'], row['source_epoch'], 'audit')

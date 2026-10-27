@@ -1,0 +1,89 @@
+{
+  "iteration": 66,
+  "runs": [
+    {
+      "run": "20261027T111009Z_1c18d7218b844e41b2064aae5b067ea9",
+      "seed": 2166,
+      "run_state": "FAILED",
+      "error": "fresh simulator failed; see simulator.log",
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "simulator_log_sha256": "0c1de8baa4f1111b161b01732e64554f0539246a324f482fe014707b983a16a2"
+    },
+    {
+      "run": "20261027T111029Z_0e8e95a045b54808ab370535fd99015c",
+      "seed": 2165,
+      "run_state": "OBSERVED",
+      "error": null,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "simulator_log_sha256": "bcabdf160047c8555ec158eb363a4419705e55dc6e8c3e7f01f1b338ad3b34e5",
+      "summary": {
+        "faults": [],
+        "received": 72,
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 72,
+          "superseded": 0,
+          "taken": 72,
+          "discarded_on_close": 0
+        },
+        "results": 72,
+        "statuses": {
+          "REJECTED": 1,
+          "PROCESSED": 71
+        },
+        "veto_reasons": {
+          "DYNAMIC_CANDIDATE_CONFLICT": 28,
+          "NO_DETECTED_DYNAMIC_CONFLICT_UNCERTIFIED": 43
+        },
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/gps",
+            "/airsim_node/drone_1/imu/imu",
+            "/airsim_node/drone_1/lidar",
+            "/airsim_node/end_goal",
+            "/airsim_node/initial_pose"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false,
+        "planning_diagnostic": true
+      },
+      "revised_audit_after_run": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 72,
+        "statuses": {
+          "REJECTED": 1,
+          "PROCESSED": 71
+        },
+        "rejection_reasons": {
+          "POSE_NO_HISTORY": 1
+        },
+        "control_eligible": false,
+        "safety_certified": false
+      },
+      "results_sha256": "bf25f006af11455d5a2507f5347c287287f03c3cfc7c3b2f7f46a7f21469e0b0",
+      "planner_reasons": {
+        "NO_STATIC_CANDIDATE": 68,
+        "GOAL_UNAVAILABLE": 3
+      },
+      "attempt_reasons": {
+        "KINEMATIC_LIMIT": 136
+      },
+      "processing_median_ms": 66.65204698219895,
+      "processing_max_ms": 98.23544998653233
+    }
+  ],
+  "note": "The goal freshness output check and audit were added after the successful run and the saved rows were re-audited; not flight or acceptance."
+}

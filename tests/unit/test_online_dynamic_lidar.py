@@ -7,6 +7,7 @@ from estimation.history import PoseHistory
 from interfaces.contracts import Health, Metadata, StateEstimate
 from perception.object_motion.online import OnlineDynamicLidar
 from perception.stereo_depth.geometry import SensorPose
+from planning.mission.goal_tracker import GoalSnapshot
 
 
 class OnlineDynamicLidarTests(unittest.TestCase):
@@ -28,6 +29,16 @@ class OnlineDynamicLidarTests(unittest.TestCase):
         self.assertGreater(len(row['tracks']), 0)
         self.assertFalse(row['dynamic_check']['safety_certified'])
         self.assertFalse(row['control_eligible'])
+
+    def test_joint_planner_keeps_uncertified_space_unusable(self):
+        pipeline = OnlineDynamicLidar(self.history, self.pipeline.sensor_pose, planning_diagnostic=True)
+        goal = GoalSnapshot('OBSERVED', (10., 0., 0.), 0, 3, 20.01, 0., '')
+        row = pipeline.process(self.cloud, 20.01, lambda: (10.01, 0, True, self.state),
+                               lambda: 20.011, lambda: goal)
+        self.assertEqual(row['status'], 'PROCESSED', row)
+        self.assertEqual(row['planner']['reason'], 'NO_STATIC_CANDIDATE')
+        self.assertFalse(row['planner']['trajectory_produced'])
+        self.assertFalse(row['planner']['control_eligible'])
 
     def test_expired_source_is_rejected_before_tracking(self):
         row = self.pipeline.process(self.cloud, 20.01, lambda: (10.21, 0, True, self.state), lambda: 20.02)
