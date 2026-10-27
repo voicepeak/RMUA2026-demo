@@ -1,0 +1,585 @@
+{
+  "iteration": 51,
+  "acceptance_eligible": false,
+  "control_published": false,
+  "query_time_note": "offline uses capture time; not online deadline",
+  "runs": [
+    {
+      "mode": "PWM",
+      "source": "runs/20261020T082058Z_e20f9b9fcb094e0bb6463b65555c7871",
+      "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+      "index_sha256": "e438768894e1310122135592438987fe1dfc8a924799a29e67ed84b798370fc8",
+      "artifact": "runs/stereo_gate_20261027_iteration51/pwm.json",
+      "artifact_sha256": "3adaf006b4cb3f94677ba4890dcaf669cb4e3e0c8c8b08c3153bf8c7486126f9",
+      "frame_count": 7,
+      "processed_count": 6,
+      "unpaired_count": 1,
+      "candidate_total": 4,
+      "elapsed_s_p50_p90_max": [
+        0.3425438484409824,
+        0.35217070288490504,
+        0.35823659086599946
+      ],
+      "frames": [
+        {
+          "left": "front_left_0000.png",
+          "right": "front_right_0000.png",
+          "input_sha256": {
+            "left": "4b8bac243f49333f4c8936eb7b48cbd8fbeca27f5dd8bc17d4f771cb0ad41b4e",
+            "right": "47d8119d2fdd40337611391e5a8aa18a907a99e313042e6b496c5845c6eff2d5"
+          },
+          "skew_s": 0.0,
+          "status": "PROCESSED",
+          "gate_count": 1,
+          "candidates": [
+            {
+              "metadata": {
+                "stamp": 1792484469.0502892,
+                "valid_until": 1792484469.2502892,
+                "epoch": 0,
+                "source": "nominal_stereo_gate_candidate",
+                "frame_id": "body_frd",
+                "covariance_or_bounds": []
+              },
+              "image_edges_px": [
+                [
+                  311.5,
+                  158.0,
+                  315.0
+                ],
+                [
+                  657.5,
+                  155.0,
+                  314.0
+                ]
+              ],
+              "center_body_frd_m": [
+                23.44901305514303,
+                -0.09462354621505842,
+                -3.4848806366047747
+              ],
+              "nominal_width_m": 9.706204902878659,
+              "nominal_height_m": 4.42268924709243,
+              "edge_disparities_px": [
+                10.5625,
+                10.875
+              ],
+              "edge_support": [
+                1383,
+                1343
+              ],
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "valid_disparity_fraction": 0.09598524305555556,
+          "elapsed_s": 0.35823659086599946,
+          "query_at_capture_time_not_output_time": true
+        },
+        {
+          "left": "front_left_0005.png",
+          "right": "front_right_0005.png",
+          "input_sha256": {
+            "left": "d8742807fbcf37d7498e3bbd2337722f309ed727f54613a135e027d747a6fded",
+            "right": "fd62309c039ead4e6931b1ef9dbc57c3277e25eece2290bb7220e045eea2dd8d"
+          },
+          "skew_s": 0.0,
+          "status": "PROCESSED",
+          "gate_count": 1,
+          "candidates": [
+            {
+              "metadata": {
+                "stamp": 1792484471.4413402,
+                "valid_until": 1792484471.6413403,
+                "epoch": 0,
+                "source": "nominal_stereo_gate_candidate",
+                "frame_id": "body_frd",
+                "covariance_or_bounds": []
+              },
+              "image_edges_px": [
+                [
+                  319.0,
+                  126.0,
+                  284.0
+                ],
+                [
+                  665.0,
+                  134.0,
+                  295.0
+                ]
+              ],
+              "center_body_frd_m": [
+                23.519290687233735,
+                0.10172413793103408,
+                -4.221182266009852
+              ],
+              "nominal_width_m": 9.746787722218405,
+              "nominal_height_m": 4.4778325123152705,
+              "edge_disparities_px": [
+                10.5,
+                10.875
+              ],
+              "edge_support": [
+                1578,
+                1824
+              ],
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "valid_disparity_fraction": 0.1536443865740741,
+          "elapsed_s": 0.3461048149038106,
+          "query_at_capture_time_not_output_time": true
+        },
+        {
+          "left": "front_left_0010.png",
+          "right": "front_right_0010.png",
+          "input_sha256": {
+            "left": "803a9d1156d0c4c854e19c2801d96c6f50bcb89a498a6278c8b2fc7495427358",
+            "right": "51ebb8892db04488bd514866b9e330e7f412efb1e393cf58051ca06e008e0e0f"
+          },
+          "skew_s": 0.0,
+          "status": "PROCESSED",
+          "gate_count": 1,
+          "candidates": [
+            {
+              "metadata": {
+                "stamp": 1792484473.77539,
+                "valid_until": 1792484473.97539,
+                "epoch": 0,
+                "source": "nominal_stereo_gate_candidate",
+                "frame_id": "body_frd",
+                "covariance_or_bounds": []
+              },
+              "image_edges_px": [
+                [
+                  277.0,
+                  178.0,
+                  336.0
+                ],
+                [
+                  623.5,
+                  182.0,
+                  341.0
+                ]
+              ],
+              "center_body_frd_m": [
+                23.5968582732839,
+                -0.8593012048192772,
+                -2.8366678141135973
+              ],
+              "nominal_width_m": 9.795759019334898,
+              "nominal_height_m": 4.465652323580034,
+              "edge_disparities_px": [
+                10.9375,
+                10.375
+              ],
+              "edge_support": [
+                1578,
+                1556
+              ],
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "valid_disparity_fraction": 0.2647164351851852,
+          "elapsed_s": 0.345900721848011,
+          "query_at_capture_time_not_output_time": true
+        },
+        {
+          "left": "front_left_0015.png",
+          "right": "front_right_0015.png",
+          "input_sha256": {
+            "left": "4c71966408c95cad6deca00761769e5ad87261fe751985cd01d85649e038dff7",
+            "right": "ff0b0b939c6adea717806a58127400eb839234b37a037e7c71a7c3a589f42332"
+          },
+          "skew_s": 0.0,
+          "status": "PROCESSED",
+          "gate_count": 1,
+          "candidates": [
+            {
+              "metadata": {
+                "stamp": 1792484476.2024417,
+                "valid_until": 1792484476.4024417,
+                "epoch": 0,
+                "source": "nominal_stereo_gate_candidate",
+                "frame_id": "body_frd",
+                "covariance_or_bounds": []
+              },
+              "image_edges_px": [
+                [
+                  192.5,
+                  188.0,
+                  356.0
+                ],
+                [
+                  555.0,
+                  201.0,
+                  363.0
+                ]
+              ],
+              "center_body_frd_m": [
+                22.915379509776308,
+                -3.013822326125073,
+                -2.269082407948568
+              ],
+              "nominal_width_m": 9.876020563567858,
+              "nominal_height_m": 4.5124488603156045,
+              "edge_disparities_px": [
+                11.0625,
+                10.875
+              ],
+              "edge_support": [
+                1841,
+                1698
+              ],
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "valid_disparity_fraction": 0.35616174768518516,
+          "elapsed_s": 0.3391869750339538,
+          "query_at_capture_time_not_output_time": true
+        },
+        {
+          "left": "front_left_0020.png",
+          "right": "front_right_0020.png",
+          "input_sha256": {
+            "left": "d669ca91c1ec14c507443a05f1997ccbcbffcb710313e48b16bf21b2dd8905d4",
+            "right": "c6398b65c67f556c828b5467b734977a00610178ee1ba3b05b6ba85995775b10"
+          },
+          "skew_s": 0.0,
+          "status": "PROCESSED",
+          "gate_count": 0,
+          "candidates": [],
+          "valid_disparity_fraction": 0.406015625,
+          "elapsed_s": 0.29270873009227216,
+          "query_at_capture_time_not_output_time": true
+        },
+        {
+          "left": "front_left_0025.png",
+          "right": "front_right_0025.png",
+          "input_sha256": {
+            "left": "2e83f0ebb0b5fc2efa7cd34b12b1a17f0f8e7e732af271b4bacae122168da5a6",
+            "right": "6747a005bd8c110fb044d2433df10f6ea96cc3db900bd22f6d1646dd64cccc43"
+          },
+          "skew_s": 0.0,
+          "status": "PROCESSED",
+          "gate_count": 0,
+          "candidates": [],
+          "valid_disparity_fraction": 0.3987181712962963,
+          "elapsed_s": 0.29196841712109745,
+          "query_at_capture_time_not_output_time": true
+        },
+        {
+          "left": "front_left_0030.png",
+          "status": "UNPAIRED",
+          "skew_s": 0.05700111389160156
+        }
+      ]
+    },
+    {
+      "mode": "VEL",
+      "source": "runs/20261020T081752Z_88e3759cc7da4c2ea5703b37af94e6ea",
+      "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+      "index_sha256": "6a0e82f256fdc69ee379885af1d12012f4ec7faa6d2fa3f1ebde38e42b0f3903",
+      "artifact": "runs/stereo_gate_20261027_iteration51/vel.json",
+      "artifact_sha256": "f0568a9ecc315b74b9d1298da30c74de099df43ae54567cd7caa47f2ceea8893",
+      "frame_count": 5,
+      "processed_count": 5,
+      "unpaired_count": 0,
+      "candidate_total": 5,
+      "elapsed_s_p50_p90_max": [
+        0.292725367937237,
+        0.32401025053113697,
+        0.34457292687147856
+      ],
+      "frames": [
+        {
+          "left": "front_left_0000.png",
+          "right": "front_right_0000.png",
+          "input_sha256": {
+            "left": "037eb74ae6402495c36ca0a74a49a83bd15b2df27c18dde5adcec98ba1a6e957",
+            "right": "0c1fd6ca7aa5985d2d18e7731b0d59de8a13984e45293c2905bf07e9fe248f52"
+          },
+          "skew_s": 0.0,
+          "status": "PROCESSED",
+          "gate_count": 1,
+          "candidates": [
+            {
+              "metadata": {
+                "stamp": 1792484283.91021,
+                "valid_until": 1792484284.11021,
+                "epoch": 0,
+                "source": "nominal_stereo_gate_candidate",
+                "frame_id": "body_frd",
+                "covariance_or_bounds": []
+              },
+              "image_edges_px": [
+                [
+                  311.5,
+                  158.0,
+                  315.0
+                ],
+                [
+                  657.5,
+                  155.0,
+                  314.0
+                ]
+              ],
+              "center_body_frd_m": [
+                23.245395839281336,
+                -0.08062656641604082,
+                -3.4544761904761905
+              ],
+              "nominal_width_m": 9.613237562599405,
+              "nominal_height_m": 4.384080200501254,
+              "edge_disparities_px": [
+                10.6875,
+                10.9375
+              ],
+              "edge_support": [
+                1365,
+                1357
+              ],
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "valid_disparity_fraction": 0.09512008101851852,
+          "elapsed_s": 0.34457292687147856,
+          "query_at_capture_time_not_output_time": true
+        },
+        {
+          "left": "front_left_0005.png",
+          "right": "front_right_0005.png",
+          "input_sha256": {
+            "left": "116d214deb4f1bc0b9191522ab53bd11c721b7563f01206834e19a67f79a75cc",
+            "right": "30b3656315e55f65546310aded591a6972a6154ec280cc3d3c1b6c46a9f1126e"
+          },
+          "skew_s": 0.0,
+          "status": "PROCESSED",
+          "gate_count": 1,
+          "candidates": [
+            {
+              "metadata": {
+                "stamp": 1792484286.307261,
+                "valid_until": 1792484286.507261,
+                "epoch": 0,
+                "source": "nominal_stereo_gate_candidate",
+                "frame_id": "body_frd",
+                "covariance_or_bounds": []
+              },
+              "image_edges_px": [
+                [
+                  297.5,
+                  169.0,
+                  326.0
+                ],
+                [
+                  643.0,
+                  167.0,
+                  325.0
+                ]
+              ],
+              "center_body_frd_m": [
+                23.79572762846523,
+                -0.33988512188288045,
+                -3.2179602129448024
+              ],
+              "nominal_width_m": 9.843318338613523,
+              "nominal_height_m": 4.4750350238161944,
+              "edge_disparities_px": [
+                10.75,
+                10.375
+              ],
+              "edge_support": [
+                1555,
+                1464
+              ],
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "valid_disparity_fraction": 0.14213541666666665,
+          "elapsed_s": 0.291750974021852,
+          "query_at_capture_time_not_output_time": true
+        },
+        {
+          "left": "front_left_0010.png",
+          "right": "front_right_0010.png",
+          "input_sha256": {
+            "left": "b698ee8866caaed7c397c005f30bf13e2707bbc9c57f2f8a82243fcd07b27ce2",
+            "right": "ab7dfe9f334566cba7f3e4a98eb8cf11ae613a8c2ddea10622718d6b93560671"
+          },
+          "skew_s": 0.0,
+          "status": "PROCESSED",
+          "gate_count": 1,
+          "candidates": [
+            {
+              "metadata": {
+                "stamp": 1792484288.6893117,
+                "valid_until": 1792484288.8893118,
+                "epoch": 0,
+                "source": "nominal_stereo_gate_candidate",
+                "frame_id": "body_frd",
+                "covariance_or_bounds": []
+              },
+              "image_edges_px": [
+                [
+                  274.0,
+                  195.0,
+                  352.0
+                ],
+                [
+                  619.0,
+                  197.0,
+                  354.0
+                ]
+              ],
+              "center_body_frd_m": [
+                23.875257039250663,
+                -0.9736571267446779,
+                -2.4365853658536585
+              ],
+              "nominal_width_m": 9.865724551745132,
+              "nominal_height_m": 4.475595657690681,
+              "edge_disparities_px": [
+                10.8125,
+                10.25
+              ],
+              "edge_support": [
+                1521,
+                1409
+              ],
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "valid_disparity_fraction": 0.266908275462963,
+          "elapsed_s": 0.292725367937237,
+          "query_at_capture_time_not_output_time": true
+        },
+        {
+          "left": "front_left_0015.png",
+          "right": "front_right_0015.png",
+          "input_sha256": {
+            "left": "2d58c22c1d5247e11f29285fb46c7fcf06db27fa2d8c7e3d84f41bdb4a09b89d",
+            "right": "c23d8d99537236bb4478c259f170cec68e6a0c7593084dc18186b49d369311e4"
+          },
+          "skew_s": 0.0,
+          "status": "PROCESSED",
+          "gate_count": 1,
+          "candidates": [
+            {
+              "metadata": {
+                "stamp": 1792484291.0563622,
+                "valid_until": 1792484291.2563622,
+                "epoch": 0,
+                "source": "nominal_stereo_gate_candidate",
+                "frame_id": "body_frd",
+                "covariance_or_bounds": []
+              },
+              "image_edges_px": [
+                [
+                  313.0,
+                  187.0,
+                  344.0
+                ],
+                [
+                  657.5,
+                  186.0,
+                  345.0
+                ]
+              ],
+              "center_body_frd_m": [
+                24.43446461474742,
+                -0.012084257206208537,
+                -2.7574722838137475
+              ],
+              "nominal_width_m": 10.052537022585852,
+              "nominal_height_m": 4.610288248337029,
+              "edge_disparities_px": [
+                10.25,
+                10.3125
+              ],
+              "edge_support": [
+                1614,
+                1709
+              ],
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "valid_disparity_fraction": 0.29994936342592593,
+          "elapsed_s": 0.29316623602062464,
+          "query_at_capture_time_not_output_time": true
+        },
+        {
+          "left": "front_left_0020.png",
+          "right": "front_right_0020.png",
+          "input_sha256": {
+            "left": "17c82a68b8dfb082357a162ac2762190c5b19eba82bfb9a186a842d3c860983e",
+            "right": "d833d8096bb45bafda7e97bf75624d29101878378b1c105184296ffc3fd471d0"
+          },
+          "skew_s": 0.0,
+          "status": "PROCESSED",
+          "gate_count": 1,
+          "candidates": [
+            {
+              "metadata": {
+                "stamp": 1792484293.4474132,
+                "valid_until": 1792484293.6474133,
+                "epoch": 0,
+                "source": "nominal_stereo_gate_candidate",
+                "frame_id": "body_frd",
+                "covariance_or_bounds": []
+              },
+              "image_edges_px": [
+                [
+                  313.0,
+                  191.0,
+                  348.0
+                ],
+                [
+                  658.0,
+                  188.0,
+                  348.0
+                ]
+              ],
+              "center_body_frd_m": [
+                24.005055174936942,
+                -0.06614973262032153,
+                -2.615187165775401
+              ],
+              "nominal_width_m": 9.90969054867851,
+              "nominal_height_m": 4.542459893048129,
+              "edge_disparities_px": [
+                10.3125,
+                10.625
+              ],
+              "edge_support": [
+                1542,
+                1614
+              ],
+              "aperture_verified": false,
+              "metric_calibration_verified": false,
+              "control_eligible": false
+            }
+          ],
+          "valid_disparity_fraction": 0.3012962962962963,
+          "elapsed_s": 0.2916770810261369,
+          "query_at_capture_time_not_output_time": true
+        }
+      ]
+    }
+  ]
+}
