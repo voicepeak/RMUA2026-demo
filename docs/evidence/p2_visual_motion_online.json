@@ -1,0 +1,184 @@
+{
+  "iteration": 48,
+  "acceptance_eligible": false,
+  "control_published": false,
+  "runs": [
+    {
+      "path": "runs/20261027T102941Z_d5990556d4484d4bad3e6272c7f26edf",
+      "run_state": "OBSERVER_FAILED",
+      "observer_exit_code": 1,
+      "audit_exit_code": null,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "manifest_sha256": "f8f4e395d759891f89c65eaa20d143a475600b62a3095a4d7c27c21d43aaae1c",
+      "failure": "observe() missing settings argument, before subscriptions",
+      "observer_log_sha256": "995284acdfd5fb8e846b53e170183420de4f42c26cc1df9e12dcf652d27e2fad"
+    },
+    {
+      "path": "runs/20261027T103003Z_347e2c2755a04508af2707c0059c1771",
+      "run_state": "OBSERVED",
+      "observer_exit_code": 0,
+      "audit_exit_code": 0,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "manifest_sha256": "0293850141ececf7b048738159f8ad70e6bff02585afa7868153eb3aac65ddb5",
+      "summary": {
+        "faults": [],
+        "pairs": 130,
+        "received": {
+          "imu": 817,
+          "left": 135,
+          "right": 134
+        },
+        "overwritten": {
+          "left": 2,
+          "right": 1
+        },
+        "pairing_events": {
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0,
+          "SENSOR_EXPIRED_left": 2,
+          "SENSOR_EXPIRED_right": 2
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 130,
+          "superseded": 60,
+          "taken": 69,
+          "discarded_on_close": 1
+        },
+        "results": 69,
+        "statuses": {
+          "WARMUP": 31,
+          "ESTIMATED": 31,
+          "REJECTED": 7
+        },
+        "timing_current_results": 0,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.2,
+        "source_settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 69,
+        "timing_current_results": 0,
+        "status_counts": {
+          "WARMUP": 31,
+          "ESTIMATED": 31,
+          "REJECTED": 7
+        },
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "results_sha256": "a64a67a8ca4f33984558c08eb10083d6e885be604acf95680fff5745af816ac8",
+      "compute_s_p50_p90_max": [
+        0.21876582992263138,
+        0.2452230181079358,
+        0.26933327806182206
+      ],
+      "age_s_p50_p90_max": [
+        0.35100769996643066,
+        0.36600780487060547,
+        0.37500786781311035
+      ]
+    },
+    {
+      "path": "runs/20261027T103033Z_d08728cc5a644d9bbb385a095bb4ba2b",
+      "run_state": "OBSERVED",
+      "observer_exit_code": 0,
+      "audit_exit_code": 0,
+      "source_unchanged": true,
+      "original_simulator_files_unchanged": true,
+      "cleanup_errors": [],
+      "manifest_sha256": "4047a80b1c3b37684eee8c68dbb34db5a70261ca9b232cb63539be40fb045a00",
+      "summary": {
+        "faults": [],
+        "pairs": 6,
+        "received": {
+          "right": 109,
+          "imu": 600,
+          "left": 108
+        },
+        "overwritten": {},
+        "pairing_events": {
+          "SENSOR_EXPIRED_right": 102,
+          "SENSOR_EXPIRED_left": 101,
+          "SUPERSEDED_left": 0,
+          "SUPERSEDED_right": 0
+        },
+        "slot": {
+          "capacity": 1,
+          "pending": 0,
+          "submitted": 6,
+          "superseded": 0,
+          "taken": 6,
+          "discarded_on_close": 0
+        },
+        "results": 6,
+        "statuses": {
+          "WARMUP": 3,
+          "ESTIMATED": 1,
+          "REJECTED": 2
+        },
+        "timing_current_results": 0,
+        "node_graph": {
+          "subscriptions": [
+            "/airsim_node/drone_1/front_left/Scene",
+            "/airsim_node/drone_1/front_right/Scene",
+            "/airsim_node/drone_1/imu/imu"
+          ],
+          "publishers": [
+            "/rosout"
+          ]
+        },
+        "image_age_budget_s": 0.15,
+        "source_settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17",
+        "control_published": false,
+        "debug_inputs_used": false,
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "audit": {
+        "audit_valid": true,
+        "errors": [],
+        "rows": 6,
+        "timing_current_results": 0,
+        "status_counts": {
+          "WARMUP": 3,
+          "ESTIMATED": 1,
+          "REJECTED": 2
+        },
+        "control_eligible": false,
+        "acceptance_eligible": false
+      },
+      "results_sha256": "0c11391058180f081d46225d007580a62d1a3d22cd2400c3e251dc4ad7028c70",
+      "compute_s_p50_p90_max": [
+        0.20138401305302978,
+        0.20138401305302978,
+        0.20138401305302978
+      ],
+      "age_s_p50_p90_max": [
+        0.285006046295166,
+        0.285006046295166,
+        0.285006046295166
+      ]
+    }
+  ]
+}

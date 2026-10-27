@@ -16,12 +16,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--seed', type=int, required=True)
     parser.add_argument('--duration', type=float, default=10.)
-    parser.add_argument('--kind', choices=('lidar', 'stereo', 'pose-history', 'joint'), default='lidar')
+    parser.add_argument('--kind', choices=('lidar', 'stereo', 'pose-history', 'joint', 'visual-motion'), default='lidar')
     parser.add_argument('--image-age-budget-ms', type=int, choices=(150, 200), default=150)
     args = parser.parse_args()
     if args.seed < 0 or not math.isfinite(args.duration) or not 0 < args.duration <= 30:
         parser.error('nonnegative seed and duration in (0,30] required')
-    if args.kind not in ('stereo','joint') and args.image_age_budget_ms != 150:
+    if args.kind not in ('stereo','joint','visual-motion') and args.image_age_budget_ms != 150:
         parser.error('image age experiment requires --kind stereo or joint')
     root = Path(__file__).resolve().parents[2]
     container = os.environ.get('RMUA_CONTAINER', 'rmua_noetic')
@@ -30,11 +30,12 @@ def main():
     before = verify_local_simulator(root)
     config = json.loads((root / 'configs/official_baseline.yaml').read_text())
     config['experiment'] = {'kind': args.kind + '_read_only', 'duration_s': args.duration}
-    if args.kind in ('stereo','joint'):
+    if args.kind in ('stereo','joint','visual-motion'):
         config['experiment']['image_age_budget_ms'] = args.image_age_budget_ms
     run, manifest = prepare_run(root, root / 'runs', args.seed, digest, config)
     stages = {'lidar': 'P2_READ_ONLY_LIDAR_ENDPOINTS', 'stereo': 'P2_READ_ONLY_STEREO_PAIRING',
-              'pose-history': 'P2_READ_ONLY_POSE_HISTORY', 'joint': 'P2_READ_ONLY_JOINT_SENSORS'}
+              'pose-history': 'P2_READ_ONLY_POSE_HISTORY', 'joint': 'P2_READ_ONLY_JOINT_SENSORS',
+              'visual-motion': 'P2_READ_ONLY_VISUAL_MOTION'}
     manifest.update(stage=stages[args.kind], acceptance_eligible=False,
                     simulator_preflight=before, run_state='PREPARED')
     (run / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
@@ -45,6 +46,8 @@ def main():
         module, audit_module = 'adapters.ros_noetic.pose_history_observer', 'evaluation.metrics.pose_history'
     if args.kind == 'joint':
         module, audit_module = 'adapters.ros_noetic.joint_sensor_observer', 'evaluation.metrics.joint_sensors'
+    if args.kind == 'visual-motion':
+        module, audit_module = 'adapters.ros_noetic.visual_motion_observer', 'evaluation.metrics.visual_motion'
     sensor_type = 'PointCloud2' if args.kind == 'lidar' else 'Imu'
     sensor_topic = '/airsim_node/drone_1/lidar' if args.kind == 'lidar' else '/airsim_node/drone_1/imu/imu'
     marker = 'rmua_' + args.kind.replace('-', '_') + '_sensor_readiness'
@@ -81,7 +84,7 @@ def main():
                 command = [str(root / 'tools/enter_env.sh'), 'env',
                         'OPENBLAS_NUM_THREADS=1', 'python3', '-m', module, '--run-dir', container_run,
                         '--duration', str(args.duration)]
-                if args.kind in ('stereo','joint'):
+                if args.kind in ('stereo','joint','visual-motion'):
                     command.extend(['--image-age-budget-ms', str(args.image_age_budget_ms)])
                 code = subprocess.call(command, stdout=observer_log,
                         stderr=subprocess.STDOUT, timeout=args.duration + 15)
@@ -143,6 +146,9 @@ def main():
             if args.kind == 'joint':
                 manifest['telemetry'] = ['joint_states.jsonl', 'joint_raw_sensors.jsonl', 'joint_summary.json',
                                         'joint_audit.json', 'joint/']
+            if args.kind == 'visual-motion':
+                manifest['telemetry'] = ['visual_motion_results.jsonl', 'visual_motion_summary.json',
+                                         'visual_motion_audit.json']
             (run / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     return code if manifest['source_unchanged'] and manifest['original_simulator_files_unchanged'] else 2
 
