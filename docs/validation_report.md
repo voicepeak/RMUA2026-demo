@@ -1,3 +1,5 @@
+> 历史记录：本文件中的状态和计划以各段日期为准。当前入口见 [文档索引](README.md)、[当前基线](current_baseline.md) 与 [飞行里程碑](flight_milestones.md)。
+
 # P0 验证记录（2026-10-19）
 
 - 环境：复用 rmua_noetic（Python 3.8.10、ROS Noetic、OpenCV 4.2.0），RTX 3060 Laptop 驱动 595.91.07 可访问；未重装环境。
