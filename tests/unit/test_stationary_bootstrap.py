@@ -45,5 +45,15 @@ class BootstrapTests(unittest.TestCase):
         self.assertGreater(np.linalg.eigvalsh(s.estimator.P).min(),0)
         with self.assertRaises(RuntimeError):s.bootstrap_at_rest_before_control()
 
+    def test_nonfinite_and_out_of_order_measurements_cannot_initialize(self):
+        imu,gps=self.window()
+        for field in ('omega_body','acceleration_body'):
+            altered=deepcopy(imu);altered[30][field][0]=float('nan')
+            self.assertIsNone(resting_window(altered,gps,(1,0,0,0),101.1))
+        altered=deepcopy(imu);altered[30],altered[31]=altered[31],altered[30]
+        self.assertIsNone(resting_window(altered,gps,(1,0,0,0),101.1))
+        altered=list(gps);altered[3],altered[4]=altered[4],altered[3]
+        self.assertIsNone(resting_window(imu,altered,(1,0,0,0),101.1))
+
 
 if __name__=='__main__':unittest.main()

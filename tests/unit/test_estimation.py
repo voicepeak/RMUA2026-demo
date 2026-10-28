@@ -85,6 +85,16 @@ class EstimatorTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             e.propagate(.5, (0., 0., 0.), (0., 0., 0.))
 
+    def test_rejected_imu_cannot_replace_accepted_angular_velocity(self):
+        e = self.estimator()
+        e.update_gps(1., (1., 2., -1.), (1., 0., 0., 0.))
+        e.propagate(1.01, (0., 0., -9.81), (.1, .2, .3))
+        before = e.snapshot()
+        for stamp in (1.01, .5):
+            with self.assertRaises(ValueError):
+                e.propagate(stamp, (0., 0., -9.81), (9., 8., 7.))
+            self.assertEqual(e.snapshot(), before)
+
 
 if __name__ == "__main__":
     unittest.main()

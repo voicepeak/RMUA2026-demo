@@ -69,6 +69,11 @@ class OccupancyTests(unittest.TestCase):
         grid = OccupancySnapshot(metadata(), 1., (Cell((0, 0, 0), Occupancy.OCCUPIED, metadata()),))
         self.assertEqual(grid.query((0., 0., 0.), 1.5, 1), Occupancy.OCCUPIED)
 
+    def test_cell_from_another_frame_cannot_authorize_free_space(self):
+        cell = Cell((0, 0, 0), Occupancy.FREE, metadata(frame='camera_optical'))
+        grid = OccupancySnapshot(metadata(), 1., (cell,))
+        self.assertEqual(grid.query((0., 0., 0.), 1.5, 1), Occupancy.UNKNOWN)
+
 
 class BrakingTests(unittest.TestCase):
     def test_design_high_speed_example(self):
@@ -88,6 +93,13 @@ class BrakingTests(unittest.TestCase):
         for deceleration in (0., -1., math.nan):
             with self.assertRaises(ValueError):
                 speed_limit(30., 0.35, deceleration, 2.)
+
+    def test_overflow_cannot_produce_nonfinite_speed_or_distance(self):
+        with self.assertRaises(ValueError):
+            speed_limit(1e308, 0., 1e308, 0.)
+        with self.assertRaises(ValueError):
+            stopping_distance(1e308, 1., 1., 0.)
+        self.assertEqual(speed_limit(0., 0., 1e308, 0.), 0.)
 
 
 class SafetyPreconditionsTests(unittest.TestCase):

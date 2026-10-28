@@ -18,3 +18,7 @@
 6. [原 main 开发命令](docs/main_development_commands.md)：历史环境与实验命令，执行前先核对环境。
 
 后续开发遵循 [AGENTS.md](AGENTS.md)。文档整理不会修改现有代码、比赛配置或历史证据。
+
+## 无模拟器的本地测试
+
+在项目根目录运行 `python tools/run_portable_tests.py`。Windows 会明确列出 Linux 专属的未执行测试；此入口不代替 ROS、仿真器或飞行验证。

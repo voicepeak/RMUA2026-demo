@@ -46,5 +46,6 @@ class OccupancySnapshot:
         key = tuple(math.floor(x / self.resolution_m) for x in position)
         for cell in self.cells:
             if cell.key == key:
-                return cell.status if cell.metadata.current(now, epoch) else Occupancy.UNKNOWN
+                return (cell.status if cell.metadata.frame_id == self.metadata.frame_id
+                        and cell.metadata.current(now, epoch) else Occupancy.UNKNOWN)
         return Occupancy.UNKNOWN

@@ -44,13 +44,14 @@ class ImuGpsEstimator:
         if not math.isfinite(stamp) or stamp <= 0:
             raise ValueError("invalid IMU stamp")
         acceleration, omega = vector(acceleration_body), vector(angular_velocity_body)
-        self.omega = omega - self.bg
         if self.stamp is None:
+            self.omega = omega - self.bg
             self.stamp = stamp
             return
         dt = stamp - self.stamp
         if dt <= 0:
             raise ValueError("IMU must increase within epoch")
+        self.omega = omega - self.bg
         self.stamp = stamp
         if dt > .1:
             # Missing integration interval cannot be silently treated as fresh.

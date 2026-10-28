@@ -46,6 +46,10 @@ class MotorAllocator:
         forces = np.clip(collective+scale*differential, 0., limit)
         pwm = forces/self.max_thrust
         achieved = self.B @ forces
-        saturated = not np.allclose(request, achieved, atol=1e-8)
+        # Saturation describes a limit applied by the allocator, not whether the
+        # resulting wrench is numerically close to the request. A relative
+        # tolerance can hide small but real clipping near a motor limit and
+        # incorrectly leave the controller's integral enabled.
+        saturated = float(thrust) > 4. * limit or scale < 1.
         margin = float(np.minimum(pwm, self.ceiling-pwm).min())
         return Allocation(tuple(pwm), tuple(achieved), saturated, float(scale), margin)

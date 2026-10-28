@@ -66,6 +66,25 @@ class FlightControlTests(unittest.TestCase):
             w = c.step(state(), (-100., 0., -1.), allow_integral=False)
         self.assertEqual(w.integral[0], 1.)
 
+    def test_allocator_reports_small_limit_excess_as_saturation(self):
+        allocator = MotorAllocator(config())
+        limit = allocator.max_thrust * allocator.ceiling
+        # Relative closeness of the achieved and requested wrench must not
+        # conceal a real reduction in collective thrust.
+        requested = 4. * limit * (1. + 1e-6)
+        clipped = allocator.allocate(requested, (0., 0., 0.))
+        self.assertLess(clipped.achieved_wrench[0], requested)
+        self.assertTrue(clipped.saturated)
+        self.assertFalse(allocator.allocate(4. * limit, (0., 0., 0.)).saturated)
+
+        # A small moment reduction at a motor boundary is also saturation.
+        forces = np.array((limit * (1. + 1e-6), limit * .5,
+                           limit * .5, limit * (1. - 1e-6)))
+        wrench = allocator.B @ forces
+        result = allocator.allocate(wrench[0], wrench[1:])
+        self.assertLess(result.moment_scale, 1.)
+        self.assertTrue(result.saturated)
+
     def test_small_angle_closed_loop_roll_converges(self):
         c = config(); controller = Se3Controller(c); allocator = MotorAllocator(c)
         angle, omega = .12, 0.

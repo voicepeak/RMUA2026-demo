@@ -13,15 +13,19 @@ def resting_window(imu,gps,initial_attitude,stamp):
     gps=[r for r in gps if stamp-1.1<=r[0]<=stamp]
     if len(imu)<65 or len(gps)<7:return None
     times=np.array([r['stamp'] for r in imu])
-    if times[-1]-times[0]<1. or np.max(np.diff(times))>.04:return None
+    if (not np.all(np.isfinite(times)) or times[-1]-times[0]<1.
+            or np.any(np.diff(times)<=0) or np.max(np.diff(times))>.04):return None
     gt=np.array([r[0] for r in gps])
-    if gt[-1]-gt[0]<.6 or stamp-gt[-1]>.15:return None
+    if (not np.all(np.isfinite(gt)) or np.any(np.diff(gt)<=0)
+            or gt[-1]-gt[0]<.6 or stamp-gt[-1]>.15):return None
     positions=np.array([r[1] for r in gps])
     if not np.all(np.isfinite(positions)) or np.any(np.all(positions==0,axis=1)):return None
     if np.max(np.linalg.norm(positions-positions.mean(0),axis=1))>.2:return None
     acceleration=np.array([r['acceleration_body'] for r in imu])
     gyro=np.array([r['omega_body'] for r in imu])
-    if (np.max(np.linalg.norm(gyro,axis=1))>.025
+    if (acceleration.shape != (len(imu),3) or gyro.shape != (len(imu),3)
+            or not np.all(np.isfinite(acceleration)) or not np.all(np.isfinite(gyro))
+            or np.max(np.linalg.norm(gyro,axis=1))>.025
             or np.max(np.std(acceleration,axis=0))>.08
             or abs(np.linalg.norm(acceleration.mean(0))-9.81)>.15):return None
     q0=unit(initial_attitude)
