@@ -1,0 +1,59 @@
+{
+  "run_directory": "runs/20261029T081511Z_59279bc2e7314576b4b36e96ddb03262",
+  "git_sha": "8ccd37f182fd66b1a1c3747e22d0c7349b7247f5",
+  "source_unchanged": true,
+  "input_hashes": {
+    "manifest.json": "5867f5a960197a4f63c51156ca730cdf3cbe91689ae23b2abf318ccc46f6f3d6",
+    "pwm_summary.json": "a59cdf9b8d740cc2e14b28ad13d75ed1383b6213aabc67ee5b81fad65aecb7e1",
+    "fault_observation.json": "c7311b073001ef209ff41f76096d3732e6dc592542ca6807a616476915fa172c",
+    "command_trace_audit.json": "e29c644226d7ff1930b0122247009f3c3ffd67ea9182dc8795b02acc89b302df",
+    "evaluation_truth.jsonl": "58e075afdb0ffdff4a349d0b06e77b61a83097d1c8d1ae050218eb4a9bd74fdd",
+    "evaluation_actuation.jsonl": "469537dae563f6c516188e5d0c5089f24022445ba6687b9c5504314265884667",
+    "evaluation_pwm_commands.jsonl": "85f9f682d3502c5caf1e75986624432c59df705be8f03b8b18089d14872a05dc"
+  },
+  "experiment": {
+    "seed": 1009,
+    "mode": "PWM",
+    "hover_seconds": 12,
+    "sensor_fault": "IMU_DROP",
+    "fault_seconds": 0.2,
+    "truth_use": "offline_only"
+  },
+  "fault": "STALE_IMU",
+  "injection": {
+    "kind": "IMU_DROP",
+    "start_stamp": 1793261728.9568486,
+    "duration": 0.2,
+    "injected_samples": 10
+  },
+  "commands": 475,
+  "failure_wall_monotonic": 3223.739356227,
+  "wall_since_last_publication_s": 0.09769775199993092,
+  "wire_trace_valid": true,
+  "wire_after_fault_count": 0,
+  "truth_after_fault_count": 84,
+  "truth_first_position": [
+    0.021089073882029834,
+    -0.017207045843946382,
+    -0.7169657945632935
+  ],
+  "truth_last_position": [
+    0.04079124161127091,
+    -0.05604533483373893,
+    -0.6809312105178833
+  ],
+  "truth_last_arrival_after_fault_s": 0.84109797300016,
+  "debug_last_arrival_after_fault_s": 0.8401869750000515,
+  "debug_last_values": [
+    0.17692068219184875,
+    0.17663677036762238,
+    0.174390971660614,
+    0.17497947812080383
+  ],
+  "cleanup": {
+    "stop_and_launcher_completed": true,
+    "stop_script_exit_code": 0,
+    "launcher_exit_code": 143
+  },
+  "limits": "Local injected dropout and host shutdown only; debug PWM is not verified motor application; no sustained loss recovery or formal result."
+}
