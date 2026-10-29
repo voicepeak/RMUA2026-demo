@@ -1,0 +1,100 @@
+{
+  "batch_directory": "runs/batches/20261029T165532Z_e383f880db884ab589df307450c8dbf5",
+  "analysis_sha256": "fecd768618331fc584dc5705ac3dea6f0dc3dc9a78d21c9aa3d922fc889444ba",
+  "purpose": "Offline comparison of two callback arrival paths, not source-to-actuator latency",
+  "cases": [
+    {
+      "run_directory": "runs/20261029T165532Z_bcb52f939ad7427982e22cf8ad1670bb",
+      "inputs_sha256": {
+        "manifest.json": "c948825d6f31d12b0e6584fefdda3570882165e86ea0b765efc7759022a0ab0e",
+        "pwm_telemetry.jsonl": "c4f0400f4db93d537d02b4e6847414d482a765fb88e3321ef7ac0b95edcf92f9",
+        "evaluation_imu.jsonl": "0acb684bdc523276e4cb35fa408991d68db58201fe36b870b9288aad9792f1d7"
+      },
+      "comparison": {
+        "commands": 941,
+        "observer_messages": 1580,
+        "unique_matches": 914,
+        "missing_matches": 0,
+        "ambiguous_matches": 27,
+        "invalid_telemetry": 0,
+        "controller_minus_observer_arrival_min_p50_p95_p99_max_s": [
+          -0.0013307030021678656,
+          7.867001841077581e-06,
+          0.0001386747520882635,
+          0.0005781658890191472,
+          0.004058568003529217
+        ],
+        "observer_arrival_to_publish_end_min_p50_p95_p99_max_s": [
+          0.0014659549997304566,
+          0.007328112496907124,
+          0.015402330654978867,
+          0.018658900579321198,
+          0.022051386004022788
+        ],
+        "interpretation": "Exact source stamp, acceleration and angular velocity match; duplicates excluded. Signed differences between independent subscriber callbacks on the same host, not generation or delivery latency. Same content does not prove unique physical sampling or independent upstream transport."
+      }
+    },
+    {
+      "run_directory": "runs/20261029T165600Z_57804b4754fa46d8ab012bbbb692b5e2",
+      "inputs_sha256": {
+        "manifest.json": "25939ac726b85857951ed9a6ce66e19f90ee11ab26674fcf2bc51604eadc68b3",
+        "pwm_telemetry.jsonl": "4d5d5141deb0fb6e2d4aa658031f1775899d568ac78de9eaa509fde9397b6095",
+        "evaluation_imu.jsonl": "a3e7631c8f39e14eb8ca5da6aacabd3aac51b9d29cb61b656b8b97a3aa018eb2"
+      },
+      "comparison": {
+        "commands": 962,
+        "observer_messages": 1607,
+        "unique_matches": 936,
+        "missing_matches": 0,
+        "ambiguous_matches": 26,
+        "invalid_telemetry": 0,
+        "controller_minus_observer_arrival_min_p50_p95_p99_max_s": [
+          -0.0010515609974390827,
+          6.160498742247e-06,
+          0.0001503252497059293,
+          0.0006415342006221163,
+          0.005333388995495625
+        ],
+        "observer_arrival_to_publish_end_min_p50_p95_p99_max_s": [
+          0.0008629280055174604,
+          0.00682487749872962,
+          0.014449841248278972,
+          0.01775298334905528,
+          0.02144721600052435
+        ],
+        "interpretation": "Exact source stamp, acceleration and angular velocity match; duplicates excluded. Signed differences between independent subscriber callbacks on the same host, not generation or delivery latency. Same content does not prove unique physical sampling or independent upstream transport."
+      }
+    },
+    {
+      "run_directory": "runs/20261029T165627Z_0e5795fe5e08444cbcff6d83c32edcb1",
+      "inputs_sha256": {
+        "manifest.json": "3d46944190afc3a93ad764d47ccfb2b1393d774552c55c5cb90e1cde11b0a887",
+        "pwm_telemetry.jsonl": "002861ffdabf63bda43cc31ade816b5c5cb5d8254dfa14b111ab2efa295a385c",
+        "evaluation_imu.jsonl": "a56a03c665e34a3e1aa0002106d97e9917585c593c346390d52374bb3ea594b6"
+      },
+      "comparison": {
+        "commands": 947,
+        "observer_messages": 1583,
+        "unique_matches": 917,
+        "missing_matches": 0,
+        "ambiguous_matches": 30,
+        "invalid_telemetry": 0,
+        "controller_minus_observer_arrival_min_p50_p95_p99_max_s": [
+          -0.001986466995731462,
+          2.6189954951405525e-06,
+          0.00013213920028647407,
+          0.0005083876010030534,
+          0.005299381002259906
+        ],
+        "observer_arrival_to_publish_end_min_p50_p95_p99_max_s": [
+          0.0007104499964043498,
+          0.006785587000194937,
+          0.013181870001426422,
+          0.017292901762120897,
+          0.02189753099810332
+        ],
+        "interpretation": "Exact source stamp, acceleration and angular velocity match; duplicates excluded. Signed differences between independent subscriber callbacks on the same host, not generation or delivery latency. Same content does not prove unique physical sampling or independent upstream transport."
+      }
+    }
+  ]
+}
