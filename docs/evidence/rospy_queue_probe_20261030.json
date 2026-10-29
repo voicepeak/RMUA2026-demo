@@ -1,0 +1,51 @@
+{
+  "cases": [
+    {
+      "queue_size": 1,
+      "send_order": [
+        "A",
+        "B",
+        "C"
+      ],
+      "blocked_connection_writes": [
+        "A",
+        "C"
+      ],
+      "other_connection_writes": [
+        "A",
+        "B",
+        "C"
+      ],
+      "slow_first_write_blocked_until_after_C_enqueued": true,
+      "python_version": "3.8.10",
+      "rospy_source": "/opt/ros/noetic/lib/python3/dist-packages/rospy/impl/tcpros_pubsub.py",
+      "rospy_source_sha256": "7798ba90cfe8cd89e1f16db1c9f160963d69201826bd3c5f04f24a356c799390",
+      "probe_sha256": "b509e604fbeffea6d230035a6390104a4abba9f91e51339aa3b8bec20e93c3b0",
+      "limitations": "Controlled fake transports; no TCP, ROS subscriber, simulator, backend or motor behavior tested."
+    },
+    {
+      "queue_size": 2,
+      "send_order": [
+        "A",
+        "B",
+        "C"
+      ],
+      "blocked_connection_writes": [
+        "A",
+        "B",
+        "C"
+      ],
+      "other_connection_writes": [
+        "A",
+        "B",
+        "C"
+      ],
+      "slow_first_write_blocked_until_after_C_enqueued": true,
+      "python_version": "3.8.10",
+      "rospy_source": "/opt/ros/noetic/lib/python3/dist-packages/rospy/impl/tcpros_pubsub.py",
+      "rospy_source_sha256": "7798ba90cfe8cd89e1f16db1c9f160963d69201826bd3c5f04f24a356c799390",
+      "probe_sha256": "b509e604fbeffea6d230035a6390104a4abba9f91e51339aa3b8bec20e93c3b0",
+      "limitations": "Controlled fake transports; no TCP, ROS subscriber, simulator, backend or motor behavior tested."
+    }
+  ]
+}
