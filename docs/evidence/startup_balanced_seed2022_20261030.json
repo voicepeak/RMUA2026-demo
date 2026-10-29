@@ -1,0 +1,383 @@
+{
+  "purpose": "Exploratory balanced startup comparison; preserve all outcomes; not stage acceptance",
+  "batch_directory": "runs/batches/20261029T172820Z_1265c37dd38f4aeeae3d36bb43750886",
+  "batch_report_sha256": "177477bfb5e3ce53244fe5a7f592983869be0ca97cae012024078be9b297fa83",
+  "protocol": {
+    "schema_version": 1,
+    "purpose": "Exploratory balanced seed 2022 PWM startup comparison, not stage acceptance",
+    "seed": 2022,
+    "cases_in_order": [
+      "normal",
+      "stationary_bootstrap",
+      "stationary_bootstrap",
+      "normal"
+    ],
+    "hover_seconds": 14,
+    "mode": "PWM",
+    "evaluate_truth": true,
+    "parameter_policy": "Freeze source and configuration, retain all faults, preserve existing safeguards",
+    "evaluation_policy": "Report all outcomes, startup estimate and nearest truth; no causal or population reliability claim",
+    "official_result": "UNKNOWN"
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "8cac667f4a1bf0b5e25fef5938c4c18b243192f21d1af24c2dcc98b37a37e186",
+    "files": 508,
+    "uncompressed_bytes": 3192808,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "completed": true,
+  "cases": [
+    {
+      "mode": "normal",
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T172820Z_106ab54cc81b42cd82ded3ba8ed262fb",
+      "git_sha": "74be805980a7fc44baa97bd93ee3dc9c4ee0ed9a",
+      "git_status": "?? configs/startup_balanced_seed2022_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "8cac667f4a1bf0b5e25fef5938c4c18b243192f21d1af24c2dcc98b37a37e186",
+        "files": 508,
+        "uncompressed_bytes": 3192808,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 951,
+      "wire_valid": true,
+      "matched_commands": 951,
+      "evaluation_valid": true,
+      "truth_tracking_max_norm_m": 0.14245870263000682,
+      "first_command_stamp": 1793294910.484701,
+      "first_estimated_velocity_ned_m_s": [
+        0.020921143573547872,
+        -0.0009689572172337391,
+        0.06555821967804948
+      ],
+      "first_estimated_speed_m_s": 0.06882233136031667,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "initial_truth_bracket": {
+        "before": {
+          "stamp": 1793294910.4757006,
+          "position": [
+            -7.797241474690959e-05,
+            -1.0070796533909049e-05,
+            0.308248370885849
+          ],
+          "orientation": [
+            0.9999999999999996,
+            0.0,
+            0.0,
+            -2.98023259404094e-08
+          ],
+          "arrival_wall_monotonic": 36404.202730434
+        },
+        "after": {
+          "stamp": 1793294910.484701,
+          "position": [
+            -7.797241474690959e-05,
+            -1.0070796533909049e-05,
+            0.308248370885849
+          ],
+          "orientation": [
+            0.9999999999999996,
+            0.0,
+            0.0,
+            -2.98023259404094e-08
+          ],
+          "arrival_wall_monotonic": 36404.212748405
+        },
+        "source_interval_s": 0.009000301361083984,
+        "position_difference_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "finite_difference_velocity_m_s": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "input_sha256": {
+        "manifest.json": "67e4e222eb394d7ae8bd04e2399a325920ac2cf2950002e725eee6b73801b8d6",
+        "pwm_summary.json": "5622d8abe84b6038e8562e1a7a5239cefe548f73c7389a4328cfed2a0cfce173",
+        "pwm_telemetry.jsonl": "cac50905f5532a0a1ce8841f724c8d755fa8dd8e2ce420357a4782f289f412cf",
+        "evaluation_truth.jsonl": "a11b7a8aed613b461db219b614561fd0b14a5b1d55229e54823235585832bf88",
+        "command_trace_audit.json": "f3113fc6ad3376e2149bc5dfa21d93fe2da0ca76d617db74e1832fead324cca9",
+        "closed_loop_metrics.json": "3fb347ce0a88ec4ba70ac2d9c0aa260dab779dbe35cd9a450a81f8103775a54e"
+      }
+    },
+    {
+      "mode": "stationary_bootstrap",
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T172847Z_7ac424a3ae2743fd9a1ebc046e93cbc2",
+      "git_sha": "74be805980a7fc44baa97bd93ee3dc9c4ee0ed9a",
+      "git_status": "?? configs/startup_balanced_seed2022_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "8cac667f4a1bf0b5e25fef5938c4c18b243192f21d1af24c2dcc98b37a37e186",
+        "files": 508,
+        "uncompressed_bytes": 3192808,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 939,
+      "wire_valid": true,
+      "matched_commands": 939,
+      "evaluation_valid": true,
+      "truth_tracking_max_norm_m": 0.1961699743347217,
+      "first_command_stamp": 1793294938.05105,
+      "first_estimated_velocity_ned_m_s": [
+        0.01896743686797735,
+        -0.021593937781022525,
+        0.005792335538594268
+      ],
+      "first_estimated_speed_m_s": 0.02931915689823022,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "initial_truth_bracket": {
+        "before": {
+          "stamp": 1793294938.04205,
+          "position": [
+            -7.797241474690959e-05,
+            -1.0070796533909049e-05,
+            0.3081952929496765
+          ],
+          "orientation": [
+            0.9999999999999996,
+            0.0,
+            0.0,
+            -2.98023259404094e-08
+          ],
+          "arrival_wall_monotonic": 36431.846179383
+        },
+        "after": {
+          "stamp": 1793294938.05105,
+          "position": [
+            -7.797241474690959e-05,
+            -1.0070796533909049e-05,
+            0.3081952929496765
+          ],
+          "orientation": [
+            0.9999999999999996,
+            0.0,
+            0.0,
+            -2.98023259404094e-08
+          ],
+          "arrival_wall_monotonic": 36431.855884236
+        },
+        "source_interval_s": 0.009000062942504883,
+        "position_difference_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "finite_difference_velocity_m_s": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "input_sha256": {
+        "manifest.json": "e10ac0f3f427229776a1d2b79b8b1d047a8b7b5bad73ae1d81fd32d7144ab5e7",
+        "pwm_summary.json": "87c5716faba9fba5577c86e8420fe6d09b63770a25487c9718470a695d5e705c",
+        "pwm_telemetry.jsonl": "c4501c47b7d69ace5e0c075439e7a5bda57eb80f59ac65af65c6495e9cda1954",
+        "evaluation_truth.jsonl": "15bed062d9d55b71ee22adb41153f19f0f25a5b5948f2fa37e079f7eba2c2bf1",
+        "command_trace_audit.json": "7f23f62f3d687808cf03d4f753babbcbcf87aaa619790d537fe747520f6f98e1",
+        "closed_loop_metrics.json": "524687ff1b6ea68bc311162f334902967630b63fe5e24102dcb6481db7cb8300",
+        "stationary_bootstrap.json": "cadab9195a9499a3234f90a052760a4af7607ff6a6bfe54193b4bc689dcb9521"
+      }
+    },
+    {
+      "mode": "stationary_bootstrap",
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T172914Z_34fb7aed2159440fb5d6d519c157eb3e",
+      "git_sha": "74be805980a7fc44baa97bd93ee3dc9c4ee0ed9a",
+      "git_status": "?? configs/startup_balanced_seed2022_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "8cac667f4a1bf0b5e25fef5938c4c18b243192f21d1af24c2dcc98b37a37e186",
+        "files": 508,
+        "uncompressed_bytes": 3192808,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 969,
+      "wire_valid": true,
+      "matched_commands": 969,
+      "evaluation_valid": true,
+      "truth_tracking_max_norm_m": 0.2684695506757327,
+      "first_command_stamp": 1793294965.7646854,
+      "first_estimated_velocity_ned_m_s": [
+        0.15335738742453983,
+        -0.018026142904620637,
+        0.0016683873227117947
+      ],
+      "first_estimated_speed_m_s": 0.1544221927766757,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "initial_truth_bracket": {
+        "before": {
+          "stamp": 1793294965.755685,
+          "position": [
+            -7.797241474690959e-05,
+            -1.0070796533909049e-05,
+            0.30818724632263184
+          ],
+          "orientation": [
+            0.9999999999999996,
+            0.0,
+            0.0,
+            -2.98023259404094e-08
+          ],
+          "arrival_wall_monotonic": 36459.596959305
+        },
+        "after": {
+          "stamp": 1793294965.7646854,
+          "position": [
+            -7.797241474690959e-05,
+            -1.0070796533909049e-05,
+            0.30818724632263184
+          ],
+          "orientation": [
+            0.9999999999999996,
+            0.0,
+            0.0,
+            -2.98023259404094e-08
+          ],
+          "arrival_wall_monotonic": 36459.606991443
+        },
+        "source_interval_s": 0.009000301361083984,
+        "position_difference_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "finite_difference_velocity_m_s": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "input_sha256": {
+        "manifest.json": "311d335beab3d5db414f266fc796136e6e25cf564bcc886c70df1a1a1120c903",
+        "pwm_summary.json": "86b2f3b867b0b7f92a60e05573b94cf408a06ee2013c938f3676f6d52ff648fb",
+        "pwm_telemetry.jsonl": "b1d60495eb27da7b8b9fb4f8a0e92e6fe062f451bbec6cd9d51f500dd3d0d73a",
+        "evaluation_truth.jsonl": "cac24f50703786a262114504ed54495a3c2e08069360ea6bacc2b72496ba5c7c",
+        "command_trace_audit.json": "f21a9cc95a7726acad80b062829b14965cfb381b6a7ed84244fab3af6edb015e",
+        "closed_loop_metrics.json": "4bbe0e56e55ccc13ff41c5d89c2b2e5a3932f5aa35d60bf340154d246a1df3f5",
+        "stationary_bootstrap.json": "59e1717045e42e6026379987202371c6d97b0f4ad1a98bac61181072ecf83b19"
+      }
+    },
+    {
+      "mode": "normal",
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T172942Z_caa765e72e494740bf87928594d432ee",
+      "git_sha": "74be805980a7fc44baa97bd93ee3dc9c4ee0ed9a",
+      "git_status": "?? configs/startup_balanced_seed2022_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "8cac667f4a1bf0b5e25fef5938c4c18b243192f21d1af24c2dcc98b37a37e186",
+        "files": 508,
+        "uncompressed_bytes": 3192808,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "FAILED",
+      "fault": "ANGULAR_RATE_LIMIT",
+      "commands": 443,
+      "wire_valid": true,
+      "matched_commands": 443,
+      "evaluation_valid": true,
+      "truth_tracking_max_norm_m": 0.13469533434558773,
+      "first_command_stamp": 1793294992.3959396,
+      "first_estimated_velocity_ned_m_s": [
+        0.06767437705631471,
+        -0.09175141095729779,
+        0.30875973017163577
+      ],
+      "first_estimated_speed_m_s": 0.3291363147668098,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "initial_truth_bracket": {
+        "before": {
+          "stamp": 1793294992.3869393,
+          "position": [
+            -7.797241474690959e-05,
+            -1.0070796533909049e-05,
+            0.3081952631473541
+          ],
+          "orientation": [
+            0.9999999999999996,
+            0.0,
+            0.0,
+            -2.98023259404094e-08
+          ],
+          "arrival_wall_monotonic": 36486.216823406
+        },
+        "after": {
+          "stamp": 1793294992.3959396,
+          "position": [
+            -7.797241474690959e-05,
+            -1.0070796533909049e-05,
+            0.3081952631473541
+          ],
+          "orientation": [
+            0.9999999999999996,
+            0.0,
+            0.0,
+            -2.98023259404094e-08
+          ],
+          "arrival_wall_monotonic": 36486.226816438
+        },
+        "source_interval_s": 0.009000301361083984,
+        "position_difference_m": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "finite_difference_velocity_m_s": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "fault_wall_elapsed_at_last_read": 6.300918326996907,
+      "rate_guard_event": {
+        "stamp": 1793294998.0630605,
+        "arrival_wall_monotonic": 36492.531149727,
+        "angular_velocity_body": [
+          1.471753096986911,
+          0.9037741161107401,
+          -0.07115356222484098
+        ],
+        "rate_norm_rad_s": 1.7285623103780776,
+        "limit_rad_s": 1.0
+      },
+      "input_sha256": {
+        "manifest.json": "34eae5093e13a951f9f19d6413c16f428025def013c5b5d6f2e01e4867002c29",
+        "pwm_summary.json": "4d30cd3a8e67bd8bee99890736ed7a2ec0870fc0d5108fafab9151cda6d063f0",
+        "pwm_telemetry.jsonl": "191b85a5413abbbe07069b5825595871e32115b96d7f04497203c509e2d2119d",
+        "evaluation_truth.jsonl": "30c7155a4f42c55b6d15576fc6d690ee77b9f52b57d7b7ea8e9e949f32126670",
+        "command_trace_audit.json": "c0949f946725d1e93e67c559d0edf34b41c964284d1fa789840abe62ba303f57",
+        "closed_loop_metrics.json": "9c054fe1b5f7d3d282c388a7e18fa2fcadba1bf075377dc485da90d22b2aca8c",
+        "fault_observation.json": "65eea66caf8317bdbdf82df98333d810f6bb57b405cf7b1475329786ae20be84"
+      }
+    }
+  ]
+}

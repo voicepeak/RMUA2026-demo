@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "purpose": "Exploratory balanced seed 2022 PWM startup comparison, not stage acceptance",
+  "seed": 2022,
+  "cases_in_order": ["normal", "stationary_bootstrap", "stationary_bootstrap", "normal"],
+  "hover_seconds": 14,
+  "mode": "PWM",
+  "evaluate_truth": true,
+  "parameter_policy": "Freeze source and configuration, retain all faults, preserve existing safeguards",
+  "evaluation_policy": "Report all outcomes, startup estimate and nearest truth; no causal or population reliability claim",
+  "official_result": "UNKNOWN"
+}
