@@ -1,0 +1,111 @@
+{
+  "purpose": "Predeclared one-pair startup comparison, not causal or stage acceptance",
+  "protocol": {
+    "schema_version": 1,
+    "purpose": "Exploratory seed 2022 PWM startup comparison; not a fix or stage acceptance",
+    "seed": 2022,
+    "cases_in_order": [
+      "normal",
+      "stationary_bootstrap"
+    ],
+    "mode": "PWM",
+    "hover_seconds": 14,
+    "evaluate_truth": true,
+    "repetitions_per_case": 1,
+    "parameter_policy": "Freeze source and parameters; retain all outcomes; existing safety bounds unchanged",
+    "evaluation_policy": "Report startup state, fault, command audit, truth evaluation and cleanup; do not infer probability or causality from one pair",
+    "official_result": "UNKNOWN"
+  },
+  "protocol_sha256": "26124d8e91f3283f51d597e9f7e8769ed31bfe7e48f480fca680fc0db3a23877",
+  "cases": [
+    {
+      "mode": "normal",
+      "run_directory": "runs/20261029T172617Z_c8800dac9c614f70bcc6329416ef1655",
+      "git_sha": "e231e8f0116e0a71d10b5af6fd5d4e526f49ff22",
+      "git_status": "?? configs/startup_comparison_seed2022_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "72517e193df61f81d27b6fe374c35f022445297a40621c354adb04dd57ee60fb",
+        "files": 506,
+        "uncompressed_bytes": 3186060,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 925,
+      "wire_valid": true,
+      "matched_commands": 925,
+      "evaluation_valid": true,
+      "truth_tracking_rmse_m": [
+        0.05418572116710414,
+        0.09722746204660802,
+        0.03716657544377834
+      ],
+      "truth_tracking_max_norm_m": 0.2011765472168331,
+      "first_estimated_velocity_ned_m_s": [
+        -0.058244510043341274,
+        0.08829369886826392,
+        0.44314306443831514
+      ],
+      "first_estimated_speed_m_s": 0.45559189607565376,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "f21ccfd7831cfbc5b2e310f10e7390f2475ab4517669d4fb9679d528e7fea498",
+        "pwm_summary.json": "458d029b9b4904bae347dcd3d8cda995b6ab016b2ec6708d801fb899e0425e68",
+        "command_trace_audit.json": "9d6c1dc5f11aa5fe33d8a45851d6128a91995e0c497712dcf6fda44926291c96",
+        "closed_loop_metrics.json": "4f114226b1068943c967d304240ce745308a8b18d67b05bb728a5b326cfb3c5e",
+        "pwm_telemetry.jsonl": "53ea84322c3fa417268aaebeadc320387b13bf07f76d3a7604411f73386fe637"
+      }
+    },
+    {
+      "mode": "stationary_bootstrap",
+      "run_directory": "runs/20261029T172643Z_dd55a09f9e04488db3ee116d780ea7f7",
+      "git_sha": "e231e8f0116e0a71d10b5af6fd5d4e526f49ff22",
+      "git_status": "?? configs/startup_comparison_seed2022_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "72517e193df61f81d27b6fe374c35f022445297a40621c354adb04dd57ee60fb",
+        "files": 506,
+        "uncompressed_bytes": 3186060,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 959,
+      "wire_valid": true,
+      "matched_commands": 959,
+      "evaluation_valid": true,
+      "truth_tracking_rmse_m": [
+        0.037863081416965226,
+        0.08366654291556483,
+        0.034404418795913806
+      ],
+      "truth_tracking_max_norm_m": 0.1464478642135301,
+      "first_estimated_velocity_ned_m_s": [
+        -0.022824237035968004,
+        8.891915335956097e-05,
+        0.008943095577544736
+      ],
+      "first_estimated_speed_m_s": 0.024513927906375754,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "e00a6eb564bb3860b5ab4a9bd62edb7d828e8291817c26aac9cdf28fc0621dab",
+        "pwm_summary.json": "fbf756aca1d18c5e71aae9efbb151b9be8efc1f82fd12816e94f3c9060a24ab3",
+        "command_trace_audit.json": "95f2faddb307c2d2225fcfdf4a2c05a25295e8933e47f106f04586b21b8e6661",
+        "closed_loop_metrics.json": "91736375b2e90c3f32687e0c5f847e5a0c707348400f169ca8b88c24b29d72a1",
+        "pwm_telemetry.jsonl": "9f1146076c939c8091d2a6be72c29921012cd43910cbefd3d24642dfeaef7433",
+        "stationary_bootstrap.json": "2d36b441b0a99446332877018e982edca685b8ada45542802d995edc599a9bac"
+      }
+    }
+  ]
+}
