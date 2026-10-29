@@ -52,6 +52,10 @@ class SensorAdapterTests(unittest.TestCase):
         before = s.startup_velocity_snapshot()
         self.assertEqual(before['gps_updates'], 2)
         self.assertEqual(before['imu_updates'], 2)
+        self.assertEqual(len(before['gps_events']), 2)
+        self.assertAlmostEqual(before['gps_events'][1]['gps_stamp'], 100.05)
+        self.assertAlmostEqual(before['gps_events'][1]['state_stamp'], 100.05)
+        self.assertEqual(before['gps_events_dropped'], 0)
         for index in range(3):
             self.assertAlmostEqual(before['velocity_at_seal'][index],
                                    before['imu_delta'][index] + before['gps_delta'][index]

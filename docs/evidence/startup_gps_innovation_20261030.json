@@ -1,0 +1,201 @@
+{
+  "purpose": "Startup accepted GPS update observation and same-source-time offline truth interpolation; not calibration or stage acceptance",
+  "run_directory": "runs/20261029T173839Z_6c0134e624bc4934b758dd4c583444e2",
+  "seed": 2022,
+  "mode": "PWM",
+  "git_sha": "06ae16adc9d4ed6c495b43b407a813529d4fb262",
+  "git_status": " M adapters/ros_noetic/flight_sensors.py\n M tests/unit/test_flight_sensors.py\n",
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "8175a159bd1078f091f5182a3a19d1545a4c0380fff11e5500eefe24439fb804",
+    "files": 512,
+    "uncompressed_bytes": 3233163,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "run_state": "EVALUATED",
+  "fault": null,
+  "commands": 944,
+  "wire_valid": true,
+  "matched_commands": 944,
+  "evaluation_valid": true,
+  "startup_velocity": {
+    "imu_delta": [
+      -0.024153295960707817,
+      -0.003229500962699966,
+      -0.00476188248312902
+    ],
+    "gps_delta": [
+      -0.12750894038268934,
+      -0.1731714786174761,
+      0.1212882892611626
+    ],
+    "bootstrap_delta": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "gps_updates": 3,
+    "imu_updates": 29,
+    "sealed": true,
+    "velocity_at_seal": [
+      -0.15166223634339715,
+      -0.17640097958017606,
+      0.11652640677803358
+    ],
+    "stamp_at_seal": 1793295529.6475177,
+    "gps_events": [
+      {
+        "gps_stamp": 1793295529.4105127,
+        "state_stamp": 1793295529.4105127,
+        "gps_position": [
+          0.04138988610897057,
+          0.060060754743908394,
+          0.2946206868944371
+        ],
+        "predicted_position": [
+          -5.851334892709016e-05,
+          8.1867029991771e-06,
+          -3.542426670647947e-05
+        ],
+        "position_innovation": [
+          0.04144839945789766,
+          0.060052568040909214,
+          0.2946561111611436
+        ],
+        "position_velocity_variance_before": [
+          0.10129651477554309,
+          0.10129651477615065,
+          0.10129628483611795,
+          1.0020831579022282,
+          1.0020831543242026,
+          1.000822994330312
+        ],
+        "velocity_delta": [
+          0.01748041115601171,
+          0.018976164842447806,
+          0.09534928403375112
+        ]
+      },
+      {
+        "gps_stamp": 1793295529.5095148,
+        "state_stamp": 1793295529.5095148,
+        "gps_position": [
+          0.058551880696649156,
+          0.022639115637245393,
+          0.2773527798727639
+        ],
+        "predicted_position": [
+          0.04003167549748511,
+          0.056464481525750086,
+          0.27717812942558323
+        ],
+        "position_innovation": [
+          0.018520205199164044,
+          -0.033825365888504696,
+          0.0001746504471806798
+        ],
+        "position_velocity_variance_before": [
+          0.019493865072177916,
+          0.01949386945106539,
+          0.019444173277412043,
+          1.0057077095002473,
+          1.00570913456321,
+          0.9915682861847549
+        ],
+        "velocity_delta": [
+          0.026374552300277396,
+          -0.11244254216288352,
+          0.0002720295232772063
+        ]
+      },
+      {
+        "gps_stamp": 1793295529.608517,
+        "state_stamp": 1793295529.608517,
+        "gps_position": [
+          0.010419333035230124,
+          0.005464474962413643,
+          0.29385506984941606
+        ],
+        "predicted_position": [
+          0.05570440305920964,
+          0.02487838974152559,
+          0.2861318322423874
+        ],
+        "position_innovation": [
+          -0.04528507002397951,
+          -0.01941391477911195,
+          0.0077232376070286435
+        ],
+        "position_velocity_variance_before": [
+          0.019929694452029346,
+          0.019929743419802352,
+          0.019726341710457448,
+          0.6732023900605428,
+          0.6732128290200796,
+          0.6457701848656295
+        ],
+        "velocity_delta": [
+          -0.17136390383897843,
+          -0.07970510129704038,
+          0.025666975704134273
+        ]
+      }
+    ],
+    "gps_events_dropped": 0
+  },
+  "truth_interpolation": [
+    {
+      "gps_stamp": 1793295529.4105127,
+      "matched": true,
+      "truth_before_stamp": 1793295529.4015124,
+      "truth_after_stamp": 1793295529.4105127,
+      "truth_position_interpolated": [
+        -7.797241474690959e-05,
+        -1.0070796533909049e-05,
+        0.30819395184516907
+      ],
+      "gps_error_norm_m": 0.07424500584602356,
+      "predicted_position_error_norm_m": 0.30822937726684585
+    },
+    {
+      "gps_stamp": 1793295529.5095148,
+      "matched": true,
+      "truth_before_stamp": 1793295529.4975145,
+      "truth_after_stamp": 1793295529.5095148,
+      "truth_position_interpolated": [
+        -7.797241474690959e-05,
+        -1.0070796533909049e-05,
+        0.30819395184516907
+      ],
+      "gps_error_norm_m": 0.07001159340143204,
+      "predicted_position_error_norm_m": 0.07589558719720729
+    },
+    {
+      "gps_stamp": 1793295529.608517,
+      "matched": true,
+      "truth_before_stamp": 1793295529.5965166,
+      "truth_after_stamp": 1793295529.608517,
+      "truth_position_interpolated": [
+        -7.797241474690959e-05,
+        -1.0070796533909049e-05,
+        0.30819395184516907
+      ],
+      "gps_error_norm_m": 0.01859482750296592,
+      "predicted_position_error_norm_m": 0.06494494593761285
+    }
+  ],
+  "simulator_cleanup": {
+    "stop_and_launcher_completed": true,
+    "stop_script_exit_code": 0,
+    "launcher_exit_code": 143
+  },
+  "input_sha256": {
+    "manifest.json": "d397f30fd475ca2d93df4d7ccd1278674bbb3763e847dfd237c98f038027d6ad",
+    "pwm_summary.json": "ce19f4ed36e14db3b01a8cee5cc9e9de97efcb38ab783a4e8ab6b812f5ce289d",
+    "evaluation_truth.jsonl": "6815c40e1916953813554a5fa73def7b727da557fae53276d16810f231dac45c",
+    "command_trace_audit.json": "3095e271eb8718fc240d78cc487c12635899de6b988a3f5f045bdc6a270dc3d8",
+    "closed_loop_metrics.json": "a3236037d5476f04b8f1056530ac744d1224df39fa18130f7c07f22c83f48cf1"
+  },
+  "limitations": "Only accepted updates before seal, max 32; source clock and truth latency not calibrated; residuals are not causal proof."
+}

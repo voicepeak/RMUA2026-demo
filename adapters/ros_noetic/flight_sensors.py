@@ -34,7 +34,8 @@ class FlightSensors:
         self.startup_velocity = {'imu_delta': np.zeros(3), 'gps_delta': np.zeros(3),
                                  'bootstrap_delta': np.zeros(3), 'gps_updates': 0,
                                  'imu_updates': 0, 'sealed': not track_startup_velocity, 'velocity_at_seal': None,
-                                 'stamp_at_seal': None}
+                                 'stamp_at_seal': None, 'gps_events': [],
+                                 'gps_events_dropped': 0}
         if subscribe:
             import rospy
             from geometry_msgs.msg import PoseStamped
@@ -141,10 +142,25 @@ class FlightSensors:
     def _update_gps(self, stamp, position, attitude):
         # Called only while the sensor lock is held.
         before = self.estimator.v.copy() if not self.startup_velocity['sealed'] else None
+        if before is not None:
+            state_stamp = self.estimator.stamp
+            predicted_position = self.estimator.p.copy()
+            variance_before = np.diag(self.estimator.P)[:6].copy()
         accepted = self.estimator.update_gps(stamp, position, attitude)
         if accepted and before is not None:
-            self.startup_velocity['gps_delta'] += self.estimator.v - before
+            delta = self.estimator.v - before
+            self.startup_velocity['gps_delta'] += delta
             self.startup_velocity['gps_updates'] += 1
+            events = self.startup_velocity['gps_events']
+            if len(events) < 32:
+                events.append({'gps_stamp': stamp, 'state_stamp': state_stamp,
+                               'gps_position': list(position),
+                               'predicted_position': predicted_position.tolist(),
+                               'position_innovation': (np.asarray(position) - predicted_position).tolist(),
+                               'position_velocity_variance_before': variance_before.tolist(),
+                               'velocity_delta': delta.tolist()})
+            else:
+                self.startup_velocity['gps_events_dropped'] += 1
         return accepted
 
     def on_gps(self, msg):
