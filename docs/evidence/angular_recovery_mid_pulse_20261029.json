@@ -1,0 +1,75 @@
+{
+  "batch_directory": "runs/batches/20261029T092158Z_8077bdf5bb68439b88ae07be07d5d977",
+  "batch_report_sha256": "5b398c60e570e499daaf14388566a7985b86557256c744870a083527f3816629",
+  "protocol": {
+    "schema_version": 1,
+    "purpose": "New development-only 0.3 Nm single-cycle pitch pulse; distinct from retained 0.2 Nm results; stop on first failed case, no stage acceptance",
+    "seeds": [
+      2030,
+      2041
+    ],
+    "hover_seconds": 14,
+    "mode": "PWM",
+    "braking": false,
+    "yaw_motion": false,
+    "snapshot": false,
+    "stationary_bootstrap": true,
+    "angular_recovery": true,
+    "angular_recovery_profile": "standard",
+    "angular_pulse_moments": [
+      0.3
+    ],
+    "evaluation_policy": "Pulse sent, recovery hold, valid truth evaluation, unchanged source and wire audit required; existing recovery hard limits unchanged. Preserve all prior outcomes.",
+    "official_result": "UNKNOWN"
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "ee2f94d0e36b5edfe69a3590493199ba99ed0d03b926d665d55ed05f0d774bd3",
+    "files": 475,
+    "uncompressed_bytes": 3045528,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "batch_succeeded": false,
+  "planned_cases": [
+    {
+      "seed": 2030,
+      "angular_pulse_moment": 0.3
+    },
+    {
+      "seed": 2041,
+      "angular_pulse_moment": 0.3
+    }
+  ],
+  "completed_cases": 1,
+  "staged_pulse_stopped_on_failed_case": true,
+  "run_directory": "runs/20261029T092159Z_8f104415941c43a287bbcb0eed8ac048",
+  "run_manifest_sha256": "0c37df2b422c39af93fcb6a62948b32d08c32d630c5fac867fc8718e8c30b5d5",
+  "run_source_unchanged": true,
+  "fault": "ANGULAR_RECOVERY_HARD_BOUND",
+  "fault_state_omega_body": [
+    -0.03798657368450819,
+    2.797381119207251,
+    -0.010745923350333312
+  ],
+  "fault_elapsed_s": 2.2000992940002106,
+  "pulse_sent": false,
+  "commands": 154,
+  "transitions": [
+    {
+      "stamp": 1793265733.9872744,
+      "from": "NORMAL",
+      "to": "ANGULAR_RECOVERY",
+      "rate_rad_s": 1.1819489181595197,
+      "tilt_rad": 0.037990671962016755
+    }
+  ],
+  "wire_trace_valid": true,
+  "evaluation_valid": false,
+  "cleanup": {
+    "stop_and_launcher_completed": true,
+    "stop_script_exit_code": 0,
+    "launcher_exit_code": 143
+  },
+  "interpretation": "Spontaneous fault before planned pulse; no pulse-response result, no proof of causality or acceptance."
+}
