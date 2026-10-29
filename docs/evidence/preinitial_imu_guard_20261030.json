@@ -1,0 +1,40 @@
+{
+  "purpose": "Local single-seed PWM compatibility after rejecting pre-initialization propagation; not stage acceptance",
+  "run_directory": "runs/20261029T173157Z_7d5f8b200f984addb827996b36779f85",
+  "seed": 2022,
+  "mode": "PWM",
+  "git_sha": "6e82879b790aa89c2e0c0f2025032ae7dd3bebe8",
+  "git_status": " M adapters/ros_noetic/flight_sensors.py\n M adapters/ros_noetic/state_reader.py\n M estimation/imu_gps.py\n M tests/unit/test_estimation.py\n M tests/unit/test_flight_sensors.py\n",
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "4d35b39229531600e69c44437462d8b283d35ab5b7c5edc22ce8828cc620cf1d",
+    "files": 509,
+    "uncompressed_bytes": 3209837,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "run_state": "EVALUATED",
+  "fault": null,
+  "commands": 942,
+  "wire_valid": true,
+  "matched_commands": 942,
+  "evaluation_valid": true,
+  "truth_tracking_rmse_m": [
+    0.050349844041283884,
+    0.055416522776355025,
+    0.03566360616190467
+  ],
+  "truth_tracking_max_norm_m": 0.15232156904618302,
+  "simulator_cleanup": {
+    "stop_and_launcher_completed": true,
+    "stop_script_exit_code": 0,
+    "launcher_exit_code": 143
+  },
+  "input_sha256": {
+    "manifest.json": "7c7d935658804b00d3bfc0ce663a242df5bc7010cc057c8ba6bb160159b7b836",
+    "pwm_summary.json": "a446912315f12680237d687f41d2f0957a7c4783ddfabc680c3f440070616800",
+    "command_trace_audit.json": "2c83fd54d1f4a54b180930e5bc5a3fe6d9e9921552dbfb2d7d1bd9d1d2648572",
+    "closed_loop_metrics.json": "f4b2f2c686c276f78c82b9d22ac7d0d9a3b407dc589fe7e5d6d4e20815d0dac0"
+  },
+  "limitations": "One normal run cannot establish startup ordering, fault cause, multi-seed safety or official acceptance."
+}

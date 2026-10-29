@@ -41,6 +41,8 @@ class ImuGpsEstimator:
         return True
 
     def propagate(self, stamp, acceleration_body, angular_velocity_body):
+        if not self.initialized:
+            raise ValueError("estimator not initialized")
         if not math.isfinite(stamp) or stamp <= 0:
             raise ValueError("invalid IMU stamp")
         acceleration, omega = vector(acceleration_body), vector(angular_velocity_body)

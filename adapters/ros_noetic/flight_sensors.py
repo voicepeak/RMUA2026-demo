@@ -57,6 +57,8 @@ class FlightSensors:
                     return
                 if previous == stamp:
                     return
+                if self.initial is None:
+                    return
                 if self.initial is not None and not self.estimator.initialized:
                     self.estimator.initialize(*self.initial)
                 a, w = msg.linear_acceleration, msg.angular_velocity
@@ -137,6 +139,8 @@ class FlightSensors:
                 raise RuntimeError(self.fault)
             if not self.clock.fresh(time.monotonic()):
                 raise RuntimeError('STALE_IMU')
+            if not self.estimator.initialized or self.raw is None:
+                raise RuntimeError('NO_INITIAL_STATE')
             raw = dict(self.raw)
             raw['last_gps_stamp'] = self.estimator.last_gps
             raw['gyro_bias_body'] = tuple(self.estimator.bg)

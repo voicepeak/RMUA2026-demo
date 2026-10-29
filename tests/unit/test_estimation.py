@@ -28,6 +28,16 @@ class EstimatorTests(unittest.TestCase):
         e.propagate(1., (0., 0., -9.81), (0., 0., 0.))
         return e
 
+    def test_propagation_before_initialization_is_rejected_without_mutation(self):
+        e = ImuGpsEstimator()
+        with self.assertRaisesRegex(ValueError, 'not initialized'):
+            e.propagate(1., (4., 0., -9.81), (0., 0., 0.))
+        self.assertIsNone(e.stamp)
+        np.testing.assert_array_equal(e.v, (0., 0., 0.))
+        e.initialize((1., 2., -1.), (1., 0., 0., 0.))
+        e.propagate(2., (0., 0., -9.81), (0., 0., 0.))
+        np.testing.assert_array_equal(e.v, (0., 0., 0.))
+
     def test_ned_gravity_stationary_and_positive_yaw(self):
         e = self.estimator()
         for i in range(1, 101):

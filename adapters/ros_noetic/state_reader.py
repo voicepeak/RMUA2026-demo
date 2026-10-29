@@ -51,6 +51,9 @@ def observe(run, duration):
                     elif previous == stamp:
                         events["IMU_DUPLICATE"] += 1
                         return
+                    if initial is None:
+                        events["IMU_BEFORE_INITIAL"] += 1
+                        return
                     if initial is not None and not estimator.initialized:
                         estimator.initialize(*initial)
                     a, w = msg.linear_acceleration, msg.angular_velocity

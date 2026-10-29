@@ -24,6 +24,22 @@ class SensorAdapterTests(unittest.TestCase):
         s.on_gps(message(100.))
         return s
 
+    def test_imu_before_initial_pose_cannot_integrate_unknown_frame(self):
+        s = FlightSensors(subscribe=False)
+        for stamp in (100., 100.05, 100.10):
+            msg = message(stamp)
+            msg.linear_acceleration.x = 4.
+            s.on_imu(msg)
+        with self.assertRaisesRegex(RuntimeError, 'NO_INITIAL_STATE'):
+            s.read()
+        s.on_initial(message(0.))
+        s.on_imu(message(100.15))
+        s.on_gps(message(100.15))
+        state, _ = s.read()
+        self.assertEqual(state.velocity_ned, (0., 0., 0.))
+        self.assertEqual(state.position_ned, (1., 2., -1.))
+        self.assertEqual(state.health, Health.OK)
+
     def test_future_gps_waits_for_imu_then_updates(self):
         s=self.sensors()
         s.on_gps(message(100.02))
