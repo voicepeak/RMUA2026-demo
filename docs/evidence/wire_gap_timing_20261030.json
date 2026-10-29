@@ -1,0 +1,81 @@
+{
+  "purpose": "Retrospective timing of previously failed PWM observer audits; not a causal experiment",
+  "runs": [
+    {
+      "observers": [
+        {
+          "records": 468,
+          "median_ms": 0.6267764983931556,
+          "p95_nearest_lower_ms": 3.873307003232185,
+          "at_least_6ms": 5,
+          "max_ms": 9.421628004929516
+        },
+        {
+          "records": 467,
+          "median_ms": 0.6845660027465783,
+          "p95_nearest_lower_ms": 3.5017089976463467,
+          "at_least_6ms": 5,
+          "max_ms": 7.6213749998714775
+        }
+      ],
+      "missing_windows": [
+        {
+          "observer_index": 1,
+          "logical_sequence": 236,
+          "previous_publish_begin_ms": -16.514850001840387,
+          "next_publish_begin_ms": 11.216529994271696,
+          "publish_call_ms": 0.47883799561532214,
+          "other_observer_arrival_ms": 6.318966996332165
+        }
+      ],
+      "run_directory": "runs/20261029T171015Z_9fcfaca0e2544b1492648da73b8a1824",
+      "input_sha256": {
+        "pwm_telemetry.jsonl": "debad7887ec2ed6f69e13a8c3a5826fa1c9d24b8afff500d44970e8bdcec1268",
+        "evaluation_pwm_commands.jsonl": "7df3cf8312870571f7f61bf587cc63d4b144acfce1306df5e53978c294030ebe",
+        "second_wire_commands.jsonl": "24b4cd923172a193b80f7548c5728879dbe7e63818b4d74ecfb6d95e62e48e5e",
+        "command_trace_audit.json": "35389fb5dbd54080f929b3134aaa46bd8993f8585c85a070f49fe49a302b37d3",
+        "second_wire_audit.json": "117ebd6d20560193b73cfbdbc8c4b30521868b2dc0734c98be7ddafdc2a2105a"
+      },
+      "analysis_sha256": "5c1872105704bfb7705ffcd3d369022a2a92529a2f40dc09224ae34cb041db50",
+      "limitations": "Same-host callback arrival timing only; ROS queuing, transport and backend consumption are not observed. Existing strict wire audit remains authoritative."
+    },
+    {
+      "observers": [
+        {
+          "records": 805,
+          "median_ms": 0.6753710040356964,
+          "p95_nearest_lower_ms": 3.586406004615128,
+          "at_least_6ms": 13,
+          "max_ms": 10.259652000968345
+        },
+        {
+          "records": 806,
+          "median_ms": 0.7187839983089361,
+          "p95_nearest_lower_ms": 3.867130995786283,
+          "at_least_6ms": 14,
+          "max_ms": 11.03331999911461
+        }
+      ],
+      "missing_windows": [
+        {
+          "observer_index": 0,
+          "logical_sequence": 14,
+          "previous_publish_begin_ms": -14.930464996723458,
+          "next_publish_begin_ms": 12.121990002924576,
+          "publish_call_ms": 0.3850560024147853,
+          "other_observer_arrival_ms": 6.231776002096012
+        }
+      ],
+      "run_directory": "runs/20261029T171054Z_92ef65d1ced840b786e5541f17e08077",
+      "input_sha256": {
+        "pwm_telemetry.jsonl": "8c33c77f43607e5d4099e08e0386997451e684c91f3941cfe494efb9be120762",
+        "evaluation_pwm_commands.jsonl": "969b99fbd017888e8378dced9808524bc570fac6381d625c825c9fc9e25b0724",
+        "second_wire_commands.jsonl": "e66d7321543bdace9dc3dfec1126e6fbff1258559788609168b13f0d1d006f92",
+        "command_trace_audit.json": "3220c261dc84b38c3c2929d1629a6f4bba25ea7a93b02b974553a26c0a483f64",
+        "second_wire_audit.json": "398eb4a4119f2f844633c2b018920f2622a75d27db10b8e96278b982141f71d7"
+      },
+      "analysis_sha256": "5c1872105704bfb7705ffcd3d369022a2a92529a2f40dc09224ae34cb041db50",
+      "limitations": "Same-host callback arrival timing only; ROS queuing, transport and backend consumption are not observed. Existing strict wire audit remains authoritative."
+    }
+  ]
+}
