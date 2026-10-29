@@ -1,0 +1,50 @@
+{
+  "assumed_static_truth_m": [
+    1.0,
+    2.0,
+    0.31
+  ],
+  "assumed_moving_speed_m_s": 0.18,
+  "duration_s": 1.1,
+  "max_static_gps_error_m": 0.09899999999999998,
+  "same_imu_and_gps_for_both_worlds": true,
+  "current_window_accepted": true,
+  "reset_velocity_m_s": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "moving_world_reset_error_m_s": 0.18,
+  "bootstrap_result": {
+    "position": [
+      1.0000000000000002,
+      2.0,
+      0.31
+    ],
+    "gyro_bias": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "imu_samples": 111,
+    "gps_samples": 12,
+    "span_s": 1.0999999999999943,
+    "gps_position_std_m": [
+      0.06213694553162391,
+      0.0,
+      0.0
+    ],
+    "acceleration_std_m_s2": [
+      0.0,
+      0.0,
+      2.842170943040401e-14
+    ],
+    "assumption": "fresh ground-start scene, before any control publisher",
+    "imu_orientation_use": "resting alignment check only; initial_pose supplies attitude"
+  },
+  "limitations": "Synthetic inputs only. A ground-start guarantee could exclude the moving world; no simulator truth, actual noise distribution or in-flight behavior is established.",
+  "source_sha256": {
+    "rest_observability.py": "e6e1812dfa669cafff6569ac2a60f48afc5dc60e4e08fda6b7f8f4ad61353e04",
+    "stationary_bootstrap.py": "65e2faddf02f364745c7fa1c3112459f83541fda8cb26144b9fb4776ce1de751"
+  }
+}
