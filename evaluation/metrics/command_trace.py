@@ -26,6 +26,22 @@ def decode(row):
 def packed(values):return struct.pack('<4d',*values)
 
 
+def compare_observers(first, second):
+    """Compare logical missing sequences; neither observer certifies backend delivery."""
+    comparable = (first.get('ros_header_sequence_offset') is not None
+                  and second.get('ros_header_sequence_offset') is not None
+                  and first.get('sender_commands') is not None
+                  and first.get('sender_commands') == second.get('sender_commands'))
+    missing_first, missing_second = set(first['missing_sequences']), set(second['missing_sequences'])
+    return {'comparable': comparable,
+            'missing_first_only': sorted(missing_first-missing_second) if comparable else None,
+            'missing_second_only': sorted(missing_second-missing_first) if comparable else None,
+            'missing_both': sorted(missing_first & missing_second) if comparable else None,
+            'both_wire_traces_valid': bool(first['wire_trace_valid'] and second['wire_trace_valid']),
+            'backend_delivery_verified': False,
+            'note': 'Observer records have separate connections; agreement does not prove backend receipt or actuator consumption.'}
+
+
 def evaluate(telemetry,wire,debug):
     decoded=[decode(x) for x in wire]
     invalid=sum(x is None for x in decoded)

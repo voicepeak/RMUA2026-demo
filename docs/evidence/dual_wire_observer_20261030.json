@@ -1,0 +1,169 @@
+{
+  "purpose": "Independent PWM wire observers; no backend delivery guarantee",
+  "analysis_sha256": "c81e6d5b496c477259e1bb5fd5260d79b45bbc31651c78ae345e84a86749ce56",
+  "runs": [
+    {
+      "run_directory": "runs/20261029T093231Z_c3bc67dda71c4663a0174720abd5b529",
+      "inputs_sha256": {
+        "manifest.json": "dce97fd704baa4b2df3cec87abdc7aa7aa2de6eb43c9847f1042eac3ee2ef7fb",
+        "command_trace_audit.json": "1ea6b57197e5062a6e2df33e480a47444fba1e8ba6a263d60f386e42bc7500e0",
+        "second_wire_audit.json": "093df6aeb6aa6ebae5665c8317be376dfd42c99c5e5b57a704707a0b199ce94c",
+        "pwm_telemetry.jsonl": "c7a3e5cbe9c78b4f53920eaa71ff0822ec5103b69cd9be6b3b679590d8f88ba2",
+        "evaluation_pwm_commands.jsonl": "6b08b5d3a0178ce92d46c48dbc16636e1cd99f927b4a8ca206c6a955b64a84fe",
+        "second_wire_commands.jsonl": "892e87a25dd41abe28bbc8bfc5910678756932c312a07e94677444eb1a524764"
+      },
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "d8b162e7e86a1863842e0a70c760ea1aa2694b54d4f418468de322e1df3c0a20",
+        "files": 479,
+        "uncompressed_bytes": 3066661,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "fault": "ANGULAR_RATE_LIMIT",
+      "injected_samples": 1,
+      "sender_commands": 474,
+      "first_matched": 474,
+      "second_matched": 474,
+      "comparison_recomputed": {
+        "comparable": true,
+        "missing_first_only": [],
+        "missing_second_only": [],
+        "missing_both": [],
+        "both_wire_traces_valid": true,
+        "backend_delivery_verified": false,
+        "note": "Observer records have separate connections; agreement does not prove backend receipt or actuator consumption."
+      },
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "run_directory": "runs/20261029T093328Z_d6e2f762e04347d78c1bafb1ed738434",
+      "inputs_sha256": {
+        "manifest.json": "167967a7e1316e53d1060b7d5ae9530188b4fad26a2a1daf5f2b73badbac42cb",
+        "command_trace_audit.json": "9e661c5b40f5488d935e0037552acdb7e52f1e7a6ae0dad5fd26669540b86e65",
+        "second_wire_audit.json": "5f9369df2083e51dd04ca55af0309c169c63a050b6cda47d5b1039124edd9659",
+        "pwm_telemetry.jsonl": "a2cfd0b5a0299b9f880365026891bc7f4ad831c8da81264011cea871d10bb652",
+        "evaluation_pwm_commands.jsonl": "839e926c7ae5b8a1ea68142a220ca146b57b1bde9a2060fdf624b33670b237d8",
+        "second_wire_commands.jsonl": "755acfdfe5a6f136d7ea378c75a55db0657c4d85896c5161cb4105d508c9b1fd"
+      },
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "a18756c32bd26716fe214adb868abb2240aa4d3351f71a14e4ff25cc3a76940a",
+        "files": 479,
+        "uncompressed_bytes": 3068137,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "fault": "ANGULAR_RATE_LIMIT",
+      "injected_samples": 1,
+      "sender_commands": 473,
+      "first_matched": 473,
+      "second_matched": 473,
+      "comparison_recomputed": {
+        "comparable": true,
+        "missing_first_only": [],
+        "missing_second_only": [],
+        "missing_both": [],
+        "both_wire_traces_valid": true,
+        "backend_delivery_verified": false,
+        "note": "Observer records have separate connections; agreement does not prove backend receipt or actuator consumption."
+      },
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "run_directory": "runs/20261029T164759Z_8d984fda466c40ef8e6cb0b419253355",
+      "inputs_sha256": {
+        "manifest.json": "3c54e59f93af751c0a482a68b60d4b57e4e54feb767192ac7a371f960c25517e",
+        "command_trace_audit.json": "b90d5ba6630aced641e827b45d9a2f679e61ce43e24bfc0f849816a5941fe25b",
+        "second_wire_audit.json": "04fdb80705d84f647e5e8ae7019a2a67fb6b6c2fd405fa3499589b57357ebf53",
+        "pwm_telemetry.jsonl": "0bd519e2a5cb61bce1e9deed6f88e952c61aa3e1553e0ff53941af645551a161",
+        "evaluation_pwm_commands.jsonl": "afb68c8c57b92c9710ee7fc960ff72e5197cf7175de83781873625900cbabb2d",
+        "second_wire_commands.jsonl": "3d40ac0e73febd4fc78a912282e530f472c33a237f7eb8d917211de387b2e66f"
+      },
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "b8c6f676bed6880759dd1f95e3cca0177358048a184eec51dbf8dd830143eda3",
+        "files": 479,
+        "uncompressed_bytes": 3069053,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "fault": "ANGULAR_RATE_LIMIT",
+      "injected_samples": 1,
+      "sender_commands": 454,
+      "first_matched": 454,
+      "second_matched": 454,
+      "comparison_recomputed": {
+        "comparable": true,
+        "missing_first_only": [],
+        "missing_second_only": [],
+        "missing_both": [],
+        "both_wire_traces_valid": true,
+        "backend_delivery_verified": false,
+        "note": "Observer records have separate connections; agreement does not prove backend receipt or actuator consumption."
+      },
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "run_directory": "runs/20261029T164950Z_d1b6b417bdff47a189dca23a321acc9f",
+      "inputs_sha256": {
+        "manifest.json": "57620ac66712b430d8b7af9985c450fe7a198c302db3a5aa56508642585bc381",
+        "command_trace_audit.json": "1c26063d26604469e983e13f28f6a06b43063f5466d942d053c92d09b6d2aa45",
+        "second_wire_audit.json": "4ea5fadc7f82ab42b3b21d1a5d65c16bb4f6098cd7585beb734b8a68562bbe93",
+        "pwm_telemetry.jsonl": "3adc52c31f03cd375143046cdbcdcca70eeb04ba0ebff7aa323fcaf47fea60e6",
+        "evaluation_pwm_commands.jsonl": "27d97c694766f42bd835c03f83ac3e5c10090dac362b65cef9b2cc88334ea8f7",
+        "second_wire_commands.jsonl": "30cc7b5077f68b02c8f51ff80aa4d7d8348c7ca82232e0d17954d849d17f9c58"
+      },
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "0e62bd84918d602ab48f079e537ace8cf70566a6e595041000f14db5d2bcc5a1",
+        "files": 480,
+        "uncompressed_bytes": 3076941,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "fault": null,
+      "injected_samples": null,
+      "sender_commands": 677,
+      "first_matched": 677,
+      "second_matched": 677,
+      "comparison_recomputed": {
+        "comparable": true,
+        "missing_first_only": [],
+        "missing_second_only": [],
+        "missing_both": [],
+        "both_wire_traces_valid": true,
+        "backend_delivery_verified": false,
+        "note": "Observer records have separate connections; agreement does not prove backend receipt or actuator consumption."
+      },
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    }
+  ],
+  "environment_failure": {
+    "run_directory": "runs/20261029T164655Z_7b78c54ba5b346b5816e3fe2221e688b",
+    "manifest_sha256": "e51eb332237457952bad6cfa1dd13bc08448ca598e11837791d79b0a336167ac",
+    "error": "fresh simulator failed; see simulator.log",
+    "cleanup": {
+      "stop_and_launcher_completed": false,
+      "error": "SIMULATOR_EXITED_BEFORE_CLEANUP",
+      "launcher_exit_code": 1
+    },
+    "controller_started": false
+  }
+}

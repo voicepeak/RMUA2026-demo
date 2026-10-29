@@ -1,6 +1,6 @@
 import unittest
 import json
-from evaluation.metrics.command_trace import evaluate,MD5
+from evaluation.metrics.command_trace import evaluate,compare_observers,MD5
 
 
 def record(seq,value):
@@ -9,6 +9,17 @@ def record(seq,value):
 
 
 class CommandTraceTests(unittest.TestCase):
+    def test_independent_observer_gaps_remain_separate(self):
+        a={'missing_sequences':[1,2],'wire_trace_valid':False,'ros_header_sequence_offset':1,'sender_commands':4}
+        b={'missing_sequences':[2,3],'wire_trace_valid':False,'ros_header_sequence_offset':1,'sender_commands':4}
+        result=compare_observers(a,b)
+        self.assertEqual(result['missing_first_only'],[1])
+        self.assertEqual(result['missing_second_only'],[3])
+        self.assertEqual(result['missing_both'],[2])
+        self.assertFalse(result['backend_delivery_verified'])
+        b['ros_header_sequence_offset']=None
+        self.assertFalse(compare_observers(a,b)['comparable'])
+        self.assertIsNone(compare_observers(a,b)['missing_first_only'])
     def test_float64_wire_matches_but_sampled_debug_can_miss_a_real_command(self):
         telemetry=[{'command':{'sequence':i,'stamp':10+i*.01,'values':[value]*4},
                     'collective_pulse_applied':i==1} for i,value in enumerate((.2,.4,.2))]

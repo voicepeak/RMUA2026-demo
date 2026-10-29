@@ -1,11 +1,22 @@
 import subprocess
 import unittest
 from unittest.mock import Mock, patch
+from pathlib import Path
+import tempfile
 
-from evaluation.seed_runner.pwm_identification import cleanup_simulator
+from evaluation.seed_runner.pwm_identification import cleanup_simulator, evaluation_input_error
 
 
 class SimulatorCleanupTests(unittest.TestCase):
+    def test_truth_evaluation_requires_successful_recorder_and_inputs(self):
+        with tempfile.TemporaryDirectory() as directory:
+            run = Path(directory)
+            self.assertEqual(evaluation_input_error(run, 'pwm', {}), 'TRUTH_RECORDER_INCOMPLETE')
+            self.assertEqual(evaluation_input_error(run, 'pwm', {'truth_evaluator_exit_code': 0}),
+                             'EVALUATION_INPUT_MISSING')
+            (run/'pwm_telemetry.jsonl').touch(); (run/'evaluation_truth.jsonl').touch()
+            self.assertIsNone(evaluation_input_error(run, 'pwm', {'truth_evaluator_exit_code': 0}))
+
     @patch('evaluation.seed_runner.pwm_identification.subprocess.run')
     def test_success_requires_stop_script_and_wrapper_exit(self, run):
         run.return_value.returncode = 0

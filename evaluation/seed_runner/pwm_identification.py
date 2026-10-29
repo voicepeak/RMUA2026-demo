@@ -41,6 +41,14 @@ def cleanup_simulator(simulator, stop_script):
     return result
 
 
+def evaluation_input_error(run, prefix, manifest):
+    if manifest.get('truth_evaluator_exit_code') != 0:
+        return 'TRUTH_RECORDER_INCOMPLETE'
+    if not (run/(prefix+'_telemetry.jsonl')).is_file() or not (run/'evaluation_truth.jsonl').is_file():
+        return 'EVALUATION_INPUT_MISSING'
+    return None
+
+
 def main():
     root = Path(__file__).resolve().parents[2]
     parser = argparse.ArgumentParser(description=__doc__)
@@ -70,10 +78,14 @@ def main():
     parser.add_argument('--reference-stall-seconds',type=float,default=0.)
     parser.add_argument('--collective-pulse-pwm',type=float)
     parser.add_argument('--record-pwm-commands',action='store_true',help='opt in for a new observer-compatible standalone image')
+    parser.add_argument('--second-wire-observer',action='store_true',help='additional independent diagnostic PWM subscriber')
     parser.add_argument('--bridge-probe',choices=('observe','serialize','lifetime','native-input','native-serialize'),help='instrumented simulator, never acceptance eligible')
     parser.add_argument('--controller-image',help='locally built immutable standalone image; no beta bind mount')
     parser.add_argument('--contract-audit-only',action='store_true',help='read-only service handshake; no controller')
     args = parser.parse_args()
+    if args.second_wire_observer and (args.mode != 'PWM' or not args.evaluate_truth
+                                      or args.controller_image or args.contract_audit_only):
+        parser.error('second observer requires evaluated workspace PWM')
     if args.control_hz != 80 and (args.mode != 'PWM' or args.controller_image or args.contract_audit_only):
         parser.error('nondefault control rate requires the PWM workspace controller')
     if args.mode == 'VEL' and (args.motor_pulses or not 3 <= args.hover_seconds <= 20):
@@ -150,6 +162,7 @@ def main():
                             'reference_stall_seconds':args.reference_stall_seconds,
                             'collective_pulse_pwm':args.collective_pulse_pwm,
                             'record_pwm_commands':record_commands if args.evaluate_truth else False,
+                            'second_wire_observer':args.second_wire_observer,
                             'bridge_probe':args.bridge_probe}
     run, manifest = prepare_run(root, root/'runs', args.seed, digest, config)
     manifest['stage'] = ('P1_PWM_CLOSED_LOOP' if args.hover_seconds else 'P0_PWM_IDENTIFICATION') if args.mode == 'PWM' else 'P1_VEL_BENCHMARK'
@@ -173,6 +186,8 @@ def main():
     code = 1
     evaluator = None
     evaluation_log = None
+    second_wire = None
+    second_wire_log = None
     scene_recorder=None
     scene_log=None
     controller_name='rmua-next-flight-'+run.name
@@ -227,6 +242,17 @@ def main():
                     time.sleep(.05)
                 if not (run/'truth_ready').exists():
                     raise RuntimeError('hidden truth evaluator failed to receive truth')
+            if args.second_wire_observer:
+                second_wire_log = (run/'second_wire.log').open('x')
+                second_wire = subprocess.Popen([str(root/'tools/enter_env.sh'), 'python3', '-m',
+                    'evaluation.metrics.second_wire_recorder', '--run-dir', container_run],
+                    stdout=second_wire_log, stderr=subprocess.STDOUT)
+                deadline = time.monotonic()+5
+                while not (run/'second_wire_ready').exists() and time.monotonic() < deadline:
+                    if second_wire.poll() is not None: break
+                    time.sleep(.05)
+                if not (run/'second_wire_ready').exists():
+                    raise RuntimeError('second wire observer did not start')
             if args.scene_trace:
                 scene_log=(run/'scene_recorder.log').open('x')
                 scene_recorder=subprocess.Popen([str(root/'tools/enter_env.sh'),'env','OPENBLAS_NUM_THREADS=1',
@@ -314,6 +340,25 @@ def main():
                     evaluator.terminate()
                     manifest['truth_evaluator_exit_code'] = 'TIMEOUT'
                 evaluation_log.close()
+            if second_wire:
+                (run/'second_wire_stop').touch()
+                try:
+                    manifest['second_wire_exit_code'] = second_wire.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    manifest['second_wire_exit_code'] = 'TIMEOUT'
+                    try:
+                        manifest['terminated_owned_second_wire_pids'] = stop_bound_controller(
+                            container, 'evaluation.metrics.second_wire_recorder', container_run)
+                    except Exception as error:
+                        manifest['second_wire_cleanup_error'] = str(error)
+                    if second_wire.poll() is None:
+                        try:
+                            second_wire.terminate()
+                        except ProcessLookupError:
+                            pass
+                if manifest['second_wire_exit_code'] != 0:
+                    code = 1
+                second_wire_log.close()
             # Only stop a process group launched by this invocation.
             manifest['simulator_cleanup'] = cleanup_simulator(simulator, root/'tools/stop_sim.sh')
             if not manifest['simulator_cleanup']['stop_and_launcher_completed']:
@@ -371,7 +416,17 @@ def main():
                 if record_commands:
                     manifest['evaluation_only_inputs'].append('/airsim_node/drone_1/rotor_pwm_cmd')
                     manifest['telemetry'].append('evaluation_pwm_commands.jsonl')
+                if args.second_wire_observer:
+                    manifest['telemetry'].append('second_wire_commands.jsonl')
             manifest['artifacts']=sorted(p.name for p in run.iterdir() if p.is_file() and p.name!='manifest.json')
+            (run/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
+    if args.evaluate_truth:
+        input_error = evaluation_input_error(run, prefix, manifest)
+        if input_error:
+            manifest['evaluation_input_error'] = input_error
+            if code == 0:
+                code = 1
+            manifest['run_state'] = 'FAILED'
             (run/'manifest.json').write_text(json.dumps(manifest, indent=2)+'\n')
     if args.evaluate_truth and (run/(prefix+'_telemetry.jsonl')).exists() and (run/'evaluation_truth.jsonl').exists():
         metric_code = subprocess.call(['python3', '-m', 'evaluation.metrics.closed_loop', str(run)], cwd=root)
@@ -388,6 +443,26 @@ def main():
                     stdout=subprocess.DEVNULL)
                 if code==0 and manifest['command_trace_audit_exit_code']!=0:
                     code=manifest['command_trace_audit_exit_code']
+            if args.second_wire_observer and (run/'second_wire_commands.jsonl').exists():
+                from evaluation.metrics.command_trace import evaluate as evaluate_trace, compare_observers
+                def rows(name):
+                    return [json.loads(line) for line in (run/name).read_text().splitlines()]
+                second = evaluate_trace(rows('pwm_telemetry.jsonl'), rows('second_wire_commands.jsonl'), [])
+                (run/'second_wire_audit.json').write_text(json.dumps(second, indent=2)+'\n')
+                manifest['second_wire_audit_valid'] = second['wire_trace_valid']
+                primary_path = run/'command_trace_audit.json'
+                if primary_path.exists():
+                    primary = json.loads(primary_path.read_text())
+                    comparison = compare_observers(primary, second)
+                    (run/'wire_observer_comparison.json').write_text(json.dumps(comparison, indent=2)+'\n')
+                else:
+                    manifest['second_wire_comparison_error'] = 'PRIMARY_AUDIT_MISSING'
+                    code = 1
+                if code == 0 and not second['wire_trace_valid']:
+                    code = 2
+            elif args.second_wire_observer:
+                manifest['second_wire_comparison_error'] = 'SECOND_WIRE_RECORD_MISSING'
+                code = 1
         manifest['run_state']='EVALUATED' if code==0 else 'FAILED'
         manifest['artifacts']=sorted(p.name for p in run.iterdir() if p.is_file() and p.name!='manifest.json')
         (run/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
