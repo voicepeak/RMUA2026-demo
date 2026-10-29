@@ -42,9 +42,75 @@ int main(){char arg[]="argv";char* argv[]={arg,nullptr};
   airsim_ros::commands_impl::ROTOR_PWM_Callback(message);
   mock_native_counts();return mock_peak();}
 '''
+CONCURRENT_DRIVER = DECLARATIONS + r'''
+#include <boost/shared_ptr.hpp>
+#include <atomic>
+#include <thread>
+#include <cstdio>
+namespace ros {struct TimerEvent{};}
+using NativeCallback=void(*)(void*,void*);
+extern "C" void mock_init(int,char**,NativeCallback,bool,bool,int,const char*,const char*,const char*,int)
+  asm("_ZN10airsim_ros13InitAirSimROSEiPPcPFvPvS2_EbbNS_17AirSimROSGameTypeEPKcS7_S7_i");
+extern "C" void owned_native_handler(void*,void*);
+extern "C" void mock_native_counts();
+extern "C" int mock_peak();
+extern "C" int mock_concurrent_peak();
+int main(){char arg[]="argv";char* argv[]={arg,nullptr};
+  mock_init(7,argv,owned_native_handler,true,false,17,"c","d","e",101);
+  std::atomic<bool> start{false};
+  std::thread a([&]{boost::shared_ptr<const airsim_ros::RotorPWM_<std::allocator<void>>> message;
+    while(!start.load()){};for(int i=0;i<32;++i)airsim_ros::commands_impl::ROTOR_PWM_Callback(message);});
+  std::thread b([&]{ros::TimerEvent event;while(!start.load()){};
+    for(int i=0;i<32;++i)airsim_ros::PublishAsyncCommands(event);});
+  start=true;a.join();b.join();mock_native_counts();mock_peak();std::printf("%d\n",mock_concurrent_peak());}
+'''
+
+# This mock keeps the parameter alive and deliberately overlaps the original
+# functions; it never dereferences freed memory or changes simulator code.
+CONCURRENT_MOCK = MOCK.replace('#include <thread>', '''#include <thread>
+#include <chrono>
+std::atomic<int> active{}, peak{};
+struct Activity { Activity(){int n=++active;int p=peak.load();
+  while(p<n&&!peak.compare_exchange_weak(p,n)){};
+  std::this_thread::sleep_for(std::chrono::milliseconds(2));} ~Activity(){--active;} };
+extern "C" int mock_concurrent_peak(){return peak.load();}''')
+CONCURRENT_MOCK = CONCURRENT_MOCK.replace(
+    'while(phase.load()<(free_in_native()?4:(safe()?2:1)))std::this_thread::yield();\n  free_parameter(&owner);phase=3;',
+    'Activity activity; phase=3;')
+CONCURRENT_MOCK = CONCURRENT_MOCK.replace('void* parameter=get_parameter(&owner);phase=1;',
+                                          'Activity activity; void* parameter=get_parameter(&owner);phase=1;')
 
 
 class NativeInputTests(unittest.TestCase):
+    def test_native_serializer_excludes_concurrent_original_callbacks(self):
+        root = Path(__file__).resolve().parents[2]
+        build = Path(subprocess.check_output(['bash', str(root/'tools/build_bridge_probe.sh'), 'native-input'],
+                                            cwd=root, text=True).strip())
+        probe = '/workspace/main/' + str(build.relative_to(root))
+        with tempfile.TemporaryDirectory(prefix='native_concurrent_test_', dir=root/'runs') as directory:
+            path = Path(directory); inside = '/workspace/main/' + str(path.relative_to(root))
+            (path/'mock.cpp').write_text(CONCURRENT_MOCK)
+            (path/'driver.cpp').write_text(CONCURRENT_DRIVER)
+            def run(*args):
+                return subprocess.check_output([str(root/'tools/enter_env.sh'), *args], cwd=root,
+                                               text=True, stderr=subprocess.STDOUT, timeout=30)
+            run('g++','-std=c++14','-shared','-fPIC','-pthread',inside+'/mock.cpp','-o',inside+'/mock.so')
+            run('g++','-std=c++14','-pthread',inside+'/driver.cpp','-L'+inside,
+                '-Wl,-rpath,'+inside,'-l:mock.so','-o',inside+'/driver')
+            for mode, expected_peak in (('native-input',2),('native-serialize',1)):
+                output = run('env','LD_PRELOAD='+probe,'RMUA_BRIDGE_PROBE_ORIGINAL='+inside+'/mock.so',
+                             'RMUA_BRIDGE_PROBE_OUTPUT='+inside+'/'+mode+'.jsonl',
+                             'RMUA_BRIDGE_PROBE_MODE='+mode,'MOCK_SAFE=1',inside+'/driver')
+                self.assertEqual(output.split(), ['1','32','32','0','32','32',str(expected_peak)])
+                records = [json.loads(x) for x in (path/(mode+'.jsonl')).read_text().splitlines()]
+                entries = [r for r in records if r['event']=='native_pwm_entry']
+                self.assertEqual(len(entries),32)
+                self.assertTrue(all(r['parameter_read_ok'] and
+                                    r['parameter_float32_hex']==struct.pack('<4f',.1,.2,.3,.4).hex()
+                                    for r in entries))
+                self.assertEqual(records[-1]['overlap_entries'] > 0, mode == 'native-input')
+                self.assertEqual(records[-1]['write_errors'], 0)
+
     def test_native_arguments_results_and_float_bits_survive_and_unreadable_snapshot_does_not_crash(self):
         root = Path(__file__).resolve().parents[2]
         build = Path(subprocess.check_output(['bash', str(root/'tools/build_bridge_probe.sh'), 'native-input'],
