@@ -17,6 +17,15 @@ def observe():
             'local_md5':cls._md5sum if cls else None,'headers':headers,
             'service_request_sent':False,'business_success_semantics_verified':False,
             'formal_server_permissions_verified':False}
+    # Read-only local inventory: these names are not added to the formal allowlist.
+    # Querying a type probes service headers but does not send a request.
+    services = sorted(n for n in rosservice.get_service_list() if n.startswith('/airsim_node/'))
+    candidates = ('/airsim_node/drone_1/takeoff', '/airsim_node/drone_1/land', '/airsim_node/reset')
+    result['local_advertised_services'] = services
+    result['local_candidate_types'] = {n: rosservice.get_service_type(n) if n in services else None
+                                       for n in candidates}
+    result['candidate_service_requests_sent'] = False
+    result['candidate_service_semantics_verified'] = False
     result['compatible']=(cls is not None and result['type']=='airsim_ros/MeterReport'
                            and result['server_md5']==cls._md5sum=='40e1aa17dd96ff6a8c88396581d6a491')
     return result

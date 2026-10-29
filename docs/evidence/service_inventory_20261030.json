@@ -1,0 +1,70 @@
+{
+  "purpose": "Read-only local service inventory; no service requests, flight, or formal availability claim",
+  "run_directory": "runs/20261029T172457Z_1f5913c1259a44748bd79140685b56dc",
+  "git_sha": "431d343780019d1c743d632a30d4a8a3222eda0f",
+  "git_status": " M adapters/ros_noetic/service_contract_audit.py\n",
+  "source_unchanged": true,
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "742ddb1b6f3a1016338f522174e374985ce975fbe0d4d97e897dc7e51a952c15",
+    "files": 503,
+    "uncompressed_bytes": 3179574,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "run_state": "AUDIT_COMPLETE",
+  "simulator_preflight": {
+    "strict_rules_verified": true,
+    "game_config": {
+      "IgnoreAllHitCollision": false,
+      "IgnoreOverTime": false
+    },
+    "game_config_sha256": "4173ab7ae90fa031fb32a9e77d2810376c6f325b8274f4f8fd07be3c9adb6d39",
+    "binary_sha256": "5231addfa25ddaa9e4473ea9ac40c9c0bc685174e69cd14bb49159f443b97800",
+    "ros_plugin_sha256": "69d5ea3302bdd5f20b842ec3d3e84bafcb50ef3649ada42c4d346c9bcd389885",
+    "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17"
+  },
+  "simulator_cleanup": {
+    "stop_and_launcher_completed": true,
+    "stop_script_exit_code": 0,
+    "launcher_exit_code": 143
+  },
+  "audit": {
+    "service": "/airsim_node/meter_report",
+    "type": "airsim_ros/MeterReport",
+    "server_md5": "40e1aa17dd96ff6a8c88396581d6a491",
+    "local_md5": "40e1aa17dd96ff6a8c88396581d6a491",
+    "headers": {
+      "callerid": "/airsim_node",
+      "md5sum": "40e1aa17dd96ff6a8c88396581d6a491",
+      "request_type": "airsim_ros/MeterReportRequest",
+      "response_type": "airsim_ros/MeterReportResponse",
+      "type": "airsim_ros/MeterReport"
+    },
+    "service_request_sent": false,
+    "business_success_semantics_verified": false,
+    "formal_server_permissions_verified": false,
+    "local_advertised_services": [
+      "/airsim_node/any_report",
+      "/airsim_node/drone_1/debug_sphere",
+      "/airsim_node/drone_1/land",
+      "/airsim_node/drone_1/takeoff",
+      "/airsim_node/drone_1/trigger_port",
+      "/airsim_node/get_loggers",
+      "/airsim_node/meter_report",
+      "/airsim_node/reset",
+      "/airsim_node/set_logger_level"
+    ],
+    "local_candidate_types": {
+      "/airsim_node/drone_1/takeoff": "airsim_ros/Takeoff",
+      "/airsim_node/drone_1/land": "airsim_ros/Land",
+      "/airsim_node/reset": "airsim_ros/Reset"
+    },
+    "candidate_service_requests_sent": false,
+    "candidate_service_semantics_verified": false,
+    "compatible": true
+  },
+  "input_sha256": {
+    "manifest.json": "2ee6357a74135a8cbf87fecb1a01c51146710b990884e0e19fe420568c3f8d4c",
+    "service_contract_audit.json": "238dfe0c51f61d051e5d0b710d117e9f8584d846e8530b3e8517138717392e77"
+  }
+}
