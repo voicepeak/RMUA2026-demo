@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "purpose": "M0 same-seed bounded hover reproducibility, exploratory not stage acceptance",
+  "seeds": [1005, 1005, 1005],
+  "hover_seconds": 14,
+  "mode": "PWM",
+  "braking": false,
+  "yaw_motion": false,
+  "snapshot": false,
+  "parameter_policy": "freeze source and configuration; retain all outcomes; existing flight guards unchanged",
+  "evaluation_policy": "report completion, faults, source and command audits, truth tracking and timing; no M1 acceptance thresholds inferred from one prior run",
+  "official_result": "UNKNOWN"
+}

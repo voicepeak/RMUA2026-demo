@@ -1,0 +1,92 @@
+{
+  "purpose": "M0 exploratory same-seed repetition; not stage acceptance",
+  "batch_directory": "runs/batches/20261029T080428Z_0c6a67b6d4854b378ab4a9887f4d1018",
+  "batch_report_sha256": "ba95a5c5432a29e77b1de5fc9cc0e30a0c248dacbdd38bb95cab4aed12feb74f",
+  "protocol": {
+    "schema_version": 1,
+    "purpose": "M0 same-seed bounded hover reproducibility, exploratory not stage acceptance",
+    "seeds": [
+      1005,
+      1005,
+      1005
+    ],
+    "hover_seconds": 14,
+    "mode": "PWM",
+    "braking": false,
+    "yaw_motion": false,
+    "snapshot": false,
+    "parameter_policy": "freeze source and configuration; retain all outcomes; existing flight guards unchanged",
+    "evaluation_policy": "report completion, faults, source and command audits, truth tracking and timing; no M1 acceptance thresholds inferred from one prior run",
+    "official_result": "UNKNOWN"
+  },
+  "source_unchanged": true,
+  "all_cases_completed": true,
+  "cases": [
+    {
+      "run_directory": "runs/20261029T080428Z_6d075140f5804f4daff81919413323f8",
+      "manifest_sha256": "afa0b7f18924af21871583a2ff3834c4334e4e9629916ac4a236f3cc90f2da8c",
+      "exit_code": 0,
+      "fault": null,
+      "commands": 958,
+      "run_source_unchanged": true,
+      "evaluation_valid": true,
+      "truth_tracking_rmse_m": [
+        0.08399162322083396,
+        0.07100898279319295,
+        0.0468510030353321
+      ],
+      "truth_tracking_max_norm_m": 0.27535376081396035,
+      "wire_trace_valid": true,
+      "matched_commands": 958,
+      "angular_residual_max_Nm": 0.027710169284158225,
+      "source_archive_sha256": "eb8d4ae10149bb84b39db64f37df6348eb1b6948cf70380d4a262b11353afc03"
+    },
+    {
+      "run_directory": "runs/20261029T080454Z_a0fb856d19854132b1622e6a92c09e42",
+      "manifest_sha256": "790e09092f8621fe0ee8de7e13c96f1cf97335656ef2fd412bfaf87c2c65fd86",
+      "exit_code": 0,
+      "fault": null,
+      "commands": 995,
+      "run_source_unchanged": true,
+      "evaluation_valid": true,
+      "truth_tracking_rmse_m": [
+        0.09989557585356106,
+        0.06259036685834689,
+        0.03482541889061767
+      ],
+      "truth_tracking_max_norm_m": 0.26939429644256774,
+      "wire_trace_valid": true,
+      "matched_commands": 995,
+      "angular_residual_max_Nm": 0.020946882337231555,
+      "source_archive_sha256": "eb8d4ae10149bb84b39db64f37df6348eb1b6948cf70380d4a262b11353afc03"
+    },
+    {
+      "run_directory": "runs/20261029T080521Z_7b94c4bf786a4ce0a37716080a01db08",
+      "manifest_sha256": "9f0a401da5804d1e4f655d551b631825df4296827573e491eab62b039483622d",
+      "exit_code": 2,
+      "fault": "ANGULAR_RATE_LIMIT",
+      "commands": 118,
+      "run_source_unchanged": true,
+      "evaluation_valid": false,
+      "truth_tracking_rmse_m": null,
+      "truth_tracking_max_norm_m": null,
+      "wire_trace_valid": true,
+      "matched_commands": 118,
+      "angular_residual_max_Nm": 1.9099703689571421,
+      "source_archive_sha256": "eb8d4ae10149bb84b39db64f37df6348eb1b6948cf70380d4a262b11353afc03"
+    }
+  ],
+  "fault_analysis": {
+    "fault_wall_elapsed_s": 1.6875923259999581,
+    "last_publish_to_fault_wall_s": 0.011997924000297644,
+    "imu_pitch_rate_before_rad_s": -0.10711141675710678,
+    "imu_pitch_rate_at_guard_rad_s": 3.892638921737671,
+    "imu_pitch_rate_peak_sample_rad_s": 3.9406118392944336,
+    "source_stamp_before": 1793261132.8636794,
+    "source_stamp_guard": 1793261132.88768,
+    "truth_pose_changes_after_imu_impulse": true,
+    "truth_and_imu_independence_not_established": true,
+    "actuator_consumption_verified": false,
+    "cause_identified": false
+  }
+}
