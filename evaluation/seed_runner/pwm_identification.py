@@ -49,6 +49,8 @@ def main():
     parser.add_argument('--pulse-seconds', type=float, default=.3)
     parser.add_argument('--motor-pulses', action='store_true')
     parser.add_argument('--hover-seconds', type=float, default=0.)
+    parser.add_argument('--control-hz', type=int, choices=(50, 80), default=80,
+                        help='experimental PWM control loop rate; default remains 80 Hz')
     parser.add_argument('--evaluate-truth', action='store_true')
     parser.add_argument('--step', action='store_true')
     parser.add_argument('--mode', choices=('PWM', 'VEL'), default='PWM')
@@ -72,6 +74,8 @@ def main():
     parser.add_argument('--controller-image',help='locally built immutable standalone image; no beta bind mount')
     parser.add_argument('--contract-audit-only',action='store_true',help='read-only service handshake; no controller')
     args = parser.parse_args()
+    if args.control_hz != 80 and (args.mode != 'PWM' or args.controller_image or args.contract_audit_only):
+        parser.error('nondefault control rate requires the PWM workspace controller')
     if args.mode == 'VEL' and (args.motor_pulses or not 3 <= args.hover_seconds <= 20):
         parser.error('VEL requires hover-seconds [3,20] and no motor pulses')
     if args.sensor_fault and args.mode != 'PWM':
@@ -131,6 +135,7 @@ def main():
     config = json.loads((root/'configs/official_baseline.yaml').read_text())
     config['control_mode'] = args.mode
     config['experiment'] = {'levels': args.levels, 'pulse_seconds': args.pulse_seconds,
+                            'control_hz': args.control_hz,
                             'motor_pulses': args.motor_pulses, 'hover_seconds': args.hover_seconds,
                             'evaluate_truth': args.evaluate_truth, 'step': args.step,
                             'sensor_fault':args.sensor_fault, 'fault_seconds':args.fault_seconds,
@@ -243,6 +248,8 @@ def main():
                         'python3','-m',module,'--run-dir','/workspace/main/'+str(run.relative_to(root))]
             if args.mode == 'PWM' and not args.contract_audit_only:
                 command.extend(['--levels', args.levels, '--pulse-seconds', str(args.pulse_seconds)])
+                if args.control_hz != 80:
+                    command.extend(['--control-hz', str(args.control_hz)])
             if args.motor_pulses:
                 command.append('--motor-pulses')
             if args.hover_seconds:

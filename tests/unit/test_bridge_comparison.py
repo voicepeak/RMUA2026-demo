@@ -4,6 +4,7 @@ import tempfile
 import unittest
 
 from evaluation.seed_runner.bridge_comparison import case_order, collect_case, MODES
+from adapters.ros_noetic.pwm_experiment import run_experiment
 
 
 class BridgeComparisonTests(unittest.TestCase):
@@ -45,6 +46,19 @@ class BridgeComparisonTests(unittest.TestCase):
                                   'modes': ['native-input', 'native-serialize']})
         self.assertEqual([c['mode'] for c in native_pair],
                          ['native-input', 'native-serialize', 'native-serialize', 'native-input'])
+
+    def test_rate_pair_has_fixed_limits_and_rotates_order(self):
+        protocol = {'schema_version': 1, 'seeds': [1005], 'repeats': 2,
+                    'hover_seconds': 14, 'stationary_bootstrap': False,
+                    'modes': ['native-input'], 'control_rates_hz': [80, 50]}
+        cases = case_order(protocol)
+        self.assertEqual([c['control_hz'] for c in cases], [80, 50, 50, 80])
+        for rates in ([100, 50], [80, 20], [50, 80], [True, 50], [80, 50.0]):
+            with self.subTest(rates=rates), self.assertRaises(ValueError):
+                case_order(dict(protocol, control_rates_hz=rates))
+        for rate in (0, 100, 50.0, True):
+            with self.subTest(rate=rate), self.assertRaises(ValueError):
+                run_experiment(Path('/unused'), (.2,), .3, control_hz=rate)
 
     def test_missing_trace_and_control_fault_are_reported_separately(self):
         with tempfile.TemporaryDirectory() as directory:

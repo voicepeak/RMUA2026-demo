@@ -43,7 +43,9 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                    sensor_fault=None, fault_seconds=.15, gps_bridge=False, yaw_motion=False,braking=False,
                    stationary_bootstrap=False,angular_recovery=False,angular_pulse=False,
                    isolated_reference=False,reference_stall_seconds=0.,collective_pulse_pwm=None,
-                   angular_pulse_moment=.5,angular_recovery_profile='standard'):
+                   angular_pulse_moment=.5,angular_recovery_profile='standard',control_hz=80):
+    if type(control_hz) is not int or control_hz not in (50, 80):
+        raise ValueError('experimental control rate must be 50 or 80 Hz')
     import rospy
     import rosgraph
     from airsim_ros.msg import RotorPWM
@@ -250,7 +252,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     if details.get('angular_pulse_applied'):pulse_sent=True
                     if details.get('collective_pulse_applied'):collective_pulse.published(command.stamp)
                 previous_control_stamp = state.metadata.stamp
-                next_tick += 1/80.
+                next_tick += 1/control_hz
                 delay = next_tick-time.monotonic()
                 if delay < -.1:
                     raise RuntimeError('CONTROL_DEADLINE')
@@ -282,7 +284,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
     result = {'commands': len(rows), 'fault': fault, 'levels': levels,
               'control_end_wall_monotonic':control_end_wall,
               'motor_pulses': motor_pulses,
-              'hover_seconds': hover_seconds,
+              'hover_seconds': hover_seconds, 'control_hz': control_hz,
               'step': step,
               'reference_clock': 'IMU',
               'gps_rejections': sensors.estimator.rejections,
@@ -315,6 +317,7 @@ def main():
     parser.add_argument('--pulse-seconds', type=float, default=.3)
     parser.add_argument('--motor-pulses', action='store_true')
     parser.add_argument('--hover-seconds', type=float, default=0.)
+    parser.add_argument('--control-hz', type=int, choices=(50, 80), default=80)
     parser.add_argument('--step', action='store_true')
     parser.add_argument('--sensor-fault', choices=('GPS_ZERO','IMU_DROP','IMU_ROLLBACK'))
     parser.add_argument('--fault-seconds',type=float,default=.15)
@@ -364,7 +367,7 @@ def main():
                           args.stationary_bootstrap,args.angular_recovery,args.angular_pulse,
                           args.isolated_reference,args.reference_stall_seconds,args.collective_pulse_pwm,
                           .5 if args.angular_pulse_moment is None else args.angular_pulse_moment,
-                          args.angular_recovery_profile)
+                          args.angular_recovery_profile,args.control_hz)
 
 
 if __name__ == '__main__':

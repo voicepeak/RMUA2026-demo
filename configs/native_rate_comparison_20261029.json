@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "seeds": [1005],
+  "repeats": 2,
+  "modes": ["native-input"],
+  "control_rates_hz": [80, 50],
+  "hover_seconds": 14,
+  "stationary_bootstrap": false,
+  "purpose": "Exploratory diagnostic comparison of client loop rates; existing safety guards unchanged. No claim of eliminating bridge ownership defects or stage acceptance."
+}

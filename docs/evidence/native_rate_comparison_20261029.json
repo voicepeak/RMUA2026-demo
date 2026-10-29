@@ -1,0 +1,251 @@
+{
+  "batch_directory": "runs/batches/20261029T082955Z_c329267df1344b19986d8fa6fcff55e8",
+  "batch_report_sha256": "cc10da80b6e555651b74b89a337bf5de742112d9ecc31f4b0ccbd37443597de8",
+  "protocol": {
+    "schema_version": 1,
+    "seeds": [
+      1005
+    ],
+    "repeats": 2,
+    "modes": [
+      "native-input"
+    ],
+    "control_rates_hz": [
+      80,
+      50
+    ],
+    "hover_seconds": 14,
+    "stationary_bootstrap": false,
+    "purpose": "Exploratory diagnostic comparison of client loop rates; existing safety guards unchanged. No claim of eliminating bridge ownership defects or stage acceptance."
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "ddc00282821ff71a9edc0d8c798eb49a434e1ef7f19586d3bd963628eaed71b7",
+    "files": 468,
+    "uncompressed_bytes": 3013659,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "simulator": {
+    "strict_rules_verified": true,
+    "game_config": {
+      "IgnoreAllHitCollision": false,
+      "IgnoreOverTime": false
+    },
+    "game_config_sha256": "4173ab7ae90fa031fb32a9e77d2810376c6f325b8274f4f8fd07be3c9adb6d39",
+    "binary_sha256": "5231addfa25ddaa9e4473ea9ac40c9c0bc685174e69cd14bb49159f443b97800",
+    "ros_plugin_sha256": "69d5ea3302bdd5f20b842ec3d3e84bafcb50ef3649ada42c4d346c9bcd389885",
+    "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17"
+  },
+  "container_image_digest": "sha256:a1bfe1df3d0f0b57c406fc7873803c07a812f291e42c1a7eba13d2f9328fc106",
+  "probe_binary_sha256": "654e985a2690a6301215791477afb3b2f443ee6f9ecbd4ccd1b5b756db245094",
+  "stage_acceptance": false,
+  "cases": [
+    {
+      "mode": "native-input",
+      "control_hz": 80,
+      "run_directory": "runs/20261029T082956Z_35428d0314524dfdb0b94e2d7ef25a21",
+      "exit_code": 2,
+      "fault": "ANGULAR_RATE_LIMIT",
+      "provenance_verified": true,
+      "command_trace_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "command_intervals_s": [
+        0.012592444999881991,
+        0.021058097949935465,
+        0.0231429330002993
+      ],
+      "tracking_max_norm_m": 0.21199116491615203,
+      "native": {
+        "native_entries": 2539,
+        "matched_entries": 2538,
+        "unmatched_entries": 1,
+        "unreadable_entries": 0,
+        "incomplete_native_calls": 0,
+        "callback_bindings": 1,
+        "snapshot_coverage_valid": true,
+        "record_write_errors": 0,
+        "control_window_monotonic_s": [
+          4100.719230609,
+          4111.803163983
+        ],
+        "control_window_end_basis": "controller_end",
+        "native_entries_in_control_window": 2216,
+        "native_calls_with_exact_intervals": 2539,
+        "native_entries_after_control": 323,
+        "parameters_freed_during_original_callback": 0,
+        "actual_actuator_consumption_verified": false,
+        "physical_impulse_cause_identified": false,
+        "acceptance_eligible": false,
+        "interpretation": "Snapshot of four float32 fields at the original native callback entry, not the downstream payload read or motor application. Payloads are compared to sender float32 conversions published before the snapshot ended. Bounds use the publisher-call and snapshot sampling intervals on the same Linux monotonic clock; asynchronous send can overlap the publisher call.",
+        "publish_to_snapshot_lower_min_s": 0.0003734200008693733,
+        "publish_to_snapshot_upper_max_s": 0.029213759999947797
+      },
+      "linked_unmatched": [
+        {
+          "span": 2155,
+          "classification": "free_completed_before_entry",
+          "finite_unit_range": true
+        }
+      ],
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "mode": "native-input",
+      "control_hz": 50,
+      "run_directory": "runs/20261029T083021Z_944e0f40ddc34356907f7f76e8d7efd9",
+      "exit_code": 0,
+      "fault": null,
+      "provenance_verified": true,
+      "command_trace_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "command_intervals_s": [
+        0.020006400500278687,
+        0.028175670800192162,
+        0.030435200570127562
+      ],
+      "tracking_max_norm_m": 0.1330386368573491,
+      "native": {
+        "native_entries": 3115,
+        "matched_entries": 3115,
+        "unmatched_entries": 0,
+        "unreadable_entries": 0,
+        "incomplete_native_calls": 0,
+        "callback_bindings": 1,
+        "snapshot_coverage_valid": true,
+        "record_write_errors": 0,
+        "control_window_monotonic_s": [
+          4125.527407807,
+          4139.526614779
+        ],
+        "control_window_end_basis": "controller_end",
+        "native_entries_in_control_window": 2800,
+        "native_calls_with_exact_intervals": 3115,
+        "native_entries_after_control": 315,
+        "parameters_freed_during_original_callback": 0,
+        "actual_actuator_consumption_verified": false,
+        "physical_impulse_cause_identified": false,
+        "acceptance_eligible": false,
+        "interpretation": "Snapshot of four float32 fields at the original native callback entry, not the downstream payload read or motor application. Payloads are compared to sender float32 conversions published before the snapshot ended. Bounds use the publisher-call and snapshot sampling intervals on the same Linux monotonic clock; asynchronous send can overlap the publisher call.",
+        "publish_to_snapshot_lower_min_s": 0.0006238470004973351,
+        "publish_to_snapshot_upper_max_s": 0.03244563799944444
+      },
+      "linked_unmatched": [],
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "mode": "native-input",
+      "control_hz": 50,
+      "run_directory": "runs/20261029T083049Z_36f9fd4eb7f8416eba99522770cc58d3",
+      "exit_code": 2,
+      "fault": "ANGULAR_RATE_LIMIT",
+      "provenance_verified": true,
+      "command_trace_audit_exit_code": 0,
+      "evaluation_valid": false,
+      "command_intervals_s": [
+        0.020041779000621318,
+        0.028313112399473536,
+        0.03018682367024667
+      ],
+      "tracking_max_norm_m": null,
+      "native": {
+        "native_entries": 625,
+        "matched_entries": 624,
+        "unmatched_entries": 1,
+        "unreadable_entries": 0,
+        "incomplete_native_calls": 0,
+        "callback_bindings": 1,
+        "snapshot_coverage_valid": true,
+        "record_write_errors": 0,
+        "control_window_monotonic_s": [
+          4153.094363052,
+          4154.69837278
+        ],
+        "control_window_end_basis": "controller_end",
+        "native_entries_in_control_window": 320,
+        "native_calls_with_exact_intervals": 625,
+        "native_entries_after_control": 305,
+        "parameters_freed_during_original_callback": 0,
+        "actual_actuator_consumption_verified": false,
+        "physical_impulse_cause_identified": false,
+        "acceptance_eligible": false,
+        "interpretation": "Snapshot of four float32 fields at the original native callback entry, not the downstream payload read or motor application. Payloads are compared to sender float32 conversions published before the snapshot ended. Bounds use the publisher-call and snapshot sampling intervals on the same Linux monotonic clock; asynchronous send can overlap the publisher call.",
+        "publish_to_snapshot_lower_min_s": 0.0012382110007820302,
+        "publish_to_snapshot_upper_max_s": 0.03231062099985138
+      },
+      "linked_unmatched": [
+        {
+          "span": 814,
+          "classification": "free_completed_before_entry",
+          "finite_unit_range": false
+        }
+      ],
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "mode": "native-input",
+      "control_hz": 80,
+      "run_directory": "runs/20261029T083103Z_f9a0847992734880ad03831a06e575f0",
+      "exit_code": 0,
+      "fault": null,
+      "provenance_verified": true,
+      "command_trace_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "command_intervals_s": [
+        0.012612338000508316,
+        0.020674125800178442,
+        0.023145426900518944
+      ],
+      "tracking_max_norm_m": 0.2206148014532748,
+      "native": {
+        "native_entries": 3130,
+        "matched_entries": 3129,
+        "unmatched_entries": 1,
+        "unreadable_entries": 0,
+        "incomplete_native_calls": 0,
+        "callback_bindings": 1,
+        "snapshot_coverage_valid": true,
+        "record_write_errors": 0,
+        "control_window_monotonic_s": [
+          4167.834074839,
+          4181.833662471
+        ],
+        "control_window_end_basis": "controller_end",
+        "native_entries_in_control_window": 2800,
+        "native_calls_with_exact_intervals": 3130,
+        "native_entries_after_control": 330,
+        "parameters_freed_during_original_callback": 2,
+        "actual_actuator_consumption_verified": false,
+        "physical_impulse_cause_identified": false,
+        "acceptance_eligible": false,
+        "interpretation": "Snapshot of four float32 fields at the original native callback entry, not the downstream payload read or motor application. Payloads are compared to sender float32 conversions published before the snapshot ended. Bounds use the publisher-call and snapshot sampling intervals on the same Linux monotonic clock; asynchronous send can overlap the publisher call.",
+        "publish_to_snapshot_lower_min_s": 0.0006136770007287851,
+        "publish_to_snapshot_upper_max_s": 0.030928447000405868
+      },
+      "linked_unmatched": [
+        {
+          "span": 2717,
+          "classification": "free_completed_before_entry",
+          "finite_unit_range": true
+        }
+      ],
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    }
+  ]
+}

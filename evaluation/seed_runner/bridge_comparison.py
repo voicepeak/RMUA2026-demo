@@ -27,15 +27,23 @@ def case_order(protocol):
             or any(type(seed) is not int or seed < 0 for seed in seeds)):
         raise ValueError('invalid development seeds')
     modes = tuple(protocol.get('modes', MODES))
-    if modes not in (MODES, ('none', 'lifetime'), ('none', 'native-input'),
-                     ('native-input', 'native-serialize')):
+    rates = tuple(protocol.get('control_rates_hz', [80]))
+    if any(type(rate) is not int for rate in rates):
+        raise ValueError('control rates must be integer Hz values')
+    allowed = (MODES, ('none', 'lifetime'), ('none', 'native-input'),
+               ('native-input', 'native-serialize'))
+    if rates == (80, 50) and modes == ('native-input',):
+        variants = [(mode, rate) for mode in modes for rate in rates]
+    elif rates == (80,) and modes in allowed:
+        variants = [(mode, 80) for mode in modes]
+    else:
         raise ValueError('unsupported fixed diagnostic comparison')
     cases = []
     for repeat in range(protocol['repeats']):
         for index, seed in enumerate(seeds):
-            offset = (repeat + index) % len(modes)
-            for mode in modes[offset:] + modes[:offset]:
-                cases.append({'seed': seed, 'repeat': repeat, 'mode': mode})
+            offset = (repeat + index) % len(variants)
+            for mode, rate in variants[offset:] + variants[:offset]:
+                cases.append({'seed': seed, 'repeat': repeat, 'mode': mode, 'control_hz': rate})
     return cases
 
 
@@ -110,6 +118,8 @@ def main():
                        '--evaluate-truth']
             if protocol['stationary_bootstrap']:
                 command.append('--stationary-bootstrap')
+            if plan['control_hz'] != 80:
+                command.extend(['--control-hz', str(plan['control_hz'])])
             if plan['mode'] != 'none':
                 command.extend(['--bridge-probe', plan['mode']])
             console = batch / ('case_%02d.console.log' % index)
