@@ -1,0 +1,106 @@
+{
+  "purpose": "Local compatibility of opt-in and sealed precontrol bootstrap; not stage acceptance",
+  "runs": [
+    {
+      "case": "normal_pwm",
+      "seed": 1005,
+      "run_directory": "runs/20261029T174727Z_6a2e0dcb870b44598369976cd14e9256",
+      "git_sha": "402c5757e8eacd5cb34c62de784fe06924e4aa23",
+      "git_status": " M adapters/ros_noetic/flight_sensors.py\n M adapters/ros_noetic/pwm_experiment.py\n M adapters/ros_noetic/vel_experiment.py\n M tests/unit/test_stationary_bootstrap.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "3e4acdeea6eb383baf43623c9b0d6e639552da1793f3801d577d282e4b939f23",
+        "files": 521,
+        "uncompressed_bytes": 3285059,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "run_state": "FAILED",
+      "fault": null,
+      "commands": 930,
+      "evaluation_valid": true,
+      "wire_valid": false,
+      "matched_commands": 929,
+      "missing_sequences": [
+        582
+      ],
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "01e67a877a3102f308cfb44bb0de157e8f08c8bc8217710d90cd046d31d8045b",
+        "pwm_summary.json": "ae24df45a12fffdf59e19c7b0a00cf5427fc3a77aa257a3a94085c0723db666c",
+        "closed_loop_metrics.json": "3ce2be9c629089062842be9f5621b262a23dd74d695e19ca70d4a713104a41cd",
+        "command_trace_audit.json": "32ace08a39b9d898ac47f6198e348943b9379bb9f023b5bfa055541d259f2549"
+      }
+    },
+    {
+      "case": "stationary_pwm",
+      "seed": 1005,
+      "run_directory": "runs/20261029T174754Z_f243f45bcc8d4038b61c11cb012c8833",
+      "git_sha": "402c5757e8eacd5cb34c62de784fe06924e4aa23",
+      "git_status": " M adapters/ros_noetic/flight_sensors.py\n M adapters/ros_noetic/pwm_experiment.py\n M adapters/ros_noetic/vel_experiment.py\n M tests/unit/test_stationary_bootstrap.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "3e4acdeea6eb383baf43623c9b0d6e639552da1793f3801d577d282e4b939f23",
+        "files": 521,
+        "uncompressed_bytes": 3285059,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 928,
+      "evaluation_valid": true,
+      "wire_valid": true,
+      "matched_commands": 928,
+      "missing_sequences": [],
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "c1e20f9218857bb289adda57af3e98afc7deacf5f726b15771a51b09f9ada850",
+        "pwm_summary.json": "3e126628dd465c03a2184f4832a60624627221f41a2515aac594b4a9a3571938",
+        "closed_loop_metrics.json": "8d8060bcd3cd435153c249b134b720099548ca406f3844f00f543edc915abd3b",
+        "command_trace_audit.json": "1cfad567f4927591267f98d69a4e80cb7d1ff7ee0c70cad40f5e774b17b02c18",
+        "stationary_bootstrap.json": "4bcdf77085a304624f5c94e7e509114e4c1b63bd085ae1f63cb6079f40979305"
+      }
+    },
+    {
+      "case": "vel_diagnostic",
+      "seed": 1007,
+      "run_directory": "runs/20261029T174821Z_145d25cf27ee4beeaf5a714a71b09eee",
+      "git_sha": "402c5757e8eacd5cb34c62de784fe06924e4aa23",
+      "git_status": " M adapters/ros_noetic/flight_sensors.py\n M adapters/ros_noetic/pwm_experiment.py\n M adapters/ros_noetic/vel_experiment.py\n M tests/unit/test_stationary_bootstrap.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "3e4acdeea6eb383baf43623c9b0d6e639552da1793f3801d577d282e4b939f23",
+        "files": 521,
+        "uncompressed_bytes": 3285059,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 700,
+      "evaluation_valid": true,
+      "wire_valid": null,
+      "matched_commands": null,
+      "missing_sequences": null,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "b9dbf71b9cea72c5ab7e444d2b5d2c20c5036ceafe5e8cfe6c7bc2068be3ff7b",
+        "vel_summary.json": "e172d03789cca0f8d152c8a809ca40d16e65fcc5d0ee7b8ccb782d6e9b9bd815",
+        "closed_loop_metrics.json": "76bd7a8a84a2e1b418c0fe9d012b4ee4abfaa19316f25d5e369979de8228c4a8"
+      }
+    }
+  ]
+}

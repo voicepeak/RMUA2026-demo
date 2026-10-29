@@ -28,7 +28,7 @@ class BootstrapTests(unittest.TestCase):
         self.assertIsNone(resting_window(imu,[(t,(0,0,0),q) for t,p,q in gps],(1,0,0,0),101.1))
 
     def test_ground_offset_does_not_become_launch_velocity_after_rest_reset(self):
-        s=FlightSensors(subscribe=False)
+        s=FlightSensors(subscribe=False, allow_stationary_bootstrap=True)
         s.on_initial(message(0.,position=(0,0,0)))
         for i in range(121):
             msg=message(100+i*.01)
@@ -44,6 +44,17 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(s.clock.epoch,epoch)
         self.assertGreater(np.linalg.eigvalsh(s.estimator.P).min(),0)
         with self.assertRaises(RuntimeError):s.bootstrap_at_rest_before_control()
+
+    def test_bootstrap_is_opt_in_and_cannot_be_reenabled_after_seal(self):
+        default = FlightSensors(subscribe=False)
+        with self.assertRaisesRegex(RuntimeError, 'BOOTSTRAP_NOT_PERMITTED'):
+            default.bootstrap_at_rest_before_control()
+        sensors = FlightSensors(subscribe=False, allow_stationary_bootstrap=True)
+        sensors.seal_precontrol()
+        sensors.seal_precontrol()
+        with self.assertRaisesRegex(RuntimeError, 'BOOTSTRAP_NOT_PERMITTED'):
+            sensors.bootstrap_at_rest_before_control()
+        self.assertFalse(sensors.bootstrap_applied)
 
     def test_nonfinite_and_out_of_order_measurements_cannot_initialize(self):
         imu,gps=self.window()

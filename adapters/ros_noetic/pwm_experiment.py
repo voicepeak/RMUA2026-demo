@@ -83,7 +83,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
 
     with ControlLease(scene_id, 'PWM'):
         graph(False)
-        sensors = FlightSensors(track_startup_velocity=True)
+        sensors = FlightSensors(track_startup_velocity=True, allow_stationary_bootstrap=stationary_bootstrap)
         publisher = None
         monitor = None
         recovery = HoverRecovery()
@@ -111,6 +111,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
             else:
                 raise RuntimeError('NO_HEALTHY_STATE')
             origin = np.array(state.position_ned)
+            sensors.seal_precontrol()
             publisher = rospy.Publisher('/airsim_node/drone_1/rotor_pwm_cmd', RotorPWM, queue_size=1)
             expected_connections,backend_nodes=expected_control_connections(master.getSystemState(),
                                                '/airsim_node/drone_1/rotor_pwm_cmd')

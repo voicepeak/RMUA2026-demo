@@ -9,7 +9,8 @@ from adapters.ros_noetic.state_reader import pose_values
 
 
 class FlightSensors:
-    def __init__(self, subscribe=True, pose_history=None, track_startup_velocity=False):
+    def __init__(self, subscribe=True, pose_history=None, track_startup_velocity=False,
+                 allow_stationary_bootstrap=False):
         self.lock = threading.RLock()
         self.clock = SensorClock()
         self.estimator = ImuGpsEstimator()
@@ -24,6 +25,7 @@ class FlightSensors:
         self.bootstrap_imu=deque(maxlen=180)
         self.bootstrap_gps=deque(maxlen=24)
         self.bootstrap_applied=False
+        self._bootstrap_permitted = allow_stationary_bootstrap
         self.pose_history=pose_history
         self.startup_diagnostics = {'first_imu_callback_wall_monotonic': None,
                                     'initial_pose_callback_wall_monotonic': None,
@@ -210,6 +212,7 @@ class FlightSensors:
         """Caller must not have created a control publisher; never call in flight."""
         from estimation.stationary_bootstrap import resting_window
         with self.lock:
+            if not self._bootstrap_permitted:raise RuntimeError('BOOTSTRAP_NOT_PERMITTED')
             if self.bootstrap_applied:raise RuntimeError('BOOTSTRAP_ALREADY_APPLIED')
             if self.fault or self.initial is None or not self.clock.fresh(time.monotonic()):return None
             result=resting_window(self.bootstrap_imu,self.bootstrap_gps,self.initial[1],self.clock.stamp)
@@ -226,6 +229,11 @@ class FlightSensors:
             e.omega=np.array(self.raw['omega_body'])-e.bg
             self.bootstrap_applied=True
             return result
+
+    def seal_precontrol(self):
+        """Permanently disable resting reset before this adapter's publisher is created."""
+        with self.lock:
+            self._bootstrap_permitted = False
 
     def seal_startup_velocity(self):
         with self.lock:

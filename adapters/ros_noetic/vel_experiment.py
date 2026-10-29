@@ -48,6 +48,7 @@ def run_experiment(run, duration, step,yaw_motion=False,braking=False):
                 time.sleep(.01)
             else:
                 raise RuntimeError('NO_HEALTHY_STATE')
+            sensors.seal_precontrol()
             publisher = rospy.Publisher('/airsim_node/drone_1/vel_body_cmd', VelCmd, queue_size=1)
             deadline = time.monotonic()+2
             while publisher.get_num_connections() != 1 and time.monotonic() < deadline:
