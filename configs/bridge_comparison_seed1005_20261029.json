@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "seeds": [1005],
+  "repeats": 2,
+  "hover_seconds": 14,
+  "stationary_bootstrap": false,
+  "purpose": "Exploratory uninstrumented, observe and serialized bridge comparison on seed 1005, matching prior fault baseline; no stage acceptance or causal conclusion from failure counts."
+}

@@ -1,0 +1,152 @@
+{
+  "batch_directory": "runs/batches/20261029T082040Z_49482e8d12654615a6dc65014b675dd4",
+  "batch_report_sha256": "1e5916f20ebf8a5a7910eadad2a277ca473890e6629f9859ef79cb4b6b9b757a",
+  "protocol": {
+    "schema_version": 1,
+    "seeds": [
+      1005
+    ],
+    "repeats": 2,
+    "hover_seconds": 14,
+    "stationary_bootstrap": false,
+    "purpose": "Exploratory uninstrumented, observe and serialized bridge comparison on seed 1005, matching prior fault baseline; no stage acceptance or causal conclusion from failure counts."
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "63a06a0cec476d1a0d0296bc9a614d624f06a7ea1516c2e51189c46ed9594d37",
+    "files": 464,
+    "uncompressed_bytes": 2984994,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "simulator": {
+    "strict_rules_verified": true,
+    "game_config": {
+      "IgnoreAllHitCollision": false,
+      "IgnoreOverTime": false
+    },
+    "game_config_sha256": "4173ab7ae90fa031fb32a9e77d2810376c6f325b8274f4f8fd07be3c9adb6d39",
+    "binary_sha256": "5231addfa25ddaa9e4473ea9ac40c9c0bc685174e69cd14bb49159f443b97800",
+    "ros_plugin_sha256": "69d5ea3302bdd5f20b842ec3d3e84bafcb50ef3649ada42c4d346c9bcd389885",
+    "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17"
+  },
+  "container_image_digest": "sha256:a1bfe1df3d0f0b57c406fc7873803c07a812f291e42c1a7eba13d2f9328fc106",
+  "probe_binary_sha256": "dd49177a501480e331c4c9d8b4e552468c9f3800a2fcbd8be422e2118cd70c85",
+  "cases": [
+    {
+      "mode": "none",
+      "run_directory": "runs/20261029T082040Z_4d6b0c69b1484e6690091fc632f021fd",
+      "exit_code": 0,
+      "fault": null,
+      "command_trace_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "provenance_verified": true,
+      "probe_summary": null,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "mode": "observe",
+      "run_directory": "runs/20261029T082107Z_b1984dfbdce64d66b61e374b69d7fb7d",
+      "exit_code": 2,
+      "fault": "ANGULAR_RATE_LIMIT",
+      "command_trace_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "provenance_verified": true,
+      "probe_summary": {
+        "pwm_calls": 687,
+        "bridge_calls": 2688,
+        "overlap_entries": 5,
+        "write_errors": 0,
+        "complete_exit_record": false
+      },
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "mode": "serialize",
+      "run_directory": "runs/20261029T082130Z_d108407e110b43e29e261164de4b8b76",
+      "exit_code": 0,
+      "fault": null,
+      "command_trace_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "provenance_verified": true,
+      "probe_summary": {
+        "pwm_calls": 993,
+        "bridge_calls": 3584,
+        "overlap_entries": 0,
+        "write_errors": 0,
+        "complete_exit_record": false
+      },
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "mode": "observe",
+      "run_directory": "runs/20261029T082157Z_1e6a7e5dd088486c8f92c9457320df05",
+      "exit_code": 0,
+      "fault": null,
+      "command_trace_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "provenance_verified": true,
+      "probe_summary": {
+        "pwm_calls": 1010,
+        "bridge_calls": 3584,
+        "overlap_entries": 3,
+        "write_errors": 0,
+        "complete_exit_record": false
+      },
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "mode": "serialize",
+      "run_directory": "runs/20261029T082224Z_880c4c8f4159485081e356dd3f356654",
+      "exit_code": 0,
+      "fault": null,
+      "command_trace_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "provenance_verified": true,
+      "probe_summary": {
+        "pwm_calls": 1038,
+        "bridge_calls": 3584,
+        "overlap_entries": 0,
+        "write_errors": 0,
+        "complete_exit_record": false
+      },
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "mode": "none",
+      "run_directory": "runs/20261029T082251Z_3cad63c034b248809ed2cd2f829db05c",
+      "exit_code": 0,
+      "fault": null,
+      "command_trace_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "provenance_verified": true,
+      "probe_summary": null,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    }
+  ],
+  "stage_acceptance": false
+}
