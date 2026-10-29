@@ -61,6 +61,10 @@ class FlightSensors:
                     self.estimator.initialize(*self.initial)
                 a, w = msg.linear_acceleration, msg.angular_velocity
                 acceleration, omega = (a.x, a.y, a.z), (w.x, w.y, w.z)
+                if (self.local_injection is not None and self.local_injection.injected_samples == 0
+                        and self.local_injection.affects('IMU_RATE_SPIKE', stamp)):
+                    # Local diagnostic sample only; do not alter the ROS message.
+                    omega = (2., 0., 0.)
                 self.estimator.propagate(stamp, acceleration, omega)
                 self._check_rate_guard(stamp, callback_arrival)
                 if self.pending_gps is not None and self.pending_gps[0] <= stamp:

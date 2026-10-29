@@ -11,7 +11,7 @@ class LocalSensorFault:
     injected_samples: int = 0
 
     def __post_init__(self):
-        if (self.kind not in ('GPS_ZERO', 'IMU_DROP', 'IMU_ROLLBACK')
+        if (self.kind not in ('GPS_ZERO', 'IMU_DROP', 'IMU_ROLLBACK', 'IMU_RATE_SPIKE')
                 or not math.isfinite(self.start_stamp) or self.start_stamp <= 0
                 or not math.isfinite(self.duration) or not 0 < self.duration <= 1.):
             raise ValueError('invalid local sensor fault')

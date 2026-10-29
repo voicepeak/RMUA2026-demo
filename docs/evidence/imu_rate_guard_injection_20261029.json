@@ -1,0 +1,115 @@
+{
+  "purpose": "Single local synthetic gyro sample; diagnostic only, not physical impulse or stage acceptance",
+  "runs": [
+    {
+      "run_directory": "runs/20261029T092843Z_eb6ec38f5c4c40228c6759a02dd1ff0b",
+      "inputs_sha256": {
+        "manifest.json": "9e439da6f9761ee00b9cf86ccb29dc12d3e3996f76ac9559059002f394a44666",
+        "fault_observation.json": "862c1c4db5170f4659a34269f60faff1ab814a163275b88da11802f01787a228",
+        "pwm_summary.json": "951c6e40d008fa483fbef337cde64b1b169aff911b5f14876d4bc7f8b3c4467d",
+        "command_trace_audit.json": "6677ec853aafa759f4537c95f9cfcd4a1c721a6e3733f298260cd479480372ee",
+        "evaluation_imu.jsonl": "4a9329d369d3f8d48082c3d06c598b537894ed7f7c4800cd2d72a77326649020",
+        "pwm_telemetry.jsonl": "7c6996fa8a238bf5f10bad8c53b075dbf4719d5c4566b153dbc82e619366b145"
+      },
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "15b7f4e7afc44cb48375b772de73d16eb017d719484a69ee25db9fb4cc603f1a",
+        "files": 477,
+        "uncompressed_bytes": 3056456,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "injection": {
+        "kind": "IMU_RATE_SPIKE",
+        "start_stamp": 1793266141.1665757,
+        "duration": 0.15,
+        "injected_samples": 1
+      },
+      "fault": "ANGULAR_RATE_LIMIT",
+      "event": {
+        "stamp": 1793266141.1667037,
+        "arrival_wall_monotonic": 7635.688148785,
+        "angular_velocity_body": [
+          2.000995558831125,
+          0.0012020395529461234,
+          -0.013723707344820152
+        ],
+        "rate_norm_rad_s": 2.001042980923763,
+        "limit_rad_s": 1.0
+      },
+      "failure_after_callback_arrival_s": 0.005118001000482764,
+      "sender_publishes_after_callback_arrival": 0,
+      "wire_trace_valid": false,
+      "wire_matched": 475,
+      "wire_expected": 476,
+      "missing_sequences": [
+        23
+      ],
+      "independent_imu_same_stamp": [
+        -0.0033591401297599077,
+        -0.016818180680274963,
+        0.036752935498952866
+      ],
+      "independent_imu_stamp_difference_s": 0.0,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "run_directory": "runs/20261029T092929Z_b2c8d37bf2cf427cb41d5d1b74d1ebcc",
+      "inputs_sha256": {
+        "manifest.json": "6a1ae0b3b10f82bdaa26698c21578368ae97cff775a9bec180eacd653ea935fb",
+        "fault_observation.json": "fd289bc4419fbf4b843a3a9c76fb5231a5b83dd7d1c93ae3d8207f73e44597c1",
+        "pwm_summary.json": "da3954d090b83c9ef85c47a4e61d60a6ef3d9c5bcaf4786b15f4d306fcd70b54",
+        "command_trace_audit.json": "6de8650be7d1b056e5b8a613d9d5559017cb010bd59d8a1d50a11d56a26c940d",
+        "evaluation_imu.jsonl": "b58daf229737c5640beffd64bccb4411e9b1d352ec0953157ad5722da7bf0c52",
+        "pwm_telemetry.jsonl": "1f5031f167f33863ee229c9298ff11443e4d3919334926df4709fbae9cee0ac6"
+      },
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "15b7f4e7afc44cb48375b772de73d16eb017d719484a69ee25db9fb4cc603f1a",
+        "files": 477,
+        "uncompressed_bytes": 3056456,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "injection": {
+        "kind": "IMU_RATE_SPIKE",
+        "start_stamp": 1793266187.0707693,
+        "duration": 0.15,
+        "injected_samples": 1
+      },
+      "fault": "ANGULAR_RATE_LIMIT",
+      "event": {
+        "stamp": 1793266187.0738974,
+        "arrival_wall_monotonic": 7681.61393268,
+        "angular_velocity_body": [
+          1.998226061285529,
+          0.001458772437373317,
+          0.0005869353695523739
+        ],
+        "rate_norm_rad_s": 1.998226679961718,
+        "limit_rad_s": 1.0
+      },
+      "failure_after_callback_arrival_s": 0.006282196999563894,
+      "sender_publishes_after_callback_arrival": 0,
+      "wire_trace_valid": true,
+      "wire_matched": 476,
+      "wire_expected": 476,
+      "missing_sequences": [],
+      "independent_imu_same_stamp": [
+        -0.017335835844278336,
+        0.024304494261741638,
+        0.017947452142834663
+      ],
+      "independent_imu_stamp_difference_s": 0.0,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    }
+  ]
+}

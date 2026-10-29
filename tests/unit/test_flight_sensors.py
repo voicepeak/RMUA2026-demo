@@ -4,6 +4,7 @@ import unittest
 from adapters.ros_noetic.flight_sensors import FlightSensors
 from interfaces.contracts import Health
 from estimation.history import PoseHistory, HistoryUnavailable
+from adapters.ros_noetic.sensor_fault import LocalSensorFault
 
 
 def message(stamp,position=(1.,2.,-1.),q=(1.,0.,0.,0.)):
@@ -88,6 +89,19 @@ class SensorAdapterTests(unittest.TestCase):
         spike = message(100.01); spike.angular_velocity.y = 3.
         s.on_imu(spike)
         self.assertIsNone(s.fault)
+
+    def test_local_spike_injects_once_without_mutating_ros_message(self):
+        s = self.sensors(); s.arm_rate_guard()
+        s.local_injection = LocalSensorFault('IMU_RATE_SPIKE', 100.01, .1)
+        msg = message(100.01); s.on_imu(msg)
+        self.assertEqual(msg.angular_velocity.x, 0.)
+        self.assertEqual(s.local_injection.injected_samples, 1)
+        self.assertEqual(s.rate_guard_event['stamp'], 100.01)
+        self.assertEqual(s.rate_guard_event['angular_velocity_body'], (2., 0., 0.))
+        s.on_imu(message(100.02))
+        self.assertEqual(s.local_injection.injected_samples, 1)
+        with self.assertRaisesRegex(RuntimeError, 'ANGULAR_RATE_LIMIT'):
+            s.read()
 
 
 if __name__ == '__main__':

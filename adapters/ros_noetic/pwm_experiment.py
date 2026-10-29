@@ -332,7 +332,7 @@ def main():
     parser.add_argument('--hover-seconds', type=float, default=0.)
     parser.add_argument('--control-hz', type=int, choices=(50, 80), default=80)
     parser.add_argument('--step', action='store_true')
-    parser.add_argument('--sensor-fault', choices=('GPS_ZERO','IMU_DROP','IMU_ROLLBACK'))
+    parser.add_argument('--sensor-fault', choices=('GPS_ZERO','IMU_DROP','IMU_ROLLBACK','IMU_RATE_SPIKE'))
     parser.add_argument('--fault-seconds',type=float,default=.15)
     parser.add_argument('--gps-bridge',action='store_true')
     parser.add_argument('--yaw-motion',action='store_true')
