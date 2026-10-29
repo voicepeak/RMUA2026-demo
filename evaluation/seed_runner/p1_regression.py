@@ -8,6 +8,15 @@ import uuid
 from evaluation.seed_runner.manifest import source_hashes, archive_sources
 
 
+def case_succeeded(case):
+    """Completion requires the expected run evidence, not just a process exit."""
+    summary = case.get('summary')
+    return (case.get('exit_code') == 0 and case.get('run_source_unchanged') is True
+            and isinstance(summary, dict) and 'fault' in summary and summary['fault'] is None
+            and case.get('run_state') == 'EVALUATED'
+            and case.get('evaluation_valid') is True)
+
+
 def load_protocol(path):
     protocol=json.loads(path.read_text())
     seeds=protocol.get('seeds')
@@ -91,20 +100,28 @@ def main():
             manifest=json.loads((run/'manifest.json').read_text())
             case['run_source_unchanged']=(manifest.get('source_unchanged',False)
                                          and manifest['source_sha256_before']==frozen)
+            case['run_state']=manifest.get('run_state')
+            metrics=run/'closed_loop_metrics.json'
+            if metrics.exists():
+                case['evaluation_valid']=json.loads(metrics.read_text()).get('evaluation_valid')
+        case['succeeded']=case_succeeded(case)
         report['cases'].append(case)
         report['source_unchanged']=source_hashes(root)==frozen
         save()
         print('Case',index+1,'seed',seed,'exit',code,'fault',case.get('summary',{}).get('fault'),
               'run',case.get('run_directory'),flush=True)
         if not report['source_unchanged'] or code not in (0,2):break
-        if 'angular_pulse_moments' in protocol and (code!=0 or not case.get('run_source_unchanged')):
+        if 'angular_pulse_moments' in protocol and not case['succeeded']:
             report['staged_pulse_stopped_on_failed_case']=True
             break
     report['completed_cases']=len(report['cases'])
     report['all_cases_completed']=len(report['cases'])==len(plans)
     report['control_fault_cases']=sum(c.get('summary',{}).get('fault') is not None for c in report['cases'])
+    report['successful_cases']=sum(c['succeeded'] for c in report['cases'])
+    report['batch_succeeded']=(report['source_unchanged'] and report['all_cases_completed']
+                               and report['successful_cases']==len(plans))
     save()
-    return 0 if report['source_unchanged'] and report['all_cases_completed'] else 1
+    return 0 if report['batch_succeeded'] else 1
 
 
 if __name__ == '__main__':
