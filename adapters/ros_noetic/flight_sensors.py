@@ -141,7 +141,10 @@ class FlightSensors:
             raw['last_gps_stamp'] = self.estimator.last_gps
             raw['gyro_bias_body'] = tuple(self.estimator.bg)
             raw['accel_bias_body'] = tuple(self.estimator.ba)
-            return self.estimator.snapshot(), raw
+            state = self.estimator.snapshot()
+            raw['imu_callback_arrival_wall_monotonic'] = self.clock.arrival
+            raw['state_snapshot_wall_monotonic'] = time.monotonic()
+            return state, raw
 
     def bootstrap_at_rest_before_control(self):
         """Caller must not have created a control publisher; never call in flight."""

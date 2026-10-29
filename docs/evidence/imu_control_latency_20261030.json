@@ -1,0 +1,151 @@
+{
+  "batch_directory": "runs/batches/20261029T165532Z_e383f880db884ab589df307450c8dbf5",
+  "batch_report_sha256": "333a022688bd38cfeda3f44e75f106d20d1e6cddf14d83e60dd981bb91a45686",
+  "analysis_sha256": "80005ed79857579356e02c4f4dfa29b23017f8308acb9ae44bb4bc48797310a1",
+  "protocol": {
+    "schema_version": 1,
+    "purpose": "M0 same-seed bounded hover reproducibility, exploratory not stage acceptance",
+    "seeds": [
+      1005,
+      1005,
+      1005
+    ],
+    "hover_seconds": 14,
+    "mode": "PWM",
+    "braking": false,
+    "yaw_motion": false,
+    "snapshot": false,
+    "parameter_policy": "freeze source and configuration; retain all outcomes; existing flight guards unchanged",
+    "evaluation_policy": "report completion, faults, source and command audits, truth tracking and timing; no M1 acceptance thresholds inferred from one prior run",
+    "official_result": "UNKNOWN"
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "b461213a6f47cd8b6cd10bfb8e1a95e12acaf962f198a394e08aa2623f716c26",
+    "files": 483,
+    "uncompressed_bytes": 3087064,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "batch_succeeded": true,
+  "stage_acceptance": false,
+  "cases": [
+    {
+      "run_directory": "runs/20261029T165532Z_bcb52f939ad7427982e22cf8ad1670bb",
+      "manifest_sha256": "c948825d6f31d12b0e6584fefdda3570882165e86ea0b765efc7759022a0ab0e",
+      "telemetry_sha256": "c4f0400f4db93d537d02b4e6847414d482a765fb88e3321ef7ac0b95edcf92f9",
+      "fault": null,
+      "wire_valid": true,
+      "evaluation_valid": true,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "timing": {
+        "commands": 941,
+        "valid_samples": 941,
+        "missing_samples": 0,
+        "invalid_samples": 0,
+        "arrival_to_state_p50_p95_p99_max_s": [
+          0.00462186799995834,
+          0.009737230000609998,
+          0.010369343198544812,
+          0.010527515994908754
+        ],
+        "state_to_publish_end_p50_p95_p99_max_s": [
+          0.0007920110001577996,
+          0.007220505001896527,
+          0.009678826598974417,
+          0.01171907899697544
+        ],
+        "arrival_to_publish_end_p50_p95_p99_max_s": [
+          0.0073906489997170866,
+          0.015105938000488095,
+          0.01862057119578822,
+          0.02202357500209473
+        ],
+        "timing_complete": true,
+        "interpretation": "Local monotonic callback entry through state snapshot and publish return; excludes source generation, ROS pre-callback delay, backend receipt and actuator application."
+      }
+    },
+    {
+      "run_directory": "runs/20261029T165600Z_57804b4754fa46d8ab012bbbb692b5e2",
+      "manifest_sha256": "25939ac726b85857951ed9a6ce66e19f90ee11ab26674fcf2bc51604eadc68b3",
+      "telemetry_sha256": "4d5d5141deb0fb6e2d4aa658031f1775899d568ac78de9eaa509fde9397b6095",
+      "fault": null,
+      "wire_valid": true,
+      "evaluation_valid": true,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "timing": {
+        "commands": 962,
+        "valid_samples": 962,
+        "missing_samples": 0,
+        "invalid_samples": 0,
+        "arrival_to_state_p50_p95_p99_max_s": [
+          0.004301617504097521,
+          0.009143850300461054,
+          0.009799318428413244,
+          0.011291138995147776
+        ],
+        "state_to_publish_end_p50_p95_p99_max_s": [
+          0.0005924554970988538,
+          0.007019518251399859,
+          0.008663323670334644,
+          0.011762930000259075
+        ],
+        "arrival_to_publish_end_p50_p95_p99_max_s": [
+          0.006887002000439679,
+          0.014019995700800791,
+          0.017640711789645137,
+          0.021507230994757265
+        ],
+        "timing_complete": true,
+        "interpretation": "Local monotonic callback entry through state snapshot and publish return; excludes source generation, ROS pre-callback delay, backend receipt and actuator application."
+      }
+    },
+    {
+      "run_directory": "runs/20261029T165627Z_0e5795fe5e08444cbcff6d83c32edcb1",
+      "manifest_sha256": "3d46944190afc3a93ad764d47ccfb2b1393d774552c55c5cb90e1cde11b0a887",
+      "telemetry_sha256": "002861ffdabf63bda43cc31ade816b5c5cb5d8254dfa14b111ab2efa295a385c",
+      "fault": null,
+      "wire_valid": true,
+      "evaluation_valid": true,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "timing": {
+        "commands": 947,
+        "valid_samples": 947,
+        "missing_samples": 0,
+        "invalid_samples": 0,
+        "arrival_to_state_p50_p95_p99_max_s": [
+          0.004095999000128359,
+          0.009089490698534063,
+          0.009746104316873243,
+          0.011740671994630247
+        ],
+        "state_to_publish_end_p50_p95_p99_max_s": [
+          0.0006597340034204535,
+          0.00573470109666232,
+          0.008155445457086899,
+          0.011975209999945946
+        ],
+        "arrival_to_publish_end_p50_p95_p99_max_s": [
+          0.0068587069981731474,
+          0.013322431301639879,
+          0.0171325526793953,
+          0.02178817199455807
+        ],
+        "timing_complete": true,
+        "interpretation": "Local monotonic callback entry through state snapshot and publish return; excludes source generation, ROS pre-callback delay, backend receipt and actuator application."
+      }
+    }
+  ]
+}

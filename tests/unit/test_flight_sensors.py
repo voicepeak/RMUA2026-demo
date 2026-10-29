@@ -34,6 +34,13 @@ class SensorAdapterTests(unittest.TestCase):
         self.assertIsNone(s.pending_gps)
         self.assertEqual(s.read()[0].health,Health.OK)
 
+    def test_read_reports_same_accepted_imu_arrival_and_snapshot_time(self):
+        s = self.sensors()
+        state, raw = s.read()
+        self.assertEqual(raw['stamp'], state.metadata.stamp)
+        self.assertEqual(raw['imu_callback_arrival_wall_monotonic'], s.clock.arrival)
+        self.assertGreaterEqual(raw['state_snapshot_wall_monotonic'], s.clock.arrival)
+
     def test_invalid_queued_gps_cannot_kill_imu_propagation(self):
         for position in ((0.,0.,0.),(1.,2.,-1.)):
             s=self.sensors()
