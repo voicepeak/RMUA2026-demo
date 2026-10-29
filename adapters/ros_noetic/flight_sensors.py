@@ -9,7 +9,7 @@ from adapters.ros_noetic.state_reader import pose_values
 
 
 class FlightSensors:
-    def __init__(self, subscribe=True, pose_history=None):
+    def __init__(self, subscribe=True, pose_history=None, track_startup_velocity=False):
         self.lock = threading.RLock()
         self.clock = SensorClock()
         self.estimator = ImuGpsEstimator()
@@ -31,6 +31,10 @@ class FlightSensors:
                                     'imu_skipped_before_initial': 0,
                                     'first_initialized_imu_stamp': None,
                                     'first_initialized_imu_callback_wall_monotonic': None}
+        self.startup_velocity = {'imu_delta': np.zeros(3), 'gps_delta': np.zeros(3),
+                                 'bootstrap_delta': np.zeros(3), 'gps_updates': 0,
+                                 'imu_updates': 0, 'sealed': not track_startup_velocity, 'velocity_at_seal': None,
+                                 'stamp_at_seal': None}
         if subscribe:
             import rospy
             from geometry_msgs.msg import PoseStamped
@@ -79,14 +83,18 @@ class FlightSensors:
                         and self.local_injection.affects('IMU_RATE_SPIKE', stamp)):
                     # Local diagnostic sample only; do not alter the ROS message.
                     omega = (2., 0., 0.)
+                before_v = self.estimator.v.copy() if not self.startup_velocity['sealed'] else None
                 self.estimator.propagate(stamp, acceleration, omega)
+                if before_v is not None:
+                    self.startup_velocity['imu_delta'] += self.estimator.v - before_v
+                    self.startup_velocity['imu_updates'] += 1
                 if self.startup_diagnostics['first_initialized_imu_stamp'] is None:
                     self.startup_diagnostics['first_initialized_imu_stamp'] = stamp
                     self.startup_diagnostics['first_initialized_imu_callback_wall_monotonic'] = callback_arrival
                 self._check_rate_guard(stamp, callback_arrival)
                 if self.pending_gps is not None and self.pending_gps[0] <= stamp:
                     try:
-                        if self.estimator.update_gps(*self.pending_gps):
+                        if self._update_gps(*self.pending_gps):
                             self.bootstrap_gps.append(self.pending_gps)
                     except (ValueError, ArithmeticError) as error:
                         self.estimator.reject('INVALID_GPS:'+str(error))
@@ -130,6 +138,15 @@ class FlightSensors:
             if self.fault:
                 raise RuntimeError(self.fault)
 
+    def _update_gps(self, stamp, position, attitude):
+        # Called only while the sensor lock is held.
+        before = self.estimator.v.copy() if not self.startup_velocity['sealed'] else None
+        accepted = self.estimator.update_gps(stamp, position, attitude)
+        if accepted and before is not None:
+            self.startup_velocity['gps_delta'] += self.estimator.v - before
+            self.startup_velocity['gps_updates'] += 1
+        return accepted
+
     def on_gps(self, msg):
         with self.lock:
             try:
@@ -143,7 +160,7 @@ class FlightSensors:
                         # Defer future GPS to the first IMU propagation covering it.
                         self.pending_gps = (stamp, position, attitude)
                     else:
-                        if self.estimator.update_gps(stamp, position, attitude):
+                        if self._update_gps(stamp, position, attitude):
                             self.bootstrap_gps.append((stamp,position,attitude))
             except (ValueError, ArithmeticError) as error:
                 self.estimator.reject('INVALID_GPS:'+str(error))
@@ -174,6 +191,8 @@ class FlightSensors:
             result=resting_window(self.bootstrap_imu,self.bootstrap_gps,self.initial[1],self.clock.stamp)
             if result is None:return None
             e=self.estimator
+            if not self.startup_velocity['sealed']:
+                self.startup_velocity['bootstrap_delta'] -= e.v
             e.p=np.array(result['position']);e.v=np.zeros(3)
             e.q=np.array(self.initial[1],dtype=float);e.q/=np.linalg.norm(e.q)
             e.bg=np.array(result['gyro_bias']);e.ba=np.zeros(3)
@@ -183,6 +202,19 @@ class FlightSensors:
             e.omega=np.array(self.raw['omega_body'])-e.bg
             self.bootstrap_applied=True
             return result
+
+    def seal_startup_velocity(self):
+        with self.lock:
+            if self.startup_velocity['sealed']:
+                raise RuntimeError('STARTUP_ALREADY_SEALED')
+            self.startup_velocity['velocity_at_seal'] = self.estimator.v.copy()
+            self.startup_velocity['stamp_at_seal'] = self.estimator.stamp
+            self.startup_velocity['sealed'] = True
+
+    def startup_velocity_snapshot(self):
+        with self.lock:
+            return {key: value.tolist() if isinstance(value, np.ndarray) else value
+                    for key, value in self.startup_velocity.items()}
 
     def startup_snapshot(self):
         with self.lock:

@@ -83,7 +83,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
 
     with ControlLease(scene_id, 'PWM'):
         graph(False)
-        sensors = FlightSensors()
+        sensors = FlightSensors(track_startup_velocity=True)
         publisher = None
         monitor = None
         recovery = HoverRecovery()
@@ -154,6 +154,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
             start = time.monotonic()
             state, raw = sensors.read()
             sensors.arm_rate_guard(recovery=angular_recovery)
+            sensors.seal_startup_velocity()
             start_stamp = state.metadata.stamp
             if sensor_fault:
                 sensors.local_injection = LocalSensorFault(sensor_fault, start_stamp+6., fault_seconds)
@@ -337,7 +338,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
     (run/'pwm_telemetry.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
     if fault_observation is not None:
         (run/'fault_observation.json').write_text(json.dumps(fault_observation,indent=2)+'\n')
-    result = {'commands': len(rows), 'fault': fault, 'startup_diagnostics': sensors.startup_snapshot(), 'levels': levels,
+    result = {'commands': len(rows), 'fault': fault, 'startup_diagnostics': sensors.startup_snapshot(),
+              'startup_velocity': sensors.startup_velocity_snapshot(), 'levels': levels,
               'control_end_wall_monotonic':control_end_wall,
               'motor_pulses': motor_pulses,
               'hover_seconds': hover_seconds, 'control_hz': control_hz,

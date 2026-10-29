@@ -1,0 +1,132 @@
+{
+  "purpose": "Exploratory startup velocity update accounting; no causal or stage-acceptance claim",
+  "cases": [
+    {
+      "mode": "normal",
+      "run_directory": "runs/20261029T173634Z_129a9104868a49a18a1b3b348860a40d",
+      "seed": 2022,
+      "git_sha": "ee3ad397d22a324772b895ecd9cddb46d67e598b",
+      "git_status": " M adapters/ros_noetic/flight_sensors.py\n M adapters/ros_noetic/pwm_experiment.py\n M tests/unit/test_flight_sensors.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "d2b086ab43bd20ad4de92f31ea1f9f8d41a4c9645eb5803adbc197f860354f79",
+        "files": 511,
+        "uncompressed_bytes": 3225564,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 935,
+      "matched_commands": 935,
+      "wire_valid": true,
+      "evaluation_valid": true,
+      "startup_velocity": {
+        "imu_delta": [
+          -0.048771011738268276,
+          -0.004386097121443095,
+          -0.0009581362117464767
+        ],
+        "gps_delta": [
+          0.09168615367002204,
+          0.03401034765565977,
+          0.11372253758270434
+        ],
+        "bootstrap_delta": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "gps_updates": 4,
+        "imu_updates": 42,
+        "sealed": true,
+        "velocity_at_seal": [
+          0.04291514193175376,
+          0.02962425053421668,
+          0.1127644013709579
+        ],
+        "stamp_at_seal": 1793295404.3262603
+      },
+      "accounting_residual_m_s": [
+        -6.938893903907228e-18,
+        3.469446951953614e-18,
+        4.163336342344337e-17
+      ],
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "c13d1901f9d144e13f0a6be02f441cdc7d4b38f4157f31445f0a5387a3e9df95",
+        "pwm_summary.json": "76d716a8c2685e6a3b870c323ed464b386dd02352baccaa71410e7ff75559f5a",
+        "command_trace_audit.json": "dadf9bab221185e1f0ba82b522e71aff93ff06b28349fdea9c154c4a78279b74",
+        "closed_loop_metrics.json": "d72c33f9376a2ae6649a76f0b9c23e3fc511a5735efd4eebb8523d589f21aa5c"
+      }
+    },
+    {
+      "mode": "stationary_bootstrap",
+      "run_directory": "runs/20261029T173700Z_381db7cb3e7c48bea0a3f226b82a1b0c",
+      "seed": 2022,
+      "git_sha": "ee3ad397d22a324772b895ecd9cddb46d67e598b",
+      "git_status": " M adapters/ros_noetic/flight_sensors.py\n M adapters/ros_noetic/pwm_experiment.py\n M tests/unit/test_flight_sensors.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "d2b086ab43bd20ad4de92f31ea1f9f8d41a4c9645eb5803adbc197f860354f79",
+        "files": 511,
+        "uncompressed_bytes": 3225564,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 966,
+      "matched_commands": 966,
+      "wire_valid": true,
+      "evaluation_valid": true,
+      "startup_velocity": {
+        "imu_delta": [
+          0.05309270735645743,
+          0.14516485225055661,
+          0.005692268154402699
+        ],
+        "gps_delta": [
+          -0.0922881638838078,
+          -0.19320721497970314,
+          0.017108680206781093
+        ],
+        "bootstrap_delta": [
+          0.041991054918394784,
+          0.03614084164424518,
+          -0.016059319860180273
+        ],
+        "gps_updates": 13,
+        "imu_updates": 128,
+        "sealed": true,
+        "velocity_at_seal": [
+          0.002795598391044419,
+          -0.011901521084901213,
+          0.006741628501003519
+        ],
+        "stamp_at_seal": 1793295431.7649996
+      },
+      "accounting_residual_m_s": [
+        3.469446951953614e-18,
+        1.3530843112619095e-16,
+        0.0
+      ],
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "5e4eb9a6c3d699b49b13f25e416631287f03c22ec6a4c946e02e0d905c9e7853",
+        "pwm_summary.json": "8e0caf06c1e2fd8061bfc51360967ab5c60b15a2268e3aefb37525acd89fea42",
+        "command_trace_audit.json": "fff20452e703c1a67b648ce07956eee1579ff5b813b839b7166c5d517cc62132",
+        "closed_loop_metrics.json": "6b4339a0a66f003af197f760840a14ff349368f98def18cb2544f046de6cba09",
+        "stationary_bootstrap.json": "4404608196c57e4db7b9a6c73601cb48ffa5519436cc242fc6e9148771bf0502"
+      }
+    }
+  ]
+}

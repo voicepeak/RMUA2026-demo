@@ -42,6 +42,25 @@ class SensorAdapterTests(unittest.TestCase):
         self.assertEqual(state.position_ned, (1., 2., -1.))
         self.assertEqual(state.health, Health.OK)
 
+    def test_startup_velocity_accounting_freezes_at_seal(self):
+        s = FlightSensors(subscribe=False, track_startup_velocity=True)
+        s.on_initial(message(0.)); s.on_imu(message(100.)); s.on_gps(message(100.))
+        accelerated = message(100.05); accelerated.linear_acceleration.x = 2.
+        s.on_imu(accelerated)
+        s.on_gps(message(100.05, position=(1.08, 2., -1.)))
+        s.seal_startup_velocity()
+        before = s.startup_velocity_snapshot()
+        self.assertEqual(before['gps_updates'], 2)
+        self.assertEqual(before['imu_updates'], 2)
+        for index in range(3):
+            self.assertAlmostEqual(before['velocity_at_seal'][index],
+                                   before['imu_delta'][index] + before['gps_delta'][index]
+                                   + before['bootstrap_delta'][index])
+        s.on_imu(message(100.06))
+        self.assertEqual(before, s.startup_velocity_snapshot())
+        with self.assertRaisesRegex(RuntimeError, 'STARTUP_ALREADY_SEALED'):
+            s.seal_startup_velocity()
+
     def test_future_gps_waits_for_imu_then_updates(self):
         s=self.sensors()
         s.on_gps(message(100.02))
