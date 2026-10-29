@@ -1,0 +1,91 @@
+{
+  "purpose": "Source IMU wall-age gate local compatibility; no stage acceptance",
+  "runs": [
+    {
+      "run_directory": "runs/20261029T170114Z_392af08ddc3f42bbbc47c2814d5cc538",
+      "manifest_sha256": "bd5f1c48a10c5d2049e28242354ba8ce36dbe48c87dfd4febcd6072446d1dea7",
+      "git_sha": "522aa0f2465cb58569c8b38f74368f87bed3aa10",
+      "git_status": " M adapters/ros_noetic/pwm_experiment.py\n M adapters/ros_noetic/vel_experiment.py\n M control/pwm_publisher/guard.py\n M tests/unit/test_control_guard.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "bb4c0e42be657ca45ea94985f8e6e5117bd4ea6ee5c5e6b0bf689b534117a133",
+        "files": 487,
+        "uncompressed_bytes": 3105907,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "seed": 1005,
+      "mode": "PWM",
+      "fault": null,
+      "commands": 934,
+      "run_state": "FAILED",
+      "evaluation_exit_code": 0,
+      "wire_valid": false,
+      "missing_sequences": [
+        207
+      ],
+      "second_wire_valid": null,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "run_directory": "runs/20261029T170204Z_0fd6573261f7469fa68c76302213ec8d",
+      "manifest_sha256": "cdbfd53472b704e3df36b2e6912e2b8ce49b58adad19afb30147b285b3c9c02c",
+      "git_sha": "522aa0f2465cb58569c8b38f74368f87bed3aa10",
+      "git_status": " M adapters/ros_noetic/pwm_experiment.py\n M adapters/ros_noetic/vel_experiment.py\n M control/pwm_publisher/guard.py\n M tests/unit/test_control_guard.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "bb4c0e42be657ca45ea94985f8e6e5117bd4ea6ee5c5e6b0bf689b534117a133",
+        "files": 487,
+        "uncompressed_bytes": 3105907,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "seed": 1007,
+      "mode": "VEL",
+      "fault": null,
+      "commands": 699,
+      "run_state": "EVALUATED",
+      "evaluation_exit_code": 0,
+      "wire_valid": null,
+      "missing_sequences": null,
+      "second_wire_valid": null,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "run_directory": "runs/20261029T170254Z_c6c93e47ec1542068916261ec40b0647",
+      "manifest_sha256": "1f9f030d9465dcb06188e4c5fb1d486ea9717b1625cc43a82498da5ab08baa60",
+      "git_sha": "522aa0f2465cb58569c8b38f74368f87bed3aa10",
+      "git_status": " M adapters/ros_noetic/pwm_experiment.py\n M adapters/ros_noetic/vel_experiment.py\n M control/pwm_publisher/guard.py\n M tests/unit/test_control_guard.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "bb4c0e42be657ca45ea94985f8e6e5117bd4ea6ee5c5e6b0bf689b534117a133",
+        "files": 487,
+        "uncompressed_bytes": 3105907,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "seed": 1005,
+      "mode": "PWM",
+      "fault": null,
+      "commands": 936,
+      "run_state": "EVALUATED",
+      "evaluation_exit_code": 0,
+      "wire_valid": true,
+      "missing_sequences": [],
+      "second_wire_valid": true,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    }
+  ]
+}

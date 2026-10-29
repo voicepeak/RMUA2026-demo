@@ -242,7 +242,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     if sensors.fault:
                         raise RuntimeError(sensors.fault)
                     accepted_wall = time.monotonic()
-                    allowed = guard.accept(command, sensors.clock, accepted_wall)
+                    allowed = guard.accept(command, sensors.clock, accepted_wall,
+                                           raw['imu_callback_arrival_wall_monotonic'])
                 if allowed:
                     msg = RotorPWM()
                     msg.header.stamp = rospy.Time.from_sec(command.stamp)

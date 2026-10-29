@@ -98,7 +98,8 @@ def run_experiment(run, duration, step,yaw_motion=False,braking=False):
                 command = VelocityCommand(state.metadata.stamp, state.metadata.epoch, sequence, values)
                 with sensors.lock:
                     accepted_wall = time.monotonic()
-                    allowed = guard.accept(command, sensors.clock, accepted_wall)
+                    allowed = guard.accept(command, sensors.clock, accepted_wall,
+                                           raw['imu_callback_arrival_wall_monotonic'])
                 if allowed:
                     msg = VelCmd()
                     msg.header.stamp = rospy.Time.from_sec(command.stamp)

@@ -35,14 +35,17 @@ class CommandGuard:
         self.fault = self.fault or reason
         raise RuntimeError(self.fault)
 
-    def accept(self, command, clock, wall_now):
+    def accept(self, command, clock, wall_now, source_arrival):
         if self.fault:
             self.fail(self.fault)
         if not math.isfinite(wall_now):
             self.fail('INVALID_WALL_CLOCK')
         if command.epoch != self.epoch or clock.epoch != self.epoch:
             self.fail('CLOCK_RESET')
-        if (not clock.fresh(wall_now, self.input_timeout) or clock.stamp is None
+        if (not isinstance(source_arrival, (int, float)) or not math.isfinite(source_arrival)
+                or not 0 <= wall_now-source_arrival <= self.input_timeout
+                or not clock.fresh(wall_now, self.input_timeout) or clock.stamp is None
+                or source_arrival > clock.arrival
                 or not 0 <= clock.stamp-command.stamp <= .05):
             self.fail('STALE_IMU_OR_COMMAND')
         if command.sequence <= self.last_sequence:
