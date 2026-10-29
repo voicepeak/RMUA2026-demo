@@ -1,0 +1,57 @@
+{
+  "topic_prefix": "/ruma_diagnostic_queue_probe",
+  "private_ros_master": true,
+  "cases": [
+    {
+      "queue_size": 1,
+      "published": [
+        "A",
+        "B",
+        "C"
+      ],
+      "slow_subscriber": [
+        "A",
+        "C"
+      ],
+      "fast_subscriber": [
+        "A",
+        "B",
+        "C"
+      ],
+      "endpoints": [
+        "/probe_fast",
+        "/probe_slow"
+      ],
+      "connection_type": "TCPROSTransport",
+      "intervention": "block first slow underlying TCP write until B and C are enqueued"
+    },
+    {
+      "queue_size": 2,
+      "published": [
+        "A",
+        "B",
+        "C"
+      ],
+      "slow_subscriber": [
+        "A",
+        "B",
+        "C"
+      ],
+      "fast_subscriber": [
+        "A",
+        "B",
+        "C"
+      ],
+      "endpoints": [
+        "/probe_fast",
+        "/probe_slow"
+      ],
+      "connection_type": "TCPROSTransport",
+      "intervention": "block first slow underlying TCP write until B and C are enqueued"
+    }
+  ],
+  "python_version": "3.8.10",
+  "probe_sha256": "83e851782cdfd96146078a2afaa7dc9c75249ee8f7f4c71df3db6cda0b643792",
+  "rospy_source_sha256": "7798ba90cfe8cd89e1f16db1c9f160963d69201826bd3c5f04f24a356c799390",
+  "limitations": "Deliberate publisher-side instrumentation on one diagnostic connection; no simulator or backend delivery tested."
+}
