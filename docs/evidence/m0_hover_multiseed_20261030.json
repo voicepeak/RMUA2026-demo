@@ -1,0 +1,161 @@
+{
+  "purpose": "Preselected three-seed M0 exploratory PWM hover; not stage acceptance",
+  "batch_directory": "runs/batches/20261029T172039Z_ff9a9cdc6f8f4663894241dfc6ee2d0b",
+  "batch_report_sha256": "55ee2a8da151ff8ff637cd497381d97e7f9dfe820a14cc07827b512dfd1c625e",
+  "protocol": {
+    "schema_version": 1,
+    "purpose": "M0 bounded hover across three preselected existing development seeds; exploratory not stage acceptance",
+    "seeds": [
+      2021,
+      2022,
+      2023
+    ],
+    "hover_seconds": 14,
+    "mode": "PWM",
+    "braking": false,
+    "yaw_motion": false,
+    "snapshot": false,
+    "parameter_policy": "freeze source and configuration; retain all outcomes; existing flight guards unchanged",
+    "evaluation_policy": "report completion, faults, source and command audits, truth tracking and timing; no stage acceptance or population reliability inference",
+    "official_result": "UNKNOWN"
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "5a746240b6ad60fa8f68308a3ed0bb9124756d29811e0ad657b2ae9025bc9943",
+    "files": 499,
+    "uncompressed_bytes": 3163266,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "batch_succeeded": false,
+  "cases": [
+    {
+      "seed": 2021,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T172040Z_be45d3b897cd42439b4a39fc49c8e484",
+      "exit_code": 0,
+      "run_state": "EVALUATED",
+      "git_sha": "4514906e941e2647080dd77f6c0a6666b88fda5a",
+      "git_status": "?? configs/m0_hover_multiseed_20261030.json\n",
+      "run_source_unchanged": true,
+      "fault": null,
+      "commands": 937,
+      "wire_valid": true,
+      "matched_commands": 937,
+      "evaluation_valid": true,
+      "truth_tracking_rmse_m": [
+        0.06862508047670027,
+        0.07816256317903769,
+        0.03223176033859554
+      ],
+      "truth_tracking_max_norm_m": 0.1607950832850173,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "31a5cea33f69dbb1807ef2a0b234fd582e82c6a7a364d6e82057284244d96fed",
+        "pwm_summary.json": "ccebb563dbe1912577eb1cda24df30c9874d9ef536144e288c7756b456d76688",
+        "command_trace_audit.json": "900c91fc133c68f646bce3d33f763a028d0a4fff9cb59223dd80ed5f991dd7a9",
+        "closed_loop_metrics.json": "c97e9c68edf6c0b8e45f87ab54f2ae1466151bb7230b13bf36533149dce0fb5a"
+      }
+    },
+    {
+      "seed": 2022,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T172106Z_3f422116c8154ca8b17a4ae339144adf",
+      "exit_code": 2,
+      "run_state": "FAILED",
+      "git_sha": "4514906e941e2647080dd77f6c0a6666b88fda5a",
+      "git_status": "?? configs/m0_hover_multiseed_20261030.json\n",
+      "run_source_unchanged": true,
+      "fault": "ANGULAR_RATE_LIMIT",
+      "commands": 10,
+      "wire_valid": true,
+      "matched_commands": 10,
+      "evaluation_valid": false,
+      "truth_tracking_rmse_m": null,
+      "truth_tracking_max_norm_m": null,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "rate_guard_event": {
+        "stamp": 1793294476.8799002,
+        "arrival_wall_monotonic": 35970.722270075,
+        "angular_velocity_body": [
+          0.09721944294189615,
+          3.4959008664070903,
+          -0.004931149712577736
+        ],
+        "rate_norm_rad_s": 3.4972558962805773,
+        "limit_rad_s": 1.0
+      },
+      "fault_wall_elapsed_at_last_read": 0.15005549899797188,
+      "control_publish_begin_at_or_after_event": 0,
+      "independent_imu_same_stamp_count": 1,
+      "independent_imu_same_stamp": [
+        {
+          "stamp": 1793294476.8799002,
+          "acceleration_body": [
+            0.06121194362640381,
+            -5.719950422644615e-05,
+            -12.366976737976074
+          ],
+          "omega_body": [
+            0.09643561393022537,
+            3.4943459033966064,
+            -0.006045044865459204
+          ],
+          "imu_orientation_wxyz": [
+            0.9999390840530396,
+            0.002520319540053606,
+            0.010749924927949905,
+            -9.227152622770518e-05
+          ],
+          "arrival_wall_monotonic": 35970.722245733
+        }
+      ],
+      "input_sha256": {
+        "manifest.json": "360d9f631ba507085c73a6b3fcd49b78d3a47eb6f282aeb262e59cb19f77631e",
+        "pwm_summary.json": "746af6a63d6c88ed8808ec92d2cebb4d15f4c480a94ae12829c8d9ee62b53c2b",
+        "command_trace_audit.json": "b3bf5248910c74102ecf9d028461f4427eee2206943b44fe84bf755a7540a26b",
+        "closed_loop_metrics.json": "f24e5451ff7c8b62a4a60ca1fd964c1147c00e10cd52205b8d8bef2e8efd9a7d",
+        "fault_observation.json": "85eaa4c5e8fd1d8ad4b1c5a673b02dd4131a70c9ad1589f3b153877fd92e76a1",
+        "pwm_telemetry.jsonl": "52e34cce552198ee3841f0d8a0115480e12145a80016888af2a4cac1c0a1b31e",
+        "evaluation_imu.jsonl": "25e940939550c0d6eded835afdbeec9cb1e54ef37b77f8d10d5ea45a8718c5ee"
+      }
+    },
+    {
+      "seed": 2023,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T172119Z_03e250929003482f92d337e335836080",
+      "exit_code": 0,
+      "run_state": "EVALUATED",
+      "git_sha": "4514906e941e2647080dd77f6c0a6666b88fda5a",
+      "git_status": "?? configs/m0_hover_multiseed_20261030.json\n",
+      "run_source_unchanged": true,
+      "fault": null,
+      "commands": 966,
+      "wire_valid": true,
+      "matched_commands": 966,
+      "evaluation_valid": true,
+      "truth_tracking_rmse_m": [
+        0.11771970643501578,
+        0.04843747982634983,
+        0.02959839070975136
+      ],
+      "truth_tracking_max_norm_m": 0.3258415583161856,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "3f30f7f2f79d445e2a424502152db632219664bf103fdf62b7426a9fbeb2d89d",
+        "pwm_summary.json": "0c97ed450561186db2c1578129c0681f60e8a5cc9e5c80d798d4840b4ccc79fa",
+        "command_trace_audit.json": "e8a65c071afb61a141e366561bd823276758525ca89463e262f0cce52c1f7cf1",
+        "closed_loop_metrics.json": "de7d78285e9cd60c202a214b980c1caf9a6f92108435a0a98269af10dbb0d17f"
+      }
+    }
+  ]
+}

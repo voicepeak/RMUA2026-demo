@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "purpose": "M0 bounded hover across three preselected existing development seeds; exploratory not stage acceptance",
+  "seeds": [2021, 2022, 2023],
+  "hover_seconds": 14,
+  "mode": "PWM",
+  "braking": false,
+  "yaw_motion": false,
+  "snapshot": false,
+  "parameter_policy": "freeze source and configuration; retain all outcomes; existing flight guards unchanged",
+  "evaluation_policy": "report completion, faults, source and command audits, truth tracking and timing; no stage acceptance or population reliability inference",
+  "official_result": "UNKNOWN"
+}
