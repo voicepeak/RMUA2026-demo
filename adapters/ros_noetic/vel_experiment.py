@@ -106,6 +106,11 @@ def run_experiment(run, duration, step,yaw_motion=False,braking=False):
                     msg.header.seq = sequence
                     msg.vx, msg.vy, msg.vz, msg.yawRate = values
                     msg.va, msg.stop = 4, 0
+                    with sensors.lock:
+                        if sensors.fault:
+                            raise RuntimeError(sensors.fault)
+                        guard.before_publish(command, sensors.clock, time.monotonic(),
+                                             raw['imu_callback_arrival_wall_monotonic'])
                     publisher.publish(msg)
                     published_wall=time.monotonic()
                     last_published_wall=published_wall

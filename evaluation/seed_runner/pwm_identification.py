@@ -61,6 +61,7 @@ def main():
                         help='experimental PWM control loop rate; default remains 80 Hz')
     parser.add_argument('--control-stall-seconds', type=float, choices=(0., .15), default=0.,
                         help='local diagnostic: stall one control iteration for 150 ms')
+    parser.add_argument('--control-stall-stage', choices=('before-check','before-publish'), default='before-check')
     parser.add_argument('--evaluate-truth', action='store_true')
     parser.add_argument('--step', action='store_true')
     parser.add_argument('--mode', choices=('PWM', 'VEL'), default='PWM')
@@ -85,6 +86,8 @@ def main():
     parser.add_argument('--controller-image',help='locally built immutable standalone image; no beta bind mount')
     parser.add_argument('--contract-audit-only',action='store_true',help='read-only service handshake; no controller')
     args = parser.parse_args()
+    if args.control_stall_stage != 'before-check' and not args.control_stall_seconds:
+        parser.error('control stall stage requires a control stall')
     if args.control_stall_seconds and (args.mode != 'PWM' or args.hover_seconds < 10 or not args.evaluate_truth
             or args.controller_image or args.contract_audit_only or args.motor_pulses or args.sensor_fault or args.gps_bridge
             or args.step or args.yaw_motion or args.braking or args.angular_recovery or args.angular_pulse
@@ -156,6 +159,7 @@ def main():
     config['experiment'] = {'levels': args.levels, 'pulse_seconds': args.pulse_seconds,
                             'control_hz': args.control_hz,
                             'control_stall_seconds': args.control_stall_seconds,
+                            'control_stall_stage': args.control_stall_stage,
                             'motor_pulses': args.motor_pulses, 'hover_seconds': args.hover_seconds,
                             'evaluate_truth': args.evaluate_truth, 'step': args.step,
                             'sensor_fault':args.sensor_fault, 'fault_seconds':args.fault_seconds,
@@ -286,6 +290,7 @@ def main():
                     command.extend(['--control-hz', str(args.control_hz)])
                 if args.control_stall_seconds:
                     command.extend(['--control-stall-seconds', str(args.control_stall_seconds)])
+                    command.extend(['--control-stall-stage', args.control_stall_stage])
             if args.motor_pulses:
                 command.append('--motor-pulses')
             if args.hover_seconds:

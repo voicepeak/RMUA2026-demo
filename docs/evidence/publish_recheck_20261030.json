@@ -1,0 +1,133 @@
+{
+  "purpose": "Pre-publish freshness recheck; local diagnostic, no stage acceptance",
+  "runs": [
+    {
+      "run_directory": "runs/20261029T171015Z_9fcfaca0e2544b1492648da73b8a1824",
+      "inputs_sha256": {
+        "manifest.json": "b8d2eb3209c4f50e7992d5c76c1ed1e42ad9cd189c924478f1b4f09f0c032831",
+        "pwm_summary.json": "9755fc8090e78f5d42d308eecec33f2ff14114caa1ec39d734aed32f6e206dca",
+        "fault_observation.json": "cfcd977b561e0f220e8f45f899c39f18dcf77f711922b3841e5b004e974e9f7e",
+        "wire_observer_comparison.json": "f97f20a62a1dfd5a63e7f13cd28f2a2605955774cb88f3d5ec67ef6da1012789"
+      },
+      "git_sha": "e8326f4b320d91420487b3fe1c9f68077ac370f7",
+      "git_status": " M adapters/ros_noetic/pwm_experiment.py\n M adapters/ros_noetic/vel_experiment.py\n M control/pwm_publisher/guard.py\n M evaluation/seed_runner/pwm_identification.py\n M tests/unit/test_control_guard.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "ec364ec95bae74594b980c22fe09498d5895d88dc4e4c6477d9c93f8d496b294",
+        "files": 489,
+        "uncompressed_bytes": 3124744,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "seed": 1009,
+      "mode": "PWM",
+      "fault": "STALE_IMU_OR_COMMAND",
+      "commands": 468,
+      "control_stall": {
+        "begin_wall_monotonic": 35328.169429565,
+        "end_wall_monotonic": 35328.319598438,
+        "source_stamp": 1793293833.533236,
+        "stage": "before-publish"
+      },
+      "guard_observation": {
+        "stage": "before_publish",
+        "wall_now": 35328.319605506,
+        "source_arrival": 35328.160933441,
+        "source_stamp": 1793293833.533236,
+        "latest_stamp": 1793293833.6652389,
+        "latest_arrival": 35328.311004963
+      },
+      "run_state": "FAILED",
+      "wire_comparison": {
+        "comparable": true,
+        "missing_first_only": [],
+        "missing_second_only": [
+          236
+        ],
+        "missing_both": [],
+        "both_wire_traces_valid": false,
+        "backend_delivery_verified": false,
+        "note": "Observer records have separate connections; agreement does not prove backend receipt or actuator consumption."
+      },
+      "evaluation_exit_code": 0,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "run_directory": "runs/20261029T171054Z_92ef65d1ced840b786e5541f17e08077",
+      "inputs_sha256": {
+        "manifest.json": "3fa7903b35c93ea4ddbf15a2664ba9902855afeebc07cb0a483a0c3c90b4b25f",
+        "pwm_summary.json": "d0b5dcec3227c410189bd033cdc220e087a6972ab07d97c3d9f34e5ce6775b7a",
+        "wire_observer_comparison.json": "0382d2f71006ee0d583b819e2a05f716bb9155ed59e1fdf4b390591569aaa5a5"
+      },
+      "git_sha": "e8326f4b320d91420487b3fe1c9f68077ac370f7",
+      "git_status": " M adapters/ros_noetic/pwm_experiment.py\n M adapters/ros_noetic/vel_experiment.py\n M control/pwm_publisher/guard.py\n M evaluation/seed_runner/pwm_identification.py\n M tests/unit/test_control_guard.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "ec364ec95bae74594b980c22fe09498d5895d88dc4e4c6477d9c93f8d496b294",
+        "files": 489,
+        "uncompressed_bytes": 3124744,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "seed": 1009,
+      "mode": "PWM",
+      "fault": null,
+      "commands": 806,
+      "control_stall": null,
+      "guard_observation": null,
+      "run_state": "FAILED",
+      "wire_comparison": {
+        "comparable": true,
+        "missing_first_only": [
+          14
+        ],
+        "missing_second_only": [],
+        "missing_both": [],
+        "both_wire_traces_valid": false,
+        "backend_delivery_verified": false,
+        "note": "Observer records have separate connections; agreement does not prove backend receipt or actuator consumption."
+      },
+      "evaluation_exit_code": 0,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "run_directory": "runs/20261029T171138Z_9bb4e407d348443db45fbdd8359fa20a",
+      "inputs_sha256": {
+        "manifest.json": "e34ec33d0d9e0d7280e209108b5c62000f0e951cb7e1af8b414b262e58ecc909",
+        "vel_summary.json": "c8b43fe4bd32b0c8421659a433b330ff5d842538208d3ebedf141f9fa14c7c2f"
+      },
+      "git_sha": "e8326f4b320d91420487b3fe1c9f68077ac370f7",
+      "git_status": " M adapters/ros_noetic/pwm_experiment.py\n M adapters/ros_noetic/vel_experiment.py\n M control/pwm_publisher/guard.py\n M evaluation/seed_runner/pwm_identification.py\n M tests/unit/test_control_guard.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "ec364ec95bae74594b980c22fe09498d5895d88dc4e4c6477d9c93f8d496b294",
+        "files": 489,
+        "uncompressed_bytes": 3124744,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "seed": 1007,
+      "mode": "VEL",
+      "fault": null,
+      "commands": 700,
+      "control_stall": null,
+      "guard_observation": null,
+      "run_state": "EVALUATED",
+      "wire_comparison": null,
+      "evaluation_exit_code": 0,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    }
+  ]
+}

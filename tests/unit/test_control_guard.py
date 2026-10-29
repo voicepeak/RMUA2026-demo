@@ -10,6 +10,7 @@ from adapters.ros_noetic.pwm_experiment import run_experiment
 class GuardTests(unittest.TestCase):
     def test_control_stall_is_restricted_before_ros_start(self):
         for options in ({'control_stall_seconds':.3},
+                        {'control_stall_stage':'before-publish'},
                         {'control_stall_seconds':.15, 'hover_seconds':0},
                         {'control_stall_seconds':.15, 'hover_seconds':14, 'sensor_fault':'IMU_DROP'},
                         {'control_stall_seconds':.15, 'hover_seconds':14, 'step':True}):
@@ -62,6 +63,24 @@ class GuardTests(unittest.TestCase):
             guard.accept(old, clock, 1.2, 1.)
         with self.assertRaisesRegex(RuntimeError, 'STALE_IMU_OR_COMMAND'):
             guard.accept(PwmCommand(10.01,0,1,(.2,)*4), clock, 1.2, 1.2)
+
+    def test_publish_recheck_rejects_stall_after_acceptance(self):
+        clock=SensorClock(); clock.observe(10.,1.)
+        guard=CommandGuard(0); command=PwmCommand(10.,0,0,(.2,)*4)
+        self.assertTrue(guard.accept(command,clock,1.,1.))
+        clock.observe(10.01,1.15)
+        with self.assertRaisesRegex(RuntimeError, 'STALE_IMU_OR_COMMAND'):
+            guard.before_publish(command,clock,1.15,1.)
+        with self.assertRaisesRegex(RuntimeError, 'STALE_IMU_OR_COMMAND'):
+            guard.accept(PwmCommand(10.01,0,1,(.2,)*4),clock,1.15,1.15)
+
+    def test_publish_recheck_requires_the_exact_accepted_command(self):
+        clock=SensorClock(); clock.observe(10.,1.)
+        command=PwmCommand(10.,0,0,(.2,)*4); guard=CommandGuard(0)
+        self.assertTrue(guard.accept(command,clock,1.,1.))
+        guard.before_publish(command,clock,1.001,1.)
+        with self.assertRaisesRegex(RuntimeError, 'COMMAND_NOT_ACCEPTED'):
+            guard.before_publish(command,clock,1.002,1.)
 
     def test_fresh_source_and_invalid_wall_times(self):
         clock=SensorClock(); clock.observe(10.,1.); clock.observe(10.01,1.05)

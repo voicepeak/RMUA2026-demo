@@ -53,11 +53,13 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                    stationary_bootstrap=False,angular_recovery=False,angular_pulse=False,
                    isolated_reference=False,reference_stall_seconds=0.,collective_pulse_pwm=None,
                    angular_pulse_moment=.5,angular_recovery_profile='standard',control_hz=80,
-                   control_stall_seconds=0.):
+                   control_stall_seconds=0.,control_stall_stage='before-check'):
     if type(control_hz) is not int or control_hz not in (50, 80):
         raise ValueError('experimental control rate must be 50 or 80 Hz')
     if control_stall_seconds not in (0., .15):
         raise ValueError('experimental control stall must be 0 or 0.15 s')
+    if control_stall_stage not in ('before-check', 'before-publish') or (control_stall_stage != 'before-check' and not control_stall_seconds):
+        raise ValueError('invalid control stall stage')
     if control_stall_seconds and (hover_seconds < 10 or motor_pulses or sensor_fault or gps_bridge
             or step or yaw_motion or braking or angular_recovery or angular_pulse
             or isolated_reference or collective_pulse_pwm is not None):
@@ -167,13 +169,13 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 state, raw = sensors.read()
                 latest_state,latest_raw,latest_elapsed=state,raw,now-start
                 fresh_read=True
-                if (control_stall_seconds and control_stall is None
+                if (control_stall_seconds and control_stall_stage == 'before-check' and control_stall is None
                         and state.metadata.stamp-start_stamp >= 6.):
                     stall_begin = time.monotonic()
                     time.sleep(control_stall_seconds)
                     control_stall = {'begin_wall_monotonic': stall_begin,
                                      'end_wall_monotonic': time.monotonic(),
-                                     'source_stamp': state.metadata.stamp}
+                                     'source_stamp': state.metadata.stamp, 'stage': control_stall_stage}
                 R = rotation(state.orientation_wxyz)
                 if state.health != Health.OK and not (hover_seconds and gps_bridge):
                     raise RuntimeError('STATE_HEALTH_'+state.health.value)
@@ -269,6 +271,23 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     msg.header.stamp = rospy.Time.from_sec(command.stamp)
                     msg.header.seq = sequence
                     msg.rotorPWM0, msg.rotorPWM1, msg.rotorPWM2, msg.rotorPWM3 = command.values
+                    if (control_stall_seconds and control_stall_stage == 'before-publish'
+                            and control_stall is None and state.metadata.stamp-start_stamp >= 6.):
+                        stall_begin = time.monotonic()
+                        time.sleep(control_stall_seconds)
+                        control_stall = {'begin_wall_monotonic': stall_begin,
+                                         'end_wall_monotonic': time.monotonic(),
+                                         'source_stamp': state.metadata.stamp, 'stage': control_stall_stage}
+                    with sensors.lock:
+                        if sensors.fault:
+                            raise RuntimeError(sensors.fault)
+                        recheck_wall = time.monotonic()
+                        guard_observation = {'stage': 'before_publish', 'wall_now': recheck_wall,
+                            'source_arrival': raw['imu_callback_arrival_wall_monotonic'],
+                            'source_stamp': command.stamp, 'latest_stamp': sensors.clock.stamp,
+                            'latest_arrival': sensors.clock.arrival}
+                        guard.before_publish(command, sensors.clock, recheck_wall,
+                                             raw['imu_callback_arrival_wall_monotonic'])
                     publish_begin_wall=time.monotonic()
                     publisher.publish(msg)
                     published_wall = time.monotonic()
@@ -357,6 +376,7 @@ def main():
     parser.add_argument('--hover-seconds', type=float, default=0.)
     parser.add_argument('--control-hz', type=int, choices=(50, 80), default=80)
     parser.add_argument('--control-stall-seconds', type=float, choices=(0., .15), default=0.)
+    parser.add_argument('--control-stall-stage', choices=('before-check','before-publish'), default='before-check')
     parser.add_argument('--step', action='store_true')
     parser.add_argument('--sensor-fault', choices=('GPS_ZERO','IMU_DROP','IMU_ROLLBACK','IMU_RATE_SPIKE'))
     parser.add_argument('--fault-seconds',type=float,default=.15)
@@ -372,6 +392,8 @@ def main():
     parser.add_argument('--reference-stall-seconds',type=float,default=0.)
     parser.add_argument('--collective-pulse-pwm',type=float)
     args = parser.parse_args()
+    if args.control_stall_stage != 'before-check' and not args.control_stall_seconds:
+        parser.error('control stall stage requires a control stall')
     if args.control_stall_seconds and (args.hover_seconds < 10 or args.motor_pulses or args.sensor_fault or args.gps_bridge
             or args.step or args.yaw_motion or args.braking or args.angular_recovery or args.angular_pulse
             or args.isolated_reference or args.collective_pulse_pwm is not None):
@@ -410,7 +432,8 @@ def main():
                           args.stationary_bootstrap,args.angular_recovery,args.angular_pulse,
                           args.isolated_reference,args.reference_stall_seconds,args.collective_pulse_pwm,
                           .5 if args.angular_pulse_moment is None else args.angular_pulse_moment,
-                          args.angular_recovery_profile,args.control_hz,args.control_stall_seconds)
+                          args.angular_recovery_profile,args.control_hz,args.control_stall_seconds,
+                          args.control_stall_stage)
 
 
 if __name__ == '__main__':

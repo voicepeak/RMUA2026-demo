@@ -29,13 +29,14 @@ class CommandGuard:
         self.last_wall = None
         self.last_sequence = -1
         self.last_stamp = None
+        self.accepted_command = None
         self.fault = None
 
     def fail(self, reason):
         self.fault = self.fault or reason
         raise RuntimeError(self.fault)
 
-    def accept(self, command, clock, wall_now, source_arrival):
+    def validate_fresh(self, command, clock, wall_now, source_arrival):
         if self.fault:
             self.fail(self.fault)
         if not math.isfinite(wall_now):
@@ -48,6 +49,9 @@ class CommandGuard:
                 or source_arrival > clock.arrival
                 or not 0 <= clock.stamp-command.stamp <= .05):
             self.fail('STALE_IMU_OR_COMMAND')
+
+    def accept(self, command, clock, wall_now, source_arrival):
+        self.validate_fresh(command, clock, wall_now, source_arrival)
         if command.sequence <= self.last_sequence:
             self.fail('COMMAND_REPLAY')
         if self.last_stamp is not None and command.stamp < self.last_stamp:
@@ -59,7 +63,19 @@ class CommandGuard:
             if elapsed < self.minimum_period:
                 return False  # Rate limit; no stale command replay to fill gaps.
         self.last_wall, self.last_sequence, self.last_stamp = wall_now, command.sequence, command.stamp
+        self.accepted_command = command
         return True
+
+    def before_publish(self, command, clock, wall_now, source_arrival):
+        """Recheck the accepted command immediately before a publish attempt."""
+        if self.fault:
+            self.fail(self.fault)
+        if self.accepted_command is not command:
+            self.fail('COMMAND_NOT_ACCEPTED')
+        if not math.isfinite(wall_now) or wall_now < self.last_wall:
+            self.fail('INVALID_PUBLICATION_TIME')
+        self.validate_fresh(command, clock, wall_now, source_arrival)
+        self.accepted_command = None
 
     def published(self, wall_now):
         """Space the next command from completion even if ROS publish blocked."""
