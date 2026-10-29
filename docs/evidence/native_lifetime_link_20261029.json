@@ -1,0 +1,160 @@
+{
+  "unmatched_entries": 2,
+  "findings": [
+    {
+      "bridge_span": 794,
+      "parameter_address": "0x7171b0034090",
+      "borrow": {
+        "event": "parameter_borrow",
+        "mode": "native-input",
+        "function": "bridge",
+        "start_monotonic_ns": 2904546514682,
+        "end_monotonic_ns": 2904546514727,
+        "thread_id": 1359,
+        "other_thread_id": 0,
+        "pwm_calls": 116,
+        "bridge_calls": 794,
+        "overlap_entries": 8,
+        "write_errors": 0,
+        "parameter_address": "0x7171b0034090",
+        "command_address": "0x0",
+        "bridge_span": 794,
+        "parameter_read_ok": false,
+        "parameter_float32_hex": "",
+        "native_call_interval_measured": false
+      },
+      "entry": {
+        "event": "native_pwm_entry",
+        "mode": "native-input",
+        "function": "bridge",
+        "start_monotonic_ns": 2904546535811,
+        "end_monotonic_ns": 2904546543179,
+        "thread_id": 1359,
+        "other_thread_id": 0,
+        "pwm_calls": 116,
+        "bridge_calls": 794,
+        "overlap_entries": 8,
+        "write_errors": 0,
+        "parameter_address": "0x7171b0034090",
+        "command_address": "0x7173c699eb50",
+        "bridge_span": 794,
+        "parameter_read_ok": true,
+        "parameter_float32_hex": "a7c0a007747100000000000000000000",
+        "native_call_interval_measured": false
+      },
+      "snapshot_values": [
+        2.4187355175715847e-34,
+        4.0699312597849987e-41,
+        0.0,
+        0.0
+      ],
+      "finite_unit_range": true,
+      "frees_completed_before_entry": [
+        {
+          "event": "parameter_free_end",
+          "mode": "native-input",
+          "function": "bridge",
+          "start_monotonic_ns": 2904546525703,
+          "end_monotonic_ns": 2904546535619,
+          "thread_id": 1349,
+          "other_thread_id": 0,
+          "pwm_calls": 116,
+          "bridge_calls": 794,
+          "overlap_entries": 8,
+          "write_errors": 0,
+          "parameter_address": "0x7171b0034090",
+          "command_address": "0x0",
+          "bridge_span": 0,
+          "parameter_read_ok": false,
+          "parameter_float32_hex": "",
+          "native_call_interval_measured": false
+        }
+      ],
+      "frees_overlapping_entry": [],
+      "classification": "free_completed_before_entry"
+    },
+    {
+      "bridge_span": 2589,
+      "parameter_address": "0x7173fcee21b0",
+      "borrow": {
+        "event": "parameter_borrow",
+        "mode": "native-input",
+        "function": "bridge",
+        "start_monotonic_ns": 2913521597827,
+        "end_monotonic_ns": 2913521597875,
+        "thread_id": 1359,
+        "other_thread_id": 0,
+        "pwm_calls": 739,
+        "bridge_calls": 2589,
+        "overlap_entries": 48,
+        "write_errors": 0,
+        "parameter_address": "0x7173fcee21b0",
+        "command_address": "0x0",
+        "bridge_span": 2589,
+        "parameter_read_ok": false,
+        "parameter_float32_hex": "",
+        "native_call_interval_measured": false
+      },
+      "entry": {
+        "event": "native_pwm_entry",
+        "mode": "native-input",
+        "function": "bridge",
+        "start_monotonic_ns": 2913521615412,
+        "end_monotonic_ns": 2913521621948,
+        "thread_id": 1359,
+        "other_thread_id": 0,
+        "pwm_calls": 739,
+        "bridge_calls": 2589,
+        "overlap_entries": 48,
+        "write_errors": 0,
+        "parameter_address": "0x7173fcee21b0",
+        "command_address": "0x7171b0596070",
+        "bridge_span": 2589,
+        "parameter_read_ok": true,
+        "parameter_float32_hex": "907049c671710000406b49c671710000",
+        "native_call_interval_measured": false
+      },
+      "snapshot_values": [
+        -12892.140625,
+        4.0695108702457013e-41,
+        -12890.8125,
+        4.0695108702457013e-41
+      ],
+      "finite_unit_range": false,
+      "frees_completed_before_entry": [],
+      "frees_overlapping_entry": [
+        {
+          "event": "parameter_free_end",
+          "mode": "native-input",
+          "function": "bridge",
+          "start_monotonic_ns": 2913521600805,
+          "end_monotonic_ns": 2913521615542,
+          "thread_id": 1349,
+          "other_thread_id": 0,
+          "pwm_calls": 739,
+          "bridge_calls": 2589,
+          "overlap_entries": 48,
+          "write_errors": 0,
+          "parameter_address": "0x7173fcee21b0",
+          "command_address": "0x0",
+          "bridge_span": 0,
+          "parameter_read_ok": false,
+          "parameter_float32_hex": "",
+          "native_call_interval_measured": false
+        }
+      ],
+      "classification": "free_overlaps_entry"
+    }
+  ],
+  "allocation_identity_verified": false,
+  "downstream_consumption_verified": false,
+  "physical_cause_identified": false,
+  "interpretation": "Same address and timing do not prove allocation identity; overlapping intervals do not establish free completion before the snapshot.",
+  "run_directory": "runs/20261029T080959Z_b59477b9c5c4493f88187c50f791562b",
+  "inputs_sha256": {
+    "bridge_probe.jsonl": "2bb19d3e71946d4870174e1e0b9b5998a7bd553577256f3bdf2fb686b9fe89cc",
+    "native_input_audit.json": "1fe5d524f45df449ac067e2fc7163c792a96a2400c11ee655a7b60cc17f0aa0f",
+    "manifest.json": "59e6abe086a9e9806448e846aa9d349745f65c3780423e0aecda0b294dbae244"
+  },
+  "analysis_sha256": "f728391f26f04a825a867d9f4eb13df3cda80a18ab67ad47e8d64de4bb504c6c"
+}
