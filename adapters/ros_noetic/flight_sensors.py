@@ -25,6 +25,12 @@ class FlightSensors:
         self.bootstrap_gps=deque(maxlen=24)
         self.bootstrap_applied=False
         self.pose_history=pose_history
+        self.startup_diagnostics = {'first_imu_callback_wall_monotonic': None,
+                                    'initial_pose_callback_wall_monotonic': None,
+                                    'initial_pose_accepted_wall_monotonic': None,
+                                    'imu_skipped_before_initial': 0,
+                                    'first_initialized_imu_stamp': None,
+                                    'first_initialized_imu_callback_wall_monotonic': None}
         if subscribe:
             import rospy
             from geometry_msgs.msg import PoseStamped
@@ -36,13 +42,18 @@ class FlightSensors:
             ]
 
     def on_initial(self, msg):
+        arrival = time.monotonic()
         with self.lock:
             if self.initial is None:
                 self.initial = pose_values(msg.pose)
+                self.startup_diagnostics['initial_pose_callback_wall_monotonic'] = arrival
+                self.startup_diagnostics['initial_pose_accepted_wall_monotonic'] = time.monotonic()
 
     def on_imu(self, msg):
         callback_arrival=time.monotonic()
         with self.lock:
+            if self.startup_diagnostics['first_imu_callback_wall_monotonic'] is None:
+                self.startup_diagnostics['first_imu_callback_wall_monotonic'] = callback_arrival
             try:
                 stamp = msg.header.stamp.to_sec()
                 if self.local_injection is not None:
@@ -58,8 +69,9 @@ class FlightSensors:
                 if previous == stamp:
                     return
                 if self.initial is None:
+                    self.startup_diagnostics['imu_skipped_before_initial'] += 1
                     return
-                if self.initial is not None and not self.estimator.initialized:
+                if not self.estimator.initialized:
                     self.estimator.initialize(*self.initial)
                 a, w = msg.linear_acceleration, msg.angular_velocity
                 acceleration, omega = (a.x, a.y, a.z), (w.x, w.y, w.z)
@@ -68,6 +80,9 @@ class FlightSensors:
                     # Local diagnostic sample only; do not alter the ROS message.
                     omega = (2., 0., 0.)
                 self.estimator.propagate(stamp, acceleration, omega)
+                if self.startup_diagnostics['first_initialized_imu_stamp'] is None:
+                    self.startup_diagnostics['first_initialized_imu_stamp'] = stamp
+                    self.startup_diagnostics['first_initialized_imu_callback_wall_monotonic'] = callback_arrival
                 self._check_rate_guard(stamp, callback_arrival)
                 if self.pending_gps is not None and self.pending_gps[0] <= stamp:
                     try:
@@ -168,6 +183,10 @@ class FlightSensors:
             e.omega=np.array(self.raw['omega_body'])-e.bg
             self.bootstrap_applied=True
             return result
+
+    def startup_snapshot(self):
+        with self.lock:
+            return dict(self.startup_diagnostics)
 
     def close(self):
         for subscriber in self.subscribers:

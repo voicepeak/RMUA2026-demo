@@ -337,7 +337,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
     (run/'pwm_telemetry.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
     if fault_observation is not None:
         (run/'fault_observation.json').write_text(json.dumps(fault_observation,indent=2)+'\n')
-    result = {'commands': len(rows), 'fault': fault, 'levels': levels,
+    result = {'commands': len(rows), 'fault': fault, 'startup_diagnostics': sensors.startup_snapshot(), 'levels': levels,
               'control_end_wall_monotonic':control_end_wall,
               'motor_pulses': motor_pulses,
               'hover_seconds': hover_seconds, 'control_hz': control_hz,
