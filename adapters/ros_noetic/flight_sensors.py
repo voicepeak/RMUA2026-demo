@@ -51,7 +51,7 @@ class FlightSensors:
                     if self.local_injection.affects('IMU_ROLLBACK', stamp):
                         stamp -= 1.
                 previous = self.clock.stamp
-                if self.clock.observe(stamp, time.monotonic()):
+                if self.clock.observe(stamp, callback_arrival):
                     if self.pose_history is not None:self.pose_history.reset(self.clock.epoch)
                     self.fault = self.fault or 'IMU_CLOCK_RESET'
                     return

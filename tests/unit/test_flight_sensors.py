@@ -1,6 +1,7 @@
 from types import SimpleNamespace as Obj
 import time
 import unittest
+from unittest.mock import patch
 from adapters.ros_noetic.flight_sensors import FlightSensors
 from interfaces.contracts import Health
 from estimation.history import PoseHistory, HistoryUnavailable
@@ -102,6 +103,15 @@ class SensorAdapterTests(unittest.TestCase):
         self.assertEqual(s.local_injection.injected_samples, 1)
         with self.assertRaisesRegex(RuntimeError, 'ANGULAR_RATE_LIMIT'):
             s.read()
+
+    def test_callback_lock_wait_does_not_refresh_old_imu_arrival(self):
+        s = self.sensors()
+        # The callback entered at 10.0; if lock acquisition is delayed until
+        # 10.15, that delay must count against the 100 ms freshness deadline.
+        with patch('adapters.ros_noetic.flight_sensors.time.monotonic', side_effect=[10., 10.15, 10.15]):
+            s.on_imu(message(100.01))
+            with self.assertRaisesRegex(RuntimeError, 'STALE_IMU'):
+                s.read()
 
 
 if __name__ == '__main__':

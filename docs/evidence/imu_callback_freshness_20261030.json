@@ -1,0 +1,27 @@
+{
+  "batch_directory": "runs/batches/20261029T165252Z_9afd3f98c9534d989272b85cb36ecb8e",
+  "batch_report_sha256": "a3698d49d0ecb791b57da2bf38e50332e02dcc8440bcb54a05e523b120eafbb6",
+  "run_directory": "runs/20261029T165253Z_03b37745fa7146cca989b1647ca9e839",
+  "manifest_sha256": "509bc117f471dd2252a2b44e577929b6ef53a0996085dfc4b516344b15fb2025",
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "029a2f1ffb270d49770e706c13982499648a39df010a250efea1c6a2426e87ca",
+    "files": 480,
+    "uncompressed_bytes": 3081338,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "git_sha": "ba0ffd92a7f5baeed63a36a112c3e359efdb209b",
+  "git_status": " M adapters/ros_noetic/flight_sensors.py\n M tests/unit/test_flight_sensors.py\n",
+  "source_unchanged": true,
+  "seed": 1005,
+  "fault": null,
+  "commands": 923,
+  "wire_valid": true,
+  "evaluation_valid": true,
+  "cleanup": {
+    "stop_and_launcher_completed": true,
+    "stop_script_exit_code": 0,
+    "launcher_exit_code": 143
+  },
+  "stage_acceptance": false
+}
