@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "purpose": "Development-only small single-cycle pitch pulse, standard angular recovery, stop batch on any fault; no acceptance claim",
+  "seeds": [2030, 2041],
+  "hover_seconds": 14,
+  "mode": "PWM",
+  "braking": false,
+  "yaw_motion": false,
+  "snapshot": false,
+  "stationary_bootstrap": true,
+  "angular_recovery": true,
+  "angular_recovery_profile": "standard",
+  "angular_pulse_moments": [0.2],
+  "evaluation_policy": "Pulse sent and recovery hold required by existing experiment; retain all faults, verify command trace and offline truth. Existing 2.5 rad/s, 0.35 rad, 0.8 m and 3 s recovery hard limits unchanged.",
+  "official_result": "UNKNOWN"
+}

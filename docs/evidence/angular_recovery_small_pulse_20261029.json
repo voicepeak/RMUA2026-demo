@@ -1,0 +1,92 @@
+{
+  "batch_directory": "runs/batches/20261029T091839Z_715b5482de1c479cb0385f90bf670671",
+  "batch_report_sha256": "cc06aa18293f40b8f5b46990c11374e46be9c6a832f551087250d77b61544071",
+  "protocol": {
+    "schema_version": 1,
+    "purpose": "Development-only small single-cycle pitch pulse, standard angular recovery, stop batch on any fault; no acceptance claim",
+    "seeds": [
+      2030,
+      2041
+    ],
+    "hover_seconds": 14,
+    "mode": "PWM",
+    "braking": false,
+    "yaw_motion": false,
+    "snapshot": false,
+    "stationary_bootstrap": true,
+    "angular_recovery": true,
+    "angular_recovery_profile": "standard",
+    "angular_pulse_moments": [
+      0.2
+    ],
+    "evaluation_policy": "Pulse sent and recovery hold required by existing experiment; retain all faults, verify command trace and offline truth. Existing 2.5 rad/s, 0.35 rad, 0.8 m and 3 s recovery hard limits unchanged.",
+    "official_result": "UNKNOWN"
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "f46a703c569651fe4c612925aa09f51bc1c595f254927baac1d6dfaa195703a5",
+    "files": 473,
+    "uncompressed_bytes": 3038965,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "batch_succeeded": false,
+  "staged_pulse_stopped_on_failed_case": true,
+  "cases": [
+    {
+      "seed": 2030,
+      "run_directory": "runs/20261029T091839Z_c20338faad4142cf8243cd58c409731b",
+      "manifest_sha256": "5a0ef2204b1f71bfd1b05f2a72086cd2cab8e8c57bdecefed1b1ef7b81dbf72e",
+      "exit_code": 0,
+      "fault": null,
+      "pulse_sent": true,
+      "pulse_stamp": 1793265537.6605594,
+      "phase": "RECOVERY_HOLD",
+      "transitions": [
+        {
+          "stamp": 1793265537.7115605,
+          "from": "NORMAL",
+          "to": "ANGULAR_RECOVERY",
+          "rate_rad_s": 0.413249470389017,
+          "tilt_rad": 0.01983999838551243
+        },
+        {
+          "stamp": 1793265538.1255693,
+          "from": "ANGULAR_RECOVERY",
+          "to": "RECOVERY_HOLD",
+          "rate_rad_s": 0.09398304576349524,
+          "tilt_rad": 0.01614983625675079
+        }
+      ],
+      "state_rate_peak_norm_within_1s": 0.413249470389017,
+      "wire_trace_valid": true,
+      "evaluation_valid": true,
+      "source_unchanged": true,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "seed": 2041,
+      "run_directory": "runs/20261029T091909Z_95b795d839b14170a517ff566bd8dae9",
+      "manifest_sha256": "f8e0772774ac5b59f1b85a0935114d4afb10898135ed43a0eab40c84942625c0",
+      "exit_code": 2,
+      "fault": "ANGULAR_RECOVERY_NOT_SETTLED",
+      "pulse_sent": true,
+      "pulse_stamp": 1793265565.3040214,
+      "phase": "NORMAL",
+      "transitions": [],
+      "state_rate_peak_norm_within_1s": 0.3433478228515254,
+      "wire_trace_valid": true,
+      "evaluation_valid": true,
+      "source_unchanged": true,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    }
+  ]
+}

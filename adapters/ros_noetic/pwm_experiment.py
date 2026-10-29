@@ -39,6 +39,15 @@ def motor_pattern():
     return tuple(pattern)
 
 
+def validate_angular_pulse_outcome(sent, phase):
+    if not sent:
+        raise RuntimeError('ANGULAR_EXCITATION_NOT_SENT')
+    if phase == 'NORMAL':
+        raise RuntimeError('ANGULAR_RECOVERY_NOT_TRIGGERED')
+    if phase != 'RECOVERY_HOLD':
+        raise RuntimeError('ANGULAR_RECOVERY_NOT_SETTLED')
+
+
 def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds=0, step=False,
                    sensor_fault=None, fault_seconds=.15, gps_bridge=False, yaw_motion=False,braking=False,
                    stationary_bootstrap=False,angular_recovery=False,angular_pulse=False,
@@ -259,9 +268,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 time.sleep(max(0., delay))
             if collective_pulse is not None and not collective_pulse.sent:
                 raise RuntimeError('COLLECTIVE_EXCITATION_NOT_SENT')
-            if angular_pulse and not pulse_sent:raise RuntimeError('ANGULAR_EXCITATION_NOT_SENT')
-            if angular_pulse and angular_supervisor.phase!='RECOVERY_HOLD':
-                raise RuntimeError('ANGULAR_RECOVERY_NOT_SETTLED')
+            if angular_pulse:
+                validate_angular_pulse_outcome(pulse_sent, angular_supervisor.phase)
         except Exception as error:
             fault = str(error)
             failed_wall=time.monotonic()

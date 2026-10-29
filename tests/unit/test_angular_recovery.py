@@ -4,6 +4,7 @@ from pathlib import Path
 import unittest
 import numpy as np
 from control.safety_supervisor.angular_recovery import AngularRecovery
+from adapters.ros_noetic.pwm_experiment import validate_angular_pulse_outcome
 from control.motor_allocator.allocator import MotorAllocator
 from control.se3_controller.controller import Se3Controller
 from estimation.geometry import delta_quaternion,multiply,unit,rotation
@@ -49,6 +50,14 @@ def simulate_recovery(axis,impulse,lag=.02,delay=0.,inertia_scale=1.,profile='st
 
 
 class AngularRecoveryTests(unittest.TestCase):
+    def test_pulse_outcome_distinguishes_not_sent_not_triggered_and_unsettled(self):
+        for sent, phase, reason in ((False, 'NORMAL', 'ANGULAR_EXCITATION_NOT_SENT'),
+                                    (True, 'NORMAL', 'ANGULAR_RECOVERY_NOT_TRIGGERED'),
+                                    (True, 'ANGULAR_RECOVERY', 'ANGULAR_RECOVERY_NOT_SETTLED')):
+            with self.subTest(reason=reason), self.assertRaisesRegex(RuntimeError, reason):
+                validate_angular_pulse_outcome(sent, phase)
+        validate_angular_pulse_outcome(True, 'RECOVERY_HOLD')
+
     def test_loss_epoch_hard_bound_and_timeout_do_not_resume_normal_commands(self):
         for s in (state(health=Health.LOST),state(omega=(0,5.,0))):
             with self.assertRaises(RuntimeError):AngularRecovery().decide(s)
