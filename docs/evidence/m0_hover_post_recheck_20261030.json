@@ -1,0 +1,117 @@
+{
+  "purpose": "Current code M0 bounded hover same-seed exploratory reproduction, not stage acceptance",
+  "batch_directory": "runs/batches/20261029T171828Z_f320e5e5bffb417f9d65dc84f5dd6e04",
+  "batch_report_sha256": "0a5932e8dd6f3db4c306381e08e2f3e4c81582a9dbef14001ece4616da527b87",
+  "protocol": {
+    "schema_version": 1,
+    "purpose": "M0 same-seed bounded hover reproducibility, exploratory not stage acceptance",
+    "seeds": [
+      1005,
+      1005,
+      1005
+    ],
+    "hover_seconds": 14,
+    "mode": "PWM",
+    "braking": false,
+    "yaw_motion": false,
+    "snapshot": false,
+    "parameter_policy": "freeze source and configuration; retain all outcomes; existing flight guards unchanged",
+    "evaluation_policy": "report completion, faults, source and command audits, truth tracking and timing; no M1 acceptance thresholds inferred from one prior run",
+    "official_result": "UNKNOWN"
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "57b32163679f48361293d1646d28a1a483b8ea7a1ac0189637230e6f8424fea3",
+    "files": 497,
+    "uncompressed_bytes": 3156840,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "batch_succeeded": true,
+  "cases": [
+    {
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T171828Z_abbc54f922f7403183760b39e84c1814",
+      "input_sha256": {
+        "manifest.json": "bfa96308ef44113fad1a288b441a978983ebdd34913033b447026835b38db3bd",
+        "pwm_summary.json": "0855e719ffa0c5ad315e03c60da8b759245bfe0efd9d2a21355b257ce181b1e7",
+        "command_trace_audit.json": "6c9bb9d9e30e9a6bc5ad5f915fb1e67f20b1a84231a8fa68b7e21bdb84bcb8c2",
+        "closed_loop_metrics.json": "249be27cd0a36af60eb82371a798a935db7caa5cbe628c79ae88e06733c5cba6"
+      },
+      "git_sha": "e5f05d15b3614ecebdc08be5183272fb36ecafcf",
+      "git_status": "",
+      "run_source_unchanged": true,
+      "fault": null,
+      "commands": 941,
+      "wire_valid": true,
+      "matched_commands": 941,
+      "evaluation_valid": true,
+      "truth_tracking_rmse_m": [
+        0.061734589686077646,
+        0.0522137477910943,
+        0.034025489377100794
+      ],
+      "truth_tracking_max_norm_m": 0.16657570423794724,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T171855Z_27b2ddb567954f4a8646312735bd73d0",
+      "input_sha256": {
+        "manifest.json": "3986b6aeecaca4b16e3963ef117c782ba3c15fbb19267c94419832c6fc04be3e",
+        "pwm_summary.json": "4ce7aece5925e5506f39248db6c736023c4348650f8c992200541b8707c4db2a",
+        "command_trace_audit.json": "0e1e2d2272163fc031932e87ebea4dfe75200c943efcc68569c7c762166e0b02",
+        "closed_loop_metrics.json": "a6e37b6f9efda807dd674557ea3993ef11d1bc15ef90726e79713629fbba4731"
+      },
+      "git_sha": "e5f05d15b3614ecebdc08be5183272fb36ecafcf",
+      "git_status": "",
+      "run_source_unchanged": true,
+      "fault": null,
+      "commands": 942,
+      "wire_valid": true,
+      "matched_commands": 942,
+      "evaluation_valid": true,
+      "truth_tracking_rmse_m": [
+        0.09446880383532258,
+        0.04878585559329919,
+        0.036615410825343586
+      ],
+      "truth_tracking_max_norm_m": 0.1960729135271837,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T171921Z_46497e7cd0d948bc9d8aab91ddd0570b",
+      "input_sha256": {
+        "manifest.json": "cf93e94cbb76a6016e605d406c56590c0b6d938723965287223872af7edcc800",
+        "pwm_summary.json": "7d36e6219155de1e6795fc4ff2603077a58ea1a30a77ea34fa25d2f98ac5f8be",
+        "command_trace_audit.json": "14a4c39eb9d491dc368e3a705126b5add46e3f9350052a23e8009d7890650e79",
+        "closed_loop_metrics.json": "25e6e22c56a25c71fd1c12f049656e898625546e970cb732aecfebe8e6d35330"
+      },
+      "git_sha": "e5f05d15b3614ecebdc08be5183272fb36ecafcf",
+      "git_status": "",
+      "run_source_unchanged": true,
+      "fault": null,
+      "commands": 960,
+      "wire_valid": true,
+      "matched_commands": 960,
+      "evaluation_valid": true,
+      "truth_tracking_rmse_m": [
+        0.049907654443643215,
+        0.06993853074763276,
+        0.0384050524407417
+      ],
+      "truth_tracking_max_norm_m": 0.15577449863530465,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    }
+  ]
+}
