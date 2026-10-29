@@ -1,0 +1,161 @@
+{
+  "analysis_sha256": "ebbd1cf7ef176b2302fd033ab9df1ee6adff4c6e7bec0ba9eeca3f7e3f681b65",
+  "purpose": "Descriptive observation, not prospective recovery test or acceptance",
+  "runs": [
+    {
+      "run_directory": "runs/20261029T080521Z_7b94c4bf786a4ce0a37716080a01db08",
+      "mode": null,
+      "control_hz": 80,
+      "inputs_sha256": {
+        "manifest.json": "9f0a401da5804d1e4f655d551b631825df4296827573e491eab62b039483622d",
+        "evaluation_imu.jsonl": "246160413a581ed7e15048114d0ef7fbb6b9eae73b6d803b57e9fcce4adfb5fe",
+        "pwm_telemetry.jsonl": "566ec01e637056331ebd0f6c2cdddf98caaa0cd4e51e7dcad738dc2c47c02632",
+        "fault_observation.json": "a98f8c1a3a1b1f36f9a05171b4323bcce96dd3844cc3540d119161c9f72ffa21"
+      },
+      "result": {
+        "window_wall_s": [
+          -0.25,
+          0.08
+        ],
+        "recorded_imu_samples_in_window": 33,
+        "crossings": {
+          "0.35": {
+            "arrival_minus_fault_s": -0.01904487199999494,
+            "source_stamp": 1793261132.8696797,
+            "raw_angular_rate_norm_rad_s": 0.985728210594139,
+            "published_commands_after_arrival_before_fault": 1
+          },
+          "1.0": {
+            "arrival_minus_fault_s": -0.010720770000261837,
+            "source_stamp": 1793261132.8786798,
+            "raw_angular_rate_norm_rad_s": 3.399715610550028,
+            "published_commands_after_arrival_before_fault": 0
+          },
+          "2.5": {
+            "arrival_minus_fault_s": -0.010720770000261837,
+            "source_stamp": 1793261132.8786798,
+            "raw_angular_rate_norm_rad_s": 3.399715610550028,
+            "published_commands_after_arrival_before_fault": 0
+          }
+        },
+        "recovery_tested": false,
+        "limitations": "First raw IMU sample above each threshold in this window; independent observer arrival is not controller arrival or actuator response. Sample gaps, bias and prior threshold crossings are not resolved; no counterfactual recovery or causal claim."
+      }
+    },
+    {
+      "run_directory": "runs/20261029T082107Z_b1984dfbdce64d66b61e374b69d7fb7d",
+      "mode": "observe",
+      "control_hz": 80,
+      "inputs_sha256": {
+        "manifest.json": "3bcf7a73bf9225a5a15425aaee2c0e869b6413e8c296b28d1b0ec77e0daeee0e",
+        "evaluation_imu.jsonl": "2f12e7dea652ec3313c76cb3bee23c4cc01b8278db8b6b6661cc1984156d2c4a",
+        "pwm_telemetry.jsonl": "85977d0f9fe1f61405cd1ed9710085af1f6bb5feaeb573580946fc49872acccb",
+        "fault_observation.json": "188a1ca6c226164fdf77b235d677d6ff2f94e5e756f94da0c2b9b3bb1aabfe7f"
+      },
+      "result": {
+        "window_wall_s": [
+          -0.25,
+          0.08
+        ],
+        "recorded_imu_samples_in_window": 33,
+        "crossings": {
+          "0.35": {
+            "arrival_minus_fault_s": -0.005011902000205737,
+            "source_stamp": 1793262086.4190776,
+            "raw_angular_rate_norm_rad_s": 2.2410236526981255,
+            "published_commands_after_arrival_before_fault": 0
+          },
+          "1.0": {
+            "arrival_minus_fault_s": -0.005011902000205737,
+            "source_stamp": 1793262086.4190776,
+            "raw_angular_rate_norm_rad_s": 2.2410236526981255,
+            "published_commands_after_arrival_before_fault": 0
+          },
+          "2.5": {
+            "arrival_minus_fault_s": 0.005464930000016466,
+            "source_stamp": 1793262086.4250777,
+            "raw_angular_rate_norm_rad_s": 2.588874965534612,
+            "published_commands_after_arrival_before_fault": 0
+          }
+        },
+        "recovery_tested": false,
+        "limitations": "First raw IMU sample above each threshold in this window; independent observer arrival is not controller arrival or actuator response. Sample gaps, bias and prior threshold crossings are not resolved; no counterfactual recovery or causal claim."
+      }
+    },
+    {
+      "run_directory": "runs/20261029T082956Z_35428d0314524dfdb0b94e2d7ef25a21",
+      "mode": "native-input",
+      "control_hz": 80,
+      "inputs_sha256": {
+        "manifest.json": "599abff906483b2ebf676d8da1a2c4e6198a0c0d0bdcd5dc570be2e77d14acc7",
+        "evaluation_imu.jsonl": "0855129424aac7c98fe4b6a0c229d9d69c840b827e8d7d12bb2e57886ecb10e5",
+        "pwm_telemetry.jsonl": "d35a708eda01a40aaed19b2ad4e469bcb0c9cde5168aeb8b4106b8400ffb9f14",
+        "fault_observation.json": "c2e51af3f96a76e00726abaad626b887230ce92e721c88d541c6fcb62a462ff4"
+      },
+      "result": {
+        "window_wall_s": [
+          -0.25,
+          0.08
+        ],
+        "recorded_imu_samples_in_window": 33,
+        "crossings": {
+          "0.35": {
+            "arrival_minus_fault_s": -0.015503454999816313,
+            "source_stamp": 1793262616.7573411,
+            "raw_angular_rate_norm_rad_s": 0.3588068468965422,
+            "published_commands_after_arrival_before_fault": 1
+          },
+          "1.0": {
+            "arrival_minus_fault_s": -0.004140799999731826,
+            "source_stamp": 1793262616.7633414,
+            "raw_angular_rate_norm_rad_s": 1.7080958362762306,
+            "published_commands_after_arrival_before_fault": 0
+          },
+          "2.5": null
+        },
+        "recovery_tested": false,
+        "limitations": "First raw IMU sample above each threshold in this window; independent observer arrival is not controller arrival or actuator response. Sample gaps, bias and prior threshold crossings are not resolved; no counterfactual recovery or causal claim."
+      }
+    },
+    {
+      "run_directory": "runs/20261029T083049Z_36f9fd4eb7f8416eba99522770cc58d3",
+      "mode": "native-input",
+      "control_hz": 50,
+      "inputs_sha256": {
+        "manifest.json": "0bddfc955db7c9220a4623774e611ca7a5176ed009e6602d7caa6b820b213404",
+        "evaluation_imu.jsonl": "cfb1c39c971ecd5eb05459b4cfae727dd7dd5ad356368e60c21a1aa3c559325f",
+        "pwm_telemetry.jsonl": "6c6c4958bf71b544126bec55c20142016160d21d4e718dd1f2342a60338d69c3",
+        "fault_observation.json": "0a0720fbed9bbfb0b279f863a01b6d4290bf0fb763e3a5114da042353a7f2e6e"
+      },
+      "result": {
+        "window_wall_s": [
+          -0.25,
+          0.08
+        ],
+        "recorded_imu_samples_in_window": 33,
+        "crossings": {
+          "0.35": {
+            "arrival_minus_fault_s": -0.010297591000380635,
+            "source_stamp": 1793262660.7648036,
+            "raw_angular_rate_norm_rad_s": 1.1185705630011122,
+            "published_commands_after_arrival_before_fault": 0
+          },
+          "1.0": {
+            "arrival_minus_fault_s": -0.010297591000380635,
+            "source_stamp": 1793262660.7648036,
+            "raw_angular_rate_norm_rad_s": 1.1185705630011122,
+            "published_commands_after_arrival_before_fault": 0
+          },
+          "2.5": {
+            "arrival_minus_fault_s": 0.0008122489998640958,
+            "source_stamp": 1793262660.7708037,
+            "raw_angular_rate_norm_rad_s": 3.0473162918118155,
+            "published_commands_after_arrival_before_fault": 0
+          }
+        },
+        "recovery_tested": false,
+        "limitations": "First raw IMU sample above each threshold in this window; independent observer arrival is not controller arrival or actuator response. Sample gaps, bias and prior threshold crossings are not resolved; no counterfactual recovery or causal claim."
+      }
+    }
+  ]
+}
