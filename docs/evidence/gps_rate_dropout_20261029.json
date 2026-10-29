@@ -1,0 +1,39 @@
+{
+  "run_directory": "runs/20261029T081704Z_345b12936fd449d19414272a53d497bd",
+  "input_sha256": {
+    "evaluation_gps.jsonl": "c037addf8a42b60dd4ed555895dca7077c08832d9bfb40fed227bacc745d1409",
+    "evaluation_imu.jsonl": "3f479a224c1c15b4bfa8d48d6de4401213d8e9c8843e80b49f47f56328f1e7cb",
+    "fault_observation.json": "1386cd3820b9d7f3db3da716471f6e32fc4c08cc776fe78d7489e72ce891b420",
+    "manifest.json": "d12056704bb62f383f0416990e933f5288184c9643e80b377659509b6b0aed08"
+  },
+  "analysis_sha256": "2ea0dc3dcbade01bbe75c652442451be8b3e64dff3f8a4226af2e6289e2eee16",
+  "result": {
+    "gps_pairs": 88,
+    "matched_pairs": 83,
+    "conflicting_imu_timestamps": 0,
+    "matched_pairs_after_fault": 8,
+    "gps_rate_norm_median_p95_max_rad_s": [
+      2.333846909404728,
+      4.3209826349595675,
+      4.954227618870125
+    ],
+    "imu_interval_mean_rate_norm_median_p95_max_rad_s": [
+      0.07494668563840684,
+      0.17576061530107048,
+      0.24016477912717726
+    ],
+    "rate_error_norm_median_p95_max_rad_s": [
+      2.3188666576552226,
+      4.319816679468526,
+      4.907504158056248
+    ],
+    "after_fault_error_norm_median_p95_max_rad_s": [
+      2.857769219517632,
+      4.089613805919525,
+      4.160589478882968
+    ],
+    "limits": "GPS attitude difference uses shortest quaternion rotation in initial body frame; IMU rate is an approximate interval mean, without transport compensation, clock calibration or sensor independence proof. Offline diagnostic only.",
+    "gps_fallback_validated": false
+  },
+  "limitations": "Single low-dynamic run; IMU fault injection is local to the controller, evaluation IMU remains available; no clock or cross-sensor correlation calibration; 5 GPS intervals outside the fixed 70-150 ms timestamp range."
+}
