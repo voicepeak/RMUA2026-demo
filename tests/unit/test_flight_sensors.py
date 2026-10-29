@@ -58,6 +58,37 @@ class SensorAdapterTests(unittest.TestCase):
         self.assertEqual(history.snapshot_sources(),())
         with self.assertRaises(HistoryUnavailable):history.lookup(100.015,100.02,time.monotonic(),1)
 
+    def test_transient_rate_over_limit_is_latched_between_control_reads(self):
+        s = self.sensors()
+        s.arm_rate_guard()
+        spike = message(100.01); spike.angular_velocity.y = 1.1
+        s.on_imu(spike)
+        s.on_imu(message(100.02))
+        with self.assertRaisesRegex(RuntimeError, 'ANGULAR_RATE_LIMIT'):
+            s.read()
+        self.assertEqual(s.rate_guard_event['stamp'], 100.01)
+        self.assertAlmostEqual(s.rate_guard_event['rate_norm_rad_s'], 1.1)
+        with self.assertRaisesRegex(RuntimeError, 'RATE_GUARD_ALREADY_ARMED'):
+            s.arm_rate_guard()
+
+    def test_recovery_rate_guard_uses_existing_hard_limit_and_bias(self):
+        s = self.sensors(); s.estimator.bg[1] = .2
+        s.arm_rate_guard(recovery=True)
+        safe = message(100.01); safe.angular_velocity.y = 2.6
+        s.on_imu(safe)
+        self.assertIsNone(s.fault)
+        spike = message(100.02); spike.angular_velocity.y = 2.8
+        s.on_imu(spike)
+        with self.assertRaisesRegex(RuntimeError, 'ANGULAR_RECOVERY_HARD_BOUND'):
+            s.read()
+        self.assertAlmostEqual(s.rate_guard_event['rate_norm_rad_s'], 2.6)
+
+    def test_unarmed_adapter_keeps_existing_observer_behavior(self):
+        s = self.sensors()
+        spike = message(100.01); spike.angular_velocity.y = 3.
+        s.on_imu(spike)
+        self.assertIsNone(s.fault)
+
 
 if __name__ == '__main__':
     unittest.main()

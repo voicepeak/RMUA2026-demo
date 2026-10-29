@@ -142,6 +142,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 else:raise RuntimeError('REFERENCE_WORKER_STARTUP')
             start = time.monotonic()
             state, raw = sensors.read()
+            sensors.arm_rate_guard(recovery=angular_recovery)
             start_stamp = state.metadata.stamp
             if sensor_fault:
                 sensors.local_injection = LocalSensorFault(sensor_fault, start_stamp+6., fault_seconds)
@@ -238,6 +239,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     values = pattern[index]
                 command = PwmCommand(state.metadata.stamp, state.metadata.epoch, sequence, values)
                 with sensors.lock:
+                    if sensors.fault:
+                        raise RuntimeError(sensors.fault)
                     accepted_wall = time.monotonic()
                     allowed = guard.accept(command, sensors.clock, accepted_wall)
                 if allowed:
@@ -278,6 +281,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 'wall_elapsed_at_last_read':latest_elapsed,
                 'wall_since_last_publication_s':None if last_published_wall is None else failed_wall-last_published_wall,
                 'state':asdict(latest_state) if latest_state else None,'raw':latest_raw}
+            with sensors.lock:
+                fault_observation['rate_guard_event'] = sensors.rate_guard_event
         finally:
             control_end_wall=time.monotonic()
             if monitor:

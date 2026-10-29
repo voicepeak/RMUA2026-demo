@@ -16,6 +16,8 @@ class FlightSensors:
         self.initial = None
         self.raw = None
         self.fault = None
+        self.rate_guard = None
+        self.rate_guard_event = None
         self.local_injection = None
         self.pending_gps = None
         self.subscribers = []
@@ -51,7 +53,7 @@ class FlightSensors:
                 previous = self.clock.stamp
                 if self.clock.observe(stamp, time.monotonic()):
                     if self.pose_history is not None:self.pose_history.reset(self.clock.epoch)
-                    self.fault = 'IMU_CLOCK_RESET'
+                    self.fault = self.fault or 'IMU_CLOCK_RESET'
                     return
                 if previous == stamp:
                     return
@@ -60,6 +62,7 @@ class FlightSensors:
                 a, w = msg.linear_acceleration, msg.angular_velocity
                 acceleration, omega = (a.x, a.y, a.z), (w.x, w.y, w.z)
                 self.estimator.propagate(stamp, acceleration, omega)
+                self._check_rate_guard(stamp, callback_arrival)
                 if self.pending_gps is not None and self.pending_gps[0] <= stamp:
                     try:
                         if self.estimator.update_gps(*self.pending_gps):
@@ -77,7 +80,34 @@ class FlightSensors:
                 if self.pose_history is not None and self.estimator.initialized:
                     self.pose_history.append(self.estimator.snapshot(), callback_arrival)
             except (ValueError, ArithmeticError) as error:
-                self.fault = str(error)
+                self.fault = self.fault or str(error)
+
+    def _check_rate_guard(self, stamp, arrival):
+        if self.rate_guard is None or self.fault is not None:
+            return
+        limit, reason = self.rate_guard
+        omega = self.estimator.omega
+        magnitude = float(np.linalg.norm(omega))
+        if magnitude > limit:
+            self.fault = reason
+            self.rate_guard_event = {'stamp': stamp, 'arrival_wall_monotonic': arrival,
+                                     'angular_velocity_body': tuple(float(x) for x in omega),
+                                     'rate_norm_rad_s': magnitude, 'limit_rad_s': limit}
+
+    def arm_rate_guard(self, recovery=False):
+        """Latch existing experiment bounds on every accepted IMU sample."""
+        with self.lock:
+            if self.rate_guard is not None:
+                raise RuntimeError('RATE_GUARD_ALREADY_ARMED')
+            if self.fault:
+                raise RuntimeError(self.fault)
+            if not self.estimator.initialized or self.estimator.stamp is None:
+                raise RuntimeError('RATE_GUARD_NO_STATE')
+            self.rate_guard = ((2.5, 'ANGULAR_RECOVERY_HARD_BOUND') if recovery
+                               else (1., 'ANGULAR_RATE_LIMIT'))
+            self._check_rate_guard(self.estimator.stamp, time.monotonic())
+            if self.fault:
+                raise RuntimeError(self.fault)
 
     def on_gps(self, msg):
         with self.lock:

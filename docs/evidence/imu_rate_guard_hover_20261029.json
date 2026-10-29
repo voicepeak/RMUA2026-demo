@@ -1,0 +1,28 @@
+{
+  "batch_directory": "runs/batches/20261029T092456Z_b1918bb0234f4d8c9f8d3f64f65ad106",
+  "batch_report_sha256": "7fbde8be971399056311a6551534f77370bcddb7ef3ad9dfe69d64bf9d130001",
+  "run_directory": "runs/20261029T092457Z_cf492bfde6034c949c0afdcc26ad1c51",
+  "manifest_sha256": "fcf73e31e16895909ae1ff30d8b6d1388f786855f884b0639eb38a6f934dc487",
+  "git_sha": "ba7d00ed26e1e36b611c3c57d1ba3647b39099f3",
+  "git_status": " M adapters/ros_noetic/flight_sensors.py\n M adapters/ros_noetic/pwm_experiment.py\n M tests/unit/test_flight_sensors.py\n",
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "41dafb1ed590a7e13b08ce8dbdc9ae24a842bd25ef9ec55cd4dfcfd639c8fa56",
+    "files": 476,
+    "uncompressed_bytes": 3052530,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "control_mode": "PWM",
+  "seed": 1005,
+  "fault": null,
+  "commands": 979,
+  "wire_trace_valid": true,
+  "evaluation_valid": true,
+  "cleanup": {
+    "stop_and_launcher_completed": true,
+    "stop_script_exit_code": 0,
+    "launcher_exit_code": 143
+  },
+  "stage_acceptance": false
+}
