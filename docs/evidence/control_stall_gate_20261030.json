@@ -1,0 +1,94 @@
+{
+  "purpose": "Local 150 ms control stall versus no-stall diagnostic; not competition recovery",
+  "cases": [
+    {
+      "run_directory": "runs/20261029T170610Z_20fe2d0d150a4676a9a8cb04c2e053a9",
+      "sha256": {
+        "manifest.json": "04ef6ee468ff54645d178833947dd169c222e611f6de9197c62b40451f4c87b7",
+        "pwm_summary.json": "e490c65be46acebdff78aa3f83a7ccaa5284c93d4ea6b329173b280b77cf51ab",
+        "wire_observer_comparison.json": "04055e29f3b435860ff58605b9cce60496ef8eae3b712c0a9e98e39533c22869",
+        "pwm_telemetry.jsonl": "ddd0cfadc045dae385251e17d41dd2c00e4322f52ff9194c7c94f95bb28dbfdc",
+        "fault_observation.json": "ad15a703fe22e2e02d05bb4ac9d90b0dd2d5cdeef12e9b3387bc1806bd0c6af7"
+      },
+      "git_sha": "2ea079c5522211212ede0ab198fa5480f50bb21f",
+      "git_status": " M adapters/ros_noetic/pwm_experiment.py\n M evaluation/seed_runner/pwm_identification.py\n M tests/unit/test_control_guard.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "71ced98b9faa89d9af9406e1277594285f5ea16d7d628cf2099d4e821587f245",
+        "files": 488,
+        "uncompressed_bytes": 3114734,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "seed": 1009,
+      "fault": "STALE_IMU_OR_COMMAND",
+      "commands": 459,
+      "control_stall": {
+        "begin_wall_monotonic": 35083.612903115,
+        "end_wall_monotonic": 35083.763042403,
+        "source_stamp": 1793293588.972253
+      },
+      "guard_observation": {
+        "wall_now": 35083.763586879,
+        "source_arrival": 35083.611790287,
+        "source_stamp": 1793293588.972253,
+        "latest_stamp": 1793293589.1072562,
+        "latest_arrival": 35083.761839055
+      },
+      "wire_comparison": {
+        "comparable": true,
+        "missing_first_only": [],
+        "missing_second_only": [],
+        "missing_both": [],
+        "both_wire_traces_valid": true,
+        "backend_delivery_verified": false,
+        "note": "Observer records have separate connections; agreement does not prove backend receipt or actuator consumption."
+      },
+      "evaluation_exit_code": 0,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    },
+    {
+      "run_directory": "runs/20261029T170651Z_5eb36cdc3c3c40199be4033b933b33c9",
+      "sha256": {
+        "manifest.json": "50e9f29da2ca8fc15dc7f05c8baec0875bb5a66d79ff344f07d198b33d2034fe",
+        "pwm_summary.json": "24a268df27e055c1dc7fc009b90a7f6a3ced881f2697565ef1737297348f39ec",
+        "wire_observer_comparison.json": "04055e29f3b435860ff58605b9cce60496ef8eae3b712c0a9e98e39533c22869",
+        "pwm_telemetry.jsonl": "74596e27c331bfe2d1a7eca3b3e963f3cd65584ee98a170a849fe3a0f766ba6a"
+      },
+      "git_sha": "2ea079c5522211212ede0ab198fa5480f50bb21f",
+      "git_status": " M adapters/ros_noetic/pwm_experiment.py\n M evaluation/seed_runner/pwm_identification.py\n M tests/unit/test_control_guard.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "71ced98b9faa89d9af9406e1277594285f5ea16d7d628cf2099d4e821587f245",
+        "files": 488,
+        "uncompressed_bytes": 3114734,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "seed": 1009,
+      "fault": null,
+      "commands": 818,
+      "control_stall": null,
+      "guard_observation": null,
+      "wire_comparison": {
+        "comparable": true,
+        "missing_first_only": [],
+        "missing_second_only": [],
+        "missing_both": [],
+        "both_wire_traces_valid": true,
+        "backend_delivery_verified": false,
+        "note": "Observer records have separate connections; agreement does not prove backend receipt or actuator consumption."
+      },
+      "evaluation_exit_code": 0,
+      "cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      }
+    }
+  ]
+}

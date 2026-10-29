@@ -52,9 +52,16 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                    sensor_fault=None, fault_seconds=.15, gps_bridge=False, yaw_motion=False,braking=False,
                    stationary_bootstrap=False,angular_recovery=False,angular_pulse=False,
                    isolated_reference=False,reference_stall_seconds=0.,collective_pulse_pwm=None,
-                   angular_pulse_moment=.5,angular_recovery_profile='standard',control_hz=80):
+                   angular_pulse_moment=.5,angular_recovery_profile='standard',control_hz=80,
+                   control_stall_seconds=0.):
     if type(control_hz) is not int or control_hz not in (50, 80):
         raise ValueError('experimental control rate must be 50 or 80 Hz')
+    if control_stall_seconds not in (0., .15):
+        raise ValueError('experimental control stall must be 0 or 0.15 s')
+    if control_stall_seconds and (hover_seconds < 10 or motor_pulses or sensor_fault or gps_bridge
+            or step or yaw_motion or braking or angular_recovery or angular_pulse
+            or isolated_reference or collective_pulse_pwm is not None):
+        raise ValueError('control stall requires isolated bounded hover')
     import rospy
     import rosgraph
     from airsim_ros.msg import RotorPWM
@@ -66,6 +73,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
     fresh_read=False
     fault_observation=None
     last_published_wall=None
+    control_stall = None
+    guard_observation = None
     def graph(require_self):
         pubs, _, _ = master.getSystemState()
         check_graph(dict(pubs), rospy.get_name(), require_self=require_self)
@@ -158,6 +167,13 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 state, raw = sensors.read()
                 latest_state,latest_raw,latest_elapsed=state,raw,now-start
                 fresh_read=True
+                if (control_stall_seconds and control_stall is None
+                        and state.metadata.stamp-start_stamp >= 6.):
+                    stall_begin = time.monotonic()
+                    time.sleep(control_stall_seconds)
+                    control_stall = {'begin_wall_monotonic': stall_begin,
+                                     'end_wall_monotonic': time.monotonic(),
+                                     'source_stamp': state.metadata.stamp}
                 R = rotation(state.orientation_wxyz)
                 if state.health != Health.OK and not (hover_seconds and gps_bridge):
                     raise RuntimeError('STATE_HEALTH_'+state.health.value)
@@ -242,6 +258,10 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                     if sensors.fault:
                         raise RuntimeError(sensors.fault)
                     accepted_wall = time.monotonic()
+                    guard_observation = {'wall_now': accepted_wall,
+                        'source_arrival': raw['imu_callback_arrival_wall_monotonic'],
+                        'source_stamp': command.stamp, 'latest_stamp': sensors.clock.stamp,
+                        'latest_arrival': sensors.clock.arrival}
                     allowed = guard.accept(command, sensors.clock, accepted_wall,
                                            raw['imu_callback_arrival_wall_monotonic'])
                 if allowed:
@@ -272,6 +292,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 time.sleep(max(0., delay))
             if collective_pulse is not None and not collective_pulse.sent:
                 raise RuntimeError('COLLECTIVE_EXCITATION_NOT_SENT')
+            if control_stall_seconds and control_stall is None:
+                raise RuntimeError('CONTROL_STALL_NOT_INJECTED')
             if angular_pulse:
                 validate_angular_pulse_outcome(pulse_sent, angular_supervisor.phase)
         except Exception as error:
@@ -281,7 +303,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 'failure_wall_monotonic':failed_wall,
                 'wall_elapsed_at_last_read':latest_elapsed,
                 'wall_since_last_publication_s':None if last_published_wall is None else failed_wall-last_published_wall,
-                'state':asdict(latest_state) if latest_state else None,'raw':latest_raw}
+                'state':asdict(latest_state) if latest_state else None,'raw':latest_raw,
+                'guard_observation':guard_observation}
             with sensors.lock:
                 fault_observation['rate_guard_event'] = sensors.rate_guard_event
         finally:
@@ -299,6 +322,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
               'control_end_wall_monotonic':control_end_wall,
               'motor_pulses': motor_pulses,
               'hover_seconds': hover_seconds, 'control_hz': control_hz,
+              'control_stall': control_stall,
               'step': step,
               'reference_clock': 'IMU',
               'gps_rejections': sensors.estimator.rejections,
@@ -332,6 +356,7 @@ def main():
     parser.add_argument('--motor-pulses', action='store_true')
     parser.add_argument('--hover-seconds', type=float, default=0.)
     parser.add_argument('--control-hz', type=int, choices=(50, 80), default=80)
+    parser.add_argument('--control-stall-seconds', type=float, choices=(0., .15), default=0.)
     parser.add_argument('--step', action='store_true')
     parser.add_argument('--sensor-fault', choices=('GPS_ZERO','IMU_DROP','IMU_ROLLBACK','IMU_RATE_SPIKE'))
     parser.add_argument('--fault-seconds',type=float,default=.15)
@@ -347,6 +372,10 @@ def main():
     parser.add_argument('--reference-stall-seconds',type=float,default=0.)
     parser.add_argument('--collective-pulse-pwm',type=float)
     args = parser.parse_args()
+    if args.control_stall_seconds and (args.hover_seconds < 10 or args.motor_pulses or args.sensor_fault or args.gps_bridge
+            or args.step or args.yaw_motion or args.braking or args.angular_recovery or args.angular_pulse
+            or args.isolated_reference or args.collective_pulse_pwm is not None):
+        parser.error('control stall is restricted to isolated healthy bounded hover')
     levels = tuple(float(value) for value in args.levels.split(','))
     if (not levels or len(levels) > 20 or not all(0 < v <= .6 for v in levels)
             or not .05 <= args.pulse_seconds <= 1 or not 0 <= args.hover_seconds <= 20
@@ -381,7 +410,7 @@ def main():
                           args.stationary_bootstrap,args.angular_recovery,args.angular_pulse,
                           args.isolated_reference,args.reference_stall_seconds,args.collective_pulse_pwm,
                           .5 if args.angular_pulse_moment is None else args.angular_pulse_moment,
-                          args.angular_recovery_profile,args.control_hz)
+                          args.angular_recovery_profile,args.control_hz,args.control_stall_seconds)
 
 
 if __name__ == '__main__':

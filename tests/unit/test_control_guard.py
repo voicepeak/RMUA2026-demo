@@ -4,9 +4,17 @@ import unittest
 from control.control_authority.lease import ControlLease, check_graph
 from control.pwm_publisher.guard import PwmCommand, CommandGuard
 from estimation.clock import SensorClock
+from adapters.ros_noetic.pwm_experiment import run_experiment
 
 
 class GuardTests(unittest.TestCase):
+    def test_control_stall_is_restricted_before_ros_start(self):
+        for options in ({'control_stall_seconds':.3},
+                        {'control_stall_seconds':.15, 'hover_seconds':0},
+                        {'control_stall_seconds':.15, 'hover_seconds':14, 'sensor_fault':'IMU_DROP'},
+                        {'control_stall_seconds':.15, 'hover_seconds':14, 'step':True}):
+            with self.subTest(options=options), self.assertRaises(ValueError):
+                run_experiment(Path('/unused'), (.2,), .3, **options)
     def test_conflicting_publishers_and_mode_change_are_rejected(self):
         topic = '/airsim_node/drone_1/rotor_pwm_cmd'
         check_graph({topic: ['/self']}, '/self')
