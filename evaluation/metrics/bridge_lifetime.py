@@ -14,7 +14,7 @@ def evaluate(records):
     spans = defaultdict(list)
     frees = defaultdict(list)
     for row in records:
-        if (row.get('mode') not in ('lifetime','native-input')
+        if (row.get('mode') not in ('lifetime','native-input','native-serialize')
                 or not 0 <= row['start_monotonic_ns'] <= row['end_monotonic_ns']):
             raise ValueError('invalid lifetime record')
         if row['bridge_span']:

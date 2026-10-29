@@ -27,7 +27,8 @@ def case_order(protocol):
             or any(type(seed) is not int or seed < 0 for seed in seeds)):
         raise ValueError('invalid development seeds')
     modes = tuple(protocol.get('modes', MODES))
-    if modes not in (MODES, ('none', 'lifetime'), ('none', 'native-input')):
+    if modes not in (MODES, ('none', 'lifetime'), ('none', 'native-input'),
+                     ('native-input', 'native-serialize')):
         raise ValueError('unsupported fixed diagnostic comparison')
     cases = []
     for repeat in range(protocol['repeats']):
@@ -79,7 +80,7 @@ def main():
     simulator = verify_local_simulator(root)
     container_digest = subprocess.check_output(['docker', 'inspect', os.environ.get('RMUA_CONTAINER', 'rmua_noetic'),
                                                 '--format', '{{.Image}}'], text=True).strip()
-    variant = ('native-input' if any(c['mode'] == 'native-input' for c in planned)
+    variant = ('native-input' if any(c['mode'] in ('native-input', 'native-serialize') for c in planned)
                else 'lifetime' if any(c['mode'] == 'lifetime' for c in planned) else 'concurrency')
     probe = Path(subprocess.check_output(['bash', str(root / 'tools/build_bridge_probe.sh'), variant],
                                         cwd=root, text=True).strip())

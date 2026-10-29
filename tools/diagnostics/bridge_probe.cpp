@@ -114,7 +114,8 @@ void initialize() {
     mode_name=mode;
 #ifdef RMUA_LIFETIME_PROBE
 #ifdef RMUA_NATIVE_INPUT_PROBE
-    if(std::strcmp(mode,"native-input")!=0)fatal("native input build requires native-input mode");
+    if(std::strcmp(mode,"native-serialize")==0)locking=true;
+    else if(std::strcmp(mode,"native-input")!=0)fatal("native input build requires native-input or native-serialize mode");
 #else
     if(std::strcmp(mode,"lifetime")!=0)fatal("lifetime build requires lifetime mode");
 #endif

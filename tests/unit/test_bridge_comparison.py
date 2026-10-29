@@ -40,6 +40,11 @@ class BridgeComparisonTests(unittest.TestCase):
                             'modes': ['none', 'native-input']})
         self.assertEqual([c['mode'] for c in cases],
                          ['none', 'native-input', 'native-input', 'none'])
+        native_pair = case_order({'schema_version': 1, 'seeds': [1005], 'repeats': 2,
+                                  'hover_seconds': 14, 'stationary_bootstrap': False,
+                                  'modes': ['native-input', 'native-serialize']})
+        self.assertEqual([c['mode'] for c in native_pair],
+                         ['native-input', 'native-serialize', 'native-serialize', 'native-input'])
 
     def test_missing_trace_and_control_fault_are_reported_separately(self):
         with tempfile.TemporaryDirectory() as directory:

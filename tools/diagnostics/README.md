@@ -33,6 +33,8 @@ OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.bridge_comparison --pro
 
 `--bridge-probe native-input` 显式构建额外 Init/原生回调包装，保留 lifetime 追踪。仅对原桥接已识别的 PWM Command，通过只读 `/proc/self/mem` 有界读取四个 float32，记录原生回调前后快照与实际调用区间；未知回调原样透传且不读取。原回调、参数与结果均原样转发。此诊断会改变调度，不能把入口快照当成消费端实际读取，也不进入部署镜像。
 
+`native-serialize` 使用同一 native-input 构建，并对两个桥接原函数加互斥；用于同构建诊断对照，仍不证明异步消费后的对象存活或实际电机输入，也不具备比赛验收资格。
+
 ```bash
 OPENBLAS_NUM_THREADS=1 python3 -m unittest tests.integration.test_native_input_probe -v
 OPENBLAS_NUM_THREADS=1 python3 -m evaluation.seed_runner.pwm_identification --seed 2041 --hover-seconds 14 --evaluate-truth --stationary-bootstrap --bridge-probe native-input

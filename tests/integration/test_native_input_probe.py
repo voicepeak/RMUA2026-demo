@@ -26,6 +26,22 @@ int main(){char arg[]="argv";char* argv[]={arg,nullptr};
     airsim_ros::commands_impl::ROTOR_PWM_Callback(message);});
   ros::TimerEvent event;airsim_ros::PublishAsyncCommands(event);update.join();mock_native_counts();return mock_peak();}
 '''
+SERIAL_DRIVER = DECLARATIONS + r'''
+#include <boost/shared_ptr.hpp>
+namespace ros {struct TimerEvent{};}
+using NativeCallback=void(*)(void*,void*);
+extern "C" void mock_init(int,char**,NativeCallback,bool,bool,int,const char*,const char*,const char*,int)
+  asm("_ZN10airsim_ros13InitAirSimROSEiPPcPFvPvS2_EbbNS_17AirSimROSGameTypeEPKcS7_S7_i");
+extern "C" int mock_peak();
+extern "C" void owned_native_handler(void*,void*);
+extern "C" void mock_native_counts();
+int main(){char arg[]="argv";char* argv[]={arg,nullptr};
+  mock_init(7,argv,owned_native_handler,true,false,17,"c","d","e",101);
+  ros::TimerEvent event;airsim_ros::PublishAsyncCommands(event);
+  boost::shared_ptr<const airsim_ros::RotorPWM_<std::allocator<void>>> message;
+  airsim_ros::commands_impl::ROTOR_PWM_Callback(message);
+  mock_native_counts();return mock_peak();}
+'''
 
 
 class NativeInputTests(unittest.TestCase):
@@ -47,6 +63,9 @@ class NativeInputTests(unittest.TestCase):
             run('g++','-std=c++14','-shared','-fPIC','-pthread',inside+'/mock.cpp','-o',inside+'/mock.so')
             run('g++','-std=c++14','-pthread',inside+'/driver.cpp','-L'+inside,
                 '-Wl,-rpath,'+inside,'-l:mock.so','-o',inside+'/driver')
+            (path/'serial_driver.cpp').write_text(SERIAL_DRIVER)
+            run('g++','-std=c++14','-pthread',inside+'/serial_driver.cpp','-L'+inside,
+                '-Wl,-rpath,'+inside,'-l:mock.so','-o',inside+'/serial_driver')
             for bad_pointer, free_in_native in ((False, False),(True, False),(False, True)):
                 name = 'during_native' if free_in_native else ('unreadable' if bad_pointer else 'valid')
                 command = ['env','LD_PRELOAD='+probe,'RMUA_BRIDGE_PROBE_ORIGINAL='+inside+'/mock.so',
@@ -76,6 +95,13 @@ class NativeInputTests(unittest.TestCase):
                                 'publish_end_wall_monotonic':start-.0009}]
                     audit=evaluate(records,telemetry,start+.01)
                     self.assertEqual(audit['parameters_freed_during_original_callback'],int(free_in_native))
+            output = run('env','LD_PRELOAD='+probe,'RMUA_BRIDGE_PROBE_ORIGINAL='+inside+'/mock.so',
+                         'RMUA_BRIDGE_PROBE_OUTPUT='+inside+'/serial.jsonl',
+                         'RMUA_BRIDGE_PROBE_MODE=native-serialize','MOCK_SAFE=1',inside+'/serial_driver')
+            self.assertEqual(output.split(), ['1','1','1','1','1','1'])
+            serial_records = [json.loads(x) for x in (path/'serial.jsonl').read_text().splitlines()]
+            self.assertTrue(any(r['event']=='native_pwm_entry' and r['parameter_read_ok'] for r in serial_records))
+            self.assertTrue(all(r['mode']=='native-serialize' for r in serial_records))
 
 
 if __name__=='__main__':

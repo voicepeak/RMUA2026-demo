@@ -68,7 +68,7 @@ def main():
     parser.add_argument('--reference-stall-seconds',type=float,default=0.)
     parser.add_argument('--collective-pulse-pwm',type=float)
     parser.add_argument('--record-pwm-commands',action='store_true',help='opt in for a new observer-compatible standalone image')
-    parser.add_argument('--bridge-probe',choices=('observe','serialize','lifetime','native-input'),help='instrumented simulator, never acceptance eligible')
+    parser.add_argument('--bridge-probe',choices=('observe','serialize','lifetime','native-input','native-serialize'),help='instrumented simulator, never acceptance eligible')
     parser.add_argument('--controller-image',help='locally built immutable standalone image; no beta bind mount')
     parser.add_argument('--contract-audit-only',action='store_true',help='read-only service handshake; no controller')
     args = parser.parse_args()
@@ -123,7 +123,8 @@ def main():
     simulator_evidence=verify_local_simulator(root)
     probe_path=None
     if args.bridge_probe:
-        probe_variant=args.bridge_probe if args.bridge_probe in ('lifetime','native-input') else 'concurrency'
+        probe_variant=('native-input' if args.bridge_probe=='native-serialize' else
+                       args.bridge_probe if args.bridge_probe in ('lifetime','native-input') else 'concurrency')
         probe_path=Path(subprocess.check_output(['bash',str(root/'tools/build_bridge_probe.sh'),probe_variant],cwd=root,text=True).strip()).resolve()
         if not probe_path.is_file() or root/'runs/probe_builds' not in probe_path.parents:
             raise ValueError('invalid owned probe build path')
@@ -320,7 +321,7 @@ def main():
                     manifest['bridge_probe_summary']={key:max(r[key] for r in observations)
                         for key in ('pwm_calls','bridge_calls','overlap_entries','write_errors')}
                     manifest['bridge_probe_summary']['complete_exit_record']=any(r['event']=='exit' for r in observations)
-                    if args.bridge_probe in ('lifetime','native-input'):
+                    if args.bridge_probe in ('lifetime','native-input','native-serialize'):
                         required=('parameter_borrow','command_constructed','command_handoff',
                                   'parameter_free_begin','parameter_free_end','bridge_begin','bridge_end')
                         counts={event:sum(r['event']==event for r in observations) for event in required}
@@ -330,7 +331,7 @@ def main():
                         lifetime=evaluate_lifetime(observations)
                         (run/'bridge_lifetime_audit.json').write_text(json.dumps(lifetime,indent=2)+'\n')
                         if not lifetime['hook_coverage_valid']:raise RuntimeError('lifetime handoff coverage missing')
-                    if args.bridge_probe=='native-input':
+                    if args.bridge_probe in ('native-input','native-serialize'):
                         from evaluation.metrics.native_input import evaluate as evaluate_native_input
                         sender=[json.loads(x) for x in (run/'pwm_telemetry.jsonl').read_text().splitlines()]
                         controller_summary=json.loads((run/'pwm_summary.json').read_text())

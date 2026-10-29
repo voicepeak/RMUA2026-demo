@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "seeds": [1005],
+  "repeats": 2,
+  "modes": ["native-input", "native-serialize"],
+  "hover_seconds": 14,
+  "stationary_bootstrap": false,
+  "purpose": "Diagnostic same-build native snapshot comparison with and without serialized bridge callbacks; not competition eligible, does not prove downstream consumption or physical cause."
+}
