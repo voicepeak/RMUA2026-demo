@@ -20,14 +20,14 @@ def case_order(protocol):
             or type(protocol.get('repeats')) is not int or not 1 <= protocol['repeats'] <= 5
             or type(protocol.get('hover_seconds')) not in (int, float)
             or not 10 <= protocol['hover_seconds'] <= 20
-            or protocol.get('stationary_bootstrap') is not True):
+            or type(protocol.get('stationary_bootstrap')) is not bool):
         raise ValueError('invalid bounded bridge protocol')
     seeds = protocol.get('seeds')
     if (not isinstance(seeds, list) or not 1 <= len(seeds) <= 4
             or any(type(seed) is not int or seed < 0 for seed in seeds)):
         raise ValueError('invalid development seeds')
     modes = tuple(protocol.get('modes', MODES))
-    if modes not in (MODES, ('none', 'lifetime')):
+    if modes not in (MODES, ('none', 'lifetime'), ('none', 'native-input')):
         raise ValueError('unsupported fixed diagnostic comparison')
     cases = []
     for repeat in range(protocol['repeats']):
@@ -48,6 +48,8 @@ def collect_case(run):
     trace = json.loads(trace_path.read_text()) if trace_path.exists() else None
     lifetime_path = run / 'bridge_lifetime_audit.json'
     lifetime = json.loads(lifetime_path.read_text()) if lifetime_path.exists() else None
+    native_path = run / 'native_input_audit.json'
+    native = json.loads(native_path.read_text()) if native_path.exists() else None
     return {'run_directory': str(run), 'run_state': manifest.get('run_state'),
             'controller_fault': summary.get('fault') if summary else 'MISSING_SUMMARY',
             'controller_completed': bool(summary and summary.get('fault') is None
@@ -57,6 +59,10 @@ def collect_case(run):
             'evaluation_valid': metrics.get('evaluation_valid', False) if metrics else False,
             'summary': summary, 'metrics': metrics, 'command_trace': trace,
             'lifetime_audit': lifetime,
+            'native_input_audit': ({k: v for k, v in native.items()
+                                    if k not in ('matched', 'unmatched', 'unreadable',
+                                                 'freed_during_original_callback')}
+                                   if native else None),
             'bridge_probe_summary': manifest.get('bridge_probe_summary'),
             'source_archive': manifest.get('source_archive'),
             'instrumentation': manifest.get('simulator_runtime_instrumentation')}
@@ -73,7 +79,8 @@ def main():
     simulator = verify_local_simulator(root)
     container_digest = subprocess.check_output(['docker', 'inspect', os.environ.get('RMUA_CONTAINER', 'rmua_noetic'),
                                                 '--format', '{{.Image}}'], text=True).strip()
-    variant = 'lifetime' if any(c['mode'] == 'lifetime' for c in planned) else 'concurrency'
+    variant = ('native-input' if any(c['mode'] == 'native-input' for c in planned)
+               else 'lifetime' if any(c['mode'] == 'lifetime' for c in planned) else 'concurrency')
     probe = Path(subprocess.check_output(['bash', str(root / 'tools/build_bridge_probe.sh'), variant],
                                         cwd=root, text=True).strip())
     probe_hash = file_hash(probe)
@@ -99,7 +106,9 @@ def main():
                 raise RuntimeError('source or diagnostic binary changed before case')
             command = [sys.executable, '-m', 'evaluation.seed_runner.pwm_identification',
                        '--seed', str(plan['seed']), '--hover-seconds', str(protocol['hover_seconds']),
-                       '--evaluate-truth', '--stationary-bootstrap']
+                       '--evaluate-truth']
+            if protocol['stationary_bootstrap']:
+                command.append('--stationary-bootstrap')
             if plan['mode'] != 'none':
                 command.extend(['--bridge-probe', plan['mode']])
             console = batch / ('case_%02d.console.log' % index)

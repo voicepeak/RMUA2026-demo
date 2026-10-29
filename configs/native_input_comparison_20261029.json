@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "seeds": [1005],
+  "repeats": 2,
+  "modes": ["none", "native-input"],
+  "hover_seconds": 14,
+  "stationary_bootstrap": false,
+  "purpose": "Exploratory same-seed uninstrumented/native-entry comparison; no tuning or stage acceptance; no inference of actuator consumption or cause from snapshots."
+}

@@ -21,7 +21,7 @@ class BridgeComparisonTests(unittest.TestCase):
         for change in ({'repeats': 0}, {'repeats': True}, {'seeds': [True]}, {'seeds': []},
                        {'hover_seconds': 300}, {'hover_seconds': float('nan')},
                        {'modes': ['lifetime']}, {'modes': ['none', 'none']},
-                       {'stationary_bootstrap': False}):
+                       {'stationary_bootstrap': 'false'}):
             with self.subTest(change=change), self.assertRaises(ValueError):
                 case_order(dict(protocol, **change))
 
@@ -33,6 +33,13 @@ class BridgeComparisonTests(unittest.TestCase):
         for seed in (2024, 2041):
             first = [c['mode'] for i, c in enumerate(cases) if i % 2 == 0 and c['seed'] == seed]
             self.assertEqual(set(first), {'none', 'lifetime'})
+
+    def test_native_pair_can_match_non_bootstrap_baseline(self):
+        cases = case_order({'schema_version': 1, 'seeds': [1005], 'repeats': 2,
+                            'hover_seconds': 14, 'stationary_bootstrap': False,
+                            'modes': ['none', 'native-input']})
+        self.assertEqual([c['mode'] for c in cases],
+                         ['none', 'native-input', 'native-input', 'none'])
 
     def test_missing_trace_and_control_fault_are_reported_separately(self):
         with tempfile.TemporaryDirectory() as directory:

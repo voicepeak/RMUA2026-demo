@@ -1,0 +1,106 @@
+{
+  "batch_directory": "runs/batches/20261029T080931Z_298fa56605634e6a9a536cd6bf4e6233",
+  "batch_report_sha256": "4875c699576545fc522113d94391a257465c544110c3ac7eb3b7ec70e3322e5f",
+  "protocol": {
+    "schema_version": 1,
+    "seeds": [
+      1005
+    ],
+    "repeats": 2,
+    "modes": [
+      "none",
+      "native-input"
+    ],
+    "hover_seconds": 14,
+    "stationary_bootstrap": false,
+    "purpose": "Exploratory same-seed uninstrumented/native-entry comparison; no tuning or stage acceptance; no inference of actuator consumption or cause from snapshots."
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "fe50072e25c2d7dfaff8ac1d4c1c777001ac5fa224604534e48e2e5ddc7580ba",
+    "files": 451,
+    "uncompressed_bytes": 2941958,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "probe_binary_sha256": "273b8213799b7895779c7f42ad2ad28e4e705f19930a7ccff812f1f00b30d71d",
+  "simulator": {
+    "strict_rules_verified": true,
+    "game_config": {
+      "IgnoreAllHitCollision": false,
+      "IgnoreOverTime": false
+    },
+    "game_config_sha256": "4173ab7ae90fa031fb32a9e77d2810376c6f325b8274f4f8fd07be3c9adb6d39",
+    "binary_sha256": "5231addfa25ddaa9e4473ea9ac40c9c0bc685174e69cd14bb49159f443b97800",
+    "ros_plugin_sha256": "69d5ea3302bdd5f20b842ec3d3e84bafcb50ef3649ada42c4d346c9bcd389885",
+    "settings_sha256": "0d72886f92b091cbc5ba2ae58d25b4b4bc589045d4e725f483603efdc26c6c17"
+  },
+  "container_image_digest": "sha256:a1bfe1df3d0f0b57c406fc7873803c07a812f291e42c1a7eba13d2f9328fc106",
+  "source_unchanged": true,
+  "cases": [
+    {
+      "mode": "none",
+      "run_directory": "runs/20261029T080932Z_c6ade9b40b054143ae3404bc64628831",
+      "exit_code": 0,
+      "fault": null,
+      "provenance_verified": true,
+      "wire_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "max_tracking_error_m": 0.20524308248192594,
+      "native": null
+    },
+    {
+      "mode": "native-input",
+      "run_directory": "runs/20261029T080959Z_b59477b9c5c4493f88187c50f791562b",
+      "exit_code": 0,
+      "fault": null,
+      "provenance_verified": true,
+      "wire_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "max_tracking_error_m": 0.1385575503933693,
+      "native": {
+        "native_entries": 3120,
+        "matched_entries": 3118,
+        "unmatched_entries": 2,
+        "unreadable_entries": 0,
+        "incomplete_native_calls": 0,
+        "snapshot_coverage_valid": true,
+        "parameters_freed_during_original_callback": 1,
+        "native_entries_in_control_window": 2800,
+        "publish_to_snapshot_upper_max_s": 0.030084170000463928
+      }
+    },
+    {
+      "mode": "native-input",
+      "run_directory": "runs/20261029T081026Z_8da0d9f13940453590f0e640d39f2d35",
+      "exit_code": 0,
+      "fault": null,
+      "provenance_verified": true,
+      "wire_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "max_tracking_error_m": 0.18052720189962385,
+      "native": {
+        "native_entries": 3119,
+        "matched_entries": 3119,
+        "unmatched_entries": 0,
+        "unreadable_entries": 0,
+        "incomplete_native_calls": 0,
+        "snapshot_coverage_valid": true,
+        "parameters_freed_during_original_callback": 0,
+        "native_entries_in_control_window": 2800,
+        "publish_to_snapshot_upper_max_s": 0.027775832999850536
+      }
+    },
+    {
+      "mode": "none",
+      "run_directory": "runs/20261029T081053Z_6162b57c9af34af59414e4ee62f3174d",
+      "exit_code": 0,
+      "fault": null,
+      "provenance_verified": true,
+      "wire_audit_exit_code": 0,
+      "evaluation_valid": true,
+      "max_tracking_error_m": 0.18515497073943774,
+      "native": null
+    }
+  ],
+  "interpretation": "Snapshots are instrumented callback-entry memory, not downstream read or motor application; causal relationship to a physical impulse remains unproven."
+}
