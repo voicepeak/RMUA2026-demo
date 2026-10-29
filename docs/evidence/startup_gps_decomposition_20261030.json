@@ -1,0 +1,354 @@
+{
+  "purpose": "Offline decomposition of GPS innovation contributions to velocity corrections; not independent physical causation",
+  "code_sha256": {
+    "evaluation/metrics/startup_gps_counterfactual.py": "2d68a4bedf78ecebeeb333b63ad9e7253f097ff36733d0d6e356f3711bec03a0",
+    "estimation/imu_gps.py": "6f78d6ac76dfc63199ffeb4119ed56c8183461acac09361dc21203a1407fb618",
+    "estimation/geometry.py": "6626b6b50daa1a068b6670c3d69762390251366625b2d228441ca76713bd48f4"
+  },
+  "runs": [
+    {
+      "run_directory": "runs/20261029T174029Z_6050e108bdc747569ce3b886f3237df9",
+      "replay": {
+        "recorded_initial_pose": {
+          "position_at_seal": [
+            0.023311946892756234,
+            -0.08138799570942357,
+            0.41425195217302674
+          ],
+          "velocity_at_seal": [
+            -0.05846238446976588,
+            -0.2502155333084101,
+            0.5858192170984593
+          ]
+        },
+        "gps_velocity_decomposition": [
+          {
+            "position_innovation": [
+              0.06428158255338857,
+              0.019833236043136544,
+              0.23421411266167091
+            ],
+            "attitude_innovation": [
+              -0.053218846542295924,
+              -0.030584225793937034,
+              -0.013410407558233202
+            ],
+            "position_velocity_delta": [
+              0.02249768999596425,
+              0.006941245143306354,
+              0.08193603669055073
+            ],
+            "attitude_velocity_delta": [
+              0.002330493183365019,
+              -0.004062102889105451,
+              1.562598878212582e-05
+            ],
+            "gps_stamp": 1793295638.9269326,
+            "velocity_delta": [
+              0.02482818317932927,
+              0.0028791422542009033,
+              0.08195166267933286
+            ],
+            "recorded_delta_residual": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_residual": [
+              1.734723475976807e-18,
+              8.673617379884035e-19,
+              5.0212113113234924e-18
+            ]
+          },
+          {
+            "position_innovation": [
+              -0.05192242601190312,
+              -0.07390348934158832,
+              0.09754207223582345
+            ],
+            "attitude_innovation": [
+              0.1638494693280283,
+              0.010893906807667626,
+              -0.01942844549517776
+            ],
+            "position_velocity_delta": [
+              -0.1810328251049395,
+              -0.2576948264797941,
+              0.3381024969932555
+            ],
+            "attitude_velocity_delta": [
+              -0.0019097318616155738,
+              0.029730967872401377,
+              -0.00036192159325366697
+            ],
+            "gps_stamp": 1793295639.0259347,
+            "velocity_delta": [
+              -0.1829425569665551,
+              -0.2279638586073927,
+              0.3377405754000018
+            ],
+            "recorded_delta_residual": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_residual": [
+              -8.456776945386935e-18,
+              -6.938893903907228e-18,
+              -4.423544863740858e-17
+            ]
+          },
+          {
+            "position_innovation": [
+              0.02633310624448637,
+              -0.005696212108003584,
+              0.05123353871831465
+            ],
+            "attitude_innovation": [
+              -0.05325760606317092,
+              -0.016059570119069777,
+              -0.014887432552975435
+            ],
+            "position_velocity_delta": [
+              0.08729988127996317,
+              -0.018896840417255815,
+              0.16725371485641172
+            ],
+            "attitude_velocity_delta": [
+              0.003286089519304975,
+              -0.011167856874905496,
+              -3.0148453834496662e-05
+            ],
+            "gps_stamp": 1793295639.1279368,
+            "velocity_delta": [
+              0.09058597079926814,
+              -0.030064697292161296,
+              0.16722356640257724
+            ],
+            "recorded_delta_residual": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_residual": [
+              -9.107298248878237e-18,
+              1.3877787807814457e-17,
+              1.904468878606569e-17
+            ]
+          }
+        ],
+        "hypothetical_first_gps_position": {
+          "position_at_seal": [
+            0.020109220264711354,
+            -0.08237595881049337,
+            0.40257930745039305
+          ],
+          "velocity_at_seal": [
+            -0.08557754646658845,
+            -0.2585796707474258,
+            0.4869837177257879
+          ]
+        },
+        "recorded_velocity_residual_m_s": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "replay_agrees_with_recorded_velocity": true,
+        "imu_records": 34,
+        "gps_events": 3,
+        "limitations": "Independent receiver rows matched by timestamp and payload, not the controller callback stream; agreement of final velocity does not establish all internal states. Hypothetical first-GPS seeding assumes an unverified common frame and trusted GPS; no outlier, control, actuator or safety behavior is tested.",
+        "input_sha256": {
+          "pwm_summary.json": "d4ea068082ee244c3f53c2bb0885b426dad7a873033e1a5df3d2fad064ccde2f",
+          "evaluation_imu.jsonl": "d903fa4d4e5061a9b262a5f2393682cfc4793757fa5cbd822bb6e7795df5e739",
+          "evaluation_gps.jsonl": "654af259bf3d74e8aba651d6b10cd61d5c7a34d0cacf1bd0cdbb77c606491625"
+        },
+        "analysis_sha256": "2d68a4bedf78ecebeeb333b63ad9e7253f097ff36733d0d6e356f3711bec03a0"
+      },
+      "sum_position_velocity_delta_m_s": [
+        -0.0712352538290121,
+        -0.26965042175374354,
+        0.5872922485402179
+      ],
+      "sum_attitude_velocity_delta_m_s": [
+        0.00370685084105442,
+        0.014501008108390431,
+        -0.0003764440583060378
+      ],
+      "max_recorded_delta_residual_m_s": 0.0,
+      "max_component_residual_m_s": 4.556797385298716e-17
+    },
+    {
+      "run_directory": "runs/20261029T174055Z_358e33a122c240899a2ff2240181fa48",
+      "replay": {
+        "recorded_initial_pose": {
+          "position_at_seal": [
+            0.02580669034419603,
+            -0.06406791071528982,
+            0.3500017940322605
+          ],
+          "velocity_at_seal": [
+            0.20293097946439626,
+            -0.40859514941771025,
+            0.2824915563293503
+          ]
+        },
+        "gps_velocity_decomposition": [
+          {
+            "position_innovation": [
+              -0.017822774069205457,
+              0.041849507229978176,
+              0.28838923489905904
+            ],
+            "attitude_innovation": [
+              -0.0761259737058966,
+              -0.05278791540782274,
+              0.017599589518645268
+            ],
+            "position_velocity_delta": [
+              -0.006237646092989525,
+              0.01464687573858357,
+              0.10088836303349316
+            ],
+            "attitude_velocity_delta": [
+              0.004015611025592043,
+              -0.0057896015127537415,
+              3.0124203255807873e-06
+            ],
+            "gps_stamp": 1793295665.4878483,
+            "velocity_delta": [
+              -0.0022220350673974824,
+              0.008857274225829825,
+              0.10089137545381874
+            ],
+            "recorded_delta_residual": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_residual": [
+              0.0,
+              -2.6020852139652106e-18,
+              -4.205942099591228e-18
+            ]
+          },
+          {
+            "position_innovation": [
+              0.0005437441211065732,
+              -0.0014434625363278636,
+              0.055165313741500466
+            ],
+            "attitude_innovation": [
+              0.044043592290805435,
+              0.05859396487890134,
+              -0.007784321232158324
+            ],
+            "position_velocity_delta": [
+              0.0018699666164547263,
+              -0.004952763186661751,
+              0.18791782949609934
+            ],
+            "attitude_velocity_delta": [
+              -0.010371968185181466,
+              0.007746002882678768,
+              -0.00018572077387751188
+            ],
+            "gps_stamp": 1793295665.5838501,
+            "velocity_delta": [
+              -0.00850200156872674,
+              0.0027932396960170173,
+              0.18773210872222185
+            ],
+            "recorded_delta_residual": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_residual": [
+              0.0,
+              8.673617379884035e-19,
+              2.168404344971009e-17
+            ]
+          },
+          {
+            "position_innovation": [
+              0.04541606710287446,
+              -0.12102661671101919,
+              -0.0013002401899336324
+            ],
+            "attitude_innovation": [
+              0.056400805240762124,
+              -0.17126719537643154,
+              -0.13045521971462318
+            ],
+            "position_velocity_delta": [
+              0.1535299485194174,
+              -0.40913395990460816,
+              -0.004269761770779228
+            ],
+            "attitude_velocity_delta": [
+              0.035243189985188654,
+              0.011682684975246216,
+              1.3154556603345786e-05
+            ],
+            "gps_stamp": 1793295665.6828523,
+            "velocity_delta": [
+              0.18877313850460606,
+              -0.39745127492936194,
+              -0.004256607214175867
+            ],
+            "recorded_delta_residual": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "component_residual": [
+              6.938893903907228e-18,
+              0.0,
+              1.530249722509619e-17
+            ]
+          }
+        ],
+        "hypothetical_first_gps_position": {
+          "position_at_seal": [
+            0.02639976731126299,
+            -0.06546081237920806,
+            0.34040520172665467
+          ],
+          "velocity_at_seal": [
+            0.21054383360557516,
+            -0.42647476269619283,
+            0.1592974958028508
+          ]
+        },
+        "recorded_velocity_residual_m_s": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "replay_agrees_with_recorded_velocity": true,
+        "imu_records": 30,
+        "gps_events": 3,
+        "limitations": "Independent receiver rows matched by timestamp and payload, not the controller callback stream; agreement of final velocity does not establish all internal states. Hypothetical first-GPS seeding assumes an unverified common frame and trusted GPS; no outlier, control, actuator or safety behavior is tested.",
+        "input_sha256": {
+          "pwm_summary.json": "eabe5d7d1cfccfa71691a59845ed0cd7679feaa3a5a3c23f94be0df55f578a97",
+          "evaluation_imu.jsonl": "bc7a0570b5ebac3cedaa4d469f356f68ae6ef97baa8885dc44b428b34878c020",
+          "evaluation_gps.jsonl": "fdbca34893b4035b7911a4a0e19c048b7ce39fff63a56397bbc0ad0e93c744fb"
+        },
+        "analysis_sha256": "2d68a4bedf78ecebeeb333b63ad9e7253f097ff36733d0d6e356f3711bec03a0"
+      },
+      "sum_position_velocity_delta_m_s": [
+        0.1491622690428826,
+        -0.39943984735268634,
+        0.2845364307588133
+      ],
+      "sum_attitude_velocity_delta_m_s": [
+        0.02888683282559923,
+        0.013639086345171242,
+        -0.00016955379694858532
+      ],
+      "max_recorded_delta_residual_m_s": 0.0,
+      "max_component_residual_m_s": 2.1701383751121523e-17
+    }
+  ]
+}

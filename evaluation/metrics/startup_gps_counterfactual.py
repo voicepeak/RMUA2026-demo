@@ -6,6 +6,26 @@ from pathlib import Path
 
 import numpy as np
 from estimation.imu_gps import ImuGpsEstimator
+from estimation.geometry import multiply, unit
+
+
+
+def gps_velocity_components(estimator, sample):
+    """Decompose this update using its pre-update covariance and full joint gain."""
+    attitude = unit(sample['orientation'])
+    error_q = multiply(estimator.q * (1., -1., -1., -1.), attitude)
+    if error_q[0] < 0:
+        error_q = -error_q
+    residual = np.r_[np.asarray(sample['position']) - estimator.p, 2 * error_q[1:]]
+    H = np.zeros((6, 15))
+    H[:3, :3] = np.eye(3)
+    H[3:, 6:9] = np.eye(3)
+    noise = np.diag([.1**2]*3 + [.2**2]*3)
+    gain = np.linalg.solve(H @ estimator.P @ H.T + noise, H @ estimator.P).T
+    return {'position_innovation': residual[:3].tolist(),
+            'attitude_innovation': residual[3:].tolist(),
+            'position_velocity_delta': (gain[3:6, :3] @ residual[:3]).tolist(),
+            'attitude_velocity_delta': (gain[3:6, 3:] @ residual[3:]).tolist()}
 
 
 def replay(summary, imu, gps):
@@ -34,6 +54,7 @@ def replay(summary, imu, gps):
         estimator = ImuGpsEstimator()
         estimator.initialize(info['initial_position'], info['initial_orientation_wxyz'])
         seeded = False
+        decompositions = []
         for row in selected:
             estimator.propagate(row['stamp'], row['acceleration_body'], row['omega_body'])
             for event, sample in event_by_state.get(row['stamp'], []):
@@ -42,9 +63,21 @@ def replay(summary, imu, gps):
                     # same-frame initial position, which has NOT been established.
                     estimator.p = np.asarray(sample['position'], dtype=float).copy()
                     seeded = True
+                decomposition = gps_velocity_components(estimator, sample) if mode == 'recorded_initial_pose' else None
+                before = estimator.v.copy()
                 if not estimator.update_gps(event['gps_stamp'], sample['position'], sample['orientation']):
                     raise ValueError('GPS rejected in replay: ' + mode)
+                if decomposition is not None:
+                    delta = estimator.v - before
+                    decomposition['gps_stamp'] = event['gps_stamp']
+                    decomposition['velocity_delta'] = delta.tolist()
+                    decomposition['recorded_delta_residual'] = (delta - np.asarray(event['velocity_delta'])).tolist()
+                    decomposition['component_residual'] = (delta - np.asarray(decomposition['position_velocity_delta'])
+                                                           - np.asarray(decomposition['attitude_velocity_delta'])).tolist()
+                    decompositions.append(decomposition)
         output[mode] = {'position_at_seal': estimator.p.tolist(), 'velocity_at_seal': estimator.v.tolist()}
+        if mode == 'recorded_initial_pose':
+            output['gps_velocity_decomposition'] = decompositions
     expected = np.asarray(accounting['velocity_at_seal'])
     residual = np.asarray(output['recorded_initial_pose']['velocity_at_seal']) - expected
     output['recorded_velocity_residual_m_s'] = residual.tolist()
