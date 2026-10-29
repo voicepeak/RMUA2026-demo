@@ -4,7 +4,8 @@ import time
 from collections import deque
 import numpy as np
 from estimation.clock import SensorClock
-from estimation.imu_gps import ImuGpsEstimator
+from estimation.imu_gps import ImuGpsEstimator, vector
+from estimation.geometry import unit
 from adapters.ros_noetic.state_reader import pose_values
 
 
@@ -182,6 +183,16 @@ class FlightSensors:
                     if self.local_injection is not None and self.local_injection.affects('GPS_ZERO',stamp):
                         position, attitude = (0.,0.,0.), (0.,0.,0.,0.)
                     if self.clock.stamp < stamp <= self.clock.stamp+.15:
+                        # Validate before replacing a pending sample: malformed or
+                        # reordered packets must not evict a usable future sample.
+                        valid_position = vector(position)
+                        if np.all(valid_position == 0):
+                            self.estimator.reject('GPS_ZERO')
+                            return
+                        unit(attitude)
+                        if self.pending_gps is not None and stamp <= self.pending_gps[0]:
+                            self.estimator.reject('GPS_PENDING_REORDERED')
+                            return
                         # ROS callback arrival order is not sensor measurement order.
                         # Defer future GPS to the first IMU propagation covering it.
                         self.pending_gps = (stamp, position, attitude)

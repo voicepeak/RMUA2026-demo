@@ -84,6 +84,28 @@ class SensorAdapterTests(unittest.TestCase):
         self.assertEqual(raw['imu_callback_arrival_wall_monotonic'], s.clock.arrival)
         self.assertGreaterEqual(raw['state_snapshot_wall_monotonic'], s.clock.arrival)
 
+    def test_invalid_or_older_future_gps_cannot_replace_valid_pending(self):
+        s = self.sensors()
+        s.on_gps(message(100.03, position=(1.01, 2., -1.)))
+        s.on_gps(message(100.04, position=(0., 0., 0.), q=(0., 0., 0., 0.)))
+        s.on_gps(message(100.02, position=(1.02, 2., -1.)))
+        self.assertEqual(s.pending_gps[0], 100.03)
+        s.on_imu(message(100.04))
+        self.assertEqual(s.estimator.last_gps, 100.03)
+        self.assertIsNone(s.fault)
+
+    def test_valid_newer_future_gps_supersedes_pending_but_duplicate_does_not(self):
+        s = self.sensors()
+        s.on_gps(message(100.02, position=(1.01, 2., -1.)))
+        s.on_gps(message(100.03, position=(1.02, 2., -1.)))
+        s.on_gps(message(100.03, position=(1.09, 2., -1.)))
+        self.assertEqual(s.pending_gps[1], (1.02, 2., -1.))
+        s.on_gps(message(100.04, position=(1., 2., -1.), q=(0., 0., 0., 0.)))
+        self.assertEqual(s.pending_gps[0], 100.03)
+        s.on_imu(message(100.04))
+        self.assertEqual(s.estimator.last_gps, 100.03)
+        self.assertEqual(s.estimator.rejections['GPS_PENDING_REORDERED'], 1)
+
     def test_invalid_queued_gps_cannot_kill_imu_propagation(self):
         for position in ((0.,0.,0.),(1.,2.,-1.)):
             s=self.sensors()

@@ -1,0 +1,80 @@
+{
+  "purpose": "Local PWM compatibility after guarding pending future GPS; not stage acceptance",
+  "cases": [
+    {
+      "case": "normal",
+      "seed": 1009,
+      "run_directory": "runs/20261029T175023Z_e1caf56042a3429797bac2be333f51a1",
+      "git_sha": "80f486cb355dc1a1ac8906072caf1b99a02d2ecb",
+      "git_status": " M adapters/ros_noetic/flight_sensors.py\n M tests/unit/test_flight_sensors.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "01c391367751e0c02279c92b1549dc37b59637c4c930987bd488cb55d1fd057c",
+        "files": 522,
+        "uncompressed_bytes": 3292958,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 811,
+      "matched_commands": 811,
+      "wire_valid": true,
+      "evaluation_valid": true,
+      "injection": null,
+      "gps_rejections": {},
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "6dd9a29b92cbcc83209b7358ff01150e784c30b9620fca90af9b4e86f1f648d7",
+        "pwm_summary.json": "1f55832daaa8b74919bfb57d702968b56f7a60043a9654ce81b8d1205a00a6a7",
+        "command_trace_audit.json": "526b41be0210dda699e2c36edca2cc90c98840a7288f0215e7ab80a6c7fdf485",
+        "closed_loop_metrics.json": "72ff2c0f49c455c7f7326e1239112bec5fa189c8a129f477238514324ea2972d"
+      }
+    },
+    {
+      "case": "gps_zero",
+      "seed": 1009,
+      "run_directory": "runs/20261029T175047Z_2f1cdc3ebb984fd584e6524092fa49f7",
+      "git_sha": "80f486cb355dc1a1ac8906072caf1b99a02d2ecb",
+      "git_status": " M adapters/ros_noetic/flight_sensors.py\n M tests/unit/test_flight_sensors.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "01c391367751e0c02279c92b1549dc37b59637c4c930987bd488cb55d1fd057c",
+        "files": 522,
+        "uncompressed_bytes": 3292958,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 831,
+      "matched_commands": 831,
+      "wire_valid": true,
+      "evaluation_valid": true,
+      "injection": {
+        "kind": "GPS_ZERO",
+        "start_stamp": 1793296263.473025,
+        "duration": 0.15,
+        "injected_samples": 2
+      },
+      "gps_rejections": {
+        "GPS_ZERO": 2
+      },
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "f71adc9252f8e9df8a50f529196e53665614c1ff43a31706f1e1c6293cd025b5",
+        "pwm_summary.json": "8f68371ca3ae173793242a7e9fbc444c9026b7ec1174e8acfb6f5cc51d5003dd",
+        "command_trace_audit.json": "bcc68434daefabe8f67b1f81738508fb9562ad3e5412061df34d8439de5da31f",
+        "closed_loop_metrics.json": "0b4481a579e8f2644b9ea0394981ea9306e5df94ebf2dd9589501e702ac68d86"
+      }
+    }
+  ]
+}
