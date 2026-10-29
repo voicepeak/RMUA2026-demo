@@ -355,9 +355,11 @@ def main():
                 manifest['evaluation_only_inputs'] = ['/airsim_node/drone_1/debug/pose_gt',
                                                      '/airsim_node/drone_1/debug/rotor_pwm',
                                                      '/airsim_node/drone_1/debug/wind',
-                                                     '/airsim_node/drone_1/imu/imu','/rosout_agg']
+                                                     '/airsim_node/drone_1/imu/imu',
+                                                     '/airsim_node/drone_1/gps','/rosout_agg']
                 manifest['telemetry'].extend(['evaluation_truth.jsonl','evaluation_actuation.jsonl',
-                                             'evaluation_wind.jsonl','evaluation_imu.jsonl','evaluation_rosout.jsonl'])
+                                             'evaluation_wind.jsonl','evaluation_imu.jsonl',
+                                             'evaluation_gps.jsonl','evaluation_rosout.jsonl'])
                 if record_commands:
                     manifest['evaluation_only_inputs'].append('/airsim_node/drone_1/rotor_pwm_cmd')
                     manifest['telemetry'].append('evaluation_pwm_commands.jsonl')

@@ -24,6 +24,7 @@ def main():
     commands=[]
     wind=[]
     imu=[]
+    gps=[]
     logs=[]
     def receive(msg):
         p, q = msg.pose.position, msg.pose.orientation
@@ -34,6 +35,15 @@ def main():
                 rows.append(row)
     listener = rospy.Subscriber('/airsim_node/drone_1/debug/pose_gt', PoseStamped,
                                 receive, queue_size=1)
+    def receive_gps(msg):
+        arrival = time.monotonic()
+        p, q = msg.pose.position, msg.pose.orientation
+        with lock:
+            if len(gps) < 30000:
+                gps.append({'stamp': msg.header.stamp.to_sec(), 'position': (p.x, p.y, p.z),
+                            'orientation': (q.w, q.x, q.y, q.z),
+                            'arrival_wall_monotonic': arrival})
+    gps_listener = rospy.Subscriber('/airsim_node/drone_1/gps', PoseStamped, receive_gps, queue_size=1)
     def plain(value):
         if hasattr(value,'__slots__'):
             return {slot:plain(getattr(value,slot)) for slot in value.__slots__}
@@ -86,6 +96,7 @@ def main():
             time.sleep(.02)
     finally:
         listener.unregister()
+        gps_listener.unregister()
         actuator_listener.unregister()
         if command_listener:command_listener.unregister()
         wind_listener.unregister()
@@ -96,7 +107,7 @@ def main():
             (run/'evaluation_actuation.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in actuation))
             if command_listener:
                 (run/'evaluation_pwm_commands.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in commands))
-            for name,data in (('wind',wind),('imu',imu),('rosout',logs)):
+            for name,data in (('wind',wind),('imu',imu),('gps',gps),('rosout',logs)):
                 (run/('evaluation_'+name+'.jsonl')).write_text(''.join(json.dumps(row)+'\n' for row in data))
     return 0 if rows else 2
 

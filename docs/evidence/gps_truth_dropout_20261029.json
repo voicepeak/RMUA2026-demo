@@ -1,0 +1,45 @@
+{
+  "run_directory": "runs/20261029T081704Z_345b12936fd449d19414272a53d497bd",
+  "git_sha": "10cec93f6694fb68eeb4166da8d1fb0c6be2f0f0",
+  "git_status_at_run": " M evaluation/metrics/truth_recorder.py\n M evaluation/seed_runner/pwm_identification.py\n",
+  "source_unchanged": true,
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "c3bddfdceeb4102c46e4632672d4c961630940e52ac151ec71fe2522d80c1260",
+    "files": 457,
+    "uncompressed_bytes": 2967686,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "inputs_sha256": {
+    "manifest.json": "d12056704bb62f383f0416990e933f5288184c9643e80b377659509b6b0aed08",
+    "evaluation_gps.jsonl": "c037addf8a42b60dd4ed555895dca7077c08832d9bfb40fed227bacc745d1409",
+    "evaluation_truth.jsonl": "207bff41ef8065edcdc32c0304eb2e373b18d4d13d0fd7a12b9caacfeaa175bc",
+    "fault_observation.json": "1386cd3820b9d7f3db3da716471f6e32fc4c08cc776fe78d7489e72ce891b420",
+    "command_trace_audit.json": "86c7dd6c8c7d9872e1b07d4e939007fd106245fb4a866af39bf8f3b3de7bf5b7"
+  },
+  "analysis_sha256": "146810ffc137d1480bf343dcab22eca0cca13b41ce38cecf1d4879904764094f",
+  "result": {
+    "gps_samples": 89,
+    "matched_samples": 89,
+    "unmatched_samples": 0,
+    "max_allowed_stamp_delta_s": 0.015,
+    "gps_after_fault_arrival_count": 9,
+    "truth_use": "offline_only",
+    "gps_fallback_validated": false,
+    "position_error_median_max_m": [
+      0.0593980513513088,
+      0.10000000000000005
+    ],
+    "orientation_error_median_max_rad": [
+      0.15613138299089294,
+      0.34786865466588784
+    ],
+    "match_stamp_delta_max_s": 0.003000020980834961,
+    "arrival_gap_median_max_s": [
+      0.09999708850000388,
+      0.10148493100041378
+    ]
+  },
+  "control_fault": "STALE_IMU",
+  "limitations": "Nearest recorded samples, uncalibrated source stamps and dependencies; local IMU_DROP injection affects controller only; no validated alternate control or formal permissions."
+}
