@@ -10,6 +10,37 @@ from evaluation.seed_runner.simulator_preflight import verify_local_simulator
 from evaluation.seed_runner.controller_cleanup import stop_bound_controller
 
 
+def cleanup_simulator(simulator, stop_script):
+    """Report cleanup failures; terminating the local wrapper is not scene cleanup."""
+    result = {'stop_and_launcher_completed': False}
+    if simulator.poll() is not None:
+        result['error'] = 'SIMULATOR_EXITED_BEFORE_CLEANUP'
+        result['launcher_exit_code'] = simulator.returncode
+        return result
+    try:
+        stopped = subprocess.run([str(stop_script)], timeout=15)
+        result['stop_script_exit_code'] = stopped.returncode
+        if stopped.returncode != 0:
+            result['error'] = 'STOP_SCRIPT_FAILED'
+        else:
+            result['launcher_exit_code'] = simulator.wait(timeout=10)
+            result['stop_and_launcher_completed'] = True
+            return result
+    except (OSError, subprocess.TimeoutExpired) as error:
+        result['error'] = 'SIMULATOR_CLEANUP_ERROR: ' + str(error)
+    # This terminates only our local docker-exec wrapper, not necessarily the
+    # container process group. Never report that as verified scene cleanup.
+    if simulator.poll() is None:
+        try:
+            simulator.terminate()
+            result['launcher_exit_code'] = simulator.wait(timeout=5)
+        except ProcessLookupError:
+            result['launcher_exit_code'] = simulator.poll()
+        except subprocess.TimeoutExpired:
+            result['wrapper_wait_timeout'] = True
+    return result
+
+
 def main():
     root = Path(__file__).resolve().parents[2]
     parser = argparse.ArgumentParser(description=__doc__)
@@ -276,12 +307,9 @@ def main():
                     manifest['truth_evaluator_exit_code'] = 'TIMEOUT'
                 evaluation_log.close()
             # Only stop a process group launched by this invocation.
-            if simulator.poll() is None:
-                subprocess.run([str(root/'tools/stop_sim.sh')], timeout=15)
-                try:
-                    simulator.wait(timeout=10)
-                except subprocess.TimeoutExpired:
-                    simulator.terminate()
+            manifest['simulator_cleanup'] = cleanup_simulator(simulator, root/'tools/stop_sim.sh')
+            if not manifest['simulator_cleanup']['stop_and_launcher_completed']:
+                code = 1
             manifest['source_sha256_after'] = source_hashes(root)
             if probe_path:
                 try:
