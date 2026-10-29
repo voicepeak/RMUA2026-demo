@@ -1,0 +1,56 @@
+{
+  "purpose": "Offline timing and diagnostic PWM after seed 2022 angular rate fault",
+  "run_directory": "runs/20261029T172106Z_3f422116c8154ca8b17a4ae339144adf",
+  "source_git_sha": "4514906e941e2647080dd77f6c0a6666b88fda5a",
+  "input_sha256": {
+    "manifest.json": "360d9f631ba507085c73a6b3fcd49b78d3a47eb6f282aeb262e59cb19f77631e",
+    "fault_observation.json": "85eaa4c5e8fd1d8ad4b1c5a673b02dd4131a70c9ad1589f3b153877fd92e76a1",
+    "pwm_telemetry.jsonl": "52e34cce552198ee3841f0d8a0115480e12145a80016888af2a4cac1c0a1b31e",
+    "evaluation_imu.jsonl": "25e940939550c0d6eded835afdbeec9cb1e54ef37b77f8d10d5ea45a8718c5ee",
+    "evaluation_actuation.jsonl": "ac60e7294de7048dc3829249f34e64dd247484cc48b33d52ca6f7cc53ade7f21"
+  },
+  "analysis_sha256": {
+    "evaluation/metrics/angular_fault_window.py": "ebbd1cf7ef176b2302fd033ab9df1ee6adff4c6e7bec0ba9eeca3f7e3f681b65",
+    "evaluation/metrics/fault_debug_hold.py": "c06f25f696fa4d17d559f1ef06db1fa3f77fa186a7a234123775247787a25995",
+    "evaluation/metrics/command_trace.py": "c81e6d5b496c477259e1bb5fd5260d79b45bbc31651c78ae345e84a86749ce56"
+  },
+  "angular_fault_window": {
+    "window_wall_s": [
+      -0.25,
+      0.08
+    ],
+    "recorded_imu_samples_in_window": 33,
+    "crossings": {
+      "0.35": {
+        "arrival_minus_fault_s": -0.01038595600402914,
+        "source_stamp": 1793294476.8679,
+        "raw_angular_rate_norm_rad_s": 0.8348952786318925,
+        "published_commands_after_arrival_before_fault": 0
+      },
+      "1.0": {
+        "arrival_minus_fault_s": -0.0003909470033249818,
+        "source_stamp": 1793294476.8799002,
+        "raw_angular_rate_norm_rad_s": 3.4956815734254416,
+        "published_commands_after_arrival_before_fault": 0
+      },
+      "2.5": {
+        "arrival_minus_fault_s": -0.0003909470033249818,
+        "source_stamp": 1793294476.8799002,
+        "raw_angular_rate_norm_rad_s": 3.4956815734254416,
+        "published_commands_after_arrival_before_fault": 0
+      }
+    },
+    "recovery_tested": false,
+    "limitations": "First raw IMU sample above each threshold in this window; independent observer arrival is not controller arrival or actuator response. Sample gaps, bias and prior threshold crossings are not resolved; no counterfactual recovery or causal claim."
+  },
+  "debug_after_fault": {
+    "post_fault_records": 80,
+    "undecodable_records": 0,
+    "matching_last_command_records": 78,
+    "matching_suffix_records": 78,
+    "matching_suffix_first_arrival_after_fault_s": 0.02977256399753969,
+    "last_record_arrival_after_fault_s": 0.8010610829951474,
+    "match_absolute_tolerance": 1e-06,
+    "limitations": "Debug PWM is an observed diagnostic stream, not verified motor output or physical force; callback arrival is not motor time."
+  }
+}
