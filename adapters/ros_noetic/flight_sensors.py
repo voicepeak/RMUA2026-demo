@@ -28,6 +28,10 @@ class FlightSensors:
         self.startup_diagnostics = {'first_imu_callback_wall_monotonic': None,
                                     'initial_pose_callback_wall_monotonic': None,
                                     'initial_pose_accepted_wall_monotonic': None,
+                                    'initial_pose_stamp': None,
+                                    'initial_pose_frame_id': None,
+                                    'initial_position': None,
+                                    'initial_orientation_wxyz': None,
                                     'imu_skipped_before_initial': 0,
                                     'first_initialized_imu_stamp': None,
                                     'first_initialized_imu_callback_wall_monotonic': None}
@@ -51,6 +55,10 @@ class FlightSensors:
         with self.lock:
             if self.initial is None:
                 self.initial = pose_values(msg.pose)
+                self.startup_diagnostics['initial_position'] = list(self.initial[0])
+                self.startup_diagnostics['initial_orientation_wxyz'] = list(self.initial[1])
+                self.startup_diagnostics['initial_pose_stamp'] = msg.header.stamp.to_sec()
+                self.startup_diagnostics['initial_pose_frame_id'] = getattr(msg.header, 'frame_id', '')
                 self.startup_diagnostics['initial_pose_callback_wall_monotonic'] = arrival
                 self.startup_diagnostics['initial_pose_accepted_wall_monotonic'] = time.monotonic()
 

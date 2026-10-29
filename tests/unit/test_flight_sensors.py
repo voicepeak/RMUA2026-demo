@@ -36,6 +36,8 @@ class SensorAdapterTests(unittest.TestCase):
         s.on_initial(message(0.))
         s.on_imu(message(100.15))
         self.assertEqual(s.startup_snapshot()['first_initialized_imu_stamp'], 100.15)
+        self.assertEqual(s.startup_snapshot()['initial_position'], [1., 2., -1.])
+        self.assertEqual(s.startup_snapshot()['initial_pose_stamp'], 0.)
         s.on_gps(message(100.15))
         state, _ = s.read()
         self.assertEqual(state.velocity_ned, (0., 0., 0.))
