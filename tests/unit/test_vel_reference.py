@@ -19,6 +19,21 @@ class BenchmarkTests(unittest.TestCase):
         p1,v1,_=benchmark_reference((0.,0.,0.),t+h)
         np.testing.assert_allclose((np.array(p1)-p0)/h,v0,atol=1e-4)
 
+    def test_round_trip_brakes_at_both_endpoints(self):
+        for t, x in ((4., 0.), (8., .3), (9., .3), (13., 0.), (16., 0.)):
+            p, v, a = benchmark_reference((0., 0., 0.), t, round_trip=True)
+            self.assertAlmostEqual(p[0], x)
+            self.assertAlmostEqual(v[0], 0.)
+            self.assertAlmostEqual(a[0], 0.)
+        for t in (5., 7., 10., 12.):
+            p, v, a = benchmark_reference((0., 0., 0.), t, round_trip=True)
+            p1, v1, _ = benchmark_reference((0., 0., 0.), t+1e-4, round_trip=True)
+            self.assertAlmostEqual((p1[0]-p[0])/1e-4, v[0], places=4)
+            self.assertAlmostEqual((v1[0]-v[0])/1e-4, a[0], places=4)
+            self.assertLess(abs(v[0]), .15)
+        with self.assertRaises(ValueError):
+            benchmark_reference((0., 0., 0.), 5., braking=True, round_trip=True)
+
     def test_yaw_ninety_world_x_becomes_body_left_and_ned_up_positive(self):
         q=tuple(delta_quaternion((0.,0.,math.pi/2)))
         state=StateEstimate(Metadata(1.,2.,0,'test'),(0.,0.,0.),(0.,0.,0.),q,(0.,0.,0.),Health.OK)

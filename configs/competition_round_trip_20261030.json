@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "purpose": "Five fixed development seeds, low-speed PWM round trip and braking, not a competition score run",
+  "seeds": [123, 456, 789, 42, 2026],
+  "hover_seconds": 16,
+  "mode": "PWM",
+  "braking": false,
+  "round_trip": true,
+  "yaw_motion": false,
+  "snapshot": false,
+  "max_retries": 2,
+  "parameter_policy": "freeze source; retain all failures; existing flight guards unchanged",
+  "official_result": "UNKNOWN"
+}

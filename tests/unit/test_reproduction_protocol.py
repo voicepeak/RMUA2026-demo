@@ -58,6 +58,45 @@ class ProtocolTests(unittest.TestCase):
                 p.write_text(json.dumps({**valid,**change}))
                 with self.assertRaises(ValueError):load_protocol(p)
 
+    def test_retry_preserves_first_failure_and_stops_on_success(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            protocol={'schema_version':1,'seeds':[123],'mode':'PWM','hover_seconds':16,
+                      'braking':False,'yaw_motion':False,'snapshot':False,'round_trip':True,'max_retries':2}
+            path=root/'protocol.json'; path.write_text(json.dumps(protocol))
+            calls=[]
+            def run_case(command, cwd, stdout, stderr):
+                calls.append(command); code=2 if len(calls)==1 else 0
+                run=root/'runs'/('case'+str(len(calls)));run.mkdir(parents=True)
+                (run/'manifest.json').write_text(json.dumps({'source_unchanged':True,
+                    'source_sha256_before':{'source':'hash'},'run_state':'FAILED' if code else 'EVALUATED'}))
+                (run/'pwm_summary.json').write_text(json.dumps({'fault':'ANGULAR_RATE_LIMIT' if code else None}))
+                (run/'closed_loop_metrics.json').write_text(json.dumps({'evaluation_valid':not bool(code)}))
+                stdout.write(str(run)+'\n'); stdout.flush(); return code
+            with patch.object(p1_regression,'__file__',str(root/'evaluation/seed_runner/p1_regression.py')), \
+                 patch.object(p1_regression,'source_hashes',return_value={'source':'hash'}), \
+                 patch.object(p1_regression,'archive_sources',return_value={}), \
+                 patch.object(p1_regression.subprocess,'call',side_effect=run_case), \
+                 patch('sys.argv',['p1_regression','--protocol',str(path)]):
+                self.assertEqual(p1_regression.main(),1)
+            case=json.loads(next((root/'runs/batches').glob('*/batch_report.json')).read_text())['cases'][0]
+            self.assertEqual(len(calls),2)
+            self.assertTrue(all('--round-trip' in call for call in calls))
+            self.assertFalse(case['succeeded'])
+            self.assertTrue(case['succeeded_after_retries'])
+            self.assertTrue(case['retries'][0]['succeeded'])
+
+    def test_round_trip_protocol_rejects_unsafe_combinations(self):
+        valid={'schema_version':1,'seeds':[123],'mode':'PWM','hover_seconds':16,
+               'braking':False,'yaw_motion':False,'snapshot':False,'round_trip':True,'max_retries':2}
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'protocol.json'; p.write_text(json.dumps(valid))
+            self.assertTrue(load_protocol(p)['round_trip'])
+            for change in ({'mode':'VEL'}, {'hover_seconds':14}, {'braking':True},
+                           {'angular_recovery':True}, {'max_retries':3}, {'max_retries':True}):
+                p.write_text(json.dumps(dict(valid,**change)))
+                with self.assertRaises(ValueError): load_protocol(p)
+
     def test_per_case_bootstrap_requires_isolated_pwm_and_matching_booleans(self):
         valid={'schema_version':1,'seeds':[2021,2021],'mode':'PWM','hover_seconds':14,
                'braking':False,'yaw_motion':False,'snapshot':False,

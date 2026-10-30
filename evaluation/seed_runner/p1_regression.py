@@ -28,6 +28,15 @@ def load_protocol(path):
     for name in ('braking','yaw_motion','snapshot'):
         if type(protocol.get(name)) is not bool:
             raise ValueError('protocol flags must be booleans')
+    if type(protocol.get('max_retries', 0)) is not int or not 0 <= protocol.get('max_retries', 0) <= 2:
+        raise ValueError('max retries must be an integer between 0 and 2')
+    if type(protocol.get('round_trip', False)) is not bool:
+        raise ValueError('round trip flag must be boolean')
+    if protocol.get('round_trip') and (protocol['mode'] != 'PWM' or protocol['hover_seconds'] < 16
+            or protocol['braking'] or protocol['yaw_motion'] or protocol.get('angular_recovery')
+            or protocol.get('stationary_bootstrap') or protocol.get('stationary_bootstrap_cases') is not None
+            or 'angular_pulse_moments' in protocol):
+        raise ValueError('round trip requires an isolated bounded PWM flight')
     if type(protocol.get('angular_recovery', False)) is not bool:
         raise ValueError('angular recovery flag must be boolean')
     if type(protocol.get('stationary_bootstrap', False)) is not bool:
@@ -86,41 +95,51 @@ def main():
                  '--mode',protocol['mode'],'--hover-seconds',str(protocol['hover_seconds']),'--evaluate-truth']
         for key,flag in (('braking','--braking'),('yaw_motion','--yaw-motion'),('snapshot','--snapshot')):
             if protocol[key]:command.append(flag)
+        if protocol.get('round_trip'):command.append('--round-trip')
         if protocol.get('angular_recovery'):command.append('--angular-recovery')
         if protocol.get('angular_recovery_profile','standard')!='standard':
             command.extend(['--angular-recovery-profile',protocol['angular_recovery_profile']])
         if plan['stationary_bootstrap']:command.append('--stationary-bootstrap')
         if plan['angular_pulse_moment'] is not None:
             command.extend(['--angular-pulse','--angular-pulse-moment',str(plan['angular_pulse_moment'])])
-        output=batch/('case_%02d.console.log'%index)
-        with output.open('x') as log:
-            code=subprocess.call(command,cwd=root,stdout=log,stderr=subprocess.STDOUT)
-        candidates=[Path(line.strip()) for line in output.read_text().splitlines()
-                    if line.startswith(str(root/'runs')+'/')]
-        candidates=[p for p in candidates if p.parent==root/'runs' and (p/'manifest.json').exists()]
-        case={'index':index,'seed':seed,'exit_code':code,'console':output.name,'command':command}
-        case['angular_pulse_moment']=plan['angular_pulse_moment']
-        case['stationary_bootstrap']=plan['stationary_bootstrap']
-        if len(candidates)==1:
-            run=candidates[0]
-            prefix=protocol['mode'].lower()
-            case['run_directory']=str(run)
-            summary=run/(prefix+'_summary.json')
-            if summary.exists():case['summary']=json.loads(summary.read_text())
-            if (run/'fault_observation.json').exists():case['fault_observation']='fault_observation.json'
-            manifest=json.loads((run/'manifest.json').read_text())
-            case['run_source_unchanged']=(manifest.get('source_unchanged',False)
-                                         and manifest['source_sha256_before']==frozen)
-            case['run_state']=manifest.get('run_state')
-            metrics=run/'closed_loop_metrics.json'
-            if metrics.exists():
-                case['evaluation_valid']=json.loads(metrics.read_text()).get('evaluation_valid')
-        case['succeeded']=case_succeeded(case)
+        attempts=[]
+        for attempt in range(protocol.get('max_retries', 0)+1):
+            output=batch/('case_%02d%s.console.log' % (index, '' if attempt == 0 else '_retry_%d' % attempt))
+            with output.open('x') as log:
+                code=subprocess.call(command,cwd=root,stdout=log,stderr=subprocess.STDOUT)
+            candidates=[Path(line.strip()) for line in output.read_text().splitlines()
+                        if line.startswith(str(root/'runs')+'/')]
+            candidates=[p for p in candidates if p.parent==root/'runs' and (p/'manifest.json').exists()]
+            case={'index':index,'seed':seed,'exit_code':code,'console':output.name,'command':command}
+            case['angular_pulse_moment']=plan['angular_pulse_moment']
+            case['stationary_bootstrap']=plan['stationary_bootstrap']
+            if len(candidates)==1:
+                run=candidates[0]
+                prefix=protocol['mode'].lower()
+                case['run_directory']=str(run)
+                summary=run/(prefix+'_summary.json')
+                if summary.exists():case['summary']=json.loads(summary.read_text())
+                if (run/'fault_observation.json').exists():case['fault_observation']='fault_observation.json'
+                manifest=json.loads((run/'manifest.json').read_text())
+                case['run_source_unchanged']=(manifest.get('source_unchanged',False)
+                                             and manifest['source_sha256_before']==frozen)
+                case['run_state']=manifest.get('run_state')
+                metrics=run/'closed_loop_metrics.json'
+                if metrics.exists():
+                    case['evaluation_valid']=json.loads(metrics.read_text()).get('evaluation_valid')
+            case['succeeded']=case_succeeded(case)
+            case['attempt'] = attempt
+            attempts.append(case)
+            report['source_unchanged']=source_hashes(root)==frozen
+            save()
+            print('Case',index+1,'seed',seed,'exit',code,'fault',case.get('summary',{}).get('fault'),
+                  'run',case.get('run_directory'),flush=True)
+            if case['succeeded'] or not report['source_unchanged'] or code not in (0,2):break
+        case=attempts[0]
+        case['retries']=attempts[1:]
+        case['succeeded_after_retries']=any(a['succeeded'] for a in attempts)
         report['cases'].append(case)
-        report['source_unchanged']=source_hashes(root)==frozen
         save()
-        print('Case',index+1,'seed',seed,'exit',code,'fault',case.get('summary',{}).get('fault'),
-              'run',case.get('run_directory'),flush=True)
         if not report['source_unchanged'] or code not in (0,2):break
         if 'angular_pulse_moments' in protocol and not case['succeeded']:
             report['staged_pulse_stopped_on_failed_case']=True
