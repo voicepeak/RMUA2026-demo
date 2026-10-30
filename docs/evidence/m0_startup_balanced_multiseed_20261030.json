@@ -1,0 +1,404 @@
+{
+  "purpose": "Exploratory balanced multiseed startup comparison; no stage acceptance or population reliability claim",
+  "batch_directory": "runs/batches/20261030T065428Z_818714278af44b85896baad23061f5a4",
+  "batch_report_sha256": "9981a4d3bd03dbcf292015a613a66a94a023846b2da3570390246f0849be2158",
+  "protocol": {
+    "schema_version": 1,
+    "purpose": "Exploratory balanced PWM startup comparison across two development seeds; not stage acceptance",
+    "seeds": [
+      2021,
+      2021,
+      2022,
+      2022,
+      2022,
+      2022,
+      2021,
+      2021
+    ],
+    "stationary_bootstrap_cases": [
+      false,
+      true,
+      true,
+      false,
+      false,
+      true,
+      true,
+      false
+    ],
+    "hover_seconds": 14,
+    "mode": "PWM",
+    "braking": false,
+    "yaw_motion": false,
+    "snapshot": false,
+    "parameter_policy": "freeze source and configuration; retain all outcomes; existing safety guards unchanged",
+    "evaluation_policy": "report all control faults, wire audits, truth evaluations, and cleanup; no causal or population-reliability claim",
+    "official_result": "UNKNOWN"
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "b8abef43b7ed8f9ecd688cb85294c89274df74163bf7ab033071f1ec323295a8",
+    "files": 541,
+    "uncompressed_bytes": 3570693,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "all_cases_completed": true,
+  "batch_succeeded": false,
+  "successful_cases": 7,
+  "cases": [
+    {
+      "index": 0,
+      "seed": 2021,
+      "stationary_bootstrap": false,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T065429Z_6a5535b5cb7c45eeb9e84a4997cfd024",
+      "exit_code": 2,
+      "git_sha": "872888f3d253c6ad0ea4e1cd301cdf0c0fc4c1c5",
+      "git_status": " M evaluation/seed_runner/p1_regression.py\n M tests/unit/test_reproduction_protocol.py\n?? configs/m0_startup_balanced_multiseed_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "b8abef43b7ed8f9ecd688cb85294c89274df74163bf7ab033071f1ec323295a8",
+        "files": 541,
+        "uncompressed_bytes": 3570693,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "FAILED",
+      "fault": "ANGULAR_RATE_LIMIT",
+      "fault_details": {
+        "wall_elapsed_at_last_read": 10.138025875989115,
+        "rate_guard_event": {
+          "stamp": 1793343288.139982,
+          "arrival_wall_monotonic": 84783.278302867,
+          "angular_velocity_body": [
+            -2.5029730409318756,
+            1.6928715705429367,
+            0.10756176278476214
+          ],
+          "rate_norm_rad_s": 3.0236166639965516,
+          "limit_rad_s": 1.0
+        }
+      },
+      "commands": 691,
+      "wire_valid": true,
+      "matched_commands": 691,
+      "evaluation_valid": true,
+      "truth_tracking_max_norm_m": 0.14147804130384323,
+      "estimated_velocity_at_seal": [
+        -0.006849536021731306,
+        0.2834235734540014,
+        0.20475948409357275
+      ],
+      "estimated_speed_at_seal_m_s": 0.3497174351664709,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "565a8ba5ab817f35e74ff896538e2aaa40f6043d5e7e911babdd0a584978ca84",
+        "pwm_summary.json": "e2b7d1bc26ffed5247535edc7c6da10751c36ec52c8facce9c95409f8598cd30",
+        "command_trace_audit.json": "cdefdcbde225f18044de3bcf9c688287a0778ef9055f0c9a6f18f9c3e8f1c552",
+        "closed_loop_metrics.json": "4f5671788c3155a5dc426922e4e55182afe8b492429a359898647012b067c023",
+        "fault_observation.json": "cec2af0505d66c2218ebc3e053accd43e671f56901f7fa295dedd44949dea6ed"
+      }
+    },
+    {
+      "index": 1,
+      "seed": 2021,
+      "stationary_bootstrap": true,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T065451Z_5536a871b9004634bd57b10da5303687",
+      "exit_code": 0,
+      "git_sha": "872888f3d253c6ad0ea4e1cd301cdf0c0fc4c1c5",
+      "git_status": " M evaluation/seed_runner/p1_regression.py\n M tests/unit/test_reproduction_protocol.py\n?? configs/m0_startup_balanced_multiseed_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "b8abef43b7ed8f9ecd688cb85294c89274df74163bf7ab033071f1ec323295a8",
+        "files": 541,
+        "uncompressed_bytes": 3570693,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "EVALUATED",
+      "fault": null,
+      "fault_details": null,
+      "commands": 971,
+      "wire_valid": true,
+      "matched_commands": 971,
+      "evaluation_valid": true,
+      "truth_tracking_max_norm_m": 0.12272500675064284,
+      "estimated_velocity_at_seal": [
+        0.026751466655255643,
+        0.059153804720236215,
+        0.006122918834789134
+      ],
+      "estimated_speed_at_seal_m_s": 0.06520969035461302,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "464ab81fca9602a94a10cb2f3dc759d7c135db7dd6ddc6f148bb175c44784fa7",
+        "pwm_summary.json": "aa5a040063f24ec5f71539b4be9bd79da89dbd828a163a57cca2ff8623733952",
+        "command_trace_audit.json": "b72ab18b9a04f97a526c5b4bd1abfbfe19a0bdfbfbf8a0f00f7863e5aecd4862",
+        "closed_loop_metrics.json": "a99b081301cf6747ac642dd660780d6a16c12f10ec670a6fc8f30973b2de21e8",
+        "stationary_bootstrap.json": "b98c247578e4323ebc8d5d58a2ec67d416a94204e685477e2fe9eb79e8301833"
+      }
+    },
+    {
+      "index": 2,
+      "seed": 2022,
+      "stationary_bootstrap": true,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T065519Z_5109727c34c94ecbbd749aa7e638b292",
+      "exit_code": 0,
+      "git_sha": "872888f3d253c6ad0ea4e1cd301cdf0c0fc4c1c5",
+      "git_status": " M evaluation/seed_runner/p1_regression.py\n M tests/unit/test_reproduction_protocol.py\n?? configs/m0_startup_balanced_multiseed_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "b8abef43b7ed8f9ecd688cb85294c89274df74163bf7ab033071f1ec323295a8",
+        "files": 541,
+        "uncompressed_bytes": 3570693,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "EVALUATED",
+      "fault": null,
+      "fault_details": null,
+      "commands": 955,
+      "wire_valid": true,
+      "matched_commands": 955,
+      "evaluation_valid": true,
+      "truth_tracking_max_norm_m": 0.1808592771441297,
+      "estimated_velocity_at_seal": [
+        -0.04134882289929943,
+        0.14697049057842396,
+        0.0017321510444279953
+      ],
+      "estimated_speed_at_seal_m_s": 0.15268611791273282,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "f1ec62b2d0ef976cba9ae8735990057e337ca719ab7114f7dca89c9ec34c5832",
+        "pwm_summary.json": "e38df0c64adcc154417645ba4b288bca71f374c2c5a893cd7a38982f953c7861",
+        "command_trace_audit.json": "382f1f92c4799f254c1c463dc183397553ba597b0c37d79532be9feb678d29aa",
+        "closed_loop_metrics.json": "d08fd4253d774962663d92f5299092d4efae013d8e861af856c41158b76f2412",
+        "stationary_bootstrap.json": "01385ebcc0b033796e608817f79bd072390dea36482567d688316fceade515af"
+      }
+    },
+    {
+      "index": 3,
+      "seed": 2022,
+      "stationary_bootstrap": false,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T065547Z_99444a5bcbbc401ca9dabcaece779a99",
+      "exit_code": 0,
+      "git_sha": "872888f3d253c6ad0ea4e1cd301cdf0c0fc4c1c5",
+      "git_status": " M evaluation/seed_runner/p1_regression.py\n M tests/unit/test_reproduction_protocol.py\n?? configs/m0_startup_balanced_multiseed_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "b8abef43b7ed8f9ecd688cb85294c89274df74163bf7ab033071f1ec323295a8",
+        "files": 541,
+        "uncompressed_bytes": 3570693,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "EVALUATED",
+      "fault": null,
+      "fault_details": null,
+      "commands": 989,
+      "wire_valid": true,
+      "matched_commands": 989,
+      "evaluation_valid": true,
+      "truth_tracking_max_norm_m": 0.21423816081153932,
+      "estimated_velocity_at_seal": [
+        -0.2318818790235112,
+        -0.03589351303514055,
+        0.3631133396319507
+      ],
+      "estimated_speed_at_seal_m_s": 0.43232955892021363,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "585f5c2bb0123b9d5be59f143f3c1a553df460b0f30018d41d082ce39a14820b",
+        "pwm_summary.json": "a77271de32273e9120431a114d358c0d2a78e8e27af112845697721bad05ef2d",
+        "command_trace_audit.json": "41c4d9ff2bc5ad5451784d17aa2293fae3cb61edd90e3c99cb9a0dd271d692de",
+        "closed_loop_metrics.json": "ca74d46dd525186ac0159743de783ae90c9bad5d32d65cc0bfa638dbb8b82871"
+      }
+    },
+    {
+      "index": 4,
+      "seed": 2022,
+      "stationary_bootstrap": false,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T065613Z_d21b1c4f76fa4999b8760d0069f7898a",
+      "exit_code": 0,
+      "git_sha": "872888f3d253c6ad0ea4e1cd301cdf0c0fc4c1c5",
+      "git_status": " M evaluation/seed_runner/p1_regression.py\n M tests/unit/test_reproduction_protocol.py\n?? configs/m0_startup_balanced_multiseed_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "b8abef43b7ed8f9ecd688cb85294c89274df74163bf7ab033071f1ec323295a8",
+        "files": 541,
+        "uncompressed_bytes": 3570693,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "EVALUATED",
+      "fault": null,
+      "fault_details": null,
+      "commands": 992,
+      "wire_valid": true,
+      "matched_commands": 992,
+      "evaluation_valid": true,
+      "truth_tracking_max_norm_m": 0.10621971761454761,
+      "estimated_velocity_at_seal": [
+        0.23034243275572566,
+        -0.16086092508497998,
+        -0.08347750696832308
+      ],
+      "estimated_speed_at_seal_m_s": 0.2930910570397329,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "ae06f1a48128e09a577728f3c6d45278bad4d7646fbe07623655526254c0bf79",
+        "pwm_summary.json": "a5a0c3fa8ba94107e2ea26b98de2729502deb760088125342c6df87aa3882e71",
+        "command_trace_audit.json": "2e2815be10c84bac15f70a2bcad88dd2f2e825ed1f55c96b5e3fde716e6e5aae",
+        "closed_loop_metrics.json": "533f879aa98de3c82a00e2a0b6fd8fdd7988741fa1b5d54f545f13566b9e1204"
+      }
+    },
+    {
+      "index": 5,
+      "seed": 2022,
+      "stationary_bootstrap": true,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T065640Z_6b724ed93cc344cb8647cb6b017747a4",
+      "exit_code": 0,
+      "git_sha": "872888f3d253c6ad0ea4e1cd301cdf0c0fc4c1c5",
+      "git_status": " M evaluation/seed_runner/p1_regression.py\n M tests/unit/test_reproduction_protocol.py\n?? configs/m0_startup_balanced_multiseed_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "b8abef43b7ed8f9ecd688cb85294c89274df74163bf7ab033071f1ec323295a8",
+        "files": 541,
+        "uncompressed_bytes": 3570693,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "EVALUATED",
+      "fault": null,
+      "fault_details": null,
+      "commands": 986,
+      "wire_valid": true,
+      "matched_commands": 986,
+      "evaluation_valid": true,
+      "truth_tracking_max_norm_m": 0.13474377272066315,
+      "estimated_velocity_at_seal": [
+        -0.047004571382817675,
+        0.02704163015729684,
+        0.008867294930514372
+      ],
+      "estimated_speed_at_seal_m_s": 0.05494823392822698,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "90091b35f05007750826404b006748271e09fd330cdc7490d3b8865aca727ba7",
+        "pwm_summary.json": "948bec5de7f24c81902d9a31c1bccbea2c40b7a5dfd6e46464b72a68bd9a283e",
+        "command_trace_audit.json": "7c633269d49717ee7195553598424e2b564afe5424422f39a56b8b7a6e1b1a3e",
+        "closed_loop_metrics.json": "c0d36dbd9687adae2442aebe4da0a0c57356d429c9342263b2547544017d461e",
+        "stationary_bootstrap.json": "5c2c88439fc59b7ee973191f7bce35e6841d8f76dbfac53c855aa503ce2dbdc2"
+      }
+    },
+    {
+      "index": 6,
+      "seed": 2021,
+      "stationary_bootstrap": true,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T065708Z_5c8d3f0b85944141907ada31b7633971",
+      "exit_code": 0,
+      "git_sha": "872888f3d253c6ad0ea4e1cd301cdf0c0fc4c1c5",
+      "git_status": " M evaluation/seed_runner/p1_regression.py\n M tests/unit/test_reproduction_protocol.py\n?? configs/m0_startup_balanced_multiseed_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "b8abef43b7ed8f9ecd688cb85294c89274df74163bf7ab033071f1ec323295a8",
+        "files": 541,
+        "uncompressed_bytes": 3570693,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "EVALUATED",
+      "fault": null,
+      "fault_details": null,
+      "commands": 981,
+      "wire_valid": true,
+      "matched_commands": 981,
+      "evaluation_valid": true,
+      "truth_tracking_max_norm_m": 0.14616700188220974,
+      "estimated_velocity_at_seal": [
+        0.039934983958136994,
+        -0.05686393775437327,
+        0.0012531258181382346
+      ],
+      "estimated_speed_at_seal_m_s": 0.06949734300666452,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "8e47b428aaea039b9f2bf3b6c7918a2b429c4b850908449f40d46b1add708e72",
+        "pwm_summary.json": "c7533dae933e3abdfd21a8b355d0ed4fb4842ae0161acab7df0c9dc591018af8",
+        "command_trace_audit.json": "c73de9f90b23f1106dc9ccbeabeff2f3ea939ba282d655d6104b085ab9aa2ed5",
+        "closed_loop_metrics.json": "8162c5d9ddf7d700dd833cb001ddbc91c86f03d2d7729e792ede158c481c78e2",
+        "stationary_bootstrap.json": "9d5306e47582876520abec584a59f7c6671e7f5c645195428233218284ed4fcd"
+      }
+    },
+    {
+      "index": 7,
+      "seed": 2021,
+      "stationary_bootstrap": false,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T065735Z_30ae093d33314c4db83a983040f7015c",
+      "exit_code": 0,
+      "git_sha": "872888f3d253c6ad0ea4e1cd301cdf0c0fc4c1c5",
+      "git_status": " M evaluation/seed_runner/p1_regression.py\n M tests/unit/test_reproduction_protocol.py\n?? configs/m0_startup_balanced_multiseed_20261030.json\n",
+      "source_unchanged": true,
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "b8abef43b7ed8f9ecd688cb85294c89274df74163bf7ab033071f1ec323295a8",
+        "files": 541,
+        "uncompressed_bytes": 3570693,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "run_state": "EVALUATED",
+      "fault": null,
+      "fault_details": null,
+      "commands": 993,
+      "wire_valid": true,
+      "matched_commands": 993,
+      "evaluation_valid": true,
+      "truth_tracking_max_norm_m": 0.24346458277678312,
+      "estimated_velocity_at_seal": [
+        -0.3586049396026544,
+        -0.2651238657569182,
+        0.09340144580855661
+      ],
+      "estimated_speed_at_seal_m_s": 0.45564459503043,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "fa37234e0e124264caf93d4328f9f0386293287e735b5f49d5e7396f32d5cc03",
+        "pwm_summary.json": "1b15cb7dcd5be2d48a4af693971130face25925f2700e12c3f262d80c454e5cd",
+        "command_trace_audit.json": "b26023cd795b8699fb279d5a4e00fa770be0381d15ecc31e5a9730cb52c2f3f6",
+        "closed_loop_metrics.json": "44c8a568337320e4651b16e2df8bf86f61e2d8cbe842649d3d0b18af0b6d480b"
+      }
+    }
+  ]
+}

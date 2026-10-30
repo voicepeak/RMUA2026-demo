@@ -58,6 +58,46 @@ class ProtocolTests(unittest.TestCase):
                 p.write_text(json.dumps({**valid,**change}))
                 with self.assertRaises(ValueError):load_protocol(p)
 
+    def test_per_case_bootstrap_requires_isolated_pwm_and_matching_booleans(self):
+        valid={'schema_version':1,'seeds':[2021,2021],'mode':'PWM','hover_seconds':14,
+               'braking':False,'yaw_motion':False,'snapshot':False,
+               'stationary_bootstrap_cases':[False,True]}
+        with tempfile.TemporaryDirectory() as d:
+            p=Path(d)/'protocol.json';p.write_text(json.dumps(valid))
+            self.assertEqual(load_protocol(p)['stationary_bootstrap_cases'],[False,True])
+            for change in ({'stationary_bootstrap_cases':[True]},
+                           {'stationary_bootstrap_cases':[False,1]}, {'mode':'VEL'},
+                           {'stationary_bootstrap':True}, {'angular_recovery':True}, {'braking':True}):
+                p.write_text(json.dumps({**valid,**change}))
+                with self.assertRaises(ValueError):load_protocol(p)
+
+    def test_per_case_bootstrap_reaches_the_intended_command(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            protocol={'schema_version':1,'seeds':[2021,2022],'mode':'PWM','hover_seconds':14,
+                      'braking':False,'yaw_motion':False,'snapshot':False,
+                      'stationary_bootstrap_cases':[False,True]}
+            path=root/'protocol.json';path.write_text(json.dumps(protocol))
+            commands=[]
+            def run_case(command, cwd, stdout, stderr):
+                commands.append(command)
+                run=root/'runs'/('case'+str(len(commands)));run.mkdir(parents=True)
+                (run/'manifest.json').write_text(json.dumps({'source_unchanged':True,
+                    'source_sha256_before':{'source':'hash'},'run_state':'EVALUATED'}))
+                (run/'pwm_summary.json').write_text(json.dumps({'fault':None}))
+                (run/'closed_loop_metrics.json').write_text(json.dumps({'evaluation_valid':True}))
+                stdout.write(str(run)+'\n');stdout.flush();return 0
+            with patch.object(p1_regression,'__file__',str(root/'evaluation/seed_runner/p1_regression.py')), \
+                 patch.object(p1_regression,'source_hashes',return_value={'source':'hash'}), \
+                 patch.object(p1_regression,'archive_sources',return_value={}), \
+                 patch.object(p1_regression.subprocess,'call',side_effect=run_case), \
+                 patch('sys.argv',['p1_regression','--protocol',str(path)]):
+                self.assertEqual(p1_regression.main(),0)
+            self.assertNotIn('--stationary-bootstrap',commands[0])
+            self.assertIn('--stationary-bootstrap',commands[1])
+            report=json.loads(next((root/'runs/batches').glob('*/batch_report.json')).read_text())
+            self.assertEqual([c['stationary_bootstrap'] for c in report['cases']],[False,True])
+
     def test_staged_pulses_cannot_skip_recovery_or_jump_over_the_local_limit(self):
         valid={'schema_version':1,'seeds':[2030,2041],'mode':'PWM','hover_seconds':14,
                'braking':False,'yaw_motion':False,'snapshot':False,'angular_recovery':True,

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "purpose": "Exploratory balanced PWM startup comparison across two development seeds; not stage acceptance",
+  "seeds": [2021, 2021, 2022, 2022, 2022, 2022, 2021, 2021],
+  "stationary_bootstrap_cases": [false, true, true, false, false, true, true, false],
+  "hover_seconds": 14,
+  "mode": "PWM",
+  "braking": false,
+  "yaw_motion": false,
+  "snapshot": false,
+  "parameter_policy": "freeze source and configuration; retain all outcomes; existing safety guards unchanged",
+  "evaluation_policy": "report all control faults, wire audits, truth evaluations, and cleanup; no causal or population-reliability claim",
+  "official_result": "UNKNOWN"
+}

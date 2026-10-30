@@ -32,6 +32,13 @@ def load_protocol(path):
         raise ValueError('angular recovery flag must be boolean')
     if type(protocol.get('stationary_bootstrap', False)) is not bool:
         raise ValueError('stationary bootstrap flag must be boolean')
+    by_case = protocol.get('stationary_bootstrap_cases')
+    if by_case is not None and (not isinstance(by_case, list) or len(by_case) != len(seeds)
+            or any(type(value) is not bool for value in by_case) or protocol['mode'] != 'PWM'
+            or protocol.get('stationary_bootstrap', False) or protocol.get('angular_recovery', False)
+            or 'angular_pulse_moments' in protocol or protocol['braking'] or protocol['yaw_motion']
+            or protocol['snapshot']):
+        raise ValueError('per-case bootstrap requires an isolated PWM hover with one boolean per seed')
     if protocol.get('angular_recovery') and protocol['mode']!='PWM':
         raise ValueError('angular recovery requires PWM')
     profile=protocol.get('angular_recovery_profile','standard')
@@ -55,8 +62,11 @@ def main():
     parser.add_argument('--limit',type=int)
     args=parser.parse_args()
     protocol=load_protocol(args.protocol)
-    plans=[{'seed':seed,'angular_pulse_moment':moment}
-           for moment in protocol.get('angular_pulse_moments',[None]) for seed in protocol['seeds']]
+    bootstrap_cases=protocol.get('stationary_bootstrap_cases',
+                                 [protocol.get('stationary_bootstrap', False)] * len(protocol['seeds']))
+    plans=[{'seed':seed,'stationary_bootstrap':bootstrap_cases[index], 'angular_pulse_moment':moment}
+           for moment in protocol.get('angular_pulse_moments',[None])
+           for index,seed in enumerate(protocol['seeds'])]
     if args.limit is not None:
         if not 1<=args.limit<=len(plans):parser.error('invalid case limit')
         plans=plans[:args.limit]
@@ -79,7 +89,7 @@ def main():
         if protocol.get('angular_recovery'):command.append('--angular-recovery')
         if protocol.get('angular_recovery_profile','standard')!='standard':
             command.extend(['--angular-recovery-profile',protocol['angular_recovery_profile']])
-        if protocol.get('stationary_bootstrap'):command.append('--stationary-bootstrap')
+        if plan['stationary_bootstrap']:command.append('--stationary-bootstrap')
         if plan['angular_pulse_moment'] is not None:
             command.extend(['--angular-pulse','--angular-pulse-moment',str(plan['angular_pulse_moment'])])
         output=batch/('case_%02d.console.log'%index)
@@ -90,6 +100,7 @@ def main():
         candidates=[p for p in candidates if p.parent==root/'runs' and (p/'manifest.json').exists()]
         case={'index':index,'seed':seed,'exit_code':code,'console':output.name,'command':command}
         case['angular_pulse_moment']=plan['angular_pulse_moment']
+        case['stationary_bootstrap']=plan['stationary_bootstrap']
         if len(candidates)==1:
             run=candidates[0]
             prefix=protocol['mode'].lower()
