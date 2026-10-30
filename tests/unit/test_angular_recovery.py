@@ -62,9 +62,21 @@ class AngularRecoveryTests(unittest.TestCase):
         for s in (state(health=Health.LOST),state(omega=(0,5.,0))):
             with self.assertRaises(RuntimeError):AngularRecovery().decide(s)
         r=AngularRecovery();r.decide(state(omega=(0,1.,0)))
-        with self.assertRaises(RuntimeError):r.decide(state(1.1,epoch=1))
+        with self.assertRaisesRegex(RuntimeError, 'ANGULAR_RECOVERY_EPOCH'):r.decide(state(1.1,epoch=1))
+        with self.assertRaisesRegex(RuntimeError, 'ANGULAR_RECOVERY_EPOCH'):r.decide(state(1.2))
         r=AngularRecovery();r.decide(state(omega=(0,1.,0)))
-        with self.assertRaises(RuntimeError):r.decide(state(4.1,omega=(0,1.,0)))
+        with self.assertRaisesRegex(RuntimeError, 'ANGULAR_RECOVERY_TIMEOUT'):r.decide(state(4.1,omega=(0,1.,0)))
+        with self.assertRaisesRegex(RuntimeError, 'ANGULAR_RECOVERY_TIMEOUT'):r.decide(state(4.2))
+
+    def test_recovery_fault_remains_latched_after_state_recovers(self):
+        for invalid, reason in ((state(health=Health.LOST), 'ANGULAR_RECOVERY_LOCALIZATION'),
+                                (state(omega=(0., 2.6, 0.)), 'ANGULAR_RECOVERY_HARD_BOUND')):
+            with self.subTest(reason=reason):
+                supervisor = AngularRecovery()
+                with self.assertRaisesRegex(RuntimeError, reason):
+                    supervisor.decide(invalid)
+                with self.assertRaisesRegex(RuntimeError, reason):
+                    supervisor.decide(state(1.1))
 
     def test_fast_profile_is_explicit_and_does_not_relax_the_hard_bound(self):
         standard=AngularRecovery().decide(state(omega=(0,.6,0)))

@@ -21,12 +21,19 @@ class HoverRecovery:
         self.hold_position = None
         self.phase = 'NORMAL'
         self.transitions = []
+        self.fault = None
+
+    def fail(self, reason):
+        self.fault = self.fault or reason
+        raise RuntimeError(self.fault)
 
     def decide(self, state, gps_age, nominal):
+        if self.fault:
+            self.fail(self.fault)
         if not math.isfinite(gps_age) or gps_age < 0 or state.health == Health.LOST:
-            raise RuntimeError('HOVER_LOCALIZATION_LOST')
+            self.fail('HOVER_LOCALIZATION_LOST')
         if gps_age > self.maximum_gps_age:
-            raise RuntimeError('HOVER_OUTAGE_BOUND_EXCEEDED')
+            self.fail('HOVER_OUTAGE_BOUND_EXCEEDED')
         previous = self.phase
         if state.health == Health.OK and gps_age <= .3:
             self.phase = 'NORMAL'
@@ -38,7 +45,7 @@ class HoverRecovery:
                 self.hold_position = state.position_ned
             decision = HoverDecision(self.phase,self.hold_position,(0.,0.,0.),(0.,0.,0.),False)
         else:
-            raise RuntimeError('HOVER_OUTAGE_BOUND_EXCEEDED')
+            self.fail('HOVER_OUTAGE_BOUND_EXCEEDED')
         if previous != self.phase:
             self.transitions.append({'stamp':state.metadata.stamp,'from':previous,'to':self.phase})
         return decision

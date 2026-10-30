@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "purpose": "Five fixed development seeds, bounded PWM hover prerequisite, not a competition score run",
+  "seeds": [123, 456, 789, 42, 2026],
+  "hover_seconds": 14,
+  "mode": "PWM",
+  "braking": false,
+  "yaw_motion": false,
+  "snapshot": false,
+  "parameter_policy": "freeze source and configuration; retain failures; existing flight guards unchanged",
+  "evaluation_policy": "report local hover status and strict command audit; competition score and segment remain unmeasured",
+  "official_result": "UNKNOWN"
+}

@@ -62,12 +62,14 @@ class SupervisionTests(unittest.TestCase):
         self.assertFalse(d.allow_integral)
         d=r.decide(replace(s,position_ned=(1.1,2.,-1.)),.8,nominal)
         self.assertEqual(d.position,(1.,2.,-1.))
-        with self.assertRaises(RuntimeError):r.decide(s,1.1,nominal)
-        with self.assertRaises(RuntimeError):r.decide(replace(s,health=Health.OK),1.1,nominal)
         d=r.decide(replace(s,health=Health.OK),.01,nominal)
         self.assertEqual(d.phase,'NORMAL')
         self.assertEqual(d.position,nominal[0])
         self.assertEqual(len(r.transitions),2)
+        with self.assertRaisesRegex(RuntimeError,'HOVER_OUTAGE_BOUND_EXCEEDED'):
+            r.decide(s,1.1,nominal)
+        with self.assertRaisesRegex(RuntimeError,'HOVER_OUTAGE_BOUND_EXCEEDED'):
+            r.decide(replace(s,health=Health.OK),.01,nominal)
 
 
 if __name__ == '__main__':
