@@ -34,6 +34,13 @@ def load_protocol(path):
         raise ValueError('scene trace flag must be boolean')
     if type(protocol.get('max_retries', 0)) is not int or not 0 <= protocol.get('max_retries', 0) <= 2:
         raise ValueError('max retries must be an integer between 0 and 2')
+    if type(protocol.get('departure_probe', False)) is not bool:
+        raise ValueError('departure probe flag must be boolean')
+    if protocol.get('departure_probe') and (protocol['mode'] != 'PWM' or protocol['hover_seconds'] < 16
+            or protocol.get('round_trip') or protocol['braking'] or protocol['yaw_motion']
+            or protocol.get('angular_recovery') or protocol.get('stationary_bootstrap')
+            or protocol.get('stationary_bootstrap_cases') is not None or 'angular_pulse_moments' in protocol):
+        raise ValueError('departure probe requires an isolated bounded PWM flight')
     if type(protocol.get('round_trip', False)) is not bool:
         raise ValueError('round trip flag must be boolean')
     if protocol.get('round_trip') and (protocol['mode'] != 'PWM' or protocol['hover_seconds'] < 16
@@ -102,6 +109,7 @@ def main():
         if protocol.get('hud_capture'):command.append('--hud-capture')
         if protocol.get('scene_trace'):command.append('--scene-trace')
         if protocol.get('round_trip'):command.append('--round-trip')
+        if protocol.get('departure_probe'):command.append('--departure-probe')
         if protocol.get('angular_recovery'):command.append('--angular-recovery')
         if protocol.get('angular_recovery_profile','standard')!='standard':
             command.extend(['--angular-recovery-profile',protocol['angular_recovery_profile']])

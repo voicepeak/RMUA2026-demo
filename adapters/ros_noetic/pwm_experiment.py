@@ -53,7 +53,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                    stationary_bootstrap=False,angular_recovery=False,angular_pulse=False,
                    isolated_reference=False,reference_stall_seconds=0.,collective_pulse_pwm=None,
                    angular_pulse_moment=.5,angular_recovery_profile='standard',control_hz=80,
-                   control_stall_seconds=0.,control_stall_stage='before-check',round_trip=False):
+                   control_stall_seconds=0.,control_stall_stage='before-check',round_trip=False,departure=False):
     if type(control_hz) is not int or control_hz not in (50, 80):
         raise ValueError('experimental control rate must be 50 or 80 Hz')
     if control_stall_seconds not in (0., .15):
@@ -195,7 +195,7 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
                 if hover_seconds:
                     sim_elapsed = state.metadata.stamp-start_stamp
                     if reference_worker is None:
-                        reference, velocity, acceleration = benchmark_reference(origin, sim_elapsed, step,braking,round_trip)
+                        reference, velocity, acceleration = benchmark_reference(origin, sim_elapsed, step,braking,round_trip,departure)
                         yaw_command,yaw_rate = benchmark_yaw(yaw_reference,sim_elapsed,yaw_motion)
                     allow_integral = not previous_saturated
                     phase = 'NORMAL'
@@ -388,6 +388,7 @@ def main():
     parser.add_argument('--yaw-motion',action='store_true')
     parser.add_argument('--braking',action='store_true')
     parser.add_argument('--round-trip',action='store_true')
+    parser.add_argument('--departure-probe',action='store_true')
     parser.add_argument('--stationary-bootstrap',action='store_true')
     parser.add_argument('--angular-recovery',action='store_true')
     parser.add_argument('--angular-recovery-profile',choices=('standard','fast'),default='standard')
@@ -403,6 +404,10 @@ def main():
             or args.step or args.yaw_motion or args.braking or args.angular_recovery or args.angular_pulse
             or args.isolated_reference or args.collective_pulse_pwm is not None):
         parser.error('control stall is restricted to isolated healthy bounded hover')
+    if args.departure_probe and (args.hover_seconds < 16 or args.round_trip or args.step or args.braking or args.yaw_motion
+            or args.motor_pulses or args.sensor_fault or args.gps_bridge or args.angular_recovery
+            or args.isolated_reference or args.collective_pulse_pwm is not None or args.control_stall_seconds):
+        parser.error('departure probe requires isolated >=16s healthy PWM flight')
     if args.round_trip and (args.hover_seconds < 16 or args.step or args.braking or args.yaw_motion
             or args.motor_pulses or args.sensor_fault or args.gps_bridge or args.angular_recovery
             or args.isolated_reference or args.collective_pulse_pwm is not None or args.control_stall_seconds):
@@ -442,7 +447,7 @@ def main():
                           args.isolated_reference,args.reference_stall_seconds,args.collective_pulse_pwm,
                           .5 if args.angular_pulse_moment is None else args.angular_pulse_moment,
                           args.angular_recovery_profile,args.control_hz,args.control_stall_seconds,
-                          args.control_stall_stage,args.round_trip)
+                          args.control_stall_stage,args.round_trip,args.departure_probe)
 
 
 if __name__ == '__main__':

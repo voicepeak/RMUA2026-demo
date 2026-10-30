@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "purpose": "Five seed bounded low-speed departure probes with HUD capture",
+  "seeds": [123, 456, 789, 42, 2026],
+  "hover_seconds": 18,
+  "mode": "PWM",
+  "braking": false,
+  "yaw_motion": false,
+  "snapshot": false,
+  "departure_probe": true,
+  "hud_capture": true,
+  "max_retries": 2,
+  "parameter_policy": "freeze source and preserve existing flight guards",
+  "official_result": "UNKNOWN"
+}

@@ -34,6 +34,20 @@ class BenchmarkTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             benchmark_reference((0., 0., 0.), 5., braking=True, round_trip=True)
 
+    def test_departure_probe_has_bounded_smooth_motion(self):
+        for t,x in ((4.,0.),(7.,.4),(10.,.8),(15.,.8)):
+            p,v,a=benchmark_reference((0.,0.,0.),t,departure=True)
+            self.assertAlmostEqual(p[0],x)
+            self.assertLessEqual(abs(v[0]),.25)
+            self.assertLessEqual(np.linalg.norm(p),1.8)
+        for t in (5.,7.,9.):
+            p,v,a=benchmark_reference((0.,0.,0.),t,departure=True)
+            p1,v1,_=benchmark_reference((0.,0.,0.),t+1e-4,departure=True)
+            self.assertAlmostEqual((p1[0]-p[0])/1e-4,v[0],places=4)
+            self.assertAlmostEqual((v1[0]-v[0])/1e-4,a[0],places=4)
+        with self.assertRaises(ValueError):
+            benchmark_reference((0.,0.,0.),5.,round_trip=True,departure=True)
+
     def test_yaw_ninety_world_x_becomes_body_left_and_ned_up_positive(self):
         q=tuple(delta_quaternion((0.,0.,math.pi/2)))
         state=StateEstimate(Metadata(1.,2.,0,'test'),(0.,0.,0.),(0.,0.,0.),q,(0.,0.,0.),Health.OK)

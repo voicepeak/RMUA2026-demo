@@ -71,6 +71,7 @@ def main():
     parser.add_argument('--yaw-motion',action='store_true')
     parser.add_argument('--braking',action='store_true')
     parser.add_argument('--round-trip',action='store_true')
+    parser.add_argument('--departure-probe',action='store_true')
     parser.add_argument('--snapshot',action='store_true')
     parser.add_argument('--scene-trace',action='store_true',help='isolated, bounded camera/LiDAR recording')
     parser.add_argument('--hud-capture',action='store_true',help='render and record simulator HUD in an isolated host process')
@@ -91,6 +92,12 @@ def main():
     if args.hud_capture and (args.mode != 'PWM' or not args.evaluate_truth or args.hover_seconds < 10
             or args.contract_audit_only or args.controller_image or args.bridge_probe):
         parser.error('HUD capture requires an evaluated workspace PWM flight')
+    if args.departure_probe and (args.mode != 'PWM' or not 16 <= args.hover_seconds <= 20
+            or not args.evaluate_truth or args.round_trip or args.step or args.braking or args.yaw_motion
+            or args.motor_pulses or args.sensor_fault or args.gps_bridge or args.angular_recovery
+            or args.isolated_reference or args.collective_pulse_pwm is not None or args.control_stall_seconds
+            or args.contract_audit_only or args.controller_image or args.bridge_probe):
+        parser.error('departure probe requires isolated evaluated workspace PWM flight of 16-20s')
     if args.round_trip and (args.mode != 'PWM' or args.hover_seconds < 16 or args.hover_seconds > 20
             or not args.evaluate_truth or args.step or args.braking or args.yaw_motion or args.motor_pulses
             or args.sensor_fault or args.gps_bridge or args.angular_recovery or args.isolated_reference
@@ -174,7 +181,7 @@ def main():
                             'motor_pulses': args.motor_pulses, 'hover_seconds': args.hover_seconds,
                             'evaluate_truth': args.evaluate_truth, 'step': args.step,
                             'sensor_fault':args.sensor_fault, 'fault_seconds':args.fault_seconds,
-                            'gps_bridge':args.gps_bridge,'yaw_motion':args.yaw_motion,'braking':args.braking,'round_trip':args.round_trip,
+                            'gps_bridge':args.gps_bridge,'yaw_motion':args.yaw_motion,'braking':args.braking,'round_trip':args.round_trip,'departure_probe':args.departure_probe,
                             'snapshot':args.snapshot,'scene_trace':args.scene_trace,'hud_capture':args.hud_capture,'controller_image':args.controller_image,
                             'contract_audit_only':args.contract_audit_only,
                             'stationary_bootstrap':args.stationary_bootstrap,
@@ -328,6 +335,7 @@ def main():
             if args.braking:
                 command.append('--braking')
             if args.round_trip:command.append('--round-trip')
+            if args.departure_probe:command.append('--departure-probe')
             if args.stationary_bootstrap:command.append('--stationary-bootstrap')
             if args.angular_recovery:command.append('--angular-recovery')
             if args.angular_recovery_profile!='standard':

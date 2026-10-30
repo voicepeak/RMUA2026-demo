@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 
-def benchmark_reference(origin, elapsed, step=False, braking=False, round_trip=False):
+def benchmark_reference(origin, elapsed, step=False, braking=False, round_trip=False, departure=False):
     if not math.isfinite(elapsed) or elapsed < 0:
         raise ValueError('invalid reference time')
     origin = np.asarray(origin, dtype=float)
@@ -16,6 +16,8 @@ def benchmark_reference(origin, elapsed, step=False, braking=False, round_trip=F
     position = origin+(0., 0., -h)
     if step and elapsed >= 4:
         position[0] += .4 if elapsed < 8 else -.4
+    if departure and (step or braking or round_trip):
+        raise ValueError('departure must be isolated')
     if round_trip and (step or braking):
         raise ValueError('round trip must be isolated')
     vx = 0.
@@ -32,6 +34,12 @@ def benchmark_reference(origin, elapsed, step=False, braking=False, round_trip=F
             vx, ax = leg*.3*dq, leg*.3*ddq
         elif 8 <= elapsed < 9:
             position[0] += .3
+    if departure:
+        # Small forward probe within the existing origin-centred flight guard.
+        u = min(1., max(0., (elapsed-4.)/6.))
+        position[0] += .8*(10*u**3-15*u**4+6*u**5)
+        vx = .8*(30*u**2-60*u**3+30*u**4)/6
+        ax = .8*(60*u-180*u**2+120*u**3)/36
     if braking:
         # Deliberate velocity steps identify response; not a mission trajectory.
         position[0] += .4*min(2.,max(0.,elapsed-4.))
