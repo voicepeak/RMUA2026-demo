@@ -265,6 +265,36 @@ extern "C" void lifetime_ctor2(void* self,const char* type,void* parameter) {
 
 #ifdef RMUA_NATIVE_INPUT_PROBE
 namespace {
+void record_callback_location(NativeCallback callback) {
+    Dl_info info{};
+    const auto address=reinterpret_cast<std::uintptr_t>(callback);
+    const bool found=dladdr(reinterpret_cast<void*>(address),&info)!=0 && info.dli_fbase && info.dli_fname;
+    const auto base=found?reinterpret_cast<std::uintptr_t>(info.dli_fbase):0;
+    // Hex encoding avoids embedding unescaped loader paths into JSON.
+    char module_hex[513]{};
+    bool complete=found;
+    if(found){
+        const auto length=std::strlen(info.dli_fname);
+        if(length>256)complete=false;
+        else for(std::size_t i=0;i<length;++i)
+            std::snprintf(module_hex+2*i,3,"%02x",static_cast<unsigned char>(info.dli_fname[i]));
+    }
+    const auto stamp=now_ns();
+    char line[1024];
+    const int length=std::snprintf(line,sizeof(line),
+        "{\"event\":\"native_callback_location\",\"mode\":\"%s\","
+        "\"start_monotonic_ns\":%llu,\"end_monotonic_ns\":%llu,\"write_errors\":%llu,"
+        "\"pwm_calls\":%llu,\"bridge_calls\":%llu,\"overlap_entries\":%llu,\"bridge_span\":0,"
+        "\"callback_address\":\"0x%llx\",\"module_base\":\"0x%llx\","
+        "\"module_offset\":\"0x%llx\",\"module_path_hex\":\"%s\",\"location_valid\":%s}\n",
+        mode_name,static_cast<unsigned long long>(stamp),static_cast<unsigned long long>(stamp),
+        static_cast<unsigned long long>(write_errors.load()),static_cast<unsigned long long>(calls[0].load()),
+        static_cast<unsigned long long>(calls[1].load()),static_cast<unsigned long long>(overlaps.load()),
+        static_cast<unsigned long long>(address),static_cast<unsigned long long>(base),
+        static_cast<unsigned long long>(found?address-base:0),
+        module_hex,(found&&complete&&address>=base)?"true":"false");
+    if(length<=0 || length>=int(sizeof(line)) || write(output,line,length)!=length)++write_errors;
+}
 void native_input_callback(void* command,void* result) {
     const auto original=native_callback.load();
     if(!original)fatal("native callback not bound");
@@ -300,6 +330,7 @@ extern "C" void native_input_init(int argc,char** argv,NativeCallback callback,b
     NativeCallback empty=nullptr;
     if(!callback || !native_callback.compare_exchange_strong(empty,callback))fatal("unexpected native callback binding");
     const auto stamp=now_ns();record("native_callback_bound",1,stamp,stamp);
+    record_callback_location(callback);
     original_init(argc,argv,native_input_callback,a,b,game,c,d,e,f);
 }
 #endif

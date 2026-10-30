@@ -149,6 +149,16 @@ class NativeInputTests(unittest.TestCase):
                 self.assertEqual(len(exits),1)
                 self.assertTrue(exits[0]['native_call_interval_measured'])
                 self.assertEqual(sum(r['event']=='native_callback_bound' for r in records),1)
+                locations = [r for r in records if r['event'] == 'native_callback_location']
+                self.assertEqual(len(locations), 1)
+                self.assertTrue(locations[0]['location_valid'])
+                self.assertEqual(locations[0]['bridge_span'], 0)
+                self.assertTrue(all(k in locations[0] for k in ('pwm_calls', 'bridge_calls', 'overlap_entries', 'write_errors')))
+                from evaluation.metrics.bridge_lifetime import evaluate as lifetime_evaluate
+                lifetime_evaluate(records)  # All probe records must satisfy the consumer schema.
+                self.assertTrue(bytes.fromhex(locations[0]['module_path_hex']))
+                self.assertEqual(int(locations[0]['callback_address'], 16) - int(locations[0]['module_base'], 16),
+                                 int(locations[0]['module_offset'], 16))
                 self.assertEqual(entries[0]['parameter_read_ok'], not bad_pointer)
                 self.assertEqual(entries[0]['bridge_span'], exits[0]['bridge_span'])
                 self.assertEqual(records[-1]['write_errors'],0)

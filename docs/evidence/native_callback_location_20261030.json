@@ -1,0 +1,121 @@
+{
+  "purpose": "Diagnostic native callback module location and static PWM branch inspection, not actuator consumption proof",
+  "binary_path": "simulator/simulator_12.0.0.5/Build/LinuxNoEditor/RMUA/Binaries/Linux/RMUA-Linux-Shipping",
+  "binary_sha256": "5231addfa25ddaa9e4473ea9ac40c9c0bc685174e69cd14bb49159f443b97800",
+  "static_analysis": {
+    "elf_type": "EXEC",
+    "callback_virtual_address": "0x26f06f0",
+    "callback_module_base": "0x200000",
+    "callback_module_offset": "0x24f06f0",
+    "pwm_type_string_virtual_address": "0x9f63fd",
+    "pwm_type_string": "rotor_pwm",
+    "dispatcher_pointer_load_virtual_address": "0x26f07fe",
+    "dispatcher_pwm_handler_call_virtual_address": "0x26f0802",
+    "pwm_handler_virtual_address": "0x26ea0f0",
+    "conditional_16byte_parameter_load_virtual_address": "0x26ea1b9",
+    "conditional_16byte_store_virtual_address": "0x26ea1bc",
+    "limitations": "Static possible paths only; allocation, branch selection, runtime load, downstream consumer and motor application not measured."
+  },
+  "runs": [
+    {
+      "run_directory": "runs/20261030T063722Z_7ddf5022052a4c2394af1a67c408f3c4",
+      "git_sha": "442c0d7ddc2da412b0a23607b6d15f8a800db80e",
+      "git_status": " M tests/integration/test_native_input_probe.py\n M tools/diagnostics/bridge_probe.cpp\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "db25f66b686b9152ce7a231a9c7b760cf3661267b46a8f79eb5758d2f1235901",
+        "files": 527,
+        "uncompressed_bytes": 3337802,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "probe_binary_sha256": "842df12b507586237f5676e131a2d047fa845c060a3faf6c7e47385fa064240f",
+      "run_state": "FAILED",
+      "bridge_probe_error": "'pwm_calls'",
+      "fault": null,
+      "commands": 949,
+      "wire_valid": true,
+      "matched_commands": 949,
+      "callback_locations": [
+        {
+          "event": "native_callback_location",
+          "mode": "native-input",
+          "start_monotonic_ns": 83743621953125,
+          "end_monotonic_ns": 83743621953125,
+          "write_errors": 0,
+          "callback_address": "0x26f06f0",
+          "module_base": "0x200000",
+          "module_offset": "0x24f06f0",
+          "module_path_hex": "2f776f726b73706163652f6d61696e2f73696d756c61746f722f73696d756c61746f725f31322e302e302e352f4275696c642f4c696e75784e6f456469746f722f524d55412f42696e61726965732f4c696e75782f524d55412d4c696e75782d5368697070696e67",
+          "location_valid": true
+        }
+      ],
+      "decoded_module_path": "/workspace/main/simulator/simulator_12.0.0.5/Build/LinuxNoEditor/RMUA/Binaries/Linux/RMUA-Linux-Shipping",
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "e60ed5651bc544d3058421cc6b37803c849f04d6828c378c34fe395dc6587564",
+        "pwm_summary.json": "3f3e6dc3b22b93473eb04faa4c34249bb30a1546a8f232836ba8c3abe2439d1b",
+        "command_trace_audit.json": "9923e4a6940dfbbf480bcc701dc3dc92ed145f1c3fd1c42f8c7b6df05b81bbc9",
+        "closed_loop_metrics.json": "796d463c1122759d946fdbdf47ab567331d7dfa43c803cafd52df18c9276233d",
+        "bridge_probe.jsonl": "603209fe7a256e9f998589fc4ba4812400e9e210cf1534011aba7778e8f73c8b"
+      }
+    },
+    {
+      "run_directory": "runs/20261030T063904Z_d7c1df4beca04ea88949b9ec8bad0ade",
+      "git_sha": "442c0d7ddc2da412b0a23607b6d15f8a800db80e",
+      "git_status": " M tests/integration/test_native_input_probe.py\n M tools/diagnostics/bridge_probe.cpp\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "df186165e222f8328f484091abb3b1877e1986fbd915d9b30a30ac8032bfb080",
+        "files": 527,
+        "uncompressed_bytes": 3338448,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "probe_binary_sha256": "19db1736d627f90f271fdc0243341ef748318fdf8e75309e18b2a4403f4523cb",
+      "run_state": "EVALUATED",
+      "bridge_probe_error": null,
+      "fault": null,
+      "commands": 940,
+      "wire_valid": true,
+      "matched_commands": 940,
+      "callback_locations": [
+        {
+          "event": "native_callback_location",
+          "mode": "native-input",
+          "start_monotonic_ns": 83847839038134,
+          "end_monotonic_ns": 83847839038134,
+          "write_errors": 0,
+          "pwm_calls": 0,
+          "bridge_calls": 0,
+          "overlap_entries": 0,
+          "bridge_span": 0,
+          "callback_address": "0x26f06f0",
+          "module_base": "0x200000",
+          "module_offset": "0x24f06f0",
+          "module_path_hex": "2f776f726b73706163652f6d61696e2f73696d756c61746f722f73696d756c61746f725f31322e302e302e352f4275696c642f4c696e75784e6f456469746f722f524d55412f42696e61726965732f4c696e75782f524d55412d4c696e75782d5368697070696e67",
+          "location_valid": true
+        }
+      ],
+      "decoded_module_path": "/workspace/main/simulator/simulator_12.0.0.5/Build/LinuxNoEditor/RMUA/Binaries/Linux/RMUA-Linux-Shipping",
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "a887a6bf74ef9ecc433f02f899b6e909bb9be187390db4da4e1b5db1e4320c64",
+        "pwm_summary.json": "ed66c80a9a91f0fb1b4e405910d539e00efda60131b73ce99928a95fa0fcdb6c",
+        "command_trace_audit.json": "18e7d9f8508e01aec210f08f67390f862643f8fba921cf2eb2e1937c26a4b8a3",
+        "closed_loop_metrics.json": "64b7b7e02758373b1e6556be1cace7fce7976ec7a04da5c43952610982c4d6b3",
+        "bridge_probe.jsonl": "a07f60a6809e898fb62ae65540c0c51ae044c66d5e0c1b77520b0d462f2f6d3b",
+        "native_input_audit.json": "b89d731ce1229a9969d1ee50b8a6058ba495c6526776fb8bdd881cdefed88279",
+        "bridge_lifetime_audit.json": "d5643fcae7f403d84f58edf5f3869bfa07502331f4a2341d32a831cc25d8fa52"
+      }
+    }
+  ]
+}
