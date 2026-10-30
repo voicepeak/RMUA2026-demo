@@ -62,7 +62,7 @@ class ProtocolTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)
             protocol={'schema_version':1,'seeds':[123],'mode':'PWM','hover_seconds':16,
-                      'braking':False,'yaw_motion':False,'snapshot':False,'round_trip':True,'max_retries':2}
+                      'braking':False,'yaw_motion':False,'snapshot':False,'round_trip':True,'scene_trace':True,'max_retries':2}
             path=root/'protocol.json'; path.write_text(json.dumps(protocol))
             calls=[]
             def run_case(command, cwd, stdout, stderr):
@@ -81,7 +81,7 @@ class ProtocolTests(unittest.TestCase):
                 self.assertEqual(p1_regression.main(),1)
             case=json.loads(next((root/'runs/batches').glob('*/batch_report.json')).read_text())['cases'][0]
             self.assertEqual(len(calls),2)
-            self.assertTrue(all('--round-trip' in call for call in calls))
+            self.assertTrue(all('--round-trip' in call and '--scene-trace' in call for call in calls))
             self.assertFalse(case['succeeded'])
             self.assertTrue(case['succeeded_after_retries'])
             self.assertTrue(case['retries'][0]['succeeded'])
@@ -93,7 +93,7 @@ class ProtocolTests(unittest.TestCase):
             p=Path(d)/'protocol.json'; p.write_text(json.dumps(valid))
             self.assertTrue(load_protocol(p)['round_trip'])
             for change in ({'mode':'VEL'}, {'hover_seconds':14}, {'braking':True},
-                           {'angular_recovery':True}, {'max_retries':3}, {'max_retries':True}):
+                           {'angular_recovery':True}, {'max_retries':3}, {'max_retries':True}, {'scene_trace':1}):
                 p.write_text(json.dumps(dict(valid,**change)))
                 with self.assertRaises(ValueError): load_protocol(p)
 

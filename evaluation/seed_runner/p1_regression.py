@@ -28,6 +28,8 @@ def load_protocol(path):
     for name in ('braking','yaw_motion','snapshot'):
         if type(protocol.get(name)) is not bool:
             raise ValueError('protocol flags must be booleans')
+    if type(protocol.get('scene_trace', False)) is not bool:
+        raise ValueError('scene trace flag must be boolean')
     if type(protocol.get('max_retries', 0)) is not int or not 0 <= protocol.get('max_retries', 0) <= 2:
         raise ValueError('max retries must be an integer between 0 and 2')
     if type(protocol.get('round_trip', False)) is not bool:
@@ -95,6 +97,7 @@ def main():
                  '--mode',protocol['mode'],'--hover-seconds',str(protocol['hover_seconds']),'--evaluate-truth']
         for key,flag in (('braking','--braking'),('yaw_motion','--yaw-motion'),('snapshot','--snapshot')):
             if protocol[key]:command.append(flag)
+        if protocol.get('scene_trace'):command.append('--scene-trace')
         if protocol.get('round_trip'):command.append('--round-trip')
         if protocol.get('angular_recovery'):command.append('--angular-recovery')
         if protocol.get('angular_recovery_profile','standard')!='standard':

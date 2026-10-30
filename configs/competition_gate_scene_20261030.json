@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "purpose": "Five fixed development seeds, PWM hover with official-sensor-only gate scene capture",
+  "seeds": [123, 456, 789, 42, 2026],
+  "hover_seconds": 14,
+  "mode": "PWM",
+  "braking": false,
+  "yaw_motion": false,
+  "snapshot": false,
+  "scene_trace": true,
+  "max_retries": 2,
+  "parameter_policy": "freeze source; retain all failures; existing flight guards unchanged",
+  "official_result": "UNKNOWN"
+}
