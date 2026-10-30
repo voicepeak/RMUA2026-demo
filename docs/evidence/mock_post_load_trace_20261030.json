@@ -1,0 +1,88 @@
+{
+  "purpose": "Owned-child ptrace post-load hardware breakpoint mock, no simulator attached",
+  "source_sha256": "3966fd6c71fd7ae7f61c05ebe2f59fad8df7121776827ada8c0895ad9620b693",
+  "host_binary_sha256": "9859539568db87d5cce7a6753153269140e7674bbe22021f6982c7a7f502a06f",
+  "host_kernel": "6.8.0-138-generic",
+  "host_compiler": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+  "build_flags": [
+    "-std=c++14",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-O0",
+    "-no-pie"
+  ],
+  "host_cases": [
+    {
+      "case": "unchanged",
+      "snapshot": [
+        0.100000001,
+        0.200000003,
+        0.300000012,
+        0.400000006
+      ],
+      "loaded_xmm0": [
+        0.100000001,
+        0.200000003,
+        0.300000012,
+        0.400000006
+      ],
+      "post_load_breakpoint_hit": true,
+      "passed": true
+    },
+    {
+      "case": "modified_after_snapshot",
+      "snapshot": [
+        0.100000001,
+        0.200000003,
+        0.300000012,
+        0.400000006
+      ],
+      "loaded_xmm0": [
+        0.899999976,
+        0.200000003,
+        0.300000012,
+        0.400000006
+      ],
+      "post_load_breakpoint_hit": true,
+      "passed": true
+    }
+  ],
+  "noetic_container_cases": [
+    {
+      "case": "unchanged",
+      "snapshot": [
+        0.100000001,
+        0.200000003,
+        0.300000012,
+        0.400000006
+      ],
+      "loaded_xmm0": [
+        0.100000001,
+        0.200000003,
+        0.300000012,
+        0.400000006
+      ],
+      "post_load_breakpoint_hit": true,
+      "passed": true
+    },
+    {
+      "case": "modified_after_snapshot",
+      "snapshot": [
+        0.100000001,
+        0.200000003,
+        0.300000012,
+        0.400000006
+      ],
+      "loaded_xmm0": [
+        0.899999976,
+        0.200000003,
+        0.300000012,
+        0.400000006
+      ],
+      "post_load_breakpoint_hit": true,
+      "passed": true
+    }
+  ],
+  "limits": "Owned cooperative single-thread child, no freed memory, no simulator process, no external attach, no motor application or real-time overhead measurement."
+}
