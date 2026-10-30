@@ -1,0 +1,220 @@
+{
+  "purpose": "Frozen native input vs diagnostic serialization; not flight acceptance or causal proof",
+  "batch_directory": "runs/batches/20261030T063145Z_d8c602d035564d6980c65296f6491e2b",
+  "batch_report_sha256": "90c4906410d2d2f89bd46a6cbe4d2a75151c4357eb3213f5671786f7a17248ae",
+  "protocol": {
+    "schema_version": 1,
+    "seeds": [
+      1005
+    ],
+    "repeats": 2,
+    "modes": [
+      "native-input",
+      "native-serialize"
+    ],
+    "hover_seconds": 14,
+    "stationary_bootstrap": false,
+    "purpose": "Diagnostic same-build native snapshot comparison with and without serialized bridge callbacks; not competition eligible, does not prove downstream consumption or physical cause."
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "5ddd9962c179c5f42a6dfb5a3eb3a3d019d374f6cace52c42135a2660f810b66",
+    "files": 526,
+    "uncompressed_bytes": 3324791,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "probe_binary_sha256": "654e985a2690a6301215791477afb3b2f443ee6f9ecbd4ccd1b5b756db245094",
+  "source_unchanged": true,
+  "all_cases_completed": true,
+  "cases": [
+    {
+      "mode": "native-input",
+      "seed": 1005,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T063146Z_96a168f715a94964b59326205f6501ea",
+      "provenance_verified": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 949,
+      "wire_valid": true,
+      "matched_commands": 949,
+      "evaluation_valid": true,
+      "native_entries": 3125,
+      "native_matched": 3125,
+      "native_unmatched": 0,
+      "freed_during_original_callback": 0,
+      "freed_handoffs": 1,
+      "snapshot_coverage_valid": true,
+      "hook_coverage_valid": true,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "7a2cbdf3ee26bfa29d7603d93cc2268556d486fe9961825b6d13b929d36ae3b1",
+        "pwm_summary.json": "2c9ab305c9bfa42da1ea4db1c6cdc6b14f95dfbc7ff3717273b327522cdcc115",
+        "command_trace_audit.json": "9923e4a6940dfbbf480bcc701dc3dc92ed145f1c3fd1c42f8c7b6df05b81bbc9",
+        "closed_loop_metrics.json": "f907a20206df23fc88c08dafa0b75d741bb6b988e5a6837c7abac6c788b53659",
+        "native_input_audit.json": "915f17831bc30f94691a7d65a1aeec6df342a2c0ae01687655beecd894070104",
+        "bridge_lifetime_audit.json": "3e30af9f8c2174b7021cb9e929b4b49aa05d048d9e7fc3bcb76586262e0d1766",
+        "bridge_probe.jsonl": "8453878536b2d87e18635844f1de030d3ae29a95c7ee6c782c91afd2a6a93c19"
+      }
+    },
+    {
+      "mode": "native-serialize",
+      "seed": 1005,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T063213Z_3249362d91ed4bf9bbaaa99f8fc4ea13",
+      "provenance_verified": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 949,
+      "wire_valid": true,
+      "matched_commands": 949,
+      "evaluation_valid": true,
+      "native_entries": 3125,
+      "native_matched": 3125,
+      "native_unmatched": 0,
+      "freed_during_original_callback": 0,
+      "freed_handoffs": 0,
+      "snapshot_coverage_valid": true,
+      "hook_coverage_valid": true,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "c94a50f40517b7a3b0a07fa8c5b24ba7130041f78eb04fccbb5e443c3b3bf301",
+        "pwm_summary.json": "1bbb92ba4b89bf4a7fd7afe418a72d54e4bf6b7bb8a90fa589276a70e9844c1a",
+        "command_trace_audit.json": "bb552dcf2a3b82fd4748d2cf03d70e956c83bc1b08b6fd6973883c4a8b902afe",
+        "closed_loop_metrics.json": "59fe29c628baf06c45636ea1df6cef0ba163920ad2a1779a592bffb8c0f1c71b",
+        "native_input_audit.json": "62d0dde5143d44200ce19f5aa7dd42b17d6391ab15f4d7e9e066dca397b536db",
+        "bridge_lifetime_audit.json": "157fda1f0b73a7f12ece0d72cdf6297364ef33448e820285a00884a5d99cab1c",
+        "bridge_probe.jsonl": "5c9b919b7473383c2ac881418b6e20776a074942dcd96a83aafe6a55e896e4e6"
+      }
+    },
+    {
+      "mode": "native-serialize",
+      "seed": 1005,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T063240Z_5bf2064657004106b2336b436baff1a4",
+      "provenance_verified": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 965,
+      "wire_valid": true,
+      "matched_commands": 965,
+      "evaluation_valid": true,
+      "native_entries": 3128,
+      "native_matched": 3128,
+      "native_unmatched": 0,
+      "freed_during_original_callback": 0,
+      "freed_handoffs": 0,
+      "snapshot_coverage_valid": true,
+      "hook_coverage_valid": true,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "77fe5778e71a1775c7a745ebff434716a650a225c2e536c3693387447ec729cc",
+        "pwm_summary.json": "1c4e5559fb073fb57cf80037528a2b69901e03f39c03a5725d303c2a5983c805",
+        "command_trace_audit.json": "7ddba2d31fa935b4e544ddd1260ea722e2cf110004bd2c38b58032343544a78c",
+        "closed_loop_metrics.json": "976f55ede6d5223f80a2f648213306a011ae039f8e7a32730eba31f68b5aa29e",
+        "native_input_audit.json": "0215bec958d86de593087ccc4aadc97fdbd6237fb2a00033c5d09ee959d9eac1",
+        "bridge_lifetime_audit.json": "edeb543b5736fed66c05fcb5d97b13e74b58395ee1ba4348048300b96986d066",
+        "bridge_probe.jsonl": "0ddf7a736bd2d5e7df78722b172f3db2d40d6886c96a3237d18e8effc041004e"
+      }
+    },
+    {
+      "mode": "native-input",
+      "seed": 1005,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T063308Z_46c701b4a23c4e02abc212b9e18b5e11",
+      "provenance_verified": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 978,
+      "wire_valid": true,
+      "matched_commands": 978,
+      "evaluation_valid": true,
+      "native_entries": 3121,
+      "native_matched": 3120,
+      "native_unmatched": 1,
+      "freed_during_original_callback": 0,
+      "freed_handoffs": 1,
+      "snapshot_coverage_valid": true,
+      "hook_coverage_valid": true,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "039030b53736a847b9a09fd89cb239840f1e59a924c76cccc05af1ef3acb7889",
+        "pwm_summary.json": "fac976c0d3c23c3d1557cfffb1c67e61e52ca76b3b9995db53fe8265560ea3a5",
+        "command_trace_audit.json": "2c1e0026908a8bf563d7652ca2e86619cb1a88e3eab0d92427cfba1bb27b33e6",
+        "closed_loop_metrics.json": "095cab459156d312364a35cb5f76d06ad38965034d0bd62838b56cbe5d9f6902",
+        "native_input_audit.json": "fb346dc660a2fa6e9d7a5fd681a885b06f0b7c93dfac2d7de1d79dd898667d67",
+        "bridge_lifetime_audit.json": "7281756f563b8575ee1cf2db9415c4e5bd1c86b7f6511996975d3c90ca1209a3",
+        "bridge_probe.jsonl": "311e1c3376935269dae414d1be2d4888fc1395410eaac0ff2c0d6b238a754ea3",
+        "evaluation_imu.jsonl": "77cf48dba74a3e4ef67beebc2ce1c716924f4d69c69ef20c5aa649a97a1bacdc"
+      },
+      "unmatched_event": {
+        "entry": {
+          "event": "native_pwm_entry",
+          "mode": "native-input",
+          "function": "bridge",
+          "start_monotonic_ns": 83493778269970,
+          "end_monotonic_ns": 83493781009301,
+          "thread_id": 2987,
+          "other_thread_id": 0,
+          "pwm_calls": 98,
+          "bridge_calls": 782,
+          "overlap_entries": 2,
+          "write_errors": 0,
+          "parameter_address": "0x732fd5a76190",
+          "command_address": "0x732fd5397470",
+          "bridge_span": 782,
+          "parameter_read_ok": true,
+          "parameter_float32_hex": "307b65ec2f730000e07565ec2f730000",
+          "native_call_interval_measured": false
+        },
+        "snapshot_values": [
+          -1.1097029968514343e+27,
+          4.132008781754588e-41,
+          -1.1096026465636734e+27,
+          4.132008781754588e-41
+        ],
+        "finite_unit_range": false,
+        "same_address_free_inside_snapshot_interval": [
+          {
+            "event": "parameter_free_end",
+            "mode": "native-input",
+            "function": "bridge",
+            "start_monotonic_ns": 83493780535753,
+            "end_monotonic_ns": 83493780546360,
+            "thread_id": 2977,
+            "other_thread_id": 0,
+            "pwm_calls": 98,
+            "bridge_calls": 782,
+            "overlap_entries": 2,
+            "write_errors": 0,
+            "parameter_address": "0x732fd5a76190",
+            "command_address": "0x0",
+            "bridge_span": 0,
+            "parameter_read_ok": false,
+            "parameter_float32_hex": "",
+            "native_call_interval_measured": false
+          }
+        ],
+        "same_span_as_freed_handoff": false,
+        "imu_window_s": [
+          -0.1,
+          0.1
+        ],
+        "imu_samples": 20,
+        "max_raw_rate_norm_rad_s": 0.17834758808675225
+      }
+    }
+  ]
+}
