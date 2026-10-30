@@ -24,6 +24,23 @@ class SensorAdapterTests(unittest.TestCase):
         s.on_gps(message(100.))
         return s
 
+    def test_invalid_initial_pose_does_not_block_later_valid_pose(self):
+        for bad in (message(0., position=(float('nan'), 2., -1.)),
+                    message(0., q=(0., 0., 0., 0.)),
+                    message(0., q=(float('nan'), 0., 0., 0.))):
+            s = FlightSensors(subscribe=False)
+            s.on_initial(bad)
+            s.on_imu(message(100.))
+            self.assertIsNone(s.fault)
+            self.assertIsNone(s.initial)
+            s.on_initial(message(0.))
+            s.on_imu(message(100.01))
+            s.on_gps(message(100.01))
+            self.assertEqual(s.read()[0].health, Health.OK)
+            self.assertEqual(s.startup_snapshot()['invalid_initial_pose_count'], 1)
+            s.on_initial(message(0., position=(7., 8., 9.)))
+            self.assertEqual(s.initial[0], (1., 2., -1.))
+
     def test_imu_before_initial_pose_cannot_integrate_unknown_frame(self):
         s = FlightSensors(subscribe=False)
         for stamp in (100., 100.05, 100.10):

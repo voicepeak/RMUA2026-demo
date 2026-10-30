@@ -33,6 +33,7 @@ class FlightSensors:
         self.startup_diagnostics = {'first_imu_callback_wall_monotonic': None,
                                     'initial_pose_callback_wall_monotonic': None,
                                     'initial_pose_accepted_wall_monotonic': None,
+                                    'invalid_initial_pose_count': 0,
                                     'initial_pose_stamp': None,
                                     'initial_pose_frame_id': None,
                                     'initial_position': None,
@@ -59,7 +60,16 @@ class FlightSensors:
         arrival = time.monotonic()
         with self.lock:
             if self.initial is None:
-                self.initial = pose_values(msg.pose)
+                try:
+                    position, attitude = pose_values(msg.pose)
+                    vector(position)
+                    normalized_attitude = unit(attitude)
+                    if not np.all(np.isfinite(normalized_attitude)) or np.linalg.norm(normalized_attitude) < .5:
+                        raise ValueError('invalid initial attitude')
+                except (ValueError, ArithmeticError):
+                    self.startup_diagnostics['invalid_initial_pose_count'] += 1
+                    return
+                self.initial = (position, attitude)
                 self.startup_diagnostics['initial_position'] = list(self.initial[0])
                 self.startup_diagnostics['initial_orientation_wxyz'] = list(self.initial[1])
                 self.startup_diagnostics['initial_pose_stamp'] = msg.header.stamp.to_sec()

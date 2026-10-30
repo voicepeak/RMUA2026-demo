@@ -1,0 +1,85 @@
+{
+  "purpose": "Local PWM compatibility following invalid initial pose rejection; no stage acceptance",
+  "runs": [
+    {
+      "seed": 1005,
+      "run_directory": "runs/20261030T062505Z_dc6c6574bb14435a826af28de84ef830",
+      "git_sha": "b889e23f164642db50e96e1e2ce778f3d3825cdc",
+      "git_status": " M adapters/ros_noetic/flight_sensors.py\n M tests/unit/test_flight_sensors.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "f55622c1ad089ac361a68577e0f56b23f975e3a2a6590c17fbb002702132f3c2",
+        "files": 524,
+        "uncompressed_bytes": 3308408,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "run_state": "FAILED",
+      "fault": "ANGULAR_RATE_LIMIT",
+      "fault_details": {
+        "wall_elapsed_at_last_read": 0.48755770799471065,
+        "rate_guard_event": {
+          "stamp": 1793341515.4590054,
+          "arrival_wall_monotonic": 83009.29566897,
+          "angular_velocity_body": [
+            0.05044767983159603,
+            1.029900534785925,
+            0.021081532422902886
+          ],
+          "rate_norm_rad_s": 1.0313508185685525,
+          "limit_rad_s": 1.0
+        }
+      },
+      "commands": 36,
+      "matched_commands": 36,
+      "wire_valid": true,
+      "evaluation_valid": false,
+      "invalid_initial_pose_count": 0,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "a7e7a3f6c83c9b7c359dd38ea3e4d3306cb3df524a28cb84b8c49e5f518c8c5f",
+        "pwm_summary.json": "d3dc96cb9931bbb68995b58aefffc8165e4f5ada0841b222314c930f98efdbca",
+        "command_trace_audit.json": "3aa542d44c1eddac4edd20fb7fd9ef52e819a43040cd71fbdda693a56fd45abc",
+        "closed_loop_metrics.json": "0d0ebe1b95234d709e667acae1656d50ab92a9266d1eee6e923d37f92de930f7",
+        "fault_observation.json": "a201a50575def95b9f554e7a43458b044e275c15c0c627fb60dadb02a83290bf"
+      }
+    },
+    {
+      "seed": 2023,
+      "run_directory": "runs/20261030T062539Z_1d4b7cbd79474c6ca48d68c4701fece9",
+      "git_sha": "b889e23f164642db50e96e1e2ce778f3d3825cdc",
+      "git_status": " M adapters/ros_noetic/flight_sensors.py\n M tests/unit/test_flight_sensors.py\n",
+      "source_archive": {
+        "path": "source_snapshot.tar.gz",
+        "sha256": "f55622c1ad089ac361a68577e0f56b23f975e3a2a6590c17fbb002702132f3c2",
+        "files": 524,
+        "uncompressed_bytes": 3308408,
+        "scope": "workspace_sources_not_container_or_simulator_binaries"
+      },
+      "source_unchanged": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "fault_details": null,
+      "commands": 946,
+      "matched_commands": 946,
+      "wire_valid": true,
+      "evaluation_valid": true,
+      "invalid_initial_pose_count": 0,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "84d52dd02334d2a9f0d541c5c1de8685d761696b0a616056004bbe2ee80daad9",
+        "pwm_summary.json": "ea5563521956d7d81a7662ad283ca3ed4be624de8aaec16f66890f3fc24d4665",
+        "command_trace_audit.json": "5fcb0a20a4b5359dcec765b58039f6f9371fc2edd2fcdd4464a5c67d2ded5b52",
+        "closed_loop_metrics.json": "67fd998a40f850337f0818c09202dcc04ff00110c9b67d639859b5f0645f9e72"
+      }
+    }
+  ]
+}
