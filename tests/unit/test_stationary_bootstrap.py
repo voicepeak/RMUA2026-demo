@@ -16,7 +16,12 @@ class BootstrapTests(unittest.TestCase):
 
     def test_motion_gap_zero_gps_and_missing_orientation_cannot_initialize(self):
         imu,gps=self.window()
-        self.assertIsNotNone(resting_window(imu,gps,(1,0,0,0),101.1))
+        result = resting_window(imu,gps,(1,0,0,0),101.1)
+        self.assertIsNotNone(result)
+        self.assertEqual(result['imu_window_start_stamp'],100.)
+        self.assertEqual(result['imu_window_end_stamp'],101.1)
+        self.assertEqual(result['gps_window_start_stamp'],100.)
+        self.assertEqual(result['gps_window_end_stamp'],101.1)
         changed=deepcopy(imu);changed[90]['omega_body']=[.1,0,0]
         self.assertIsNone(resting_window(changed,gps,(1,0,0,0),101.1))
         self.assertIsNone(resting_window(imu[:50]+imu[60:],gps,(1,0,0,0),101.1))

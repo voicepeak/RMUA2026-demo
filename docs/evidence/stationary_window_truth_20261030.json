@@ -1,0 +1,272 @@
+{
+  "purpose": "Offline truth observations over three local stationary-bootstrap windows; not ground-contact proof or stage acceptance",
+  "batch_directory": "runs/batches/20261030T070033Z_318baa1d26cf45b79347ec2306e37c1c",
+  "batch_report_sha256": "0f9f224c981fcc618b201570c99366d4e7ac44f8ddd6848be19387fa274f5621",
+  "protocol": {
+    "schema_version": 1,
+    "purpose": "Local precontrol stationary-window observation across development seeds, not stage acceptance",
+    "seeds": [
+      2021,
+      2022,
+      2023
+    ],
+    "hover_seconds": 14,
+    "mode": "PWM",
+    "braking": false,
+    "yaw_motion": false,
+    "snapshot": false,
+    "stationary_bootstrap": true,
+    "parameter_policy": "freeze source and configuration; retain all failures; existing safety guards unchanged",
+    "evaluation_policy": "compare recorded bootstrap window to independent offline truth; no claim of physical ground contact or formal acceptance",
+    "official_result": "UNKNOWN"
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "e26cdc3ef87035d12a5c000564a2406705c82e99ffad622e0176adabcf58c6a8",
+    "files": 545,
+    "uncompressed_bytes": 3594963,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "batch_succeeded": true,
+  "analysis_sha256": "ebbe5ab3cec5c957bdc1880160be6fb303c31eb310eaa4e49213be19d3527b28",
+  "cases": [
+    {
+      "seed": 2021,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T070034Z_7c3b3a243ecc45cb815ed7c96e032c67",
+      "git_sha": "f4bd298d9d10deb55b72942c3524f4b289024df0",
+      "git_status": " M estimation/stationary_bootstrap.py\n M tests/unit/test_stationary_bootstrap.py\n?? configs/m0_stationary_window_multiseed_20261030.json\n?? evaluation/metrics/stationary_window_truth.py\n?? tests/unit/test_stationary_window_truth.py\n",
+      "source_unchanged": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 941,
+      "wire_valid": true,
+      "matched_commands": 941,
+      "evaluation_valid": true,
+      "bootstrap": {
+        "position": [
+          -0.0031306532212509878,
+          -0.015105494979154926,
+          0.28684500653269124
+        ],
+        "gyro_bias": [
+          0.00010453546423978145,
+          0.0001985148039804116,
+          5.179772235298285e-05
+        ],
+        "imu_samples": 103,
+        "gps_samples": 10,
+        "span_s": 1.0020215511322021,
+        "imu_window_start_stamp": 1793343643.675732,
+        "imu_window_end_stamp": 1793343644.6777534,
+        "gps_window_start_stamp": 1793343643.765734,
+        "gps_window_end_stamp": 1793343644.6507528,
+        "gps_position_std_m": [
+          0.03118192976524299,
+          0.04807118981522889,
+          0.04775211721914419
+        ],
+        "acceleration_std_m_s2": [
+          0.04523929566588825,
+          0.03834833442562854,
+          0.039362358810823714
+        ],
+        "assumption": "fresh ground-start scene, before any control publisher",
+        "imu_orientation_use": "resting alignment check only; initial_pose supplies attitude"
+      },
+      "first_command_stamp": 1793343644.9987602,
+      "truth_window": {
+        "usable": true,
+        "samples": 102,
+        "window_source_stamp": [
+          1793343643.675732,
+          1793343644.6777534
+        ],
+        "truth_source_stamp": [
+          1793343643.675732,
+          1793343644.6687531
+        ],
+        "start_gap_s": 0.0,
+        "end_gap_s": 0.009000301361083984,
+        "max_sample_gap_s": 0.012000322341918945,
+        "endpoint_displacement_m": 0.0,
+        "max_displacement_from_first_m": 0.0,
+        "max_attitude_change_rad": 0.0,
+        "ground_contact_verified": false,
+        "limitations": "Offline truth stream source time and frame are uncalibrated; sampled poses can miss motion, ground contact and physical velocity."
+      },
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "66a6ce0b1eea7f0c9406923d956326ac1c3909a2b593dee1f1e2e070941f7a55",
+        "pwm_summary.json": "1bc34ee4cfdb73e543bda50596ef8be372b9d60b4fd3a520753b96f5efab184c",
+        "stationary_bootstrap.json": "dfc975e2234c88610a332d12c045edf3bf79159595db2da4f09fc1e6dd96b3c5",
+        "evaluation_truth.jsonl": "bd1bbd25d25031e1713b72453d6fb81ce51a12fa4cd32ecfc5bdb1edc63e5553",
+        "pwm_telemetry.jsonl": "ee67dcd98371c1c70a81170679a6c7f6b2b6aec303a351653ad908e16d3a97cf",
+        "command_trace_audit.json": "6c9bb9d9e30e9a6bc5ad5f915fb1e67f20b1a84231a8fa68b7e21bdb84bcb8c2",
+        "closed_loop_metrics.json": "5da84dccbe4492c0195d9bca5de2fcfb8e4ba03846c31043831e45c11fe2b2ed"
+      }
+    },
+    {
+      "seed": 2022,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T070101Z_92954164b4db422f876185fff4a8500c",
+      "git_sha": "f4bd298d9d10deb55b72942c3524f4b289024df0",
+      "git_status": " M estimation/stationary_bootstrap.py\n M tests/unit/test_stationary_bootstrap.py\n?? configs/m0_stationary_window_multiseed_20261030.json\n?? evaluation/metrics/stationary_window_truth.py\n?? tests/unit/test_stationary_window_truth.py\n",
+      "source_unchanged": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 960,
+      "wire_valid": true,
+      "matched_commands": 960,
+      "evaluation_valid": true,
+      "bootstrap": {
+        "position": [
+          0.004370942497711517,
+          -0.01918044538903633,
+          0.29302298982593367
+        ],
+        "gyro_bias": [
+          0.00017276577756431425,
+          -0.00012675309663595102,
+          4.198107160168458e-05
+        ],
+        "imu_samples": 102,
+        "gps_samples": 10,
+        "span_s": 1.002021312713623,
+        "imu_window_start_stamp": 1793343671.2580721,
+        "imu_window_end_stamp": 1793343672.2600935,
+        "gps_window_start_stamp": 1793343671.3090732,
+        "gps_window_end_stamp": 1793343672.191092,
+        "gps_position_std_m": [
+          0.018740273519621296,
+          0.03641129841130685,
+          0.04970876433289521
+        ],
+        "acceleration_std_m_s2": [
+          0.04425439463978615,
+          0.03841606949218139,
+          0.037925505125474705
+        ],
+        "assumption": "fresh ground-start scene, before any control publisher",
+        "imu_orientation_use": "resting alignment check only; initial_pose supplies attitude"
+      },
+      "first_command_stamp": 1793343672.4970984,
+      "truth_window": {
+        "usable": true,
+        "samples": 103,
+        "window_source_stamp": [
+          1793343671.2580721,
+          1793343672.2600935
+        ],
+        "truth_source_stamp": [
+          1793343671.2580721,
+          1793343672.2600935
+        ],
+        "start_gap_s": 0.0,
+        "end_gap_s": 0.0,
+        "max_sample_gap_s": 0.012000322341918945,
+        "endpoint_displacement_m": 0.0,
+        "max_displacement_from_first_m": 0.0,
+        "max_attitude_change_rad": 0.0,
+        "ground_contact_verified": false,
+        "limitations": "Offline truth stream source time and frame are uncalibrated; sampled poses can miss motion, ground contact and physical velocity."
+      },
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "7e5aba3d0ca2bee4fbeaecb7bae41e1caf0457468f97a1f373355d8007b90817",
+        "pwm_summary.json": "c0247b2aae99ca96b91d4265a9d0b2a5f10163f2ef8cdd0c6ece05b44169eec1",
+        "stationary_bootstrap.json": "e53c569fe181f1e967f06ea7c5c0b959783a2cf72ee528739e4b303040db3476",
+        "evaluation_truth.jsonl": "8cb1abe7bbeb4d5cc23e766cf1059050b042ab1f0997e7b4122a7e35e86468ff",
+        "pwm_telemetry.jsonl": "0ec9ab37f08b08a57221cea243c24a9d456fe3109845b41fed5983d539768074",
+        "command_trace_audit.json": "9ec22a0348efcd126b5c7eb65b79c054cc1c78bdf7c32c6f1aecfca252ddd219",
+        "closed_loop_metrics.json": "caeb85e62be4bbcfb6a32ffe6d74b6befcbc5e3772c20bad4200ecf0a0259384"
+      }
+    },
+    {
+      "seed": 2023,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261030T070129Z_1bef29ae3bc1416aba65b94ef55ea0b7",
+      "git_sha": "f4bd298d9d10deb55b72942c3524f4b289024df0",
+      "git_status": " M estimation/stationary_bootstrap.py\n M tests/unit/test_stationary_bootstrap.py\n?? configs/m0_stationary_window_multiseed_20261030.json\n?? evaluation/metrics/stationary_window_truth.py\n?? tests/unit/test_stationary_window_truth.py\n",
+      "source_unchanged": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "commands": 971,
+      "wire_valid": true,
+      "matched_commands": 971,
+      "evaluation_valid": true,
+      "bootstrap": {
+        "position": [
+          0.003983943088282755,
+          0.030666331266315825,
+          0.3147919906380993
+        ],
+        "gyro_bias": [
+          0.00022332388767803052,
+          7.765594894858756e-05,
+          -0.000180007359287046
+        ],
+        "imu_samples": 103,
+        "gps_samples": 11,
+        "span_s": 1.008021593093872,
+        "imu_window_start_stamp": 1793343698.9249868,
+        "imu_window_end_stamp": 1793343699.9330084,
+        "gps_window_start_stamp": 1793343698.9249868,
+        "gps_window_end_stamp": 1793343699.912008,
+        "gps_position_std_m": [
+          0.026554060875603278,
+          0.037162538225050425,
+          0.02311784617969578
+        ],
+        "acceleration_std_m_s2": [
+          0.040434650625858166,
+          0.04846439650604897,
+          0.04851180022349214
+        ],
+        "assumption": "fresh ground-start scene, before any control publisher",
+        "imu_orientation_use": "resting alignment check only; initial_pose supplies attitude"
+      },
+      "first_command_stamp": 1793343700.2240145,
+      "truth_window": {
+        "usable": true,
+        "samples": 103,
+        "window_source_stamp": [
+          1793343698.9249868,
+          1793343699.9330084
+        ],
+        "truth_source_stamp": [
+          1793343698.9249868,
+          1793343699.9330084
+        ],
+        "start_gap_s": 0.0,
+        "end_gap_s": 0.0,
+        "max_sample_gap_s": 0.012000322341918945,
+        "endpoint_displacement_m": 0.0,
+        "max_displacement_from_first_m": 0.0,
+        "max_attitude_change_rad": 0.0,
+        "ground_contact_verified": false,
+        "limitations": "Offline truth stream source time and frame are uncalibrated; sampled poses can miss motion, ground contact and physical velocity."
+      },
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "b1e18a3c22ac6e04690a2fa0f580962e4880f49ab8a68d0545ffece3cd3e1f53",
+        "pwm_summary.json": "60ecf9394bb4c66c29c45796221a01fa44cab28ad34a185aab88f82c93d13d69",
+        "stationary_bootstrap.json": "ac44aa3ee39894a75f87ecc7922b10ca0c7a3ba85be2535769949a980d0c3a7b",
+        "evaluation_truth.jsonl": "0ca21f6981cc7fea02df7d254c5bfa89934fa09c051ed570bec55f742a8ed9da",
+        "pwm_telemetry.jsonl": "5238d87b8914c26ba122d138572c3ccc3744594400efe87cd1f9c39e4e96a850",
+        "command_trace_audit.json": "b72ab18b9a04f97a526c5b4bd1abfbfe19a0bdfbfbf8a0f00f7863e5aecd4862",
+        "closed_loop_metrics.json": "fc0ef28a9efbd056b63d44e1b16d1f0dc3edcce2cba79733827d42538092b214"
+      }
+    }
+  ]
+}

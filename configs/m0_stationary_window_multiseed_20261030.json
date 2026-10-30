@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "purpose": "Local precontrol stationary-window observation across development seeds, not stage acceptance",
+  "seeds": [2021, 2022, 2023],
+  "hover_seconds": 14,
+  "mode": "PWM",
+  "braking": false,
+  "yaw_motion": false,
+  "snapshot": false,
+  "stationary_bootstrap": true,
+  "parameter_policy": "freeze source and configuration; retain all failures; existing safety guards unchanged",
+  "evaluation_policy": "compare recorded bootstrap window to independent offline truth; no claim of physical ground contact or formal acceptance",
+  "official_result": "UNKNOWN"
+}

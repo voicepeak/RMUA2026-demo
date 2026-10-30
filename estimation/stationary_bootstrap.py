@@ -37,6 +37,8 @@ def resting_window(imu,gps,initial_attitude,stamp):
         if 2*np.arccos(np.clip(abs(unit(q)@q0),0.,1.))>.02:return None
     return {'position':positions.mean(0).tolist(),'gyro_bias':gyro.mean(0).tolist(),
             'imu_samples':len(imu),'gps_samples':len(gps),'span_s':float(times[-1]-times[0]),
+            'imu_window_start_stamp':float(times[0]),'imu_window_end_stamp':float(times[-1]),
+            'gps_window_start_stamp':float(gt[0]),'gps_window_end_stamp':float(gt[-1]),
             'gps_position_std_m':positions.std(0).tolist(),
             'acceleration_std_m_s2':acceleration.std(0).tolist(),
             'assumption':'fresh ground-start scene, before any control publisher',
