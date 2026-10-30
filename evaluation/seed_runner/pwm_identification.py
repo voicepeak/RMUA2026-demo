@@ -73,6 +73,7 @@ def main():
     parser.add_argument('--round-trip',action='store_true')
     parser.add_argument('--snapshot',action='store_true')
     parser.add_argument('--scene-trace',action='store_true',help='isolated, bounded camera/LiDAR recording')
+    parser.add_argument('--hud-capture',action='store_true',help='render and record simulator HUD in an isolated host process')
     parser.add_argument('--stationary-bootstrap',action='store_true',help='experimental resting initialization before PWM')
     parser.add_argument('--angular-recovery',action='store_true')
     parser.add_argument('--angular-recovery-profile',choices=('standard','fast'),default='standard')
@@ -87,6 +88,9 @@ def main():
     parser.add_argument('--controller-image',help='locally built immutable standalone image; no beta bind mount')
     parser.add_argument('--contract-audit-only',action='store_true',help='read-only service handshake; no controller')
     args = parser.parse_args()
+    if args.hud_capture and (args.mode != 'PWM' or not args.evaluate_truth or args.hover_seconds < 10
+            or args.contract_audit_only or args.controller_image or args.bridge_probe):
+        parser.error('HUD capture requires an evaluated workspace PWM flight')
     if args.round_trip and (args.mode != 'PWM' or args.hover_seconds < 16 or args.hover_seconds > 20
             or not args.evaluate_truth or args.step or args.braking or args.yaw_motion or args.motor_pulses
             or args.sensor_fault or args.gps_bridge or args.angular_recovery or args.isolated_reference
@@ -171,7 +175,7 @@ def main():
                             'evaluate_truth': args.evaluate_truth, 'step': args.step,
                             'sensor_fault':args.sensor_fault, 'fault_seconds':args.fault_seconds,
                             'gps_bridge':args.gps_bridge,'yaw_motion':args.yaw_motion,'braking':args.braking,'round_trip':args.round_trip,
-                            'snapshot':args.snapshot,'scene_trace':args.scene_trace,'controller_image':args.controller_image,
+                            'snapshot':args.snapshot,'scene_trace':args.scene_trace,'hud_capture':args.hud_capture,'controller_image':args.controller_image,
                             'contract_audit_only':args.contract_audit_only,
                             'stationary_bootstrap':args.stationary_bootstrap,
                             'angular_recovery':args.angular_recovery,'angular_pulse':args.angular_pulse,
@@ -208,13 +212,15 @@ def main():
     second_wire = None
     second_wire_log = None
     scene_recorder=None
+    hud_recorder=None
+    hud_log=None
     scene_log=None
     controller_name='rmua-next-flight-'+run.name
     module='adapters.ros_noetic.pwm_experiment' if args.mode == 'PWM' else 'adapters.ros_noetic.vel_experiment'
     if args.contract_audit_only:module='adapters.ros_noetic.service_contract_audit'
     readiness_marker='rmua_next_sensor_readiness'
     container_run='/workspace/main/'+str(run.relative_to(root))
-    simulator_command=[str(root/'tools/run_sim.sh'),str(args.seed),'offscreen']
+    simulator_command=[str(root/'tools/run_sim.sh'),str(args.seed),'render' if args.hud_capture else 'offscreen']
     simulator_environment=os.environ.copy()
     if probe_path:
         simulator_command.append('diagnostic-bridge-probe')
@@ -243,6 +249,15 @@ def main():
                     break
             else:
                 raise RuntimeError('simulator sensor readiness timeout')
+            if args.hud_capture:
+                hud_log=(run/'hud_recorder.log').open('x')
+                hud_recorder=subprocess.Popen(['python3','-m','evaluation.metrics.hud_capture','--run-dir',str(run)],
+                    cwd=root,stdout=hud_log,stderr=subprocess.STDOUT)
+                deadline=time.monotonic()+8
+                while not (run/'hud_ready').exists() and time.monotonic()<deadline:
+                    if hud_recorder.poll() is not None:break
+                    time.sleep(.05)
+                if not (run/'hud_ready').exists():raise RuntimeError('HUD recorder not ready')
             if args.snapshot:
                 subprocess.run([str(root/'tools/enter_env.sh'),'env','OPENBLAS_NUM_THREADS=1',
                     'python3','-m','adapters.ros_noetic.scene_snapshot','--run-dir',
@@ -346,6 +361,16 @@ def main():
                 except Exception as error:
                     manifest['controller_cleanup_error']=str(error)
                     code=1
+            if hud_recorder:
+                (run/'hud_stop').touch()
+                try: manifest['hud_recorder_exit_code']=hud_recorder.wait(timeout=6)
+                except subprocess.TimeoutExpired:
+                    hud_recorder.terminate()
+                    try: hud_recorder.wait(timeout=3)
+                    except subprocess.TimeoutExpired: hud_recorder.kill(); hud_recorder.wait()
+                    manifest['hud_recorder_exit_code']='TIMEOUT'
+                if manifest['hud_recorder_exit_code'] != 0: code=1
+                hud_log.close()
             if scene_recorder:
                 (run/'scene_stop').touch()
                 try:
