@@ -1,0 +1,378 @@
+{
+  "purpose": "Owned pre-existing cooperatively gated thread attach and detach mock, no simulator attachment",
+  "source_sha256": "856918577565bd5b92e95d4947553c8217add252c8c4401df4dd1115a57f1d5b",
+  "test_sha256": "79a2b6250d7c51e693ae0f1c36ab679acb979c9441662a25fb03e7c0ce8a55f4",
+  "host_binary_sha256": "1d783df5cc943053baf771d85d7108d2a2fa3ae500747aeec2c48aefbf49c19b",
+  "host_kernel": "6.8.0-138-generic",
+  "host_compiler": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+  "build_flags": [
+    "-std=c++14",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-O0",
+    "-no-pie",
+    "-pthread"
+  ],
+  "runs": {
+    "host": {
+      "cases": [
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            18.951909,
+            0.013879
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.079179,
+            0.016981
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.083893,
+            0.063975
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.031972,
+            0.016586
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.029842,
+            0.015294
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.034738,
+            0.022549
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.034327,
+            0.022664
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.029751,
+            0.016869
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.020208,
+            0.010493
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.029508,
+            0.015972
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        }
+      ],
+      "pause_min_median_max_ms": [
+        0.010493,
+        0.026085999999999998,
+        18.951909
+      ]
+    },
+    "noetic_container": {
+      "cases": [
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            22.240727,
+            0.017925
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.036097,
+            0.015614
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.036802,
+            0.018712
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.034525,
+            0.022976
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.029684,
+            0.015181
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.028922,
+            0.014837
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.029187,
+            0.015036
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.032015,
+            0.016467
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.032626,
+            0.015891
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        },
+        {
+          "enumerated_threads": 3,
+          "expected_threads": 3,
+          "configured_workers": 2,
+          "detached_workers": 2,
+          "hits": 6,
+          "hits_per_worker": [
+            3,
+            3
+          ],
+          "attach_pause_ms": [
+            0.201456,
+            0.187122
+          ],
+          "owned_child_exited": true,
+          "passed": true
+        }
+      ],
+      "pause_min_median_max_ms": [
+        0.014837,
+        0.0290545,
+        22.240727
+      ]
+    }
+  },
+  "limitations": "Owned child and two cooperative, stationary threads; no concurrent thread creation, arbitrary process attachment, real simulator, motor behavior, or loaded real-time environment tested. Pause starts immediately before PTRACE_INTERRUPT and ends immediately after PTRACE_CONT; includes setup and scheduling."
+}
