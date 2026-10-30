@@ -1,0 +1,287 @@
+{
+  "purpose": "Owned cooperative multi-thread hardware-breakpoint mock and tracer-death cleanup; no simulator attachment",
+  "source_sha256": "be3ee51c28aef6093c8b5f7879810f79d4df0be785251bf79aadf2aa359e672c",
+  "test_sha256": "9dce34e9d4486b2aadd39b26398cce8b25db6f569070a36c23ae98547d156497",
+  "host_binary_sha256": "638041fe1e8ed8381aa9d76214638c000c010dd747187d193ef186a0535dbe69",
+  "host_kernel": "6.8.0-138-generic",
+  "host_compiler": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+  "build_flags": [
+    "-std=c++14",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-O0",
+    "-no-pie",
+    "-pthread"
+  ],
+  "host_cases": [
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    }
+  ],
+  "noetic_container_cases": [
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    },
+    {
+      "clones": 2,
+      "threads_configured": 2,
+      "observed_threads": 2,
+      "hits": 6,
+      "hits_per_thread": [
+        3,
+        3
+      ],
+      "distinct_values": true,
+      "owned_child_exited": true,
+      "passed": true
+    }
+  ],
+  "tracer_death_test": {
+    "host": "passed",
+    "noetic_container": "passed",
+    "mechanism": "PTRACE_O_EXITKILL; subreaper confirms owned child terminated by SIGKILL and reaps it"
+  },
+  "limits": "Threads are created after tracing starts; no existing thread attach, simulator, motor, freed memory, performance or flight behavior tested."
+}
