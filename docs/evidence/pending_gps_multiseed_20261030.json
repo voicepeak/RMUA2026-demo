@@ -1,0 +1,155 @@
+{
+  "purpose": "Local multiseed PWM pending GPS diagnostics, not stage acceptance",
+  "batch_directory": "runs/batches/20261029T175237Z_3709e0b1e5b7404ca0b79a8d53bb4518",
+  "batch_report_sha256": "2f1fc74b963f460d4dba79037bb2fa16a0eef19694329c92f9c0cb1ff1c59dcf",
+  "protocol": {
+    "schema_version": 1,
+    "purpose": "M0 bounded hover across three preselected existing development seeds; exploratory not stage acceptance",
+    "seeds": [
+      2021,
+      2022,
+      2023
+    ],
+    "hover_seconds": 14,
+    "mode": "PWM",
+    "braking": false,
+    "yaw_motion": false,
+    "snapshot": false,
+    "parameter_policy": "freeze source and configuration; retain all outcomes; existing flight guards unchanged",
+    "evaluation_policy": "report completion, faults, source and command audits, truth tracking and timing; no stage acceptance or population reliability inference",
+    "official_result": "UNKNOWN"
+  },
+  "source_archive": {
+    "path": "source_snapshot.tar.gz",
+    "sha256": "ea9831758af3956623a7865d2022fc7f55d2102aef22ab45de27962e675d2098",
+    "files": 523,
+    "uncompressed_bytes": 3299491,
+    "scope": "workspace_sources_not_container_or_simulator_binaries"
+  },
+  "source_unchanged": true,
+  "batch_succeeded": false,
+  "cases": [
+    {
+      "seed": 2021,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T175238Z_d0af30b4af8e4b39af460c14d588db83",
+      "git_sha": "9f597fcde232e354ba55ebf19c231ba8d14938c7",
+      "git_status": " M adapters/ros_noetic/flight_sensors.py\n M adapters/ros_noetic/pwm_experiment.py\n M tests/unit/test_flight_sensors.py\n",
+      "source_unchanged": true,
+      "run_state": "FAILED",
+      "fault": "ANGULAR_RATE_LIMIT",
+      "fault_details": {
+        "wall_elapsed_at_last_read": 13.737587300005544,
+        "rate_guard_event": {
+          "stamp": 1793296380.117777,
+          "arrival_wall_monotonic": 37875.633895703,
+          "angular_velocity_body": [
+            -1.7288118920870086,
+            1.1264783913983472,
+            0.06883764352669247
+          ],
+          "rate_norm_rad_s": 2.064578103554133,
+          "limit_rad_s": 1.0
+        }
+      },
+      "commands": 937,
+      "pending_gps_diagnostics": {
+        "future_seen": 98,
+        "queued": 98,
+        "superseded": 0,
+        "invalid": 0,
+        "reordered": 0,
+        "applied": 98,
+        "rejected": 0,
+        "pending_at_snapshot": false
+      },
+      "gps_rejections": {},
+      "wire_valid": true,
+      "matched_commands": 937,
+      "evaluation_valid": true,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "9250fdfcade0789efa3e754935d95ce571f7d4a8720451a623e360d4b89d3d0d",
+        "pwm_summary.json": "11e74664f18703909f2a3997abf22150913a6b1a76949cacbde987954886fd76",
+        "command_trace_audit.json": "602a83d99c5a6cd73898485a40d60dd878fd7158975e9ba1967b74768f18094b",
+        "closed_loop_metrics.json": "926e2a2d2eb9162a65f368f7775b830dd694c51b3e18c7d6e6c9e8aa760921bf",
+        "fault_observation.json": "c76ea8ac994650c5fa83af032009c8bdfec8e766ea73a7b8637fc317dcd54677"
+      }
+    },
+    {
+      "seed": 2022,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T175304Z_76214f3f670a4153a8d9138d8835452c",
+      "git_sha": "9f597fcde232e354ba55ebf19c231ba8d14938c7",
+      "git_status": " M adapters/ros_noetic/flight_sensors.py\n M adapters/ros_noetic/pwm_experiment.py\n M tests/unit/test_flight_sensors.py\n",
+      "source_unchanged": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "fault_details": null,
+      "commands": 953,
+      "pending_gps_diagnostics": {
+        "future_seen": 120,
+        "queued": 120,
+        "superseded": 0,
+        "invalid": 0,
+        "reordered": 0,
+        "applied": 120,
+        "rejected": 0,
+        "pending_at_snapshot": false
+      },
+      "gps_rejections": {},
+      "wire_valid": true,
+      "matched_commands": 953,
+      "evaluation_valid": true,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "bcd8af81891ae3128c6894ed2ea2332e419cc5f66bb522049b5898d08ffbbbec",
+        "pwm_summary.json": "59e0c941b149607d62c5882bf9d695e4306704e7d1c8d66c5fe958b61e88af74",
+        "command_trace_audit.json": "a304dc4d61e4a2191529b7661f556e6caf936efc5246730acb27732a22639cf8",
+        "closed_loop_metrics.json": "efbe4277dbdf5faedd5f9ff5b162353339189420ae1fded02170799a1a0a79f7"
+      }
+    },
+    {
+      "seed": 2023,
+      "run_directory": "/home/tianbot/RUMA-by-helinjun/main/runs/20261029T175330Z_f02c0bda0e4640018775eb32d045a287",
+      "git_sha": "9f597fcde232e354ba55ebf19c231ba8d14938c7",
+      "git_status": " M adapters/ros_noetic/flight_sensors.py\n M adapters/ros_noetic/pwm_experiment.py\n M tests/unit/test_flight_sensors.py\n",
+      "source_unchanged": true,
+      "run_state": "EVALUATED",
+      "fault": null,
+      "fault_details": null,
+      "commands": 968,
+      "pending_gps_diagnostics": {
+        "future_seen": 61,
+        "queued": 61,
+        "superseded": 0,
+        "invalid": 0,
+        "reordered": 0,
+        "applied": 61,
+        "rejected": 0,
+        "pending_at_snapshot": false
+      },
+      "gps_rejections": {},
+      "wire_valid": true,
+      "matched_commands": 968,
+      "evaluation_valid": true,
+      "simulator_cleanup": {
+        "stop_and_launcher_completed": true,
+        "stop_script_exit_code": 0,
+        "launcher_exit_code": 143
+      },
+      "input_sha256": {
+        "manifest.json": "b641a085cc8b07999d4f62761cfe04a7ff2bd4f19e9a912161baa9926e9361a4",
+        "pwm_summary.json": "7054a024343e0e7e5a694e65a6f30a0f70346f7a8d773d4d88ea60f361fc2563",
+        "command_trace_audit.json": "8a689395d8b5fc96b472b06c5540ac4fe235f5186151e40b8be156ed441aa85d",
+        "closed_loop_metrics.json": "e42b705a6c5c3e66e438737ab006a3451694458a35c4546e0018bef5ff2e0b8e"
+      }
+    }
+  ]
+}

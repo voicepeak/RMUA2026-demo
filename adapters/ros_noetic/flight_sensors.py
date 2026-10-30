@@ -22,6 +22,8 @@ class FlightSensors:
         self.rate_guard_event = None
         self.local_injection = None
         self.pending_gps = None
+        self.pending_gps_counts = {'future_seen': 0, 'queued': 0, 'superseded': 0,
+                                   'invalid': 0, 'reordered': 0, 'applied': 0, 'rejected': 0}
         self.subscribers = []
         self.bootstrap_imu=deque(maxlen=180)
         self.bootstrap_gps=deque(maxlen=24)
@@ -108,7 +110,11 @@ class FlightSensors:
                     try:
                         if self._update_gps(*self.pending_gps):
                             self.bootstrap_gps.append(self.pending_gps)
+                            self.pending_gps_counts['applied'] += 1
+                        else:
+                            self.pending_gps_counts['rejected'] += 1
                     except (ValueError, ArithmeticError) as error:
+                        self.pending_gps_counts['rejected'] += 1
                         self.estimator.reject('INVALID_GPS:'+str(error))
                     self.pending_gps = None
                 self.raw = {'stamp': stamp, 'acceleration_body': acceleration,
@@ -185,14 +191,24 @@ class FlightSensors:
                     if self.clock.stamp < stamp <= self.clock.stamp+.15:
                         # Validate before replacing a pending sample: malformed or
                         # reordered packets must not evict a usable future sample.
-                        valid_position = vector(position)
-                        if np.all(valid_position == 0):
-                            self.estimator.reject('GPS_ZERO')
-                            return
-                        unit(attitude)
+                        self.pending_gps_counts['future_seen'] += 1
+                        try:
+                            valid_position = vector(position)
+                            if np.all(valid_position == 0):
+                                self.pending_gps_counts['invalid'] += 1
+                                self.estimator.reject('GPS_ZERO')
+                                return
+                            unit(attitude)
+                        except (ValueError, ArithmeticError):
+                            self.pending_gps_counts['invalid'] += 1
+                            raise
                         if self.pending_gps is not None and stamp <= self.pending_gps[0]:
+                            self.pending_gps_counts['reordered'] += 1
                             self.estimator.reject('GPS_PENDING_REORDERED')
                             return
+                        if self.pending_gps is not None:
+                            self.pending_gps_counts['superseded'] += 1
+                        self.pending_gps_counts['queued'] += 1
                         # ROS callback arrival order is not sensor measurement order.
                         # Defer future GPS to the first IMU propagation covering it.
                         self.pending_gps = (stamp, position, attitude)
@@ -258,6 +274,10 @@ class FlightSensors:
         with self.lock:
             return {key: value.tolist() if isinstance(value, np.ndarray) else value
                     for key, value in self.startup_velocity.items()}
+
+    def pending_gps_snapshot(self):
+        with self.lock:
+            return {**self.pending_gps_counts, 'pending_at_snapshot': self.pending_gps is not None}
 
     def startup_snapshot(self):
         with self.lock:

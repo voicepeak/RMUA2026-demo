@@ -340,7 +340,8 @@ def run_experiment(run, levels, pulse_seconds, motor_pulses=False, hover_seconds
     if fault_observation is not None:
         (run/'fault_observation.json').write_text(json.dumps(fault_observation,indent=2)+'\n')
     result = {'commands': len(rows), 'fault': fault, 'startup_diagnostics': sensors.startup_snapshot(),
-              'startup_velocity': sensors.startup_velocity_snapshot(), 'levels': levels,
+              'startup_velocity': sensors.startup_velocity_snapshot(),
+              'pending_gps_diagnostics': sensors.pending_gps_snapshot(), 'levels': levels,
               'control_end_wall_monotonic':control_end_wall,
               'motor_pulses': motor_pulses,
               'hover_seconds': hover_seconds, 'control_hz': control_hz,

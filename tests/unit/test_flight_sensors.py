@@ -105,6 +105,20 @@ class SensorAdapterTests(unittest.TestCase):
         s.on_imu(message(100.04))
         self.assertEqual(s.estimator.last_gps, 100.03)
         self.assertEqual(s.estimator.rejections['GPS_PENDING_REORDERED'], 1)
+        self.assertEqual(s.pending_gps_snapshot(), {'future_seen': 4, 'queued': 2, 'superseded': 1,
+                                                  'invalid': 1, 'reordered': 1, 'applied': 1,
+                                                  'rejected': 0, 'pending_at_snapshot': False})
+
+    def test_pending_diagnostics_distinguish_rejected_innovation(self):
+        s = self.sensors()
+        s.on_gps(message(100.02, position=(100., 100., 100.)))
+        s.on_imu(message(100.03))
+        counts = s.pending_gps_snapshot()
+        self.assertEqual(counts['queued'], 1)
+        self.assertEqual(counts['applied'], 0)
+        self.assertEqual(counts['rejected'], 1)
+        self.assertFalse(counts['pending_at_snapshot'])
+        self.assertEqual(s.estimator.rejections['GPS_INNOVATION'], 1)
 
     def test_invalid_queued_gps_cannot_kill_imu_propagation(self):
         for position in ((0.,0.,0.),(1.,2.,-1.)):
