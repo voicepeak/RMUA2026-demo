@@ -77,3 +77,11 @@ VIO / 学习立体 / 占据图 / 时空规划 / 冻结协议 / 逐轮证据链�
 用户更新的占位验收为起飞、悬停 5 秒、返回初始高度 ±0.3m 并清理，不要求接地或门框检测。三个验收位均通过，其中第二位第一次触发角速度保护、一次重试通过，合计四场中的三场通过；逐场见 ITERATIONS 与本地 scoreboard。以上覆盖较早的“P0 尚未通过”状态说明；不代表官方比赛成绩。HUD 的门框检测留待 P3。
 
 环境依赖：Docker `rmua_next_gpu`（或 `RMUA_CONTAINER` 指定的同挂载环境）、`/workspace/rmua_ws/devel`、`/workspace/main/.runtime_ws/devel` 及官方 simulator_12.0.0.5；后者本机实际链接到 beta 模拟器副本。容器需 ffmpeg/ffprobe，或在 `alpha/.tools/` 解包与容器兼容的 Ubuntu focal `ffmpeg` 包（`apt-get download ffmpeg` 后用 `dpkg-deb -x` 解到 `.tools/ffmpeg`）。记录在 runs/ 的源码哈希比未提交场次的 commit 更精确。
+
+## P1 采集进展（2026-11-02）
+
+`./run.sh <seed> --scout` 当前仅采集静止基线，记录前视图像、LiDAR 和开发用 debug pose_gt，明确标记未覆盖赛道；尚未实现真值引导飞行。seed 123/456 起点对照和局限见 ITERATIONS。现有 PWM 实验链距起点 1.8m 的保护与覆盖赛道的要求冲突，P1 门布局跨种子决策仍未作出；不使用 VEL 或修改官方设置。
+
+后续 P1 使用独立 scout-only VEL 和 pose_gt 开发引导，比赛控制路径保持 PWM。seed 123/456 在 beta 1→3 候选路线均到达 60/126 个参考点，随后在同一区域无进展停止；共同覆盖区域的 0.25m 占用端点 IoU 为 0.716924。场景端点差异不能直接认定为门布局差异，且后续路线未覆盖，因此门是否跨 seed 固定仍未判定。录包、配置、故障及比较方法见 ITERATIONS 和 `runs/scout_*`；两次 scout 的 GameConfig 保持原样。
+
+可在相同 ROS 容器环境下调用 `python3 alpha/collect.py --compare-coverage <seed123场次目录> <seed456场次目录> <输出json>` 复算局部占用端点对照。扫描与 pose_gt 使用最近时间戳并检查偏差；LiDAR 轴与外参依照本机模拟器 settings 作假设，未单独标定，未观测空间不视为空闲。
