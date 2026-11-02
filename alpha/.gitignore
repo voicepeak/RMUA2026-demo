@@ -4,3 +4,6 @@ __pycache__/
 runs/
 gates_*.yaml
 scoreboard.jsonl
+.sim-owner
+simulator.log
+.tools/
