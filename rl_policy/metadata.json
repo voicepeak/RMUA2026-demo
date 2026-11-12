@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "branch": "train",
+  "policy": {
+    "name": "model_11100",
+    "checkpoint": "policy/model_11100.pt",
+    "onnx": "policy/model_11100.onnx",
+    "checkpoint_sha256": "8827f5416ca0ad1018543de63a87f17c6393368b9bec180e021c4efabee9f624",
+    "onnx_sha256": "afc493a6a7b1618c1c630f0e865dd61336cd580304202ab38712712e4fd85816",
+    "observation": {
+      "depth": [1, 1, 20, 80],
+      "state": [1, 14],
+      "hidden": [1, 192],
+      "state_layout": [
+        "v_body[3]", "target_v_body[3]", "body_z_in_world[3]",
+        "path_offset_norm[1]", "path_offset_dir[3]", "margin[1]"
+      ]
+    },
+    "action": {
+      "shape": [1, 3],
+      "meaning": "body velocity",
+      "velcmd_mapping": "vx=act0, vy=act1, vz=-act2, yawRate=deg/s from path heading"
+    }
+  },
+  "source": {
+    "repository": "https://github.com/HITSZcjh/rmua_rl.git",
+    "commit": "9ac9657334817ad0bac6db3520bca59e5f864bf3",
+    "base_checkpoint": "RL/checkpoint3699.pth",
+    "training_run": "2026-11-11_01-04-46"
+  },
+  "training": {
+    "algorithm": "PPO",
+    "iterations": 15000,
+    "batch_size": 1024,
+    "num_steps_per_env": 20,
+    "curriculum": {
+      "speed_level": 3,
+      "obstacle_level": 2,
+      "note": "obstacle levels 3/4 were never unlocked by the curriculum"
+    },
+    "reward_changes": {
+      "p_center": "enabled quadratic path-offset penalty (previously multiplied by zero)",
+      "lat_v": "body lateral-velocity penalty",
+      "d_acc": 0.05,
+      "d_jerk": 0.006
+    },
+    "patch": "training/patches/rl_offset_lateral_reward.patch"
+  },
+  "evaluation": {
+    "protocol": "deterministic mean policy, 1024 envs x 600 steps; survival = timeout without collision/out-of-bound",
+    "rows_file": "evaluation/results.csv",
+    "model_11100": {
+      "obstacle_2_survival": 0.692,
+      "obstacle_3_survival": 0.527,
+      "obstacle_4_survival": 0.377
+    },
+    "model_14999": {
+      "obstacle_2_survival": 0.631,
+      "obstacle_3_survival": 0.466,
+      "obstacle_4_survival": 0.323
+    }
+  },
+  "deployment": {
+    "bridge": "bridge/",
+    "control_topic": "/airsim_node/drone_1/vel_body_cmd",
+    "observation_topics": [
+      "/airsim_node/drone_1/lidar",
+      "/airsim_node/drone_1/debug/pose_gt"
+    ],
+    "control_mode": "VEL diagnostic",
+    "pose_source": "debug/pose_gt development truth"
+  },
+  "limitations": [
+    "trained in simplified quadsim_cuda, not the official simulator",
+    "single-scan LiDAR depth without motion compensation",
+    "debug/pose_gt is not a competition-legal localization source",
+    "bridge altitude hold/guard is scripted, not part of the learned policy",
+    "obstacle levels 3/4 are zero-shot",
+    "VEL is not the official main PWM route"
+  ]
+}
