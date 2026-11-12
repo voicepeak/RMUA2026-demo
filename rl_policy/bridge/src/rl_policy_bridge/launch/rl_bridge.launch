@@ -1,0 +1,22 @@
+<launch>
+  <arg name="policy_root" default="$(optenv RL_POLICY_ROOT /workspace/rl_bridge)"/>
+  <arg name="path_file" default="$(arg policy_root)/bridge/path_point/1-3_center.yaml"/>
+  <arg name="model_path" default="$(arg policy_root)/policy/model_11100.onnx"/>
+  <arg name="target_speed" default="8.0"/>
+  <arg name="takeoff_height" default="1.5"/>
+  <arg name="control_rate" default="20.0"/>
+  <arg name="yaw_gain" default="1.5"/>
+  <arg name="yaw_rate_max_deg" default="60.0"/>
+  <arg name="max_speed" default="15.0"/>
+
+  <node pkg="rl_policy_bridge" type="rl_policy_bridge_node" name="rl_policy_bridge" output="screen">
+    <param name="path_file" value="$(arg path_file)"/>
+    <param name="model_path" value="$(arg model_path)"/>
+    <param name="target_speed" value="$(arg target_speed)"/>
+    <param name="takeoff_height" value="$(arg takeoff_height)"/>
+    <param name="control_rate" value="$(arg control_rate)"/>
+    <param name="yaw_gain" value="$(arg yaw_gain)"/>
+    <param name="yaw_rate_max_deg" value="$(arg yaw_rate_max_deg)"/>
+    <param name="max_speed" value="$(arg max_speed)"/>
+  </node>
+</launch>
