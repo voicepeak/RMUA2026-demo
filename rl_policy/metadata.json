@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "branch": "train",
+  "branch": "main",
   "policy": {
     "name": "model_11100",
     "checkpoint": "policy/model_11100.pt",

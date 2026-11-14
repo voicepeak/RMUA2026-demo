@@ -1,4 +1,4 @@
-# RMUA RL policy (train branch)
+# RMUA RL policy (main branch)
 
 This branch packages the trained RMUA vision policy, its deployment bridge, and the
 reward-tuning changes used for the next training round. It is a development artifact:

@@ -1,6 +1,6 @@
 # Handoff: high-compute RL continuation
 
-Branch: `train` on `voicepeak/RMUA2026-demo`.
+Branch: `main` on `voicepeak/RMUA2026-demo`. The former `train` branch was merged into `main` and its remote branch was removed.
 The 24-hour laptop loop is stopped. The deployed policy remains `model_11100`;
 the best strong-continuation stress test is kept as `model_15550.pt` but is not
 better on survival.
