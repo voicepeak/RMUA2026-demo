@@ -1,0 +1,10 @@
+{
+  "checkpoint": "policy/model_11100.pt",
+  "onnx": "policy/model_11100.onnx",
+  "survival_obst2": 0.7031512605042017,
+  "survival_obst3": 0.5193983934370193,
+  "pos_xy_err": 0.6990072239415129,
+  "min_clearance": 0.9968055305878322,
+  "note": "70.3% is a 1024-env re-evaluation of the original model_11100; it is not a new fine-tuned checkpoint.",
+  "source_checkpoint_basename": "model_11100.pt"
+}
