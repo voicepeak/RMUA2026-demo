@@ -11,9 +11,12 @@ current bridge uses VEL plus `debug/pose_gt` for diagnostics only.
 | --- | --- |
 | `policy/model_11100.onnx` | deployable ONNX policy (depth + state + hx -> body velocity) |
 | `policy/model_11100.pt` | PyTorch checkpoint for resume/fine-tune |
+| `policy/model_15550.pt` | best strong-continuation checkpoint (61.8% obstacle 2, 0.431m path error) |
 | `bridge/` | standalone ROS Noetic package: LiDAR depth + ONNX -> `/vel_body_cmd` |
-| `training/` | reward patch, config snapshot, and notes for the fine-tune pipeline |
-| `evaluation/results.csv` | deterministic evaluation used to select the checkpoint |
+| `training/` | reward patch, high-compute configs, and training notes |
+| `pipeline/` | portable training/evaluation cycle, supervisor, ONNX eval |
+| `evaluation/` | deterministic 11100/14999 and 24h training results |
+| `HANDOFF.md` | continuation notes for the next agent / high-compute run |
 
 ## Policy interface
 
@@ -40,6 +43,18 @@ current bridge uses VEL plus `debug/pose_gt` for diagnostics only.
 Obstacle levels 3/4 were never trained by the curriculum; those columns are
 zero-shot results.
 
+## 24h training status
+
+- No fine-tuned checkpoint beat `model_11100` on survival.
+- Strong continuation peaked at `model_15550`: **61.8%** survival, **0.431m** path
+  error. It briefly improved from 14000 but plateaued and fell.
+- Moderate fine-tunes reached 0.47-0.52m path error but only 56-66% survival; they
+  trade safety margin for path centering.
+- The source `v12.onnx` scored **76.6%** in the 64-env protocol; its 1024-env
+  comparison is still pending.
+- The laptop ran batch 1024 because of 6 GB VRAM; the source config uses 4096, so
+  the source is not a like-for-like reproduction. See `HANDOFF.md`.
+
 ## Provenance
 
 - source: `https://github.com/HITSZcjh/rmua_rl.git`, commit `9ac9657334`
@@ -48,9 +63,9 @@ zero-shot results.
 - reward changes for the next round: `training/patches/rl_offset_lateral_reward.patch`
 - hashes and exact shapes: `metadata.json`
 
-A continuous fine-tune/evaluation loop is running outside this repo. If it produces a
-better global checkpoint, a later commit can replace the policy artifacts; this branch
-currently pins `model_11100`.
+The 24-hour laptop loop is stopped. Best survival remains `model_11100`; the
+strong-continuation checkpoint `15550` is kept as a reference but was not better on
+survival. See `evaluation/24h_results.md` and `HANDOFF.md` for the next high-compute plan.
 
 ## Development smoke test (diagnostic)
 
