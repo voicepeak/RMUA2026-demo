@@ -1,0 +1,85 @@
+train:
+  resume: null
+  load_optimizer: false
+  target_speed: 10
+coef:
+  v: 1.0
+  collide: 15
+  obj_avoidance: 6.0
+  d_acc: 0.05
+  d_jerk: 0.006
+  d_snap: 0.0
+  p_bound: 2.0
+  p_center: 1.5
+  lat_v: 0.5
+  clearance: 0.0
+reward:
+  speed_ema_alpha: 0.9
+  obstacle_lookahead_time: 1.5
+  obstacle_lookahead_steps: 10
+  risk_clearance: 0.6
+  brake_clearance: 0.7
+  ttc_threshold: 1.5
+  brake_decel: 3.5
+  brake_stop_margin: 0.15
+  max_closing_speed: 12.0
+  clearance_target: 0.9
+curriculum:
+  enabled: true
+  start_from_max: false
+  start_speed_level: 3
+  start_obstacle_level: 2
+  success_threshold: 0.7
+log:
+  root: log_data/rl_pipeline/A
+  run_name: _strong
+eval:
+  checkpoint: RL/log_data/rl/2026-07-09_18-28-18/model_5350.pt
+  export_onnx: RL/log_data/rl/policy.onnx
+  obstacle_level: 3
+  keep_curriculum: true
+  steps: 1500
+  show_depth: true
+  wait_ms: 100
+  print_velocity: true
+class_name: OnPolicyRunner
+num_steps_per_env: 20
+max_iterations: 2000
+seed: 1
+obs_groups:
+  policy:
+  - depth
+  - state
+  critic:
+  - depth
+  - state
+save_interval: 50
+experiment_name: strong_A
+run_name: ''
+logger: tensorboard
+neptune_project: quad_model
+wandb_project: quad_model
+policy:
+  class_name: CustomVisionActorCritic
+  dim_state: 14
+  init_noise_std: 1.0
+  rnn_type: sru
+  rnn_hidden_dim: 192
+  rnn_num_layers: 1
+  base_model_path: RL/checkpoint3699.pth
+  freeze_stem: true
+algorithm:
+  class_name: PPO
+  learning_rate: 0.0003
+  num_learning_epochs: 5
+  num_mini_batches: 4
+  schedule: adaptive
+  value_loss_coef: 1.0
+  clip_param: 0.2
+  use_clipped_value_loss: true
+  desired_kl: 0.01
+  entropy_coef: 0.01
+  gamma: 0.99
+  lam: 0.95
+  max_grad_norm: 1.0
+  normalize_advantage_per_mini_batch: false

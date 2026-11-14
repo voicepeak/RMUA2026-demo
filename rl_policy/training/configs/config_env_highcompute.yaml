@@ -1,0 +1,25 @@
+runtime:
+  use_gpu: true
+  gpu_id: 0
+
+env:
+  batch_size: 4096
+  width: 80
+  height: 20
+  control_dt: 0.1
+  fov_x_half_tan: 0.53
+  cam_angle: 0
+  target_distance: 255
+  grad_decay: 0.4
+  keep_grad: false
+  dynamics: full
+  voxel_size: [2.25, 0.75, 0.4]
+
+trajectory:
+  paths:
+    - path_point/1-3_1_training.yaml
+    - path_point/1-3_2_training.yaml
+    - path_point/3-5_1_training.yaml
+    - path_point/3-5_2_training.yaml
+    - path_point/5-8_1_training.yaml
+    - path_point/5-8_2_training.yaml
